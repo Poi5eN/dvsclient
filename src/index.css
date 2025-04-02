@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap");
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
+}
+/* custom-toast.css */
+/* .custom-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+} */
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* styles.css */
+@layer utilities {
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield; /* For Firefox */
+  }
+}
+
+.custom-select option:hover {
+  background-color: red;
+  color: white; /* Optional: to make the text color white for better contrast */
+}
+
+
+@layer utilities {
+  /* .animate-marquee {
+    animation: marquee 5s linear infinite;
+  } */
+
+  @keyframes marqueeY {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+.p-calendar .p-calendar-icon {
+  background-color: red; /* Tailwind's bg-[color] doesn't apply directly here */
+}
+
+
+.text-blue-gray-400{
+  color: rgb(0 170 255);
+}
+.text-blue-gray-700 {
+  --tw-text-opacity: 1;
+  color: #f19225;
+}
+/* .border-2 {
+  border-width: 1px;
+} */
+/* .border-gray-900 {
+  --tw-border-opacity: 1;
+  border-color: rgb(33 33 33 / var(--tw-border-opacity));
+} */
+
+
+.peer:placeholder-shown ~ .peer-placeholder-shown\:text-blue-gray-500 {
+  --tw-text-opacity: 1;
+  color: #22b5fe;
+}
+.peer:placeholder-shown ~ .peer-placeholder-shown\:text-blue-gray-500 {
+  --tw-text-opacity: 1;
+  color: #22b5fe;
+}
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: #22b5fe;
+}
+.placeholder-shown\:border-t-blue-gray-200:placeholder-shown {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(0 170 255);
+}
+.placeholder-shown\:border-blue-gray-200:placeholder-shown {
+  --tw-border-opacity: 1;
+  border-color: rgb(6 172 255);
+}
+
+@media print{
+  .print_btn{
+  display:none;
+  }
+  }

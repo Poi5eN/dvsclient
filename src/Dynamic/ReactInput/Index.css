@@ -1,0 +1,29 @@
+.containerr {
+    width: 200px;
+    margin-bottom: 3px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .requiredclass{
+    border-bottom: 2px solid red;
+  }
+  .did-floating-input:focus ~ .did-floating-label,
+  .did-floating-input.has-value ~ .did-floating-label {
+    top: -11px;
+    font-size: 11px;
+  }
+  
+  .did-floating-input:focus {
+    outline: none;
+  }
+
+  .did-error-input .did-floating-input {
+    border-bottom: 2px solid #9d3b3b;
+    color: #9d3b3b;
+  }
+  
+  .did-error-input .did-floating-label {
+    font-weight: 600;
+    color: #9d3b3b;
+  }
+  

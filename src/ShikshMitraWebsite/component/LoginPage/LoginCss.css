@@ -1,0 +1,117 @@
+.laptop__base {
+  background: linear-gradient(
+    3deg,
+    rgba(193, 184, 197, 1) 0%,
+    rgba(214, 190, 214, 1) 100%
+  );
+}
+
+.laptop__base {
+  border-radius: 15px;
+}
+
+.laptop {
+  display: flex;
+  flex-direction: column;
+  width: 680px;
+  min-width: 320px;
+  margin: 0 16px;
+}
+
+.laptop-top {
+  height: auto;
+  width: 100%;
+  margin: 0 auto;
+  perspective-origin: 50% 100%;
+  perspective: 2000px;
+}
+
+.laptop__screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  /* height: 250px; */
+  min-width: 280px;
+  width: calc(85% - 30px);
+  margin: 0 auto;
+  border: 15px solid #817081;
+  border-radius: 15px 15px 0 0;
+  transform-origin: center bottom;
+  transform: rotateX(0deg);
+  transform-style: preserve-3d;
+  transition: all 250ms ease-out;
+  overflow: hidden;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Animated_Wallpaper_Windows_10_-_Wallpaper_Engine.gif/1200px-Animated_Wallpaper_Windows_10_-_Wallpaper_Engine.gif");
+  background-size: cover;
+}
+
+@media screen and (min-width: 600px) {
+  .laptop__screen {
+    height: 350px;
+  }
+}
+
+.laptop--closed .laptop__screen {
+  transform: rotateX(-90deg);
+}
+
+.laptop__base {
+  position: relative;
+  background: linear-gradient(
+    3deg,
+    rgba(193, 184, 197, 1) 0%,
+    rgba(214, 190, 214, 1) 100%
+  );
+  width: 100%;
+  height: 30px;
+  border-radius: 0 0 15px 15px;
+}
+
+.laptop__base::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(50% - 75px);
+  width: 150px;
+  height: 15px;
+  background-color: #b39eb3;
+  border-radius: 0 0 15px 15px;
+  z-index: 10;
+}
+
+.laptop__base::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  left: 0;
+  width: 95%;
+  margin: 0 auto;
+  height: 0;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  z-index: -1;
+}
+
+@keyframes LabelOnLoad {
+  0% {
+    transform: rotate(0) translateY(-19px);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .box {
+    width: 80%;
+  }
+  .laptop {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+  }
+}

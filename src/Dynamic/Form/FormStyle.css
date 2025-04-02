@@ -1,0 +1,19 @@
+/* styles.css or your preferred CSS file */
+.modal-blur {
+    /* backdrop-filter: blur(5px); Adjust the blur amount as needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the background color and opacity as needed */
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999; /* Ensure it's above the modal */
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    
+  }
+  
+  .disable-scroll {
+    overflow: hidden;
+  }

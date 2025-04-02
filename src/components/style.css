@@ -1,0 +1,55 @@
+.ribben {
+  position: relative;
+  /* margin: 0 auto 20px; */
+  padding: 10px 40px;
+  text-align: center;
+  background-color: #875e46;
+}
+
+.ribben::before, .ribben::after {
+  content: '';
+  width: 80px;
+  height: 100%;
+  background-color: #724b34;
+
+  /* position ribbon ends behind and slightly lower */
+  position: absolute;
+  z-index: -1;
+  top: 20px;
+  
+  /* clip ribbon end shape */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 25% 50%);
+
+  /* draw and position the folded ribbon bit */
+  background-image: linear-gradient(45deg, transparent 50%, #5d3922 50%);
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+}
+
+.ribben::before {
+  left: -60px;
+}
+
+.ribben::after {
+  right: -60px;
+  transform: scaleX(-1); /* flip horizontally */
+}
+
+/* everything below is for demo appearances and not important to the concept */
+/* 
+body {
+  box-sizing: border-box;
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px 80px;
+  color: #fff;
+  background-color: #c5e0dd;
+  font-family: 'Merriweather', serif
+} */
+
+@media (max-width: 400px) {
+  .ribben { font-size: 1.5rem; }
+}

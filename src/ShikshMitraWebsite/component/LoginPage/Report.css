@@ -1,0 +1,32 @@
+.report-card {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border: 1px solid #000;
+}
+.report-card th, .report-card td {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: center;
+}
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.student-info, .co-scholastic {
+    width: 80%;
+    margin: 20px auto;
+    border: 1px solid #000;
+    padding: 10px;
+}
+.student-info table, .co-scholastic table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.student-info td, .co-scholastic td {
+    border: 1px solid #000;
+    padding: 8px;
+}
+.bold {
+    font-weight: bold;
+}

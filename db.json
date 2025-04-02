@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "name": "Anand kumar jaiswal",
+      "email": "anandkumar2022bth@gmail.com",
+      "id": 9
+    },
+    {
+      "name": "Anand",
+      "email": "anandkumar2022bth@gmail.com",
+      "id": 17
+    },
+    {
+      "name": "amam",
+      "email": "aman@gmail.com",
+      "id": 18
+    },
+    {
+      "name": "Anand",
+      "email": "kumar@gmail.com",
+      "id": 19
+    },
+    {
+      "name": "jaiswal@gmail.com",
+      "email": "anandkumar2022bth@gmail.com",
+      "id": 20
+    },
+    {
+      "name": "Anand",
+      "email": "anandkumar2022bth@gmail.com",
+      "id": 21
+    },
+    {
+      "name": "Anand",
+      "email": "anandkumar2022bth@gmail.com",
+      "id": 22
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

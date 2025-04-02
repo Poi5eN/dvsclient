@@ -1,0 +1,102 @@
+/* Basic reset or box-sizing (optional) */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .admitcard-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+  }
+  
+  /* Header Styles */
+  .school-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .school-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: red; /* As in the image's heading */
+    margin-bottom: 4px;
+  }
+  
+  .school-address,
+  .school-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  
+  .admitcard-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+  }
+  
+  /* Form Section */
+  .admitcard-form {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 6px;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* If you want smaller side-by-side fields, you can create a .small-group */
+  .small-group {
+    max-width: 300px;
+  }
+  
+  /* Declaration Section */
+  .declaration {
+    margin-bottom: 20px;
+    border: 1px dashed #999;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .declaration h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    text-decoration: underline;
+  }
+  
+  /* Footer Sign Section */
+  .admitcard-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .footer-col {
+    text-align: center;
+    font-weight: bold;
+    flex: 1;
+  }
+  
