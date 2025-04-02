@@ -7,6 +7,7 @@ import {
   ActiveStudents,
   feesfeeHistory,
   getMonthlyDues,
+  getStudentSpecificFee,
   LateFines,
   parentandchildwithID,
 } from "../../Network/AdminApi";
@@ -168,6 +169,7 @@ const CreateFees = () => {
         const initialFormData = [];
         for (const child of children) {
           const feeInfo = await fetchStudentFeeInfo(child.studentId);
+          console.log("feeInfo",feeInfo)
           if (!feeInfo) {
             continue; // Skip if fee info fetch fails
           }
@@ -257,6 +259,9 @@ const CreateFees = () => {
 
   // Child selection within modal
   const handleChildSelection = async (child, index) => {
+
+
+
     const isCurrentlySelected = selectedChildren.includes(index);
     const updatedSelectedChildren = [...selectedChildren];
     const updatedShowForm = [...showForm];

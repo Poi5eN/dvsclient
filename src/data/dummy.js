@@ -60,6 +60,7 @@ export const links = [
           { name: 'Additional', link: 'additional' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Add Dues', link: 'add-dues' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
           
       ],
   },
