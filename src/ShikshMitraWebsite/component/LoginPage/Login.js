@@ -51,15 +51,29 @@ const { loginUser } = useStateContext();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormdata(prev => {
-            let newSession = prev.session; // Keep the old session
+            // let newSession = prev.session; // Keep the old session
             if (name === 'Role') {
                 setShowSessionDropdown(value === 'admin');
                 //  Don't reset session anymore! Let the user set it
 
             }
-            return ({ ...prev, [name]: value, session: newSession });
+            return ({ ...prev, [name]: value, 
+                // session: newSession
+             });
         });
     };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setFormdata(prev => {
+    //         let newSession = prev.session; // Keep the old session
+    //         if (name === 'Role') {
+    //             setShowSessionDropdown(value === 'admin');
+    //             //  Don't reset session anymore! Let the user set it
+
+    //         }
+    //         return ({ ...prev, [name]: value, session: newSession });
+    //     });
+    // };
 
     const submitHandler = async (e) => {
         e.preventDefault();
