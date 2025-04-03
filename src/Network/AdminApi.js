@@ -792,3 +792,52 @@ export const editStaff = async (payload,ID) => {
   }
 };
 // employee end
+
+
+
+  // inventory start
+export const adminRouteinventory = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRouteinventory}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const getadminRouteinventory = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRouteinventory}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const adminRoutelibrary = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRoutelibrary}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+
+
+// inventory end 

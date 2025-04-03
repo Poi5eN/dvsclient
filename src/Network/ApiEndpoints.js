@@ -138,5 +138,18 @@ teacherapi:  "adminRoute/teacher",
 
 
    // teachers api 
-   marksgetmarks:"marks/getmarks"
+   marksgetmarks:"marks/getmarks",
+    createAttendance:"teacher/createAttendance",
+   
+
+
+
+
+   //  inventory start 
+
+   adminRouteinventory:"adminRoute/inventory",
+   adminRoutelibrary:"adminRoute/library",
+   //  inventory end
+
+
 }

@@ -29,7 +29,7 @@ const BookingTrendDashboard = () => {
                     color="bg-blue-600"
 
                 />
-                 <BookingTrendCard
+                 {/* <BookingTrendCard
                     title="Admit Card"
                     value="185"
                     link="/teacher/admitcard"
@@ -41,7 +41,7 @@ const BookingTrendDashboard = () => {
                     value="57"
                     link="/teacher/reportscard"
                     color="bg-[#CA762B]"
-                />
+                /> */}
                <BookingTrendCard
                    title="Allot Marks"
                    value="57"

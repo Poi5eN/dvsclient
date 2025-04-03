@@ -18,6 +18,7 @@ import { useStateContext } from "../../../contexts/ContextProvider";
 
 function DynamicFormFileds(props) {
   const { studentData, buttonLabel, setIsOpen, setReRender } = props;
+  console.log("studentData",studentData)
   const { currentColor, isLoader, setIsLoader } = useStateContext();
   const [getClass, setGetClass] = useState([]);
 const [availableSections, setAvailableSections] = useState([]);
@@ -71,8 +72,8 @@ const [availableSections, setAvailableSections] = useState([]);
         contact: studentData.contact || "",
         rollNo: studentData.rollNo || "",
         section: studentData.section || "",
-        fatherName: studentData?.udisePlusDetails?.father_name || "",
-        motherName: studentData?.udisePlusDetails?.mother_name || "",
+        fatherName: studentData?.fatherName || "",
+        motherName: studentData?.motherName || "",
         guardianName: studentData?.udisePlusDetails?.guardian_name || "",
         studentImage: studentData?.studentImage?.url || null,
         fatherImage: studentData?.fatherImage?.url || null,
@@ -288,7 +289,7 @@ const [availableSections, setAvailableSections] = useState([]);
     setIsLoader(true);
     setReRender(false);
     setLoading(true);
-    const studentId = studentData?._id;
+    const studentId = studentData?.studentId;
 
     try {
       const studentDataForUpdate = {
@@ -389,24 +390,24 @@ const [availableSections, setAvailableSections] = useState([]);
   const [currentPhotoType, setCurrentPhotoType] = useState(null);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "dateOfBirth") {
+    setValues({ ...values, [name]: value });
+    // if (name === "DOB") {
     
-      const formattedDate = moment(
-        value,
-        ["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY"],
-        true
-      );
+    //   const formattedDate = moment(
+    //     value,
+    //     ["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY"],
+    //     true
+    //   );
 
-      setValues({
-        ...values,
-        [name]: formattedDate.isValid()
-          ? formattedDate.format("YYYY-MM-DD")
-          : value,
-      });
-    } else {
-      setValues({ ...values, [name]: value });
-    }
+    //   setValues({
+    //     ...values,
+    //     [name]: formattedDate.isValid()
+    //       ? formattedDate.format("YYYY-MM-DD")
+    //       : value,
+    //   });
+    // } else {
+    //   setValues({ ...values, [name]: value });
+    // }
   };
  
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -528,7 +529,7 @@ const [availableSections, setAvailableSections] = useState([]);
       </div>
     );
   }
-
+// console.log("values",values)
   return (
     <>
       <div class="selection:bg-[#2fa7db] selection:text-white">
@@ -831,10 +832,11 @@ const [availableSections, setAvailableSections] = useState([]);
                     <div class="relative mt-4 w-full">
                       <input
                         type="date"
-                        name="dateOfBirth"
+                        name="DOB"
                         placeholder="Enter DOB (YYYY-MM-DD)"
                         // value={values.dateOfBirth}
-                        value={values.dateOfBirth ? values.dateOfBirth.split('T')[0] : ''}
+                        value={values.DOB ? values.DOB.split('T')[0] : ''}
+                        // value={values.DOB ? values.DOB.split('T')[0] : ''}
                         onChange={handleInputChange}
                         id="DOB"
                         className="peer h-10 w-full border-b-2 border-[#ee582c] text-[#2fa7db] placeholder-gray-400 focus:outline-none focus:border-rose-600"
@@ -1011,7 +1013,7 @@ const [availableSections, setAvailableSections] = useState([]);
                 onChange={handleInputChange}
               />
             </div>
-            <div className="mb-2">
+            {/* <div className="mb-2">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="transport"
@@ -1028,7 +1030,7 @@ const [availableSections, setAvailableSections] = useState([]);
                 value={values?.remarks}
                 onChange={handleInputChange}
               />
-            </div>
+            </div> */}
 
             <div className="flex justify-center mb-6">
               <div className="relative">
@@ -1043,7 +1045,8 @@ const [availableSections, setAvailableSections] = useState([]);
                     src={
                       values.fatherImage instanceof File
                       ? URL.createObjectURL(values.fatherImage)
-                      :  values.fatherImage?.url
+                      :  values.fatherImage
+                      // :  values.fatherImage?.url
                      
                     }
                     alt="mother Image"
@@ -1080,7 +1083,7 @@ const [availableSections, setAvailableSections] = useState([]);
                     src={
                       values.motherImage instanceof File
                       ? URL.createObjectURL(values.motherImage)
-                      :  values.motherImage?.url 
+                      :  values.motherImage
                     
                     }
                    
@@ -1120,7 +1123,7 @@ const [availableSections, setAvailableSections] = useState([]);
                     src={
                       values.guardianImage instanceof File
                       ? URL.createObjectURL(values.guardianImage)
-                      :  values.guardianImage?.url 
+                      :  values.guardianImage
                      
                     }
                   

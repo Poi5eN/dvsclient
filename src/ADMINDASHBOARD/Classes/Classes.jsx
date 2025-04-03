@@ -74,11 +74,15 @@ function Classes() {
       };
 
       const response = await createClass(formattedFormData)
+    
       if (response?.success) {
         setIsLoader(false)
         toast.success(response?.message)
         setIsOpen(false);
         getclasses()
+      }
+      else{
+        toast.error(response?.message)
       }
 
     } catch (error) {
@@ -111,7 +115,7 @@ function Classes() {
     { id: "subject", label: "Subject" },
     { id: "action", label: "Action" },
   ];
-  console.log("submittedData", submittedData)
+ 
   const tBody = submittedData.map((val, ind) => ({
     SN: ind + 1,
     class: val?.className,
@@ -119,7 +123,7 @@ function Classes() {
     subject: val.subjects?.map((item) => <span>{item},</span>),
    action: (<div className="flex gap-5">
       <Link to={`/admin/classes/edit-classes/${val?.classId}`}>
-        <FaEdit className="text-[20px] text-green-700" />
+        <FaEdit className="text-[20px] text-yellow-800" />
       </Link>
       {/* <span onClick={() => handleDelete(val?.classId)} className="cursor-pointer">
         <MdDelete className="text-[20px] text-red-700" />

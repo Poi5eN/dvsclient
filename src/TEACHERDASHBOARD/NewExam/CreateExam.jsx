@@ -250,7 +250,7 @@ export default function CreateExam() {
 
   return (
     <div className="px-5">
-      <Heading2 title={"All EXAMS"}>
+      {/* <Heading2 title={"All EXAMS"}>
         <button
           onClick={handleOpenModal}
           className="py-1 p-3 shadow-md  rounded-tl-lg rounded-tr-lg  flex items-center space-x-1 text-white"
@@ -260,8 +260,8 @@ export default function CreateExam() {
           <FaPlus />
           <span>Create Exam</span>
         </button>
-      </Heading2>
-      <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Exam" : "Create Exam"}>
+      </Heading2> */}
+      {/* <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Exam" : "Create Exam"}>
         <div className=" mx-auto bg-gray-50 p-6  ">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="mt-2 grid sm:grid-cols-3  md:grid-cols-4  lg:grid-cols-3 grid-cols-2 gap-3 px-2  mx-auto bg-gray-100 rounded-md ">
@@ -407,15 +407,7 @@ export default function CreateExam() {
                     placeholder="Passing Marks"
                   />
 
-                  {/* <div className="flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => removeSubject(index)}
-                      className="text-red-500 hover:text-red-700 focus:outline-none"
-                    >
-                      <FaTimesCircle size={20} />
-                    </button>
-                  </div> */}
+                 
                 </div>
               ))}
             </div>
@@ -429,7 +421,7 @@ export default function CreateExam() {
             </button>
           </form>
         </div>
-      </Modal>
+      </Modal> */}
       <ViewExam onEdit={handleEditExam} />
     </div>
   );

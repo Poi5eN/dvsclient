@@ -15,7 +15,7 @@
 //     // Fetch all items (fees) when the component mounts
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllItems",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -42,7 +42,7 @@
 //   }, [authToken]);
 //   const fetchSalesRecords = () => {
 //     axios
-//       .get("https://eserver-i5sm.onrender.com/api/v1/inventory/getSalesRecords", {
+//       .get("https://dvsserver.onrender.com/api/v1/inventory/getSalesRecords", {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -110,7 +110,7 @@
 
 //     // Send POST request
 //     axios
-//       .post("https://eserver-i5sm.onrender.com/api/v1/inventory/multiItemSell", dataToPost, {
+//       .post("https://dvsserver.onrender.com/api/v1/inventory/multiItemSell", dataToPost, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -255,7 +255,10 @@ import Cookies from "js-cookie";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
+import { useStateContext } from "../../../contexts/ContextProvider";
+import { getadminRouteinventory } from "../../../Network/AdminApi";
 const StockTable = () => {
+  const { currentColor, setIsLoader } = useStateContext();
   const [allInventory, setInventory] = useState([]); // State to store fees data
   const [selectedItems, setSelectedItems] = useState([]); // State for selected items
   const [totalAmount, setTotalAmount] = useState(0); // State for total amount
@@ -268,37 +271,74 @@ const StockTable = () => {
   const schoolContact = sessionStorage.getItem("schoolContact");
   const schoolAddress = sessionStorage.getItem("schooladdress");
   const SchoolImage = sessionStorage.getItem("image");
-  useEffect(() => {
-    axios
-      .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllItems",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        const feesData = response.data.listOfAllItems.map((item) => {
-          return {
-            label: item.itemName,
-            category: item.category,
-            value: item._id, // Use ID for internal tracking
-            price: item.price,
-          };
-        });
-        setInventory(feesData);
-      })
-      .catch((error) => {
-        console.error("Error fetching fees data:", error);
-        toast.error("Failed to fetch fees data.");
-      });
-  }, [authToken]);
+  // useEffect(() => {
+  //   axios
+  //     .get(
+  //       "https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems",
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       const feesData = response.data.listOfAllItems.map((item) => {
+  //         return {
+  //           label: item.itemName,
+  //           category: item.category,
+  //           value: item._id, // Use ID for internal tracking
+  //           price: item.price,
+  //         };
+  //       });
+  //       setInventory(feesData);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching fees data:", error);
+  //       toast.error("Failed to fetch fees data.");
+  //     });
+  // }, [authToken]);
+ 
+ const getInventory = async () => {
+     setIsLoader(true)
+     try {
+ 
+       const response = await getadminRouteinventory()
+       console.log("response",response)
+       if (response?.success) {
+ 
+        //  setSubmittedData(response?.items);
+         const feesData = response?.items?.map((item) => {
+                  return {
+                    label: item.itemName,
+                    category: item.category,
+                    value: item._id, // Use ID for internal tracking
+                    price: item.price,
+                  };
+                });
+                setInventory(feesData);
+                console.log("feesData",feesData)
+       }
+       else {
+         toast.error(response?.error)
+       }
+ 
+     } catch (error) {
+       console.log("error", error)
+     }
+     finally {
+       setIsLoader(false)
+     }
+   };
+ 
+   useEffect(() => {
+     getInventory()
+   }, [])
+ 
   const fetchSalesRecords = () => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/inventory/getSalesRecords",
+        "https://dvsserver.onrender.com/api/v1/inventory/getSalesRecords",
         {
           withCredentials: true,
           headers: {
@@ -372,7 +412,7 @@ const StockTable = () => {
     // Send POST request
     axios
       .post(
-        "https://eserver-i5sm.onrender.com/api/v1/inventory/multiItemSell",
+        "https://dvsserver.onrender.com/api/v1/inventory/multiItemSell",
         dataToPost,
         {
           withCredentials: true,

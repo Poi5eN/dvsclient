@@ -55,14 +55,14 @@ function AllStudent() {
 
   const Getclasses = async () => {
     try {
-      setIsLoader(true);
+      // setIsLoader(true);
       const response = await thirdpartyclasses(SchoolID);
      
       if (response.success) {
         let classes = response.classList;
       localStorage.setItem("classes", JSON.stringify(classes.sort((a, b) => a-b)));
         setGetClass([{ className: "all", sections: "" }, ...classes.sort((a, b) => a - b)]); // Add "All Classes" option
-        setIsLoader(false);
+        // setIsLoader(false);
       } else {
         console.log("error", response?.message);
       }
@@ -72,10 +72,11 @@ function AllStudent() {
   };
 
   const getStudent = async () => {
+    setIsLoader(true);
     try {
-      setIsLoader(true);
+      
       const response = await thirdpartyadmissions(SchoolID);
-
+console.log("response aaaaa",response)
       if (response.success) {
         setAllStudents(response?.data);
         setFilteredStudents(response?.data);
@@ -85,14 +86,14 @@ function AllStudent() {
       console.log("error", error);
     }
   };
-useEffect(()=>{
-  getStudent()
-},[reRender])
+// useEffect(()=>{
+//   getStudent()
+// },[reRender])
 
   useEffect(() => {
     getStudent();
     Getclasses();
-  }, []);
+  }, [reRender]);
 
   useEffect(() => {
     let filtered = [...allStudents];
@@ -111,7 +112,7 @@ useEffect(()=>{
         const lowerCaseSearchTerm = searchTerm.toLowerCase();
         filtered = filtered.filter(student => {
           return (
-              student.fullName?.toLowerCase().includes(lowerCaseSearchTerm) ||
+              student.studentName?.toLowerCase().includes(lowerCaseSearchTerm) ||
               student.admissionNumber?.toLowerCase().includes(lowerCaseSearchTerm) ||
               (typeof student.contact === "string" && student.contact.includes(searchTerm))
           );

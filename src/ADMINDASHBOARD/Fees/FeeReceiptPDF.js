@@ -3,7 +3,8 @@ import { useReactToPrint } from "react-to-print";
 import "./FeeReceiptPDF.css";
 import moment from "moment";
 import { FaFilePdf } from "react-icons/fa";
-import { Button } from "@mui/material";
+import Button from "../../Dynamic/utils/Button";
+
 function FeeReceiptPDF({ details }) {
     const [showContent, setShowContent] = useState(false); // State to control visibility
     const componentPDF = useRef();
@@ -49,18 +50,26 @@ function FeeReceiptPDF({ details }) {
         <div className="fee-receipt-pdf-container">
             <div className="flex justify-end w-full gap-5">
                <Button
-               style={{background:"green"}}
-                            variant="contained"
-              
-                 onClick={handleGenerateClickAll} className="fee-receipt-pdf-button flex">
-                  <FaFilePdf/><span>All</span> 
+            //    style={{background:"green"}}
+                            // variant="contained"
+                             color="green"
+              name="All"
+              Icon={<FaFilePdf/>}
+                 onClick={handleGenerateClickAll} 
+                //  className="fee-receipt-pdf-button flex"
+                 >
+                  {/* <span>All</span>  */}
                 </Button>
                 <Button
-                 style={{background:"green"}}
-                             variant="contained"
+                 color="green"
+                 name="Today"
+                 Icon={<FaFilePdf/>}
+                            //  variant="contained"
                
-                onClick={handleGenerateClickCurrentDate} className="fee-receipt-pdf-button flex ">
-                <FaFilePdf/><span>Today</span>
+                onClick={handleGenerateClickCurrentDate}
+                //  className="fee-receipt-pdf-button flex "
+                 >
+                {/* <FaFilePdf/><span>Today</span> */}
                 </Button>
             </div>
 

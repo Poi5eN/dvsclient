@@ -4,6 +4,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { useStateContext } from "../contexts/ContextProvider";
 import { FiSettings } from "react-icons/fi";
 import "./style.css";
+import { VscSymbolColor } from "react-icons/vsc";
 import { MdFullscreen, MdFullscreenExit, MdLogout } from "react-icons/md";
 
 const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
@@ -85,7 +86,9 @@ const Navbar = () => {
 
 
   return (
-    <div className="flex justify-between items-center relative bg-[#2faadc] dark:bg-main-dark-bg shadow-xl">
+    <div className="flex justify-between items-center relative  dark:bg-main-dark-bg shadow-xl"
+    style={{background:currentColor}}
+    >
       {/* Left: Menu Button */}
       <div className="flex items-center">
         <NavButton
@@ -126,11 +129,16 @@ const Navbar = () => {
                 type="button"
                 onClick={() => setThemeSettings(true)}
                 style={{ background: currentColor,  }}
-                className="h-4 w-4 flex justify-center items-center hover:drop-shadow-xl hover:bg-light-gray"
+                className="h-4 w-4 mr-1 flex justify-center items-center hover:drop-shadow-xl hover:bg-light-gray"
               >
                 {/* <FiSettings /> */}
-                <span style={{background:currentColor,}}></span>
+                <span 
+                // style={{background:currentColor,}}
+                >
+                  <VscSymbolColor className="text-[25px] text-white"/>
+                </span>
               </button>
+            
             {/* </TooltipComponent> */}
         </div>
         <div

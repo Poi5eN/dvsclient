@@ -418,6 +418,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs .jsx";
 import { MdDelete, MdToggleOn, MdToggleOff } from "react-icons/md"; // Added toggle icons
 
 import {
+    ActiveStudents,
     AdminGetAllClasses,
     getAllStudents,
     studentsStatus,
@@ -445,7 +446,8 @@ function CreateStudent() {
     const fetchAllStudents = useCallback(async () => {
         setIsLoader(true);
         try {
-            const response = await getAllStudents();
+            const response = await ActiveStudents();
+            // const response = await getAllStudents();
             if (response?.success) {
                 // Assuming response.students.data is the array of students
                 const students = response?.students?.data?.reverse() || [];
@@ -490,7 +492,7 @@ function CreateStudent() {
     }, [fetchAllStudents, fetchAllClasses]); // Use the useCallback functions
 
     // --- Filtering Logic ---
-console.log("selectedClass",selectedClass)
+
     useEffect(() => {
         let filtered = allStudents;
 
@@ -622,11 +624,13 @@ console.log("selectedClass",selectedClass)
             <button
                 onClick={() => handleToggleStatus(student?.studentId, student.status)}
                 title={student.status === "active" ? "Deactivate Student" : "Activate Student"}
-                className={`p-1 rounded-full text-2xl ${
-                  student.status === "active" ? "text-green-600 hover:text-green-800" : "text-red-600 hover:text-red-800"
-                }`}
+                // className={`p-1 rounded-full text-2xl ${
+                //   student.status === "active" ? "text-green-600 hover:text-green-800" : "text-red-600 hover:text-red-800"
+                // }`}
+                className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
             >
-                {student.status === "active" ? <MdToggleOn /> : <MdToggleOff />}
+                {/* {student.status === "active" ? <MdToggleOn /> : <MdToggleOff />}   */}
+                <MdDelete/>
             </button>
              /* Alternative text/badge style:
              <span
@@ -678,11 +682,11 @@ console.log("selectedClass",selectedClass)
     // View: List of students
     if (!isEditing && !studentToView) {
         return (
-            <div className="mx-auto p-4 overflow-hidden">
+            <div className="mx-auto px-4 overflow-hidden">
                 <Breadcrumbs BreadItem={BreadItem} />
 
                 {/* Filter and Action Bar */}
-                <div className="flex flex-wrap items-center gap-4 mb-4 p-3 bg-white rounded shadow-md">
+                <div className="flex flex-wrap items-center gap-4 mb-2 bg-white rounded ">
                    
                
         <ReactSelect

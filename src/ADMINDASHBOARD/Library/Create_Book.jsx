@@ -6,7 +6,7 @@ import "../../Dynamic/Form/FormStyle.css";
 import DynamicDataTable from "./DataTable";
 import InputForm from "../../Dynamic/Form/InputForm";
 import { useStateContext } from "../../contexts/ContextProvider";
-import { createbooklibrary } from "../../Network/AdminApi";
+import { adminRoutelibrary, createbooklibrary } from "../../Network/AdminApi";
 import Table from "../../Dynamic/Table";
 import { Button } from "@mui/material";
 import Modal from "../../Dynamic/Modal";
@@ -15,8 +15,8 @@ import Modal from "../../Dynamic/Modal";
 function Create_Book() {
   const [openForm,setOpenForm]=useState(false)
   const authToken = localStorage.getItem("token");
-  const { currentColor } = useStateContext();
-
+ 
+  const { currentColor, setIsLoader } = useStateContext();
   const modalStyle = {
     content: {
       // width: "80%",
@@ -52,31 +52,62 @@ function Create_Book() {
       formData.subject
     );
   };
-  useEffect(() => {
-    // Fetch data from the server when the component mounts
-    axios
-      .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllBooks",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+
+
+
+
+  const getlibrary = async () => {
+      setIsLoader(true)
+      try {
+  
+        const response = await adminRoutelibrary()
+        console.log("response",response)
+        if (response?.success) {
+  
+          setSubmittedData(response?.books);
         }
-      )
-      .then((response) => {
-        if (Array.isArray(response.data.listOfAllBooks)) {
-          // Update the state with the array
-          setSubmittedData(response.data.listOfAllBooks);
+        else {
+          toast.error(response?.error)
+        }
+  
+      } catch (error) {
+        console.log("error", error)
+      }
+      finally {
+        setIsLoader(false)
+      }
+    };
+  
+    useEffect(() => {
+      getlibrary()
+    }, [])
+
+
+  // useEffect(() => {
+  //   // Fetch data from the server when the component mounts
+  //   axios
+  //     .get(
+  //       "https://dvsserver.onrender.com/api/v1/adminRoute/library",
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       if (Array.isArray(response.data.listOfAllBooks)) {
+  //         // Update the state with the array
+  //         setSubmittedData(response.data.listOfAllBooks);
        
-        } else {
-          console.error("Data format is not as expected:", response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, [shouldFetchData]);
+  //       } else {
+  //         console.error("Data format is not as expected:", response.data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, [shouldFetchData]);
 
   const handleFieldChange = (fieldName, value) => {
     setFormData({
@@ -104,20 +135,10 @@ function Create_Book() {
 
     try {
       const response= await createbooklibrary(formData)
-      // setLoading(true);
-      // const response = await axios.post(
-      //   "https://eserver-i5sm.onrender.com/api/v1/adminRoute/createBook",
-      //   formData,
-      //   {
-      //     withCredentials: true,
-      //     headers: {
-      //       Authorization: `Bearer ${authToken}`,
-      //     },
-      //   }
-      // );
+     
 if(response?.success){
   const newBookData = response.data;
-
+  
   setFormData({
     bookName: "",
     authorName: "",
@@ -127,11 +148,9 @@ if(response?.success){
     subject: "",
   });
 
-  setSubmittedData([...submittedData, newBookData]);
   setLoading(false);
   toast.success("Book Created successfully!");
 
-  // Set shouldFetchData to true to trigger the useEffect to fetch updated data
   setShouldFetchData(true);
 
   closeModal();
@@ -142,55 +161,12 @@ if(response?.success){
       toast.error("An error occurred while creating a book.");
     }
   };
-  // const handleSubmit = async () => {
-  //   if (!isFormValid()) {
-  //     toast.error("Please fill out all required fields.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-  //     const response = await axios.post(
-  //       "https://eserver-i5sm.onrender.com/api/v1/adminRoute/createBook",
-  //       formData,
-  //       {
-  //         withCredentials: true,
-  //         headers: {
-  //           Authorization: `Bearer ${authToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     const newBookData = response.data;
-
-  //     setFormData({
-  //       bookName: "",
-  //       authorName: "",
-  //       quantity: "",
-  //       category: "",
-  //       className: "",
-  //       subject: "",
-  //     });
-
-  //     setSubmittedData([...submittedData, newBookData]);
-  //     setLoading(false);
-  //     toast.success("Book Created successfully!");
-
-  //     // Set shouldFetchData to true to trigger the useEffect to fetch updated data
-  //     setShouldFetchData(true);
-
-  //     closeModal();
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     toast.error("An error occurred while creating a book.");
-  //   }
-  // };
-
+ 
   const handleDelete = async (_id) => {
     try {
       // Make an API request to delete the row from the server
       const response = await axios.delete(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
         {
           withCredentials: true,
           headers: {
@@ -279,7 +255,7 @@ if(response?.success){
     
       ];
     console.log("submittedData",submittedData)
-      const tBody = submittedData.map((val, ind) => ({
+      const tBody = submittedData?.map((val, ind) => ({
         SN: ind + 1,
     
         bookName: (
@@ -506,7 +482,7 @@ export default Create_Book;
 //     // Fetch data from the server when the component mounts
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllBooks",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllBooks",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -555,7 +531,7 @@ export default Create_Book;
 //     try {
 //       setLoading(true);
 //       const response = await axios.post(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/createBook",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/createBook",
 //         formData,
 //         {
 //           withCredentials: true,
@@ -594,7 +570,7 @@ export default Create_Book;
 //     try {
 //       // Make an API request to delete the row from the server
 //       const response = await axios.delete(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
 //         {
 //           withCredentials: true,
 //           headers: {

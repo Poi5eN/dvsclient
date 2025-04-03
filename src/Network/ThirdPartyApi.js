@@ -129,3 +129,15 @@ export const Admission = async (payload) => {
 //   }
 // };
 
+export const createAttendance = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.createAttendance}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};

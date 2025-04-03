@@ -53,7 +53,7 @@ function TeacherDashboard() {
       {userRole === "teacher" && (
         <>
           <div className="flex relative dark:bg-main-dark-bg">
-            <div className="fixed right-4 bottom-16" style={{ zIndex: "1000" }}>
+            {/* <div className="fixed right-4 bottom-16" style={{ zIndex: "1000" }}>
               <TooltipComponent content="Settings" position="Top">
                 <button
                   type="button"
@@ -64,7 +64,7 @@ function TeacherDashboard() {
                   <FiSettings className="md:text-[14px] sm:text-[20px]" />
                 </button>
               </TooltipComponent>
-            </div>
+            </div> */}
             {activeMenu ? (
               <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white "
               style={{zIndex:"99999999"}}

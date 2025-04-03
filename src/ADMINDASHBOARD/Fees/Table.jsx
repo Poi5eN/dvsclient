@@ -4,7 +4,7 @@ import { useStateContext } from "../../contexts/ContextProvider";
 import FeeRecipt from "./FeeRecipt";
 import NoDataFound from "../../NoDataFound";
 import { format, parseISO } from "date-fns";
-import { Button } from "@mui/material";
+
 import { FaEye } from "react-icons/fa";
 import FeeReceiptPDF from './FeeReceiptPDF';
 import PrintHandler from "../Admission/PrintHandler";
@@ -14,6 +14,7 @@ import { cancelFeePayment } from "../../Network/AdminApi";
 import { toast } from "react-toastify";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import Modal from "../../Dynamic/Modal";
+import Button from "../../Dynamic/utils/Button";
 const Table = ({ reLoad }) => {
   const user = JSON.parse(localStorage.getItem("user"))
   const authToken = localStorage.getItem("token");
@@ -197,7 +198,7 @@ try {
   }
   return (
     <div className="md:min-h-screen">
-      <div className="flex items-center gap-5 mb-5 flex-wrap">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
          <ReactInput
                       type="date"
                       name="studentDateOfBirth"
@@ -217,21 +218,22 @@ try {
        
             <Button
               onClick={handleDateFilter}
-              variant="contained"
-              style={{ backgroundColor: currentColor, color: "white" }}
+              name="Filter"
+              // variant="contained"
+              // style={{ backgroundColor: currentColor, color: "white" }}
              
             >
-              Filter
+              
             </Button>
          
             <Button
-              variant="contained"
-
+              // variant="contained"
+  name="Clear"
               onClick={clearDateFilter}
-              style={{ backgroundColor: "#424242", color: "white" }}
+              // style={{ backgroundColor: "#424242", color: "white" }}
              
             >
-              Clear
+              
             </Button>
             <div id="printContent">
           <FeeReceiptPDF details={filteredFeeHistory} />

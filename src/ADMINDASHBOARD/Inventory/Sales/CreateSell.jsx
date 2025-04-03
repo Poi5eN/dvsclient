@@ -4,10 +4,12 @@ import axios from "axios";
 import StockTable from "./StockDataTable";
 
 import { useStateContext } from "../../../contexts/ContextProvider";
+import { getadminRouteinventory } from "../../../Network/AdminApi";
+import { toast } from "react-toastify";
 
-function CreateSell() { const { currentColor } = useStateContext();
+function CreateSell() {
 const authToken = localStorage.getItem("token");
-
+const { currentColor, setIsLoader } = useStateContext();
   const [formData, setFormData] = useState({
     itemName: "",
     category: "",
@@ -22,24 +24,49 @@ const authToken = localStorage.getItem("token");
   const updateDependency = () => {
     setShouldFetchData(!shouldFetchData);
   }
+const getInventory = async () => {
+    setIsLoader(true)
+    try {
 
+      const response = await getadminRouteinventory()
+      console.log("response",response)
+      if (response?.success) {
+
+        setSubmittedData(response?.items);
+      }
+      else {
+        toast.error(response?.error)
+      }
+
+    } catch (error) {
+      console.log("error", error)
+    }
+    finally {
+      setIsLoader(false)
+    }
+  };
 
   useEffect(() => {
+    getInventory()
+  }, [])
 
-    axios.get('https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllItems', {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      }, // Set withCredentials to true
-    })
-      .then((response) => {
-        setSubmittedData(response.data.listOfAllItems);
-      })
 
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, [shouldFetchData]);
+  // useEffect(() => {
+
+  //   axios.get('https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllItems', {
+  //     withCredentials: true,
+  //     headers: {
+  //       Authorization: `Bearer ${authToken}`,
+  //     }, // Set withCredentials to true
+  //   })
+  //     .then((response) => {
+  //       setSubmittedData(response.data.listOfAllItems);
+  //     })
+
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, [shouldFetchData]);
 
   return (
     <div className=" mt-12 md:mt-1  mx-auto p-3">

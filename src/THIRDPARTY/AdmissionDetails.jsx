@@ -13,7 +13,7 @@ import {
 function AdmissionDetails() {
   const SchoolID = localStorage.getItem("SchoolID");
   const [reRender, setReRender] = useState(false);
-  const { currentColor } = useStateContext();
+  const { currentColor ,setIsLoader} = useStateContext();
   const [getClass, setGetClass] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSection, setSelectedSection] = useState("");
@@ -54,39 +54,45 @@ function AdmissionDetails() {
   };
  
   const Getclasses = async () => {
+    setIsLoader(true)
     try {
       const response = await thirdpartyclasses(SchoolID);
       if (response.success) {
         let classes = response.classList;
-       
+        setIsLoader(false)
         setGetClass([{ className: "all", sections: "" }, ...classes.sort((a, b) => a - b)]); // Add "All Classes" option
       } else {
         console.log("error", response?.message);
       }
     } catch (error) {
       console.log("error", error);
+      setIsLoader(false)
     }
   };
 
   const getStudent = async () => {
+    setIsLoader(true)
     try {
       const response = await getSudent(SchoolID);
-
+console.log("response student",response)
       if (response.success) {
+      
         setAllStudents(response?.data);
         setFilteredStudents(response?.data);
+        setIsLoader(false)
       }
     } catch (error) {
+      setIsLoader(false)
       console.log("error", error);
     }
   };
   
 
-  useEffect(() => {
-    setReRender(false)
-    getStudent();
+  // useEffect(() => {
+  //   setReRender(false)
+  //   getStudent();
     
-  }, [reRender]);
+  // }, [reRender]);
 
   useEffect(() => {
     getStudent();
@@ -217,9 +223,7 @@ function AdmissionDetails() {
             </button>
           </div>
         ))}
-{
-  console.log("render",reRender)
-}
+
         <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={`Edit`}>
           <DynamicFormFileds studentData={student} buttonLabel={"Update"}  setIsOpen={setModalOpen} setReRender={setReRender}/>
         </Modal>
