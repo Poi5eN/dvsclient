@@ -604,6 +604,18 @@ export const getStudentSpecificFee = async (ID,session) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const getStudentFeeInfo = async (ID,session) => {
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getStudentFeeInfo}?studentId=${ID}&session=${session}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const getfees = async (payload) => {
   try {
     const option = {

@@ -52,6 +52,19 @@ export const links = [
   { name: 'Create fee', link: 'create-fees' ,icon: <PiStudentFill />},
 
   {
+      name: 'Fees System',
+      id :2,
+      icon: <GiTakeMyMoney />,
+      children: [
+          { name: 'Create fee', link: 'create-fees',id :22 , icon: <GiTakeMyMoney />,},
+          { name: 'Fee history', link: 'feehistory' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'Student History', link: 'StudentHistory' ,id :23 , icon: <GiTakeMyMoney />,},
+          // { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
+          // { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
+          
+      ],
+  },
+  {
       name: 'Set Fees',
       id :2,
       icon: <GiTakeMyMoney />,

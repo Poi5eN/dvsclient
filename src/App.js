@@ -20,6 +20,8 @@ import StudentsMarks from "./TEACHERDASHBOARD/NewExam/StudentsMarks";
 import EditRportCard from "./ADMINDASHBOARD/Exams/EditRportCard";
 import ViewMarks from "./ADMINDASHBOARD/Exams/ViewMarks";
 import SpecificFee from "./ADMINDASHBOARD/Fees/SpecificFee";
+import Table from "./ADMINDASHBOARD/Fees/Table";
+import StudentFeeHistory from "./ADMINDASHBOARD/Fees/StudentFeeHistory";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -308,6 +310,8 @@ function App() {
               <Route path="add-dues" element={<AddDues />} />
               <Route path="lateFine" element={<LateFine />} />
               <Route path="specificFee" element={<SpecificFee />} />
+              <Route path="feehistory" element={<Table />} />
+              <Route path="StudentHistory" element={<StudentFeeHistory />} />
               <Route
                 path="classwise/edit-fees/:_id"
                 element={<EditClasswiseFees />}
