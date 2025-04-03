@@ -15,7 +15,8 @@ const BulkAdmission = ({ refreshRegistrations }) => {
   const [loading, setLoading] = useState(false);
   const { currentColor } = useStateContext();
   const [file, setFile] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [credentialsModal, setCredentialsModal] = useState(false);
+  const [generatedCredentials, setGeneratedCredentials] = useState([]);
 
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
@@ -39,17 +40,23 @@ const BulkAdmission = ({ refreshRegistrations }) => {
         const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
         const payload = { students: worksheet };
         const response = await admissionbulk(payload);
-        if (response?.message) {
+
+        if (response.success) {
           toast.success(response.message);
-          setIsOpen(false);
+          setGeneratedCredentials(response.generatedCredentials || []);
+          setCredentialsModal(true);
           setModalOpen(false);
-          // refreshRegistrations(); // Refresh the data if needed
+          // refreshRegistrations(); // Uncomment if needed
         } else {
           toast.error("Failed to process the file.");
         }
+
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach((err) => toast.error(`${err.studentEmail}: ${err.error}`));
+        }
       } catch (error) {
         console.error("Error processing file", error);
-        // toast.error("An error occurred while processing the file.");
+        toast.error("An error occurred while processing the file.");
       } finally {
         setLoading(false);
       }
@@ -61,7 +68,7 @@ const BulkAdmission = ({ refreshRegistrations }) => {
   return (
     <>
       <Button name="Bulk Admission" onClick={() => setModalOpen(true)} />
-      <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={`Bulk Admission`}>
+      <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title="Bulk Admission">
         <div className="grid md:grid-cols-1 grid-cols-1 gap-2 p-5 bg-gray-50">
           <input
             type="file"
@@ -72,6 +79,42 @@ const BulkAdmission = ({ refreshRegistrations }) => {
           <div className="mt-4 flex flex-col md:flex-row justify-center gap-2">
             <Button loading={loading} type="submit" name="Submit" width="full" onClick={submit} />
             <Button name="Cancel" onClick={() => setModalOpen(false)} width="full" color="gray" />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={credentialsModal} setIsOpen={setCredentialsModal} title="Generated Credentials">
+        <div className="p-5 max-h-96 overflow-y-auto">
+          {generatedCredentials.length > 0 ? (
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 dark:bg-secondary-dark-bg">
+                  <th className="border p-2">Student Name</th>
+                  <th className="border p-2">Student Email</th>
+                  <th className="border p-2">Student Password</th>
+                  <th className="border p-2">Parent Email</th>
+                  <th className="border p-2">Parent Password</th>
+                  <th className="border p-2">Parent Admission No.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {generatedCredentials.map((cred, index) => (
+                  <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <td className="border p-2">{cred.studentName}</td>
+                    <td className="border p-2">{cred.studentEmail}</td>
+                    <td className="border p-2">{cred.studentPassword}</td>
+                    <td className="border p-2">{cred.parentEmail}</td>
+                    <td className="border p-2">{cred.parentPassword}</td>
+                    <td className="border p-2">{cred.parentAdmissionNumber}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No credentials generated.</p>
+          )}
+          <div className="mt-4 flex justify-center">
+            <Button name="Close" onClick={() => setCredentialsModal(false)} width="full" color="gray" />
           </div>
         </div>
       </Modal>

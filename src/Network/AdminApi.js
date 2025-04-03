@@ -290,6 +290,7 @@ export const createStudentParent = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+
 export const admissionbulk = async (payload) => {
   
   try {
@@ -303,7 +304,6 @@ export const admissionbulk = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
-
 
 export const editStudentParent = async (_id,payload) => {
   try {
