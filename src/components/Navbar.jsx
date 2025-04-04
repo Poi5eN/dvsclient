@@ -20,7 +20,7 @@ const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
       {dotColor && (
         <span
           style={{ background: dotColor }}
-          className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
+          className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2 text-white"
         />
       )}
       {icon}
@@ -95,7 +95,7 @@ const Navbar = () => {
           // title="Menu"
           customFunc={() => setActiveMenu((prev) => !prev)}
           color={currentColor}
-          icon={<AiOutlineMenu />}
+          icon={<AiOutlineMenu className="text-white" />}
         />
       </div>
 

@@ -48,7 +48,7 @@ const BulkAdmission = ({ refreshRegistrations }) => {
           setModalOpen(false);
           // refreshRegistrations(); // Uncomment if needed
         } else {
-          toast.error("Failed to process the file.");
+          toast.error(response.message);
         }
 
         if (response.errors && response.errors.length > 0) {
