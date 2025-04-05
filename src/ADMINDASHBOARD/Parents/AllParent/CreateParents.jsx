@@ -261,11 +261,9 @@ function CreateParents() {
     // View: List of students
     if (!isEditing && !studentToView) {
         return (
-            <div className="mx-auto px-4 overflow-hidden">
-                <Breadcrumbs BreadItem={BreadItem} />
-
-                {/* Filter and Action Bar */}
-                <div className="flex flex-wrap items-center gap-4 mb-2 bg-white rounded ">
+            <div className=" overflow-hidden">
+{/* 
+                <div className="flex flex-wrap items-center gap-2 mb-2 bg-white rounded ">
                    
                
         <ReactSelect
@@ -282,14 +280,8 @@ function CreateParents() {
           label="Select a Section"
           dynamicOptions={DynamicSection}
         />
-                    
-                    {/* <div className="flex gap-2 items-center ml-auto"> 
-                        <button onClick={handlePrint} className="p-2 rounded hover:bg-gray-200" title="Print Table">
-                            <img src={pdf} alt="Print PDF" className="h-5 w-5" />
-                        </button>
-                        <ExportToExcel data={filteredData} fileName="Students_Report" />
-                    </div> */}
-                </div>
+
+                </div> */}
 
                 {/* Student Table */}
                 {filteredData.length > 0 ? (

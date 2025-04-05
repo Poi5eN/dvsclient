@@ -121,7 +121,7 @@ const [addDues,setAddDues]=useState(false)
     { id: "totalDues", label: "Total Dues" },
     { id: "action", label: "Action" },
   ];
-
+console.log("filteredData",filteredData)
   // Correctly format the data for the Table component
   const tBody = filteredData.map((val, ind) => ({
     admissionNo: val.admissionNumber,
@@ -194,7 +194,9 @@ const [addDues,setAddDues]=useState(false)
         >
           Partial
         </button>
+        <DuesPDF tBody={tBody} />
       </div>
+
       <div className="flex gap-3">
 
       {/* <Button name="Add Dues Fees" onClick={()=>handleAddFee()} /> */}
@@ -203,15 +205,15 @@ const [addDues,setAddDues]=useState(false)
   addDues &&  <div className="flex gap-3">  <Button name="Save" color="green" />  <Button name="cancel" color="gray " onClick={()=>setAddDues(false)} /></div>
  } */}
       </div>
-      <div id="printContent">
+      {/* <div id="printContent">
           <DuesPDF tBody={tBody} />
-        </div>
+        </div> */}
 
-      <div className="md:h-screen dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full">
-        <div className="w-full">
+      {/* <div className="md:h-screen dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full">
+        <div className="w-full"> */}
           <Table tHead={tHead} tBody={tBody} />
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
       {isOpen && (
         <div
           id="default-modal"

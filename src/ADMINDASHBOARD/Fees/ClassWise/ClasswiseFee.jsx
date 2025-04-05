@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { Button } from "@mui/material";
 import useCustomQuery from "../../../useCustomQuery";
 
 import NoDataFound from "../../../NoDataFound";
@@ -13,11 +12,8 @@ import { AdminGetAllClasses, adminRoutefeesregular, deletefees, getfees } from "
 import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
 import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
 import Table from "../../../Dynamic/Table";
-
-
-
+import Button from "../../../Dynamic/utils/Button";
 function ClasswiseFee() {
-
   const { currentColor, setIsLoader } = useStateContext();
   const [formData, setFormData] = useState({ className: "", feeType: "", amount: "" });
   const [feesData, setFeesData] = useState([])
@@ -31,7 +27,6 @@ function ClasswiseFee() {
   const getfee = async () => {
     try {
       const response = await getfees()
-      console.log("response fees", response)
       if (response?.success) {
         setFeesData(response?.data)
       }
@@ -47,15 +42,11 @@ function ClasswiseFee() {
   }, [])
 
   const GetAllClasses = async () => {
- 
     try {
       const response = await AdminGetAllClasses();
-
       if (response?.success) {
-
         let classes = response.classes;
         setGetClass(classes.sort((a, b) => a - b));
-
       } else {
         toast.error(response?.message);
       }
@@ -66,38 +57,12 @@ function ClasswiseFee() {
   useEffect(() => {
     GetAllClasses()
   }, [])
-  console.log("formdata",formData)
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleSubmit = async () => {
-  //   console.log("formData",formData)
-  //   setIsLoader(true)
-  //   try {
-  //     const response = await adminRoutefeesregular(formData)
-  //     if (response?.success) {
-  //       toast.success("Fees set successfully !")
-  //       closeModal();
-  //       setIsLoader(false)
-  //     }
-  //     else {
-  //       setIsLoader(false)
-  //       toast.error(response?.message)
-  //     }
-
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     setLoading(false);
-  //     // toast.error("An error occurred while submitting the form.");
-  //   }
-  // };
-
-  console.log("Payload before submission:", formData); 
   const handleSubmit = async () => {
-     // Debugging ke liye
-  
     setIsLoader(true);
     try {
       const response = await adminRoutefeesregular(formData);
@@ -187,9 +152,6 @@ function ClasswiseFee() {
     class: val.className,
 
     action: (<div className="flex justify-center">
-      {/* <span onClick={() => handlePrintClick(val)} className="cursor-pointer">
-        <FaEdit className="text-[25px] " />
-      </span> */}
       <span onClick={() => handleDelete(val?.feeStructureId)} className="cursor-pointer">
         <MdDelete className="text-[25px] text-red-700" />
       </span>
@@ -198,23 +160,22 @@ function ClasswiseFee() {
     ),
   }));
   return (
-    <div className=" mx-auto ">
-      <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
-        Create Class Fee
-      </h1>
-      <div className="mb-1">
+    <div className="">
+
+      <div className="">
         <Button
-          variant="contained"
-          style={{ backgroundColor: currentColor }}
+        name="Set Fee"
+          // variant="contained"
+          // style={{ backgroundColor: currentColor }}
           onClick={() => {
             setEditMode(false);
             setEditItemId(null);
             setFormData({ className: "", feeType: "", amount: "" });
             setModalOpen(true);
           }}
-        >
-          Create Fee
-        </Button>
+        />
+          
+        
       </div>
 
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Class Fee" : "Create Class Fee"}>
@@ -260,11 +221,22 @@ function ClasswiseFee() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="contained" onClick={handleSubmit} style={{ backgroundColor: currentColor, color: "white" }}>
-              {loading ? "Processing..." : editMode ? "Update" : "Submit"}
+            <Button 
+            // variant="contained"
+            name="Submit"
+             onClick={handleSubmit}
+              // style={{ backgroundColor: currentColor, color: "white" }}
+              >
+              {/* {loading ? "Processing..." : editMode ? "Update" : "Submit"} */}
             </Button>
-            <Button variant="contained" onClick={closeModal} style={{ backgroundColor: "#616161", color: "white" }}>
-              Cancel
+            <Button 
+            name="Cancel"
+            color="gray"
+            // variant="contained"
+             onClick={closeModal}
+              // style={{ backgroundColor: "#616161", color: "white" }}
+              >
+              
             </Button>
           </div>
         </div>

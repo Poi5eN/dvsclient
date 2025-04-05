@@ -29,7 +29,7 @@ const Table = ({ reLoad }) => {
   };
   const [cancel,setCencel]=useState(false)
   
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
  
   const toggleModal = () => setIsOpen(!isOpen);
@@ -197,7 +197,7 @@ try {
 
   }
   return (
-    <div className="md:min-h-screen">
+    <div className="md:min-h-screen mt-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
          <ReactInput
                       type="date"

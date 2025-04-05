@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 function AdminUser() {
   const { setIsLoader } = useStateContext();
  const [isEdit, setIsEdit]=useState(true)
-// const user=JSON.parse(localStorage.getItem("user"))
+const user=JSON.parse(localStorage.getItem("user"))
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -56,30 +56,30 @@ function AdminUser() {
     }
   }
   useEffect(()=>{
-    getAdminData()
+    // getAdminData()
   },[])
-//   useEffect(()=>{
-// if(user){
-//   setValues((preV)=>(
-//     {
-//       ...preV,
-//       address:user?.address,
-//       email:user?.email,
-//       name: user?.fullName,
-//       password: user?.newPassword,
-//       contact: user?.contact,
-//       schoolName: user?.schoolName,
-//       logoImage: user?.image?.url,
-//       feeMessage:user?.feeMessage,
-//       admissionMessage: user?.admissionMessage,
-//       registrationMessage: user?.registrationMessage,
-//       state:user?.schoolState,
-//       city: user?.schoolCity,
-//       pincode:user?.pincode,
-//     }
-//   ))
-// }
-//   },[])
+  useEffect(()=>{
+if(user){
+  setValues((preV)=>(
+    {
+      ...preV,
+      address:user?.address,
+      email:user?.email,
+      name: user?.fullName,
+      password: user?.newPassword,
+      contact: user?.contact,
+      schoolName: user?.schoolName,
+      logoImage: user?.image?.url,
+      feeMessage:user?.feeMessage,
+      admissionMessage: user?.admissionMessage,
+      registrationMessage: user?.registrationMessage,
+      state:user?.schoolState,
+      city: user?.schoolCity,
+      pincode:user?.pincode,
+    }
+  ))
+}
+  },[])
 
   const handleSubmit = async () => {
     setIsLoader(true);
@@ -194,7 +194,8 @@ if(props==="Update"){
           />
           {values.logoImage && (
             <img
-              src={URL.createObjectURL(values.logoImage)}
+              // src={URL.createObjectURL(values.logoImage)}
+              src={user?.logoImage?.url}
               alt="Logo Preview"
               className="w-10 h-10 object-cover rounded-md"
             />

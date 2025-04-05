@@ -1,47 +1,140 @@
 import { useStateContext } from "../contexts/ContextProvider";
 import { Navbar, Sidebar, ThemeSettings } from "../components";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import Topbar from "../components/Topbar";
 
 const AdminDashboard = () => {
-  const { currentMode, activeMenu, currentColor, themeSettings, setThemeSettings, isLoggedIn, setIsLoggedIn } = useStateContext();
-    return (
-      
-        <div className={currentMode === "Dark" ? "dark" : ""}>
-        <div className="flex relative dark:bg-main-dark-bg bg-white">
-          {/* <div className="fixed right-4 bottom-4" style={{ zIndex: "1000" }}>
-            <TooltipComponent content="Settings" position="Top">
-              <button
-                type="button"
-                onClick={() => setThemeSettings(true)}
-                style={{ background: currentColor, borderRadius: "50%" }}
-                className="text-3xl text-white p-3 hover:drop-shadow-xl hover:bg-light-gray"
-              >
-                <FiSettings />
-              </button>
-            </TooltipComponent>
-          </div> */}
-  
-          {activeMenu && (
-            <div className="w-56 fixed sidebar dark:bg-main-dark-bg bg-white "
-            style={{zIndex:"99999999"}}
-            >
-              <Sidebar />
-            </div>
-          )}
-  
-          <div className={activeMenu ? "dark:bg-main-dark-bg md:ml-56 w-full overflow-x-hidden ]" : "dark:bg-main-dark-bg w-full flex-2"}>
+  const {
+    currentMode,
+    activeMenu,
+    currentColor,
+    themeSettings,
+    setThemeSettings,
+    isLoggedIn,
+    setIsLoggedIn,
+  } = useStateContext();
+
+  return (
+    <div className={currentMode === "Dark" ? "dark" : ""}>
+      <div className="flex relative dark:bg-main-dark-bg bg-white h-screen">
+        {/* {activeMenu && (
+          <div
+            className="w-56 fixed sidebar dark:bg-main-dark-bg bg-white"
+            style={{ zIndex: "99999999" }}
+          >
+            <Sidebar />
+          </div>
+        )} */}
+
+        <div
+          className={
+            activeMenu
+              ? "dark:bg-main-dark-bg w-full overflow-x-hidden"
+              // ? "dark:bg-main-dark-bg md:ml-56 w-full overflow-x-hidden"
+              : "dark:bg-main-dark-bg w-full flex-2"
+          }
+        >
+          {/* Fixed Navbar */}
+          <div className="fixed top-0 w-full z-50 ">
             <Navbar />
-            <div>{themeSettings && <ThemeSettings />}</div>
-            <Outlet /> {/* ✅ Ensures child routes load */}
+            <Topbar/>
+          </div>
+
+          {/* Padding to push content below the fixed navbar */}
+          <div className="mt-[90px] px-1">
+            {themeSettings && <ThemeSettings />}
+            <Outlet />
           </div>
         </div>
       </div>
-    );
+    </div>
+  );
 };
 
 export default AdminDashboard;
+
+
+
+
+// import { useStateContext } from "../contexts/ContextProvider";
+// import { Navbar, Sidebar, ThemeSettings } from "../components";
+// import { Outlet, useNavigate } from "react-router-dom";
+// import { FiSettings } from "react-icons/fi";
+// import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+
+// const AdminDashboard = () => {
+//   const { currentMode, activeMenu, currentColor, themeSettings, setThemeSettings, isLoggedIn, setIsLoggedIn } = useStateContext();
+//     return (
+      
+//         <div className={currentMode === "Dark" ? "dark" : ""}>
+//         <div className="flex relative dark:bg-main-dark-bg bg-white">
+          
+//           {activeMenu && (
+//             <div className="w-56 fixed sidebar dark:bg-main-dark-bg bg-white "
+//             style={{zIndex:"99999999"}}
+//             >
+//               <Sidebar />
+//             </div>
+//           )}
+  
+//           <div className={activeMenu ? "dark:bg-main-dark-bg md:ml-56 w-full overflow-x-hidden ]" : "dark:bg-main-dark-bg w-full flex-2"}>
+//             <Navbar />
+//             <div>{themeSettings && <ThemeSettings />}</div>
+//             <Outlet /> {/* ✅ Ensures child routes load */}
+//           </div>
+//         </div>
+//       </div>
+//     );
+// };
+
+// export default AdminDashboard;
+
+// import { useStateContext } from "../contexts/ContextProvider";
+// import { Navbar, Sidebar, ThemeSettings } from "../components";
+// import { Outlet, useNavigate } from "react-router-dom";
+// import { FiSettings } from "react-icons/fi";
+// import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+
+// const AdminDashboard = () => {
+//   const { currentMode, activeMenu, currentColor, themeSettings, setThemeSettings, isLoggedIn, setIsLoggedIn } = useStateContext();
+//     return (
+      
+//         <div className={currentMode === "Dark" ? "dark" : ""}>
+//         <div className="flex relative dark:bg-main-dark-bg bg-white">
+//           {/* <div className="fixed right-4 bottom-4" style={{ zIndex: "1000" }}>
+//             <TooltipComponent content="Settings" position="Top">
+//               <button
+//                 type="button"
+//                 onClick={() => setThemeSettings(true)}
+//                 style={{ background: currentColor, borderRadius: "50%" }}
+//                 className="text-3xl text-white p-3 hover:drop-shadow-xl hover:bg-light-gray"
+//               >
+//                 <FiSettings />
+//               </button>
+//             </TooltipComponent>
+//           </div> */}
+  
+//           {activeMenu && (
+//             <div className="w-56 fixed sidebar dark:bg-main-dark-bg bg-white "
+//             style={{zIndex:"99999999"}}
+//             >
+//               <Sidebar />
+//             </div>
+//           )}
+  
+//           <div className={activeMenu ? "dark:bg-main-dark-bg md:ml-56 w-full overflow-x-hidden ]" : "dark:bg-main-dark-bg w-full flex-2"}>
+//             <Navbar />
+//             <div>{themeSettings && <ThemeSettings />}</div>
+//             <Outlet /> {/* ✅ Ensures child routes load */}
+//           </div>
+//         </div>
+//       </div>
+//     );
+// };
+
+// export default AdminDashboard;
 
 
 

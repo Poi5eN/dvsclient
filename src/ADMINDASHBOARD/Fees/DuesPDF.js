@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import "./FeeReceiptPDF.css";
 import moment from "moment";
+import Button from "../../Dynamic/utils/Button";
 
 function DuesPDF({ tBody }) {
     console.log("tBody",tBody)
@@ -29,14 +30,17 @@ function DuesPDF({ tBody }) {
 
     return (
         <div className="fee-receipt-pdf-container">
-            <div className="flex justify-end w-full gap-1">
-                <button onClick={handleGenerateClickAll} className="fee-receipt-pdf-button">
-                    PDF Download 
-                </button>
+            {/* <div className="flex justify-end w-full gap-1"> */}
+                <Button onClick={handleGenerateClickAll} 
+                // className="fee-receipt-pdf-button"
+                name="PDF Download "
+                >
+                    
+                </Button>
                 {/* <button onClick={handleGenerateClickCurrentDate} className="fee-receipt-pdf-button">
                     PDF Download (Current Date)
                 </button> */}
-            </div>
+            {/* </div> */}
 
             <div
                 ref={componentPDF}
@@ -65,7 +69,7 @@ function DuesPDF({ tBody }) {
                                 <tr key={index} className="fee-receipt-pdf-tr">
                                     <td className="fee-receipt-pdf-td">{index + 1}</td>
                                     <td className="fee-receipt-pdf-td">{item.admissionNo}</td>
-                                    <td className="fee-receipt-pdf-td">{item.name}</td>
+                                    <td className="fee-receipt-pdf-td">{item.studentName}</td>
                                     <td className="fee-receipt-pdf-td">{item.class}</td>
                                     <td className="fee-receipt-pdf-td">{item.fatherName}</td>
                                     <td className="fee-receipt-pdf-td">{item.contact}</td>

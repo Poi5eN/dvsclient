@@ -1,13 +1,14 @@
 
 import { toast } from "react-toastify";
 import { MdDelete } from "react-icons/md";
-import { Button } from "@mui/material";
+
 import Modal from "../../../Dynamic/Modal";
 import { useStateContext } from "../../../contexts/ContextProvider";
 import { useEffect, useState } from "react";
 import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
 import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees } from "../../../Network/AdminApi";
 import Table from "../../../Dynamic/Table";
+import Button from "../../../Dynamic/utils/Button";
 
 
 function AdditionalFee() {
@@ -174,13 +175,14 @@ function AdditionalFee() {
 
   return (
     <div className="mx-auto">
-      <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
+      {/* <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
         Additional Fee
-      </h1>
-      <div className="mb-1">
+      </h1> */}
+      <div className="">
         <Button
-          variant="contained"
-          style={{ backgroundColor: currentColor }}
+        name="Set Additional Fee"
+          // variant="contained"
+          // style={{ backgroundColor: currentColor }}
           onClick={() => {
             setEditMode(false);
 
@@ -188,7 +190,7 @@ function AdditionalFee() {
             setModalOpen(true);
           }}
         >
-          Create Fee
+          
         </Button>
       </div>
 
@@ -246,8 +248,11 @@ function AdditionalFee() {
             </div>
           </div>
 
-          <Button variant="contained" style={{ backgroundColor: currentColor }} onClick={handleSubmit}>
-            {editMode ? "Update" : "Submit"}
+          <Button
+          name="Submit"
+          // variant="contained" style={{ backgroundColor: currentColor }} 
+          onClick={handleSubmit}>
+            {/* {editMode ? "Update" : "Submit"} */}
           </Button>
         </div>
       </Modal>

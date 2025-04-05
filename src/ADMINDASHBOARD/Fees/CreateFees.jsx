@@ -646,7 +646,7 @@ const CreateFees = () => {
   modalOpen &&
 
   <form onSubmit={handleSubmit}>
-          <div className="flex flex-col max-h-[85vh]"> {/* Increased max height slightly */}
+          <div className="flex flex-col "> {/* Increased max height slightly */}
 
             {/* Student Selection Area */}
             <div className="flex flex-wrap gap-3 w-full p-4 border-b "> {/* Added flex-wrap and max-height */}
@@ -700,7 +700,7 @@ const CreateFees = () => {
             </div>
 
             {/* Form Area - Scrolls if content overflows */}
-            <div className="flex-grow overflow-y-auto space-y-6">
+            <div className="flex-grow">
               {selectedChildren.length === 0 && (
                   <div className="text-center text-gray-500">
                       Select one or more students above to enter fee details.
@@ -1063,7 +1063,7 @@ const CreateFees = () => {
       {/* <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title="Create Fees">
      
       </Modal> */}
-<Table/>
+{/* <Table/> */}
     </div> // End main container
   );
 };

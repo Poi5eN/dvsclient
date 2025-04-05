@@ -49,7 +49,7 @@ export const links = [
   { name: 'Admission', link: 'admission' ,icon: <BsPersonFillAdd />},
   { name: 'Student', link: 'allstudent' ,icon: <PiStudentFill />},
   // { name: 'Fees', link: 'fees' ,icon: <PiStudentFill />},
-  { name: 'Create fee', link: 'create-fees' ,icon: <PiStudentFill />},
+  // { name: 'Create fee', link: 'create-fees' ,icon: <PiStudentFill />},
 
   {
       name: 'Fees System',

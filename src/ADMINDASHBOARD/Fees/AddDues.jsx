@@ -202,9 +202,9 @@ const {  setIsLoader} = useStateContext();
 
   return (
     <div className="relative p-2">
-      <h1 className="text-xl text-center font-sans font-bold ">ADD DUES</h1>
+      {/* <h1 className="text-xl text-center font-sans font-bold ">ADD DUES</h1> */}
       <div className="flex space-x-2">
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <select
             name="studentClass"
             className="w-full border-1 border-black outline-none py-[1px] bg-inherit text-sm h-7"
@@ -218,7 +218,7 @@ const {  setIsLoader} = useStateContext();
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* {["All", "Unpaid", "Paid", "Partial"].map((status) => (
           <button
@@ -231,7 +231,20 @@ const {  setIsLoader} = useStateContext();
         ))} */}
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2">
+      <select
+            name="studentClass"
+            className=" border-1 border-black outline-none py-[1px] bg-inherit text-sm h-7"
+            value={selectedClass}
+            onChange={handleClassChange}
+          >
+            <option value="All">All Classes</option>
+            {getClass?.map((cls, index) => (
+              <option key={index} value={cls.className}>
+                {cls?.className}
+              </option>
+            ))}
+          </select>
         <Button name="Add Dues Fees" onClick={handleAddFee} />
         {addDues && (
           <div className="flex gap-3">
@@ -241,9 +254,9 @@ const {  setIsLoader} = useStateContext();
         )}
       </div>
     
-      <div className="md:h-screen dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full">
+      {/* <div className=" dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full"> */}
         <Table tHead={tHead} tBody={tBody} />
-      </div>
+      {/* </div> */}
     </div>
   );
 }

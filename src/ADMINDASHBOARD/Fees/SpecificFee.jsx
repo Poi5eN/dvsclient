@@ -149,8 +149,8 @@ function SpecificFee() {
     }));
    
         return (
-            <div className="mx-auto p-4 overflow-hidden">
-Set Specific Fee    
+            <div className="">
+{/* Set Specific Fee     */}
         <Table tHead={THEAD} tBody={tBody} isSearch={true} />
         
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={ "Specific Student Fee"}>

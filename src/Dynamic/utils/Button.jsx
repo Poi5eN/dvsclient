@@ -4,15 +4,21 @@ import { useStateContext } from '../../contexts/ContextProvider';
 const Button = ({ onClick, name, type, loading, width ,color,Icon}) => {
    const {  setIsLoader,currentColor } = useStateContext();
     return (
-        <button
-        style={{background:color?color:currentColor}}
+      <div className='inline-block items-center '>
+          <button
+
+        style={{background:color?color:currentColor,display:""}}
         type={type}
         onClick={onClick}
-        className={` w-${width}   h-7 items-center flex justify-center gap-2 whitespace-nowrap rounded  px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none`}>
-        <span>{Icon}</span>
-        <span>{`${name}`}</span>
+        className={` w-${width} text-center h-7 items-center flex justify-center gap-2 whitespace-nowrap rounded  px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none`}>
+       {
+        Icon && <span>{Icon}</span>
+       }
+        
+        <span className='uppercase'>{`${name}`}</span>
 
       </button>
+      </div>
         // <button
            
         //     className={` flex  justify-center item-center w-${width} bg-${color} px-2 p-[5px] text-center text-[#e36233] hover:text-blue-700 focus:text-blue-700 hover:bg-blue-100 focus:bg-blue-100 border border-blue-600 rounded-md  z-50`}

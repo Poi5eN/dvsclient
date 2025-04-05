@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { FaEdit } from "react-icons/fa";
-import { Button } from "@mui/material";
 import { AdminGetAllClasses, createClass, deleteClassebyID } from "../../Network/AdminApi";
 import Table from "../../Dynamic/Table";
 import Modal from "../../Dynamic/Modal";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { Link } from "react-router-dom";
+import Button from "../../Dynamic/utils/Button";
 
 function Classes() {
   const { currentColor, setIsLoader } = useStateContext();
@@ -133,19 +133,20 @@ function Classes() {
     ),
   }));
   return (
-    <div className="md:h-screen mt-12 md:mt-1 mx-auto p-3">
-      <h1
+    <>
+      {/* <h1
         className="text-xl font-bold mb-4 uppercase text-center hover-text"
         style={{ color: currentColor }}
       >
         Class
-      </h1>
+      </h1> */}
       <Button
         onClick={toggleModal}
-        variant="contained"
-        style={{ color: "white", backgroundColor: currentColor }}
+        name="Add Class"
+        // variant="contained"
+        // style={{ color: "white", backgroundColor: currentColor }}
       >
-        Add Class
+        
       </Button>
       <Modal
         setIsOpen={() => setIsOpen(false)}
@@ -232,7 +233,7 @@ function Classes() {
         <Table tHead={THEAD} tBody={tBody} />
 
       </div>
-    </div>
+    </>
   );
 }
 

@@ -46,8 +46,8 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
       >
       <DownloadIcon className="text-2xl" />
       </a>
-        <div className=" flex flex-1 p-2 " ref={componentPDF} >
-          <div className="w-[400px] pe-[15px] border-r border-dashed border-gray-800   rounded-sm dark:text-white">
+        <div className=" flex flex-1 p-2 gap-2" ref={componentPDF} >
+          <div className="w-[400px] pe-[15px] p-2 border-black border-1   rounded-sm dark:text-white">
             <div className="flex justify-between ">
               <div className=" h-auto w-[150px]  dark:text-white  ">
                 <img
@@ -57,43 +57,43 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                 />
               </div>
               <div className="text-end  dark:text-white">
-                <h1 className="font-semibold whitespace-nowrap">{user?.schoolName}</h1>
-                <p className="text-sm">Address: {user?.address || "N/A"}   </p>
-                <p className="text-sm">Contact: {user?.contact || "N/A"}</p>
+                <h1 className="font-bold whitespace-nowrap text-[17px]">{user?.schoolName}</h1>
+                <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || "N/A"}   </p>
+                <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || "N/A"}</p>
               </div>
             </div>
             <div className="bg-gray-300 text-center  border-b-2 border-red-500 ">
-              <h3 class="font-bold text-[9px] scale-125">Fee receipt :</h3>
+              <h3 class="font-bold text-[13px] scale-125">Fee receipt :</h3>
             </div>
             <div className="flex justify-between text-[12px] dark:text-white">
               <div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Rec.No.: <strong>{modalData.feeReceiptNumber}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Name: <strong>{modalData.studentName}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Class: <strong> {modalData.studentClass}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   S/D. of: <strong>......</strong>
                 </div>
                 {
-                modalData.transactionId.length>4 &&  <div className="text-[12px]">
+                modalData.transactionId.length>4 &&  <div className="text-[14px]">
                 checkBook/transactionId: <strong>{modalData.transactionId}</strong>
                </div>
                 }
                
               </div>
               <div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Date: <strong>{date()}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Adm No: <strong>{modalData.admissionNumber}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Mode: <strong>{modalData.paymentMode}</strong>
                 </div>
                
@@ -103,20 +103,20 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               <table class="min-w-full leading-normal">
                 <thead>
                   <tr>
-                    <th class="border border-gray-500 pl-2 text-[12px]">Name</th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">Name</th>
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Month
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Amount
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Dues
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Status{" "}
                     </th>
@@ -127,22 +127,22 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   <tbody>
                     {modalData.regularFees.map((addFee) => (
                       <tr>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           MONTHLY FEE{" "}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.month}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.paidAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.dueAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.status}
                         </td>
                       </tr>
@@ -153,20 +153,20 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   <tbody>
                     {modalData.additionalFees.map((addFee) => (
                       <tr>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.name}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.month}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.paidAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.dueAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.status}
                         </td>
                       </tr>
@@ -179,35 +179,35 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             )}
 
             <div class="mt-1">
-              <table class="w-full border border-gray-500 text-[12px]">
+              <table class="w-full border border-black text-[14px]">
                 <tbody>
                 <tr>
-                    <td class="border border-gray-500 pl-2">Total Fee Amount.</td>
-                    <td class="border border-gray-500 pl-2"> ₹ {modalData.totalFeeAmount}</td>
+                    <td class="border border-black pl-2">Total Fee Amount.</td>
+                    <td class="border border-black pl-2"> ₹ {modalData.totalFeeAmount}</td>
                   </tr>
                  
                   <tr>
-                    <td class="border border-gray-500 pl-2">Concession Amount </td>
-                    <td class="border border-gray-500 pl-2"> ₹ {modalData.concessionFee}</td>
+                    <td class="border border-black pl-2">Concession Amount </td>
+                    <td class="border border-black pl-2"> ₹ {modalData.concessionFee}</td>
                   </tr>
                   
                   <tr>
-                    <td class="border border-gray-500 pl-2">Paid Amount</td>
-                    <td class="border border-gray-500 pl-2">
+                    <td class="border border-black pl-2">Paid Amount</td>
+                    <td class="border border-black pl-2">
                     {/* ₹  {modalData.totalAmountPaid} */}
                     ₹  {modalData.newPaidAmount}
                     </td>
                   </tr>
                   <tr>
-                    <td class="border border-gray-500 pl-2">Total Dues</td>
-                    <td class="border border-gray-500 pl-2 text-red-600">
+                    <td class="border border-black pl-2">Total Dues</td>
+                    <td class="border border-black pl-2 text-red-600">
                     {/* ₹  {modalData.totalAmountPaid} */}
                     ₹  {modalData.totalDues}
                     </td>
                   </tr>
                   {/* <tr>
-                    <td class="border border-gray-500 pl-2">Paid Amount</td>
-                    <td class="border border-gray-500 pl-2">
+                    <td class="border border-black pl-2">Paid Amount</td>
+                    <td class="border border-black pl-2">
                       {modalData.totalAmountPaid}
                     </td>
                   </tr> */}
@@ -215,19 +215,21 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </table>
             </div>
 
-            <p class="mt-2 text-[12px]">{toWords(Repees()).toUpperCase()} ONLY</p>
-            <p className="text-[9px]">
+           <div className="border-black p-2 border-1 my-2">
+           <p class="text-[14px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
+            <p className="text-[14px]">
               {" "}
               Remarks:{" "}
               <strong className="">{modalData.remark}</strong>
             </p>
-            <div class="flex justify-between text-[9px]">
+            <div class="flex justify-between text-[14px]">
               <div>Fee Collected: ................</div>
               <div>Authorised sign</div>
             </div>
+           </div>
 
-            <div class=" text-[9px]">
-              <p>Note:</p>
+            <div class=" text-[14px] border-1 border-black p-2">
+              <p className="tetx-15px font-bold">Note:</p>
               <ol class="list-decimal ml-5">
                 <li>
                   Cheque is subject to the realization. Rs.500/- Extra will be
@@ -244,7 +246,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </ol>
             </div>
           </div>
-          <div className="w-[400px] ps-[15px] rounded-sm dark:text-white">
+          <div className="w-[400px] pe-[15px] p-2 border-black border-1   rounded-sm dark:text-white">
             <div className="flex justify-between ">
               <div className=" h-auto w-[150px]  dark:text-white  ">
                 <img
@@ -254,43 +256,43 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                 />
               </div>
               <div className="text-end  dark:text-white">
-                <h1 className="font-semibold whitespace-nowrap">{user?.schoolName}</h1>
-                <p className="text-sm">Address: {user?.address || "N/A"}   </p>
-                <p className="text-sm">Contact: {user?.contact || "N/A"}</p>
+                <h1 className="font-bold whitespace-nowrap text-[17px]">{user?.schoolName}</h1>
+                <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || "N/A"}   </p>
+                <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || "N/A"}</p>
               </div>
             </div>
             <div className="bg-gray-300 text-center  border-b-2 border-red-500 ">
-              <h3 class="font-bold text-[9px] scale-125">Fee receipt :</h3>
+              <h3 class="font-bold text-[13px] scale-125">Fee receipt :</h3>
             </div>
             <div className="flex justify-between text-[12px] dark:text-white">
               <div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Rec.No.: <strong>{modalData.feeReceiptNumber}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Name: <strong>{modalData.studentName}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Class: <strong> {modalData.studentClass}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   S/D. of: <strong>......</strong>
                 </div>
                 {
-                modalData.transactionId.length>4 &&  <div className="text-[12px]">
+                modalData.transactionId.length>4 &&  <div className="text-[14px]">
                 checkBook/transactionId: <strong>{modalData.transactionId}</strong>
                </div>
                 }
                
               </div>
               <div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Date: <strong>{date()}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Adm No: <strong>{modalData.admissionNumber}</strong>
                 </div>
-                <div className="text-[12px]">
+                <div className="text-[14px]">
                   Mode: <strong>{modalData.paymentMode}</strong>
                 </div>
                
@@ -300,20 +302,20 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               <table class="min-w-full leading-normal">
                 <thead>
                   <tr>
-                    <th class="border border-gray-500 pl-2 text-[12px]">Name</th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">Name</th>
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Month
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Amount
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Dues
                     </th>
-                    <th class="border border-gray-500 pl-2 text-[12px]">
+                    <th class="border border-black pl-2 text-[14px]">
                       {" "}
                       Status{" "}
                     </th>
@@ -324,22 +326,22 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   <tbody>
                     {modalData.regularFees.map((addFee) => (
                       <tr>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           MONTHLY FEE{" "}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.month}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.paidAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.dueAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.status}
                         </td>
                       </tr>
@@ -350,20 +352,20 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   <tbody>
                     {modalData.additionalFees.map((addFee) => (
                       <tr>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.name}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.month}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {" "}
                           {addFee.paidAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.dueAmount}
                         </td>
-                        <td class="border border-gray-500 pl-2 text-[12px]">
+                        <td class="border border-black pl-2 text-[14px]">
                           {addFee.status}
                         </td>
                       </tr>
@@ -376,52 +378,35 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             )}
 
             <div class="mt-1">
-              <table class="w-full border border-gray-500 text-[12px]">
+              <table class="w-full border border-black text-[14px]">
                 <tbody>
                 <tr>
-                    <td class="border border-gray-500 pl-2">Total Fee Amount.</td>
-                    <td class="border border-gray-500 pl-2"> ₹ {modalData.totalFeeAmount}</td>
+                    <td class="border border-black pl-2">Total Fee Amount.</td>
+                    <td class="border border-black pl-2"> ₹ {modalData.totalFeeAmount}</td>
                   </tr>
-                  {/* <tr>
-                    <td class="border border-gray-500 pl-2">
-                     
-                      Late Fine
-                      </td>
-                    <td class="border border-gray-500 pl-2">
-                    ₹ {modalData.previousDues}
-                    </td>
-                  </tr> */}
                  
                   <tr>
-                    <td class="border border-gray-500 pl-2">Concession Amount </td>
-                    <td class="border border-gray-500 pl-2"> ₹ {modalData.concessionFee}</td>
+                    <td class="border border-black pl-2">Concession Amount </td>
+                    <td class="border border-black pl-2"> ₹ {modalData.concessionFee}</td>
                   </tr>
-                  {/* <tr>
-                    <td class="border border-gray-500 pl-2">Total fee after Concession.</td>
-                    <td class="border border-gray-500 pl-2">₹  {modalData.paidAfterConcession}</td>
-                  </tr> */}
-                  {/* <tr>
-                    <td class="border border-gray-500 pl-2">Total Fee Amount.</td>
-                    <td class="border border-gray-500 pl-2">{modalData.totalFeeAmount}</td>
-                  </tr> */}
                   
                   <tr>
-                    <td class="border border-gray-500 pl-2">Paid Amount</td>
-                    <td class="border border-gray-500 pl-2">
+                    <td class="border border-black pl-2">Paid Amount</td>
+                    <td class="border border-black pl-2">
                     {/* ₹  {modalData.totalAmountPaid} */}
                     ₹  {modalData.newPaidAmount}
                     </td>
                   </tr>
                   <tr>
-                    <td class="border border-gray-500 pl-2">Total Dues</td>
-                    <td class="border border-gray-500 pl-2 text-red-600">
+                    <td class="border border-black pl-2">Total Dues</td>
+                    <td class="border border-black pl-2 text-red-600">
                     {/* ₹  {modalData.totalAmountPaid} */}
                     ₹  {modalData.totalDues}
                     </td>
                   </tr>
                   {/* <tr>
-                    <td class="border border-gray-500 pl-2">Paid Amount</td>
-                    <td class="border border-gray-500 pl-2">
+                    <td class="border border-black pl-2">Paid Amount</td>
+                    <td class="border border-black pl-2">
                       {modalData.totalAmountPaid}
                     </td>
                   </tr> */}
@@ -429,19 +414,21 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </table>
             </div>
 
-            <p class="mt-2 text-[12px]">{toWords(Repees()).toUpperCase()} ONLY</p>
-            <p className="text-[9px]">
+           <div className="border-black p-2 border-1 my-2">
+           <p class="text-[14px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
+            <p className="text-[14px]">
               {" "}
               Remarks:{" "}
               <strong className="">{modalData.remark}</strong>
             </p>
-            <div class="flex justify-between text-[9px]">
+            <div class="flex justify-between text-[14px]">
               <div>Fee Collected: ................</div>
               <div>Authorised sign</div>
             </div>
+           </div>
 
-            <div class=" text-[9px]">
-              <p>Note:</p>
+            <div class=" text-[14px] border-1 border-black p-2">
+              <p className="tetx-15px font-bold">Note:</p>
               <ol class="list-decimal ml-5">
                 <li>
                   Cheque is subject to the realization. Rs.500/- Extra will be
@@ -458,6 +445,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </ol>
             </div>
           </div>
+         
         </div>
      
     </div>

@@ -112,7 +112,9 @@ teacherapi:  "adminRoute/teacher",
    feesfeeHistory:"fees/feeHistory",
    createStudentSpecificFee:"adminRoute/fees/student",
    getStudentSpecificFee:"fees/getStudentFeeInfo",
+   promotionOfStudent:"adminRoute/promotionOfStudent",
    // fees End
+
 
 
 

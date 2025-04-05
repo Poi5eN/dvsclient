@@ -70,6 +70,18 @@ export const createClass = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const promotionOfStudent = async (payload) => {
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.promotionOfStudent}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const createteacher = async (payload) => {
   try {
     const option = {

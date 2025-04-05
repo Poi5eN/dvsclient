@@ -251,14 +251,14 @@ const newAdmission=async()=>{
   };
 
   const THEAD = [
-    { id: "SN", label: "S No.", width: "5" },
-    { id: "image", label: "Photo", width: "7" },
-    { id: "admissionNo", label: "Adm No." },
-    { id: "name", label: "Name" },
-    { id: "fatherName", label: "Father Name" },
-    { id: "class", label: "Class" },
-    { id: "contact", label: "Contact" },
-    { id: "action", label: "Action" },
+    { id: "SN", label: "S No.", width: "2%" },
+    { id: "image", label: "Photo", width: "2%" },
+    { id: "admissionNo", label: "Adm No.", width: "2%"  },
+    { id: "name", label: "Name", width: "20%"  },
+    { id: "fatherName", label: "Father Name", width: "20%"  },
+    { id: "class", label: "Class", width: "5%"  },
+    { id: "contact", label: "Contact" , width: "20%" },
+    { id: "action", label: "Action",width: "2", width: "2%"   },
   ];
 
   const tBody = filteredData?.map((val, ind) => ({
@@ -306,10 +306,10 @@ const newAdmission=async()=>{
   ]
   return (
     <div 
-    className="px-2 "
+    className=""
     // className="px-2 h-[86.5vh]"
     >
-      <Breadcrumbs BreadItem={BreadItem} />
+      {/* <Breadcrumbs BreadItem={BreadItem} /> */}
       <div className="flex md:flex-row gap-1">
         <Button name="New Admission" onClick={toggleModal} />
         <BulkAdmission />
@@ -326,10 +326,14 @@ const newAdmission=async()=>{
             })) || []), // Ensure it doesn't break if `getClass` is undefined
           ]}
         />
+        {
+          filteredData?.length>0 && <span className="text-green-700 text-[18px] font-bold">COUNT = {filteredData?.length} 
+          </span>
+        }
 
       </div>
 
-      <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create "} maxWidth="500px">
+      <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create"} maxWidth="500px">
         <form onSubmit={handleSubmit} className="p-3">
           <div
             className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-gray-100 rounded-md "
@@ -489,12 +493,11 @@ const newAdmission=async()=>{
       >
         <div id="printContent">
           <AdmissionPrint student={selectStudent} />
-
         </div>
       </div>
 
       {filteredData?.length > 0 ? (
-      <div className="mt-2">
+      <div className="mt-1">
           <Table tHead={THEAD} tBody={tBody} isSearch={true} />
         </div>
       ) : (

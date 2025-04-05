@@ -5,12 +5,12 @@ import "../../Dynamic/Form/FormStyle.css";
 import InputForm from "../../Dynamic/Form/InputForm";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { FaEdit } from "react-icons/fa";
-import { Button } from "@mui/material";
 import Heading from "../../Dynamic/Heading";
 import { AdminGetAllClasses, getAllTeachers } from "../../Network/AdminApi";
 import EditTeacher from "./EditTeacher";
 import Table from "../../Dynamic/Table";
 import moment from "moment";
+import Button from "../../Dynamic/utils/Button";
 const authToken = localStorage.getItem("token");
 
 const toastifyTiming = {
@@ -392,17 +392,18 @@ const THEAD = [
     {
       !isEdit?
       (
-        <div className=" md:mt-1  mx-auto p-2 md:h-[100vh]">
-        <Heading Name="All Teacher" />
-           <div className="mb-4">
+        <>
+        {/* <Heading Name="All Teacher" /> */}
+           {/* <div className="mb-4"> */}
              <Button
-               variant="contained"
-               style={{ backgroundColor: currentColor }}
+              //  variant="contained"
+              //  style={{ backgroundColor: currentColor }}
                onClick={toggleModal}
+               name="Add Teacher"
              >
-               Add Teacher
+              
              </Button>
-           </div>
+           {/* </div> */}
            {isOpen && (
              <div
                id="default-modal"
@@ -501,7 +502,7 @@ const THEAD = [
            )}
      <Table tBody={tBody} tHead={THEAD}/>
   
-         </div>
+         </>
       ):(
         <EditTeacher teacherDetails={teacherDetails} handleCancel={handleCancel} setIsEdit={ setIsEdit }/>
       )

@@ -20,7 +20,7 @@ const RegistrationForm = () => {
           Create Registration
         </button>
         <button onClick={handleThirdPartyClick} disabled={activeComponent === 'thirdParty'}>
-          Third Party Admission
+          Third Party Admission cvvf
         </button>
       </div>
 

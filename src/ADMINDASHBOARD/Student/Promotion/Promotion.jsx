@@ -1,652 +1,308 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { DataGrid } from "@mui/x-data-grid";
-import Button from "@mui/material/Button";
-import Popover from "@mui/material/Popover";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import { useStateContext } from "../../../contexts/ContextProvider.js";
-import { toast } from "react-toastify";
-import { ActiveStudents, AdminGetAllClasses } from "../../../Network/AdminApi.js";
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActiveStudents,
+  adminapproveAdmissions,
+  AdminGetAllClasses,
+  promotionOfStudent
+} from '../../../Network/AdminApi';
+import Table from '../../../Dynamic/Table';
+import Button from '../../../Dynamic/utils/Button';
+import { toast } from 'react-toastify';
+import { useStateContext } from '../../../contexts/ContextProvider';
+import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
 
 const Promotion = () => {
+  const { currentColor, setIsLoader } = useStateContext();
+  const [filteredStudents, setFilteredStudents] = useState([]);
 
-  const authToken = localStorage.getItem("token");
-  const {  currentColor,setIsLoader } = useStateContext();
-  const [allstudentdata,setAllStudentData]=useState([])
+  const [studentDetails, setStudentDetails] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [getClass, setGetClass] = useState([]);
+  const [availableSections, setAvailableSections] = useState([]);
 
-  const [selectionModel, setSelectionModel] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedSection, setSelectedSection] = useState("");
-  const [classAnchorEl, setClassAnchorEl] = useState(null);
-  const [sectionAnchorEl, setSectionAnchorEl] = useState(null);
-  const [promoteClass, setPromoteClass] = useState("");
-  const [promoteSection, setPromoteSection] = useState("");
-  const [promoteClassAnchorEl, setPromoteClassAnchorEl] = useState(null);
-  const [promoteSectionAnchorEl, setPromoteSectionAnchorEl] = useState(null);
-  const [error, setError] = useState(null);
-  // const [apiData, setApiData] = useState([]);
-    const [getClass, setGetClass] = useState([]);
-  const [apisection, setApisection] = useState([]); // State for sections of selected class
-  const [studentData, setStudentData] = useState([]);
-
-
-
-   const allStudent =async() => {
-      setIsLoader(true);
-      try {
-        const response = await ActiveStudents();
-        if (response?.students?.data) {
-         
-          setAllStudentData(response?.students?.data);
-        }
-      } catch (error) {
-        console.error("Error fetching students:", error);
-        toast.error("Error fetching students.");
-      } finally {
-        setIsLoader(false);
-      }
-    };
-
-
-
-   const getAllClass = async () => {
-      setIsLoader(true)
-      try {
-  
-        const response = await AdminGetAllClasses()
-        if (response?.success) {
-          setIsLoader(false)
-          let classes = response.classes;
-          setGetClass(classes.sort((a, b) => a - b));
-        }
-      } catch (error) {
-        console.log("error")
-      }
+  // State separation for clarity
+  const [fromClass, setFromClass] = useState(null);
+  const [fromSection, setFromSection] = useState(null);
+  const [toClass, setToClass] = useState(null);
+  const [toSection, setToSection] = useState(null);
+  const [values,setValues]=useState(
+    {
+      toClass:"",
+      toSection:"",
+      fromClass:"",
+      fromSection:""
     }
-
-    useEffect(()=>{
-      allStudent()
-      getAllClass()
-    },[])
-
-  const customButtonStyle = { backgroundColor: currentColor };
-
-  const handleClassChange = (event, classData) => {
-    const selectedClassData = getClass.find((data) => data.className === classData);
-    console.log("selectedClassData",selectedClassData)
-    setSelectedClass(classData);
-    setApisection(selectedClassData ? selectedClassData.sections : []); // Update sections based on selected class
-    // setApisection(selectedClassData ? selectedClassData.sections.split(", ") : []); // Update sections based on selected class
-    setSectionAnchorEl(event.currentTarget);
+  )
+console.log("toSection",toSection)
+  const studentData = async () => {
+    setIsLoader(true);
+    try {
+      const response = await ActiveStudents();
+      if (response?.success) {
+        setStudentDetails(response?.students?.data?.reverse());
+      } else {
+        console.log('No data found');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoader(false);
+    }
   };
 
-  const handleSectionChange = (section) => {
-    const filteredData = allstudentdata
-      .filter((student) => student.class === selectedClass && student.section === section)
-      .map((student) => ({
-        id: student._id,
-        name: student.studentName,
-        rollNumber: student.rollNo,
-        class: student.class,
-      }));
-      console.log("allstudentdata",allstudentdata)
-    setStudentData(filteredData);
-    setSelectedSection(section);
-    setSectionAnchorEl(null);
+  const fetchAllClasses = useCallback(async () => {
+    setIsLoader(true);
+    try {
+      const response = await AdminGetAllClasses();
+      if (response?.success) {
+        setGetClass(response.classes || []);
+      } else {
+        toast.error(response?.message || "Failed to fetch classes.");
+      }
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+      toast.error("An error occurred while fetching classes.");
+    } finally {
+      setIsLoader(false);
+    }
+  }, [setIsLoader]);
+
+  useEffect(() => {
+    studentData();
+    fetchAllClasses();
+  }, []);
+
+
+  const filterStudents = (cls, sec) => {
+    const filtered = studentDetails.filter((student) => {
+      const matchClass = cls ? student.class === cls : true;
+      const matchSection = sec ? student.section === sec : true;
+      return matchClass && matchSection;
+    });
+    setFilteredStudents(filtered);
+  };
+  
+  const handleFromClassChange = (e) => {
+    const selected = e.target.value;
+    setValues((prev)=>({
+...prev,
+fromClass:selected
+    }))
+    setFromClass(selected);
+    const classObj = getClass.find((cls) => cls.className === selected);
+    setAvailableSections(classObj?.sections || []);
+    filterStudents(selected, fromSection);
+  };
+  
+  const handleFromSectionChange = (e) => {
+    console.log("first e",e)
+    const selected = e.target.value;
+    // setFromSection(selected);
+    // filterStudents(fromClass, selected);
+    setValues((prev)=>({
+      ...prev,
+      fromSection:selected
+          }))
+  };
+  
+
+  // const handleFromSectionChange = (e) => setFromSection(e.target.value);
+
+  const handleToClassChange = (e) => {
+    const selected = e.target.value;
+    setToClass(selected);
+    setValues((prev)=>({
+      ...prev,
+      toClass:selected
+          }))
+    const classObj = getClass.find((cls) => cls.className === selected);
+    setAvailableSections(classObj?.sections || []);
   };
 
-  const handlePromoteClassChange = (event, classData) => {
-    setPromoteClass(classData.className);
-    setPromoteSectionAnchorEl(event.currentTarget);
+  const handleToSectionChange = (e) =>{
+    const selected = e.target.value;
+    // console.log("first",name,value)
+    setValues((prev)=>({
+      ...prev,
+    toSection:selected
+          }))
+    // setToSection(e.target.value)
   };
 
-  const handlePromoteSectionChange = (section) => {
-    setPromoteSection(section);
-    setPromoteSectionAnchorEl(null);
+
+  const handleSelectAllChange = () => {
+    if (!selectAll) {
+      const allStudentIds = studentDetails.map((student) => student._id);
+      setSelectedStudent(allStudentIds);
+    } else {
+      setSelectedStudent([]);
+    }
+    setSelectAll(!selectAll);
   };
 
-  const handleMenuClose = () => {
-    setClassAnchorEl(null);
-    setSectionAnchorEl(null);
-    setPromoteClassAnchorEl(null);
-    setPromoteSectionAnchorEl(null);
+  const handleCheckboxChange = (studentId) => {
+    setSelectedStudent((prevSelected) =>
+      prevSelected.includes(studentId)
+        ? prevSelected.filter((id) => id !== studentId)
+        : [...prevSelected, studentId]
+    );
   };
 
-  const handleSelectionModelChange = (newSelection) => {
-    setSelectionModel(newSelection);
-  };
+  useEffect(() => {
+    setSelectAll(
+      studentDetails.length > 0 &&
+        selectedStudent.length === studentDetails.length
+    );
+  }, [studentDetails, selectedStudent]);
+
+
 
   const handlePromoteClick = async () => {
-    if (selectionModel.length === 0) {
+    if (selectedStudent.length === 0) {
       toast.error("No students selected for promotion");
       return;
     }
 
+    if (!values?.toClass || !values?.toSection) {
+      toast.error("Please select both class and section for promotion");
+      return;
+    }
+    setIsLoader(true)
     const dataToUpdate = {
-      students: selectionModel,
-      promotedClass: promoteClass,
-      promotedSection: promoteSection,
+      students: selectedStudent,
+      promotedClass: values?.toClass,
+      promotedSection:values?.toSection
     };
 
     try {
-      await axios.put(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/promotionOfStudent",
-        dataToUpdate,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      toast.success("Student promotion successful");
-      setStudentData((prevData) => prevData.filter((student) => !selectionModel.includes(student.id)));
+      const response = await promotionOfStudent(dataToUpdate);
+      if (response?.success) {
+        toast.success(response?.message);
+        studentData();
+        setValues({})
+
+        setFilteredStudents([])
+        setIsLoader(false)
+      } else {
+        toast.error(response?.message);
+      }
     } catch (error) {
       toast.error("Student promotion failed");
       console.error("Promotion Failed:", error);
     }
   };
 
-  const columns = [
-    { field: "id", headerName: "Select All", type: "checkbox", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "rollNumber", headerName: "Roll Number", flex: 1 },
-    { field: "class", headerName: "Class", flex: 1 },
+  const dynamicOptions = getClass.map((cls) => ({
+    label: cls.className,
+    value: cls.className
+  }));
+
+  const DynamicSection = availableSections?.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const THEAD = [
+    {
+      id: 'select',
+      label: (
+        <input
+          type="checkbox"
+          checked={selectAll}
+          onChange={handleSelectAllChange}
+        />
+      )
+    },
+    { id: 'SN', label: 'S No.' },
+    { id: 'admissionNumber', label: 'Admission No' },
+    { id: 'fullName', label: 'Name' },
+    { id: 'guardianName', label: 'Father Name' },
+    { id: 'gender', label: 'Gender' },
+    { id: 'class', label: 'Class' },
+    { id: 'section', label: 'Section' },
+    { id: 'contact', label: 'Contact' },
+   
   ];
 
+  // const filteredStudents = studentDetails.filter(student =>
+  //   (!fromClass || student.class === fromClass) &&
+  //   (!fromSection || student.section === fromSection)
+  // );
+
+  const tBody = filteredStudents.map((val, ind) => ({
+    select: (
+      <input
+        type="checkbox"
+        checked={selectedStudent.includes(val._id)}
+        onChange={() => handleCheckboxChange(val._id)}
+      />
+    ),
+    SN: ind + 1,
+    admissionNumber: (
+      <span className="text-red-700 font-semibold">
+        {val.admissionNumber}
+      </span>
+    ),
+    fullName: val.studentName,
+    guardianName: val.fatherName,
+    gender: val.gender,
+    class: val.class,
+    section: val.section,
+
+    contact: val.contact,
+
+  }));
+
   return (
-    <div className="mt-12 md:mt-1 mx-auto p-3">
-      <h1 className="text-4xl font-bold mb-4 uppercase text-center hover-text" style={{ color: currentColor }}>
-        Student Promotion
-      </h1>
-
-      <div className="flex space-x-4">
-        <div className="w-1/2">
-          <h3 className="text-lg font-semibold dark:text-white">Class</h3>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            style={customButtonStyle}
-            onClick={(event) => setClassAnchorEl(event.currentTarget)}
-          >
-            {selectedClass ? `${selectedClass} - ${selectedSection}` : "Select Class and Section"}
-          </Button>
-          <Popover anchorEl={classAnchorEl} open={Boolean(classAnchorEl)} onClose={handleMenuClose}>
-            <List>
-              {getClass.map((classData) => (
-                <ListItem key={classData.className} onClick={(event) => handleClassChange(event, classData.className)}>
-                  <ListItemText primary={classData.className} />
-                </ListItem>
-              ))}
-            </List>
-          </Popover>
-          <Popover anchorEl={sectionAnchorEl} open={Boolean(sectionAnchorEl)} onClose={handleMenuClose}>
-            <List>
-              {apisection.map((section) => (
-                <ListItem key={section} onClick={() => handleSectionChange(section)}>
-                  <ListItemText primary={section} />
-                </ListItem>
-              ))}
-            </List>
-          </Popover>
-        </div>
-
-        <div className="w-1/2">
-          <h3 className="text-lg font-semibold dark:text-white">Promote</h3>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            style={customButtonStyle}
-            onClick={(event) => setPromoteClassAnchorEl(event.currentTarget)}
-          >
-            {promoteClass ? `${promoteClass} - ${promoteSection}` : "Select Promote Class and Section"}
-          </Button>
-          <Popover anchorEl={promoteClassAnchorEl} open={Boolean(promoteClassAnchorEl)} onClose={handleMenuClose}>
-            <List>
-              {getClass.map((classData) => (
-                <ListItem key={classData.className} onClick={(event) => handlePromoteClassChange(event, classData)}>
-                  <ListItemText primary={classData.className} />
-                </ListItem>
-              ))}
-            </List>
-          </Popover>
-          <Popover anchorEl={promoteSectionAnchorEl} open={Boolean(promoteSectionAnchorEl)} onClose={handleMenuClose}>
-            <List>
-              {getClass
-                .find((data) => data.className === promoteClass)
-                ?.sections
-                // ?.sections.split(", ")
-                .map((section) => (
-                  <ListItem key={section} onClick={() => handlePromoteSectionChange(section)}>
-                    <ListItemText primary={section} />
-                  </ListItem>
-                ))}
-            </List>
-          </Popover>
-        </div>
-      </div>
-
-      <div style={{ height: 400, width: "100%", backgroundColor: "white", borderRadius: "10px" }}>
-        <div className="dark:bg-[#999b9e]">
-          <DataGrid
-            rows={studentData}
-            columns={columns}
-            checkboxSelection
-            selectionModel={selectionModel}
-            onRowSelectionModelChange={handleSelectionModelChange}
+    <>
+     
+      <div className="flex flex-wrap gap-8 mt-4">
+        <div>
+          <span className="font-semibold">From</span>
+          <ReactSelect
+            name="fromClass"
+            label="Select a Class"
+            value={values?.fromClass}
+            // value={fromClass}
+            handleChange={(e)=>handleFromClassChange(e)}
+            dynamicOptions={dynamicOptions}
           />
-        </div>
-      </div>
 
-      <div className="w-1/2">
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          style={customButtonStyle}
-          onClick={handlePromoteClick}
-          disabled={!promoteClass || !promoteSection}
-        >
-          Promote Selected Students
-        </Button>
+          <ReactSelect
+  name="fromSection"
+  label="Section"
+  value={values?.fromSection}  // 👈 Fix here
+  // value={DynamicSection.find(opt => opt.value === fromSection)}  // 👈 Fix here
+  handleChange={(e) => handleFromSectionChange(e)}
+  dynamicOptions={DynamicSection}
+/>
+        </div>
+        <div>
+          <span className="font-semibold">To</span>
+          <ReactSelect
+            name="toClass"
+            label="Select a Class"
+            value={values?.toClass}
+            // value={toClass}
+            handleChange={handleToClassChange}
+            dynamicOptions={dynamicOptions}
+          />
+          <ReactSelect
+            name="toSection"
+            label="Section"
+            value={values?.toSection}
+            handleChange={(e)=>handleToSectionChange(e)}
+            dynamicOptions={DynamicSection}
+          />
+           <Button color="Green" name="Promote" onClick={handlePromoteClick} />
+        </div>
+       
       </div>
-    </div>
+      <Table isSearch={false} tHead={THEAD} tBody={tBody} />
+    </>
   );
 };
 
 export default Promotion;
 
-
-
-
-
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import { DataGrid } from "@mui/x-data-grid";
-// import Button from "@mui/material/Button";
-// import Popover from "@mui/material/Popover";
-// import List from "@mui/material/List";
-// import ListItem from "@mui/material/ListItem";
-// import ListItemText from "@mui/material/ListItemText";
-// import { useStateContext } from "../../../contexts/ContextProvider.js";
-// import { toast } from "react-toastify";
-// import Cookies from "js-cookie";
-
-
-// const Promotion = () => {
-//   const authToken = Cookies.get("token");
-//   const { allstudentdata, currentColor } = useStateContext();
-
-//   const [selectionModel, setSelectionModel] = useState([]);
-//   const [selectedClass, setSelectedClass] = useState("");
-//   const [selectedSection, setSelectedSection] = useState([]);
-//   const [classAnchorEl, setClassAnchorEl] = useState(null);
-//   const [sectionAnchorEl, setSectionAnchorEl] = useState(null);
-
-//   const [promoteClass, setPromoteClass] = useState("");
-//   const [promoteSection, setPromoteSection] = useState("");
-//   const [promoteClassAnchorEl, setPromoteClassAnchorEl] = useState(null);
-//   const [promoteSectionAnchorEl, setPromoteSectionAnchorEl] = useState(null);
-//   const [error, setError] = useState(null);
-
-//   // const [class, setClass] = useState([]);
-//   const [apiclass, setApiclass] = useState([]);
-//   const [apisection, setApisection] = useState([]);
-//   const [shouldFetchData, setShouldFetchData] = useState(false);
-
-//   // Created for testing
-//   const [meta, setMeta] = useState();
-//   const [apiData, setApiData] = useState([]);
-//   // set the studentdata
-//   const [studentData, setStudentData] = useState([]);
-
-//   useEffect(() => {
-//     // Fetch data from the server when the component mounts
-//     axios
-//       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses",
-//         // "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClass",
-//         {
-//           withCredentials: true,
-//           headers: {
-//             Authorization: `Bearer ${authToken}`,
-//           },
-//         }
-//       )
-//       .then((response) => {
-//         // console.log(response);
-//         if (Array.isArray(response.data.classList)) {
-//           //   // Extract class names from the response
-//           const classNames = response.data.classList.map(
-//             (classData) => classData.className
-//           );
-//           // const classNames = response.data.classList;
-//           const classSection = response.data.classList.map(
-//             (classData) => classData.section
-//           );
-        
-//           setApiData(response.data.classList);
-
-//           setApiclass(classNames);
-//           setApisection(classSection);
-//           console.log(response);
-//         } else {
-//           setError("Data format is not as expected.");
-//         }
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching data:", error);
-//         setError("Error fetching data.");
-//       });
-//   }, [shouldFetchData]);
-
-//   // Extra console in useEffects
-//   // console.log("All student data created by admin ", allstudentdata);
-//   // console.log("Api data that for selecting class and sectio ", apiData);
-//   // console.log("To set api class dynamically ", apiclass);
-//   // console.log("To set api class section  dynamically ", apisection);
-
-//   const customButtonStyle = {
-//     backgroundColor: currentColor, // Change this to the color you desire
-  
-//   };
-
-  
-//   const classSections = apiData.map((data) => (
-   
-//     {
-   
-//     class: data.className,
-//     sections: data.sections,
-//   }
-// ));
-
-//   // Static columns
-//   const columns = [
-//     { field: "id", headerName: "Select All", type: "checkbox", flex: 0.5 },
-//     { field: "name", headerName: "Name", flex: 1 },
-//     { field: "rollNumber", headerName: "Roll Number", flex: 1 },
-//     { field: "class", headerName: "Class", flex: 1 },
-//   ];
-
-//   const handleClassChange = (event, classData) => {
-//     // set the section if it the classdata match with apidata and the section in the api data related to the classs other wise set it to null
-//     const selectedSection = getSelectedSection(classData);
-   
-//     setApisection(selectedSection);
-  
-//     setSelectedClass(classData);
-//     setSectionAnchorEl(event.currentTarget);
-//   };
-
-//   function getSelectedSection(classData) {
-//     const matchingData = apiData.find((data) => data.className === classData);
-//     if (matchingData) {
-//       // If a matching class is found, return its section
-//       const filteredStudentData = allstudentdata.filter(
-//         (student) => student.className === classData
-//       );
-//       setStudentData(filteredStudentData);
-//       return matchingData.section; // Assuming there is only one section in the array
-//     }
-//     // If no matching class is found, return null or a default value
-//     return null;
-//   }
-
-//   const handleSectionChange = (section, selectedClass) => {
-
-//     const matchingData = allstudentdata.filter((object) => {
-//       return object.class === selectedClass && object.section === section;
-//     });
-
-
-//     const formattedData = matchingData.map((object) => ({
-//       id: object._id,
-//       name: object.fullName,
-//       rollNumber: object.rollNo,
-//       class: object.class,
-//     }));
-
-//     setStudentData(formattedData);
-   
-
-  
-//     setSelectedSection(section);
-//     // Close the section anchor element (if you're using a dropdown or popover)
-//     setSectionAnchorEl(null);
-//   };
-
-//   const handlePromoteClassChange = (event, classData) => {
-//     setPromoteClass(classData.class);
-//     setPromoteSectionAnchorEl(event.currentTarget);
-//   };
-
-//   const handlePromoteSectionChange = (section) => {
-//     setPromoteSection(section);
-//     setPromoteSectionAnchorEl(null);
-//   };
-
-//   const handleMenuClose = () => {
-//     setClassAnchorEl(null);
-//     setSectionAnchorEl(null);
-//     setPromoteClassAnchorEl(null);
-//     setPromoteSectionAnchorEl(null);
-//   };
-//   const handleSelectionModelChange = (newSelection) => {
-//     setSelectionModel(newSelection);
-    
-//   };
-  
-//   const handlePromoteClick = async () => {
-//     // Get the selected student's ID, promoted section, and promoted class
-//     const studentId = selectionModel; // Replace this with the actual way you obtain the selected student's ID
-//     const promotedSection = promoteSection; // Replace with your logic to get the promoted section
-//     const promotedClass = promoteClass; // Replace with your logic to get the promoted class
-
-//     if (studentId.length === 0) {
-//       console.error("No students selected for promotion");
-//       return;
-//     }
-//     // Prepare the data to send in the PUT request
-//     const dataToUpdate = {
-//       students: studentId,
-//       promotedClass: promotedClass,
-//       promotedSection: promotedSection,
-//     };
-
-//     // Make the PUT request
-//     await axios
-//       .put(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/promotionOfStudent",
-//         dataToUpdate,
-//         {
-//           withCredentials: true,
-//       headers: {
-//         Authorization: `Bearer ${authToken}`,
-//         "Content-Type": "application/json"
-//       },
-//         }
-//       )
-//       .then((response) => {
-//         toast.success("Student promotion successfully");
-
-//         const unMatchingData = studentData.filter((object) => {
-//           return !dataToUpdate.students.includes(object.id);
-//         });
-
-//         setStudentData(unMatchingData);
-
-//         // console.log(
-//         //   "Promotion Successful:",
-//         //   response.data,
-//         //   "Promoted class",
-//         //   promoteClass,
-//         //   "Promoted Section ",
-//         //   promotedSection
-//         // );
-//       })
-//       .catch((error) => {
-//         // Handle errorscd c
-//         toast.error("Student promotion  failed");
-//         console.error("Promotion Failed:", error);
-//       });
-//   };
-
-//   return (
-//     <div className=" mt-12 md:mt-1  mx-auto p-3">
-//       <h1 
-//       className="text-4xl font-bold mb-4 uppercase text-center  hover-text "
-//       style={{color:currentColor}}
-//       >
-//         Student Promotion
-//       </h1>
-
-//       <div className="flex space-x-4">
-//         <div className="w-1/2">
-//           <h3 className="text-lg font-semibold dark:text-white  ">Class</h3>
-//           <Button
-//             variant="contained"
-//             color="primary"
-//             fullWidth
-//             style={customButtonStyle}
-//             onClick={(event) => {
-//               setClassAnchorEl(event.currentTarget);
-//               setSectionAnchorEl(null);
-              
-//             }}
-//           >
-//             {selectedClass
-//               ? `${selectedClass} - ${selectedSection}`
-//               : "Select Class and Section"}
-//           </Button>
-//           <Popover
-//             anchorEl={classAnchorEl}
-//             open={Boolean(classAnchorEl)}
-//             onClose={handleMenuClose}
-//           >
-//             <List>
-//               {apiclass.map((classData) => (
-//                 <ListItem
-//                   key={classData}
-//                   onClick={(event) => handleClassChange(event, classData)}
-//                 >
-//                   <ListItemText primary={classData} />
-//                 </ListItem>
-//               ))}
-//             </List>
-//           </Popover>
-//           <Popover
-//             anchorEl={sectionAnchorEl}
-//             open={Boolean(sectionAnchorEl)}
-//             onClose={handleMenuClose}
-//           >
-//             <List>
-              
-//               {apisection.map((section) => (
-//                 <ListItem
-//                   key={section}
-//                   onClick={() => handleSectionChange(section, selectedClass)}
-//                 >
-//                   <ListItemText primary={section} />
-//                 </ListItem>
-//               ))}
-//             </List>
-//           </Popover>
-//         </div>
-//         <div className="w-1/2">
-//           <h3 className="text-lg font-semibold  dark:text-white ">Promote</h3>
-//           <Button
-//             variant="contained"
-//             color="primary"
-//             style={customButtonStyle}
-//             fullWidth
-//             onClick={(event) => {
-//               setPromoteClassAnchorEl(event.currentTarget);
-//               setPromoteSectionAnchorEl(null);
-//             }}
-//           >
-//             {promoteClass
-//               ? `${promoteClass} - ${promoteSection}`
-//               : "Select Promote Class and Section"}
-//           </Button>
-//           <Popover
-//             anchorEl={promoteClassAnchorEl}
-//             open={Boolean(promoteClassAnchorEl)}
-//             onClose={handleMenuClose}
-//           >
-//             <List>
-//               {classSections.map((classData) => (
-//                 <ListItem
-//                   button
-//                   key={classData.class}
-//                   onClick={(event) =>
-//                     handlePromoteClassChange(event, classData)
-//                   }
-//                 >
-//                   <ListItemText primary={classData.class} />
-//                 </ListItem>
-//               ))}
-//             </List>
-//           </Popover>
-//           <Popover
-//             anchorEl={promoteSectionAnchorEl}
-//             open={Boolean(promoteSectionAnchorEl)}
-//             onClose={handleMenuClose}
-//           >
-//             <List>
-//               {classSections
-//                 .find((classData) => classData.class === promoteClass)
-//                 ?.sections.map((section) => (
-//                   <ListItem
-//                     button
-//                     key={section}
-//                     onClick={() => handlePromoteSectionChange(section)}
-//                   >
-//                     <ListItemText primary={section} />
-//                   </ListItem>
-//                 ))}
-//             </List>
-//           </Popover>
-//         </div>
-//       </div>
-//       <div
-//         style={{
-//           height: 400,
-//           width: "100%",
-//           backgroundColor: "white",
-//           borderRadius: "10px",
-//         }}
-//       >
-//         <div className=" dark:bg-[#999b9e] ">
-//           <DataGrid
-//             rows={studentData}
-//             columns={columns}
-//             checkboxSelection
-//             selectionModel={selectionModel}
-//             onRowSelectionModelChange={handleSelectionModelChange}
-//           />
-//         </div>
-//       </div>
-
-//       <div className="w-1/2">
-//         <Button
-//           variant="contained"
-//           color="primary"
-//           style={customButtonStyle}
-//           fullWidth
-//           onClick={handlePromoteClick}
-//         >
-//           Update Session
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Promotion;

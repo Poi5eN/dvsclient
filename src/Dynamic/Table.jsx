@@ -35,7 +35,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
 
   return (
     <section className="py-1 bg-blueGray-50 ">
-      <div className="relative flex flex-col min-w-0 break-words  w-full mb-6 shadow-lg rounded">
+      <div className="relative flex flex-col min-w-0 break-words w-full mb-6 rounded">
         {
           isSearch && <div className="rounded-t border-0">
 
@@ -49,7 +49,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
                 />
           </div>
         }
-        <div className="block w-full overflow-x-auto h-[80vh] overflow-y-auto">
+        <div className="block w-full overflow-x-auto h-[72vh] overflow-y-auto dark:text-gray-200">
           <table className="items-center bg-transparent w-full border-collapse ">
             <thead className="sticky top-0 z-10">
 
@@ -57,9 +57,12 @@ const Table = ({ tHead, tBody, isSearch, }) => {
              
                 {tHead.map((header) => (
                
-                  <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-${header?.width}`}
-                    style={{ background: currentColor, color: "white" }}
+                  <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-[${header?.width}]`}
+                  // <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-${header?.width}`}
+                    // style={{ background: currentColor, color: "white", }}
+                    style={{ background: currentColor, color: "white"}}
                   >
+                    {console.log("first",header?.width)}
                     {header.label}
                   </th>
                 ))}

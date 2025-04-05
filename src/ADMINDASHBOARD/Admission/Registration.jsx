@@ -16,13 +16,14 @@ const Registration = () => {
 
   return (
     <div>
-  <div className="flex justify-end w-full relative right-2 mt-1">
+      
+  {/* <div className="flex justify-end w-full relative right-2 mt-1">
     {activeComponent === 'thirdParty' ? (
       <Button onClick={handleCreateClick} name="Admin Admission" />
     ) : (
-      <Button onClick={handleThirdPartyClick} name="Third Party Admission" />
+      <Button onClick={handleThirdPartyClick} name="Third Party Admission " />
     )}
-  </div>
+  </div> */}
 
   {activeComponent === 'create' && <Create_Registration_Form />}
   {activeComponent === 'thirdParty' && <ThirdPartyAdmission />}

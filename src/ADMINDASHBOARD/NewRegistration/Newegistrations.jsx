@@ -456,10 +456,10 @@ const Newegistrations = () => {
         }
       ]
     return (
-        <div className="mx-auto px-3 md:h-[86.5vh]">
+        <div className="">
               
-             <Breadcrumbs BreadItem={BreadItem} />
-            
+            {/* <Breadcrumbs BreadItem={BreadItem} />
+             */}
             <div className="flex gap-1 md:flex-row ">
                 <div className="mb-1 md:mb-0">
                     <RegForm setReload={setReload} reload={reload} />

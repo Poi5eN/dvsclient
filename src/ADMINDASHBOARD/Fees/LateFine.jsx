@@ -1,7 +1,6 @@
 
 import { toast } from "react-toastify";
 import { MdDelete } from "react-icons/md";
-import { Button } from "@mui/material";
 import Modal from "../../Dynamic/Modal";
 import { useEffect, useState } from "react";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
@@ -9,6 +8,7 @@ import { AdminGetAllClasses, getAdditionalfees, Latefine, LateFines } from "../.
 import { useStateContext } from "../../contexts/ContextProvider";
 import Table from "../../Dynamic/Table";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+import Button from "../../Dynamic/utils/Button";
 
 
 function LateFine() {
@@ -171,23 +171,21 @@ function LateFine() {
 
   return (
     <div className="mx-auto">
-      <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
+      {/* <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
         Late Fine Fee
-      </h1>
-      <div className="mb-1">
+      </h1> */}
+      {/* <div className="mb-1"> */}
         <Button
-          variant="contained"
-          style={{ backgroundColor: currentColor }}
+        name="Set Late Fine"
+          // variant="contained"
+          // style={{ backgroundColor: currentColor }}
           onClick={() => {
-           
-           
-
-            setModalOpen(true);
+              setModalOpen(true);
           }}
         >
-          Create Fee
+          {/* Create Fee */}
         </Button>
-      </div>
+      {/* </div> */}
 
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Late Fine"}>
         <div className="p-4 space-y-4 bg-gray-50">

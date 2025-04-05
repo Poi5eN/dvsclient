@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { FaEdit } from "react-icons/fa";
-import { Button } from "@mui/material";
 import {  adminRouteinventory,  getadminRouteinventory } from "../../Network/AdminApi";
 import Table from "../../Dynamic/Table";
 import Modal from "../../Dynamic/Modal";
 
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+import Button from "../../Dynamic/utils/Button";
 
 
 function Create_Sales() {
@@ -94,20 +94,6 @@ const payload={
     }
   };
 
-  // const handleDelete = async (classId) => {
-  //   try {
-  //     const response = await deleteClassebyID(classId);
-  //     if (response?.success) {
-  //       toast.success(response?.message);
-  //       getclasses()
-  //     } else {
-  //       toast.error(response?.message);
-  //     }
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
-
   const THEAD = [
     { id: "SN", label: "S No.", width: "5" },
     { id: "itemName", label: "itemName", width: "7" },
@@ -132,19 +118,20 @@ const payload={
     ),
   }));
   return (
-    <div className="md:h-screen mt-12 md:mt-1 mx-auto p-3">
-      <h1
+    <>
+      {/* <h1
         className="text-xl font-bold mb-4 uppercase text-center hover-text"
         style={{ color: currentColor }}
       >
          Stock
-      </h1>
+      </h1> */}
       <Button
+      name="Add Item"
         onClick={toggleModal}
-        variant="contained"
-        style={{ color: "white", backgroundColor: currentColor }}
+        // variant="contained"
+        // style={{ color: "white", backgroundColor: currentColor }}
       >
-        Add Item
+       
       </Button>
       <Modal
         setIsOpen={() => setIsOpen(false)}
@@ -198,27 +185,30 @@ const payload={
           />
           <div className="flex items-center gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
             <Button
-              type="submit"
-              variant="contained"
+              // type="submit"
+              // variant="contained"
               onClick={handleSubmit}
-              style={{
-                backgroundColor: currentColor,
-                color: "white",
-                width: "100%",
-              }}
-            > Submit
+              name="Submit"
+              // style={{
+              //   backgroundColor: currentColor,
+              //   color: "white",
+              //   width: "100%",
+              // }}
+            >
 
             </Button>
             <Button
-              variant="contained"
+            color="gray"
+              // variant="contained"
+               name="Cancel"
               onClick={toggleModal}
-              style={{
-                backgroundColor: "#616161",
-                color: "white",
-                width: "100%",
-              }}
+              // style={{
+              //   backgroundColor: "#616161",
+              //   color: "white",
+              //   width: "100%",
+              // }}
             >
-              Cancel
+              
             </Button>
           </div>
         </div>
@@ -228,7 +218,7 @@ const payload={
         <Table tHead={THEAD} tBody={tBody} />
 
       </div>
-    </div>
+    </>
   );
 }
 
