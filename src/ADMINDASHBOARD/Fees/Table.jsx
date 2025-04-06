@@ -1,23 +1,23 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useStateContext } from "../../contexts/ContextProvider";
 import FeeRecipt from "./FeeRecipt";
 import NoDataFound from "../../NoDataFound";
 import { format, parseISO } from "date-fns";
-
 import { FaEye } from "react-icons/fa";
 import FeeReceiptPDF from './FeeReceiptPDF';
 import PrintHandler from "../Admission/PrintHandler";
 import { FaShareAlt } from "react-icons/fa";
 
-import { cancelFeePayment } from "../../Network/AdminApi";
+import { cancelFeePayment, feesfeeHistory } from "../../Network/AdminApi";
 import { toast } from "react-toastify";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import Modal from "../../Dynamic/Modal";
 import Button from "../../Dynamic/utils/Button";
+import moment from "moment";
+import { FeeReceipt } from "../../Dynamic/utils/Message";
 const Table = ({ reLoad }) => {
   const user = JSON.parse(localStorage.getItem("user"))
-  const authToken = localStorage.getItem("token");
+  // console.log("user",user)
   const { currentColor } = useStateContext();
   const [modalData, setModalData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -49,18 +49,15 @@ const Table = ({ reLoad }) => {
 
   const getFeeHistory = async () => {
     try {
-      const response = await axios.get(
-        // "https://dvsserver.onrender.com/api/v1/fees/getFeeStatus",
-        "https://dvsserver.onrender.com/api/v1/fees/feeHistory",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      setFeeHistory(response.data.data);
-      setFilteredFeeHistory(response.data.data);
+      const response =await feesfeeHistory()
+      if(response?.success){
+        setFeeHistory(response?.data);
+        setFilteredFeeHistory(response?.data);
+      }
+      else{
+        toast?.error(response?.message)
+      }
+     
     } catch (error) {
       console.error("Error fetching fee history:", error);
     }
@@ -71,9 +68,10 @@ const Table = ({ reLoad }) => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const handleDateFilter = () => {
     const filteredData = feeHistory.filter((fee) => {
-      const feeDate = new Date(fee.date);
-      return feeDate >= new Date(startDate) && feeDate <= new Date(endDate);
+      const feeDate = moment(fee.date).format("DD-MM-YYYY");
+      return feeDate >= moment(startDate).format("DD-MM-YYYY") && feeDate <= moment(endDate).format("DD-MM-YYYY");
     });
+
     setFilteredFeeHistory(filteredData);
   };
 
@@ -83,93 +81,15 @@ const Table = ({ reLoad }) => {
     setFilteredFeeHistory(feeHistory);
   };
 
-  const { handlePrint } = PrintHandler(); // Use the hook
-  const handlePrintClick = (filteredFeeHistory) => {
-    // setSelectStudent(filteredFeeHistory);
-    setTimeout(() => {
-      // Call the reusable handlePrint function and pass the content
-      handlePrint(document.getElementById("printContent").innerHTML);
-    }, 100);
-  };
-  // const phoneNumbers = [
-  //   "7905710965", "7079771102", "9525678043", "9507386757", "9873993957", "8920377548","9795769820",,"9026631059" // ... up to 50 numbers
-  // ];
-
-  // const shareOnWhatsAppBatched = (fee, phoneNumbers, batchSize = 5, delaySeconds = 30) => {
-  //   const receiptCard = `
-  // ------------------------------------
-  // ✨ Fee Receipt ✨
-  // ------------------------------------
-  // Admission No: ${fee.admissionNumber}
-  // Name: ${fee.studentName}
-  // Class: ${fee.studentClass}
-  // Receipt No: ${fee.feeReceiptNumber}
-  // Pay Date: ${format(parseISO(fee.date), "dd/MM/yyyy")}
-  // Total Amount Paid: ${fee.totalAmountPaid}
-  // Dues: ${fee.dues}
-  // Remarks: ${fee.remark}
-  // ------------------------------------
-  // Thank you!
-  // ------------------------------------
-  // `;
-  
-  //   const message = `Check out this fee receipt:\n\n${receiptCard}`;
-  //   const encodedMessage = encodeURIComponent(message);
-  
-  //   const sendBatch = (batch) => {
-  //     batch.forEach(phoneNumber => {
-  //       const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-  //       window.open(whatsappURL, "_blank");
-  //     });
-  //   };
-  
-  //   const batchCount = Math.ceil(phoneNumbers.length / batchSize);
-  
-  //   const sendWithDelay = async () => {
-  //     for (let i = 0; i < batchCount; i++) {
-  //       const start = i * batchSize;
-  //       const end = start + batchSize;
-  //       const batch = phoneNumbers.slice(start, end);
-  
-  //       sendBatch(batch); // Send current batch
-  //       if (i < batchCount - 1) {
-  //           await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000)); // Wait before next batch
-  //       }
-  //     }
-  //   };
-  
-  //   sendWithDelay(); // Start the process
+  // const { handlePrint } = PrintHandler(); // Use the hook
+  // const handlePrintClick = (filteredFeeHistory) => {
+  //   // setSelectStudent(filteredFeeHistory);
+  //   setTimeout(() => {
+  //     // Call the reusable handlePrint function and pass the content
+  //     handlePrint(document.getElementById("printContent").innerHTML);
+  //   }, 100);
   // };
-  const shareOnWhatsApp = (fee) => { // Add phoneNumber as an argument
-    // Build the "card" as a string (styled with bold and monospace)
-    const receiptCard = `
-  ------------------------------------
-      ✨ *Fee Receipt* ✨
-  ------------------------------------
-  *Admission No:* \`${fee.admissionNumber}\`
-  *Name:* \`${fee.studentName}\`
-  *Class:* \`${fee.studentClass}\`
-  *Receipt No:* \`${fee.feeReceiptNumber}\`
-  *Pay Date:* \`${format(parseISO(fee.date), "dd/MM/yyyy")}\`
-  *Total Amount Paid:* \`₹${fee.totalAmountPaid}\`
-  *Month:* \`${fee.regularFees?.map((val)=>val?.month)}\`
-  *Dues:* \`₹${fee.dues}\`
-  *Remarks:* _${fee.remark || 'N/A'}_
-  ------------------------------------
-              *Thank you!* 🙏
- If there are any issues, please contact the accountant.
-  ------------------------------------
-  `;
-  
-    const message = `*${user?.schoolName}*\n${user?.address}\n${"+91 XXXXXXXXXX"}\n${receiptCard}`; // Add intro text
-  
-    const encodedMessage = encodeURIComponent(message);
-  
-    // Construct the WhatsApp URL to open a chat with the specified number
-    const whatsappURL = `https://wa.me/${fee?.parentContact}?text=${encodedMessage}`;
-  
-    window.open(whatsappURL, "_blank");
-  };
+ 
   
   const cancelFee=async()=>{
     const payload={
@@ -219,23 +139,20 @@ try {
             <Button
               onClick={handleDateFilter}
               name="Filter"
-              // variant="contained"
-              // style={{ backgroundColor: currentColor, color: "white" }}
              
             >
               
             </Button>
          
             <Button
-              // variant="contained"
+
   name="Clear"
-              onClick={clearDateFilter}
-              // style={{ backgroundColor: "#424242", color: "white" }}
-             
-            >
+              onClick={clearDateFilter} >
               
             </Button>
-            <div id="printContent">
+            <div
+            //  id="printContent"
+             >
           <FeeReceiptPDF details={filteredFeeHistory} />
         </div>
          
@@ -457,27 +374,28 @@ try {
                         </a>
                       </td>
                       <td className="px-4 py-4">
-                         <button
-                         title="Share"
+                         <Button
+                         name="Share"
+                         color="green"
                             // onClick={() => shareOnWhatsAppBatched(fees, phoneNumbers, 5, 30)}
-                            onClick={() => shareOnWhatsApp(fees)}
-                            className="font-medium text-green-600 cursor-pointer dark:text-green-500 hover:underline"
+                            onClick={() => FeeReceipt(fees)}
+                            // className="font-medium text-green-600 cursor-pointer dark:text-green-500 hover:underline"
                          >
                          
                          <FaShareAlt className="text-2xl"/>
-                         </button>
+                         </Button>
                        
                       </td>
                       <td className="px-4 py-4">
-                         <button
-                         title="Cancel"
-                            // onClick={() => setCencel(true)}
+                         <Button
+                         name="Cancel"
+                              // onClick={() => setCencel(true)}
                             onClick={() => handleCancel(fees)}
                             className=" text-red-600 font-bold cursor-pointer dark:text-green-500 hover:underline"
                          >
-                         Cancel
-                         {/* <FaShareAlt className="text-2xl"/> */}
-                         </button>
+                         
+                        
+                         </Button>
                       </td>
                     </tr>
                   ))
@@ -485,14 +403,10 @@ try {
             </tbody>
           </table>
            
-
-
-
-
           <Modal
         setIsOpen={toggleModal}
-        // setIsOpen={() => setViewAdmision(false)}
-        isOpen={isOpen} title={"Addmission details pdf"} maxWidth="100px">
+        isOpen={isOpen} 
+        title={"Addmission details pdf"} maxWidth="100px">
  <FeeRecipt
                       modalData={modalData}
                       handleCloseModal={toggleModal}
@@ -510,19 +424,17 @@ try {
           </p>
            <div className="w-full flex justify-around">
            <Button
-                    variant="contained"
-                    // style={{ backgroundColor: currentColor }}
-                    onClick={() => cancelFee()}
+           name="Yes"
+            onClick={() => cancelFee()}
                   >
-                  OK
+                
                   </Button>
            <Button
-           style={{background:"gray"}}
-                    variant="contained"
-                    // style={{ backgroundColor: currentColor }}
+           name="No"
+
                     onClick={() => setCencel(false)}
                   >
-                   Cancel
+                   
                   </Button>
        
            </div>

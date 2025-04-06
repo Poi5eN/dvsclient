@@ -7,6 +7,7 @@ import { useStateContext } from "../../contexts/ContextProvider.js";
 import { toWords } from "number-to-words";
 
 import "./Print.css"
+import Button from "../../Dynamic/utils/Button.jsx";
 const FeeRecipt = ({ modalData, handleCloseModal }) => {
   const user = JSON.parse(localStorage.getItem("user"))
 
@@ -44,7 +45,8 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
         className="text-black absolute right-20 top-1  cursor-pointer "
        
       >
-      <DownloadIcon className="text-2xl" />
+      
+      <Button Icon={<DownloadIcon className="text-2xl"/>} name="PRINT"/>
       </a>
         <div className=" flex flex-1 p-2 gap-2" ref={componentPDF} >
           <div className="w-[400px] pe-[15px] p-2 border-black border-1   rounded-sm dark:text-white">

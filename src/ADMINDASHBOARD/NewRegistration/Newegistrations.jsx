@@ -11,13 +11,13 @@ import { useReactToPrint } from 'react-to-print';
 import { Modal } from "@mui/material";
 
 import { Box } from "@mui/material";
-import { AiFillDelete, AiFillEye, AiFillPrinter, AiOutlineShareAlt } from 'react-icons/ai';
+import { AiFillDelete, AiFillEye } from 'react-icons/ai';
 import Button from "../../Dynamic/utils/Button.jsx";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
 import Table from "../../Dynamic/Table.jsx";
 import Breadcrumbs from "../../components/Breadcrumbs .jsx";
 import moment from "moment";
+import { handleShareRegistration } from "../../Dynamic/utils/Message.jsx";
 const uploadPDF = async (pdfBlob) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -36,72 +36,6 @@ const MobileRegistrationCard = ({ student, onClose, handleDelete }) => {
         documentTitle: `Registration_${student.studentFullName}`,
         onAfterPrint: () => toast.success("PDF Downloaded Successfully!"),
     });
-
-    // Handle WhatsApp Share of PDF
-    const handleWhatsAppSharePDF = async (student) => {
-        const element = componentPDF.current;
-
-        if (!element) {
-            console.error("Component not found for PDF generation.");
-            toast.error("Failed to generate PDF for sharing.");
-            return;
-        }
-
-        try {
-            const canvas = await html2canvas(element, {
-                useCORS: true, // Required if images are from different domains
-                scale: 2      // Increase scale for higher resolution
-            });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');  // Portrait, millimeters, A4 size
-            const imgWidth = 210;  // A4 width
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Keep aspect ratio
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-            const pdfBlob = pdf.output('blob'); // Create a Blob from the PDF
-            toast.info("Uploading PDF..."); // Show a message during upload
-            const pdfURL = await uploadPDF(pdfBlob); // Await the upload and get the URL
-            if (!pdfURL) {
-                toast.error("Failed to upload PDF.");
-                return;
-            }
-
-            toast.success("Message Send successfully!");
-            const receiptCard = `
-              -------------------------------------------
-                  ✨ *Registration Receipt* ✨
-              -------------------------------------------
-              *Registration No:* \`${student?.registrationNumber}\`
-              *Name:* \`${student?.studentFullName}\`
-              *Father's Name:* \`${student?.fatherName}\`
-              *Gender:* \`${student?.gender}\`
-              *Class:* \`${student?.registerClass}\`
-              *Mobile Number:* \`${student?.mobileNumber}\`
-              *Address:* \`${student?.studentAddress}\`
-              *Receipt No:* \`${student?.registrationNumber}\`
-              -------------------------------------------
-                          *Thank you!* 🙏
-                     Welcome To Our Family
-              ${user?.schoolName}
-              -------------------------------------------
-              `;
-              
-                const message = `
-                *${user?.schoolName}*\
-                    n${user?.address}\
-                    n${user?.contact}\
-                    n${receiptCard}`; // Add intro text
-              
-            // const message = `*${schoolName} Registration Details*\n\n*Registration Number:* ${student.registrationNumber}\n*Student's Name:* ${student.studentFullName}\n*Guardian's Name:* ${student.guardianName}\n*Email:* ${student.studentEmail}\n*Gender:* ${student.gender}\n*Class:* ${student.registerClass}\n*Mobile:* ${student.mobileNumber}\n*Address:* ${student.studentAddress}\n\n${schoolName} - ${schoolAddress} - Contact: ${schoolContact}\n\nCheck out this registration receipt: ${pdfURL}`;
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/91${student?.mobileNumber}?text=${encodedMessage}`;
-            // const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
-            window.open(whatsappURL, '_blank');
-
-        } catch (error) {
-            console.error("Error generating or sharing PDF:", error);
-            toast.error("Error sharing PDF.");
-        }
-    };
 
     return (
         <Modal
@@ -212,7 +146,8 @@ const MobileRegistrationCard = ({ student, onClose, handleDelete }) => {
                 {/* Buttons */}
                 <div className="mt-2 flex justify-between gap-3">
                     <Button name="Print" onClick={handlePrint} width="full" />
-                    <Button name="Share " onClick={()=>handleWhatsAppSharePDF(student)} width="full" />
+                    <Button name="Share " onClick={()=> handleShareRegistration(student, user)} width="full" />
+                    {/* <Button name="Share " onClick={()=>handleWhatsAppSharePDF(student)} width="full" /> */}
                     <Button name="Close" onClick={onClose} width="full" color="#607093" />
                 </div>
             </Box>

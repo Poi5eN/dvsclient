@@ -49,7 +49,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
                 />
           </div>
         }
-        <div className="block w-full overflow-x-auto h-[72vh] overflow-y-auto dark:text-gray-200">
+        <div className="block w-full overflow-x-auto h-[70vh] overflow-y-auto dark:text-gray-200">
           <table className="items-center bg-transparent w-full border-collapse ">
             <thead className="sticky top-0 z-10">
 
@@ -62,7 +62,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
                     // style={{ background: currentColor, color: "white", }}
                     style={{ background: currentColor, color: "white"}}
                   >
-                    {console.log("first",header?.width)}
+                 
                     {header.label}
                   </th>
                 ))}
@@ -80,7 +80,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
                       {tHead.map((header) => (
                         <td
                           key={`${index}-${header.id}`}
-                          className="border px-2 py-1 align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
+                          className="border px-2  align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
                         >
                           <p class="block text-sm font-normal leading-none text-slate-500">
                             {row[header.id]}

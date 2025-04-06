@@ -20,13 +20,13 @@
 }
 
 ::-webkit-scrollbar {
-  width: 400px;
+  width: 4px;
   /* width: 10px; */
   
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(193, 24, 24);
-  border-radius: 400px;
+  background-color: rgb(216, 216, 216);
+  border-radius: 40px;
   cursor: pointer;
 }
 ::-webkit-scrollbar-track {

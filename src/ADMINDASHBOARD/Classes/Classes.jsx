@@ -151,7 +151,7 @@ function Classes() {
       <Modal
         setIsOpen={() => setIsOpen(false)}
         isOpen={isOpen} title={"Create Class"} maxWidth="100px">
-        <div className="  px-4 py-2 text-center gap-y-3 ">
+        <div className=" px-4 py-2 text-center gap-y-3 ">
           <div className="my-2">
           <ReactSelect
             name="className"
@@ -203,27 +203,29 @@ function Classes() {
           />
           <div className="flex items-center gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
             <Button
-              type="submit"
-              variant="contained"
+              // type="submit"
+              name="Submit"
+              // // variant="contained"
               onClick={handleSubmit}
-              style={{
-                backgroundColor: currentColor,
-                color: "white",
-                width: "100%",
-              }}
-            > Submit
+              // // style={{
+              // //   backgroundColor: currentColor,
+              // //   color: "white",
+              // //   width: "100%",
+              // }}
+            > 
 
             </Button>
             <Button
-              variant="contained"
+              // variant="contained"
               onClick={toggleModal}
-              style={{
-                backgroundColor: "#616161",
-                color: "white",
-                width: "100%",
-              }}
+              // style={{
+              //   backgroundColor: "#616161",
+              //   color: "white",
+              //   width: "100%",
+              // }}
+              name="Cancel"
             >
-              Cancel
+              
             </Button>
           </div>
         </div>

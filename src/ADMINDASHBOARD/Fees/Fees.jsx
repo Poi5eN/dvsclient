@@ -1,6 +1,6 @@
 import React from 'react'
 import { TabsDefault } from '../../Dynamic/TabsDefault'
-import DuesFees from "./DuesFees";
+import DuesStatus from "./DuesStatus";
 import NewCheckFee2 from "./CreateFees";
 import ClasswiseFee from "./ClassWise/ClasswiseFee";
 import AdditionalFee from "./Additional/AdditionalFee";
@@ -17,7 +17,7 @@ const Fees = () => {
       label: "Dues",
       value: "dues",
       color:"#8e24aa",
-      desc: <DuesFees/>
+      desc: <DuesStatus/>
     },
     {
       label: "Create  Fees",

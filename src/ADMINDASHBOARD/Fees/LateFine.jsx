@@ -215,8 +215,12 @@ function LateFine() {
               value={formData.amount}
             />
           </div>
-          <Button variant="contained" style={{ backgroundColor: currentColor, width: "100%" }} onClick={handleSubmit}>
-            Submit
+          <Button
+          //  variant="contained"
+          //   style={{ backgroundColor: currentColor, width: "100%" }} 
+            name="Submit"
+            onClick={handleSubmit}>
+            
           </Button>
         </div>
       </Modal>

@@ -9,7 +9,7 @@ import PublicRoute from "./components/Auth/PublicRoute";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { useStateContext } from "./contexts/ContextProvider";
 import AddDues from "./ADMINDASHBOARD/Fees/AddDues";
-import DuesFees from "./ADMINDASHBOARD/Fees/DuesFees";
+import DuesStatus from "./ADMINDASHBOARD/Fees/DuesStatus";
 import AdminUser from "./Users/AdminUser";
 import Testing from "./ADMINDASHBOARD/Testing";
 import AdmitcardTesting from "./ADMINDASHBOARD/AdmitcardTesting";
@@ -355,7 +355,7 @@ function App() {
               />
               {/* <Route path="fees" element={<Fees />} /> */}
               <Route path="create-fees" element={<CreateFees />} />
-              <Route path="dues-status" element={<DuesFees />} />
+              <Route path="dues-status" element={<DuesStatus />} />
               <Route path="admission" element={<Registration />} />
               <Route
                 path="admission/bulkadmission"

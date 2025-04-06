@@ -63,7 +63,7 @@ function CreateStudent() {
   }, [setIsLoader]); // Include dependencies
 
   const fetchAllClasses = useCallback(async () => {
-    setIsLoader(true); // Potentially set loader again or manage it globally
+    // setIsLoader(true); // Potentially set loader again or manage it globally
     try {
       const response = await AdminGetAllClasses();
       if (response?.success) {
@@ -79,9 +79,9 @@ function CreateStudent() {
       toast.error("An error occurred while fetching classes.");
     } finally {
       // Consider loader management if fetchAllStudents is also setting it
-      setIsLoader(false);
+      // setIsLoader(false);
     }
-  }, [setIsLoader]); // Include dependencies
+  }, []); // Include dependencies
 
   useEffect(() => {
     fetchAllStudents();
@@ -92,7 +92,6 @@ function CreateStudent() {
 
   useEffect(() => {
     let filtered = allStudents;
-
     if (selectedClass) {
       filtered = filtered.filter((student) => student.class === selectedClass);
     }
@@ -187,7 +186,7 @@ function CreateStudent() {
     { id: "dateOfBirth", label: "DOB" },
     { id: "contact", label: "Contact" },
     { id: "gender", label: "Gender" },
-    { id: "status", label: "Status" },
+    // { id: "status", label: "Status" },
     { id: "action", label: "Action" },
   ];
 
@@ -221,20 +220,20 @@ function CreateStudent() {
       : "N/A",
     contact: student.contact || "N/A",
     gender: student.gender || "N/A",
-    status: (
-      <button
-        onClick={() => handleToggleStatus(student?.studentId, student.status)}
-        title={
-          student.status === "active"
-            ? "Deactivate Student"
-            : "Activate Student"
-        }
-        className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
-      >
-        {" "}
-        <MdDelete />
-      </button>
-    ),
+    // status: (
+    //   <button
+    //     onClick={() => handleToggleStatus(student?.studentId, student.status)}
+    //     title={
+    //       student.status === "active"
+    //         ? "Deactivate Student"
+    //         : "Activate Student"
+    //     }
+    //     className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
+    //   >
+    //     {" "}
+    //     <MdDelete />
+    //   </button>
+    // ),
     action: (
       <div className="flex justify-center items-center gap-3">
         <button
@@ -251,6 +250,19 @@ function CreateStudent() {
         >
           <FaEdit />
         </button>
+        <button
+        onClick={() => handleToggleStatus(student?.studentId, student.status)}
+        // title={
+        //   student.status === "active"
+        //     ? "Deactivate Student"
+        //     : "Activate Student"
+        // }
+        title="Deactivate"
+        className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
+      >
+        {" "}
+        <MdDelete />
+      </button>
       </div>
     ),
     rowClassName:
@@ -271,9 +283,9 @@ function CreateStudent() {
 
   if (!isEditing && !studentToView) {
     return (
-      <div className="mt-7">
+      <div className="mt-2">
         {/* <Breadcrumbs BreadItem={BreadItem} /> */}
-        <div className="flex flex-wrap items-center gap-1 mb-2 bg-white rounded  ">
+        <div className="flex flex-wrap items-center gap-1  bg-white rounded  ">
           <ReactSelect
             name="studentClass"
             value={selectedClass}

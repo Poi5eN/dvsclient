@@ -26,7 +26,7 @@ const MyKids = () => {
       )
       .then((response) => {
         // console.log("My KIds ", response.data);
-        const data = response.data.data[0];
+        const data = response?.data?.data[0];
         setStudentData(data);
         // console.log("ParentDashBoard--->", data);
         setLoading(false); // Set loading to false once data is received
@@ -50,7 +50,7 @@ const MyKids = () => {
       )
       .then((response) => {
         // console.log("Data student ", response.data.admin);
-        setAdminData(response.data.admin);
+        setAdminData(response?.data?.admin);
         setLoading(false); // Set loading to false once data is received
       })
       .catch((error) => {
@@ -69,10 +69,10 @@ const MyKids = () => {
           <div className="w-[300px] border-1 rounded-md border-[#01a9ac] p-5 hover:shadow-[rgba(6,24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset]">
             <div className="flex justify-between">
               <div>
-                {admindata.image && (
+                {admindata?.image && (
                   <img
                     className="w-[80px] h-[80px] rounded-full"
-                    src={admindata.image.url}
+                    src={admindata?.image?.url}
                     alt="school logo"
                   />
                 )}
@@ -85,7 +85,7 @@ const MyKids = () => {
               style={{color:currentColor}}
               >
                 {/* Model School */}
-                {admindata.schoolName}
+                {admindata?.schoolName}
               </h1>
             </div>
 
@@ -94,15 +94,15 @@ const MyKids = () => {
             >
               <h3 className="text-white">
                 {/* Lorem ipsum dolor, sit amet consectetur adipisicing. */}
-                {admindata.address}
+                {admindata?.address}
               </h3>
             </div>
 
             <div className="flex mt-5">
-              {studentData.image && (
+              {studentData?.image && (
                 <img
                   className="w-[80px] h-[80px] rounded-full"
-                  src={studentData.image.url}
+                  src={studentData?.image?.url}
                   alt="Student Image "
                 />
               )}
@@ -110,35 +110,35 @@ const MyKids = () => {
                 <div className="">
                   <h2 className="w-[100px] text-[13px] leading-3">Name :</h2>
                   <span className="font-semibold text-[14px] ">
-                    {studentData && studentData.fullName}
+                    {studentData && studentData?.fullName}
                   </span>
                 </div>
                 <div className="my-1 py-1">
                   <h2 className="w-[100px] text-[13px] leading-3 ">F/Name :</h2>
                   <span className="font-semibold text-[14px] ">
-                    {studentData.fatherName}
+                    {studentData?.fatherName}
                   </span>
                 </div>
                 <div className="my-1 py-1">
                   <h2 className="w-[100px] text-[13px] leading-3 ">M/Name :</h2>
                   <span className="font-semibold text-[14px] ">
-                    {studentData && studentData.motherName}
+                    {studentData && studentData?.motherName}
                   </span>
                 </div>
 
                 <div className="flex mt-2  items-center">
                   <h2 className="w-[60px] text-[13px] leading-3 ">Class:</h2>
                   <span className="">
-                    {studentData.class !== undefined
-                      ? `${studentData.class}th - ${studentData.section}`
+                    {studentData?.class !== undefined
+                      ? `${studentData?.class}th - ${studentData?.section}`
                       : "N/A"}
                   </span>
                 </div>
                 <div className="flex mt-2 items-center">
                   <h2 className="w-[60px] text-[13px] leading-3 ">DOB. :</h2>
                   <span className="">
-                    {studentData.dateOfBirth
-                      ? studentData.dateOfBirth.split("T")[0]
+                    {studentData?.dateOfBirth
+                      ? studentData?.dateOfBirth.split("T")[0]
                       : "N/A"}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ const MyKids = () => {
 
             <div className="p-2">
               <h2>Address : </h2>
-              <span>{studentData.address}</span>
+              <span>{studentData?.address}</span>
             </div>
           </div>
 
@@ -160,20 +160,20 @@ const MyKids = () => {
                                         <th scope="row" className="px-2 py-2 font-medium text-gray-900  dark:text-white">
                                         Email :
                                         </th>
-                                        <td className="px-2 py-2">   {studentData.email}</td>
+                                        <td className="px-2 py-2">   {studentData?.email}</td>
                                     </tr>
                                     <tr className=" dark:bg-gray-800">
                                         <th scope="row" className="px-2 py-2 font-medium text-gray-900  dark:text-white">
                                         Roll No. :
                                         </th>
-                                        <td className="px-2 py-2"> {studentData.rollNo}</td>
+                                        <td className="px-2 py-2"> {studentData?.rollNo}</td>
                                     </tr>
                                     <tr className=" dark:bg-gray-800">
                                         <th scope="row" className="px-2 py-2 font-medium text-gray-900  dark:text-white">
                                         Joining Date :
                                         </th>
-                                        <td className="px-2 py-2"> {studentData.joiningDate
-                  ? studentData.joiningDate.split("T")[0]
+                                        <td className="px-2 py-2"> {studentData?.joiningDate
+                  ? studentData?.joiningDate?.split("T")[0]
                   : "N/A"}
                   </td>
                                     </tr>
@@ -182,7 +182,7 @@ const MyKids = () => {
                                         Gender :
                                         </th>
                                         <td className="px-2 py-2">
-                                        {studentData.gender}
+                                        {studentData?.gender}
                                         </td>
                                     </tr>
                                     <tr className=" dark:bg-gray-800">
@@ -190,14 +190,14 @@ const MyKids = () => {
                                         Mobile :
                                         </th>
                                         <td className="px-2 py-2">
-                                        {studentData.contact}
+                                        {studentData?.contact}
                                         </td>
                                     </tr>
                                     <tr className=" dark:bg-gray-800">
                                         <th scope="row" className="px-2 py-2 font-medium text-gray-900  dark:text-white">
                                         ParentMobile:
                                         </th>
-                                        <td className="px-2 py-2">    +91 {studentData.parentContact}</td>
+                                        <td className="px-2 py-2">    +91 {studentData?.parentContact}</td>
                                     </tr>
                                    
                                 </tbody>

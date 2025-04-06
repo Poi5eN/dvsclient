@@ -168,7 +168,7 @@ const newAdmission=async()=>{
     *Admission No:* \`${val?.student?.admissionNumber}\`
     *Name:* \`${val?.student?.studentName}\`
     *Class:* \`${val?.student?.class}\`
-    *Guardian Name:* \`${val.fatherName}\`
+    *Father Name:* \`${val.fatherName}\`
     ------------------------------------
                 *Thank you!* 🙏
    Welcome To Our Family ${user?.schoolName}
@@ -204,12 +204,12 @@ const newAdmission=async()=>{
   };
 
   const getAllClass = async () => {
-    setIsLoader(true)
+    // setIsLoader(true)
     try {
 
       const response = await AdminGetAllClasses()
       if (response?.success) {
-        setIsLoader(false)
+        // setIsLoader(false)
         let classes = response.classes;
         setGetClass(classes.sort((a, b) => a - b));
       }
@@ -307,10 +307,9 @@ const newAdmission=async()=>{
   return (
     <div 
     className=""
-    // className="px-2 h-[86.5vh]"
     >
       {/* <Breadcrumbs BreadItem={BreadItem} /> */}
-      <div className="flex md:flex-row gap-1">
+      <div className="flex flex-wrap md:flex-row gap-1">
         <Button name="New Admission" onClick={toggleModal} />
         <BulkAdmission />
         <ReactSelect

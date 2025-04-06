@@ -74,10 +74,11 @@ export const links = [
           { name: 'Add Dues', link: 'add-dues' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'Dues Status', link: 'dues-status' ,id :23 , icon: <GiTakeMyMoney />,},
           
       ],
   },
-  { name: 'Dues Status', link: 'dues-status' ,icon: <PiStudentFill />},
+  // { name: 'Dues Status', link: 'dues-status' ,icon: <PiStudentFill />},
   // { name: 'Fees Payment', link: 'checkfee' ,icon: <GiTakeMyMoney />},
   {
     name: 'Classes',
@@ -187,11 +188,11 @@ export const links = [
   icon: <FaArrowDownUpAcrossLine />, link: 'promotion'
 
 },
-// {
-//   name: 'UserDetails',
-//   icon: <FaArrowDownUpAcrossLine />, link: 'userdetails'
+{
+  name: 'UserDetails',
+  icon: <FaArrowDownUpAcrossLine />, link: 'userdetails'
 
-// },
+},
 // {
 //   name: 'Testing',
 //   icon: <FaArrowDownUpAcrossLine />, link: 'testing'

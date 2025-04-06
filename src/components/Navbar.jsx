@@ -7,7 +7,10 @@ import "./style.css";
 import { VscSymbolColor } from "react-icons/vsc";
 import { MdFullscreen, MdFullscreenExit, MdLogout } from "react-icons/md";
 // import logo from "../../src/ShikshMitraWebsite/white logo.jpg"; // Verify path
-import logo from "../../src/ShikshMitraWebsite/digitalvidya.png"; // Verify path
+// import logo from "../../src/ShikshMitraWebsite/digitalvidya.png"; // Verify path
+// import logo from "../../src/ShikshMitraWebsite/DIGITALVIDYASAARTHI LOGO.png"; // Verify path
+import logo from "../../src/ShikshMitraWebsite/DIGITALV-removebg-preview.png"; // Verify path
+// import logo from "../../src/ShikshMitraWebsite/digital.png"; // Verify path
 import { Link } from "react-router-dom";
 
 const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
@@ -102,8 +105,8 @@ const Navbar = () => {
         /> */}
          <Link to={dashboardPath} 
         //  onClick={closeAllMenus}
-          className="flex items-center gap-2 flex-shrink-0 ml-5">
-           <img src={logo} alt="logo" className="h-8 object-contain scale-150" />
+          className="flex items-center gap-2 flex-shrink-0 ml-2">
+           <img src={logo} alt="logo" className="h-8 object-contain " />
          </Link>
       </div>
 
