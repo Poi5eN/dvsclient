@@ -22,6 +22,7 @@ import Breadcrumbs from "../../components/Breadcrumbs ";
 import AdmissionForm from "../../ShikshMitraWebsite/component/LoginPage/AdmissionForm";
 
 function Create_Registration_Form() {
+  const [refreshRegistrations,setRefreshRegistrations]=useState(false)
   const user = JSON.parse(localStorage.getItem("user"))
   const {  setIsLoader } = useStateContext();
   const [viewAdmision, setViewAdmision] = useState(false);
@@ -80,7 +81,7 @@ const newAdmission=async()=>{
 
   useEffect(() => {
     newAdmission();
-  }, []);
+  }, [refreshRegistrations]);
 
   const handleSubmit = async (e) => {
 
@@ -95,6 +96,10 @@ const newAdmission=async()=>{
 
     if (!selectedClass) {
       toast.warn("Please Select Class")
+      return
+    }
+    if (!selectedSection) {
+      toast.warn("Please Select Section")
       return
     }
     setIsLoader(true)
@@ -134,11 +139,13 @@ const newAdmission=async()=>{
     try {
       const response = await createStudentParent(formDataToSend)
       if (response?.success) {
+        newAdmission()
         setWhatsAppMsg(response);
         setIsModalOpen(true);
         setIsLoader(false)
         toast.success(response?.message)
         toggleModal();
+        setPayload({})
         setLoading(false);
         setModalOpen(false);
         setSelectedClass("");
@@ -311,7 +318,7 @@ const newAdmission=async()=>{
       {/* <Breadcrumbs BreadItem={BreadItem} /> */}
       <div className="flex flex-wrap md:flex-row gap-1">
         <Button name="New Admission" onClick={toggleModal} />
-        <BulkAdmission />
+        <BulkAdmission setRefreshRegistrations={setRefreshRegistrations} />
         <ReactSelect
           name="filterClass"
           value={filterClass}
@@ -398,6 +405,7 @@ const newAdmission=async()=>{
               dynamicOptions={dynamicOptions}
             />
             <ReactSelect
+             required={true}
               name="studentSection"
               value={selectedSection} // Use selectedSection state
               handleChange={handleSectionChange} // Use the handleSectionChange function

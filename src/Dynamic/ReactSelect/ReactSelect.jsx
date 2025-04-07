@@ -29,7 +29,7 @@ export function ReactSelect({
         value={value}
         onChange={handleSelectChange}
         required={required}
-        style={{ borderBottom: required && !value ? "2px solid red" : "" }}
+        style={{ borderBottom: required? "2px solid red" : "" }}
       >
         <option value="" disabled>
           {label}

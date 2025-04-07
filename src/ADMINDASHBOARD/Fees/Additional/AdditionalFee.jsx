@@ -9,6 +9,7 @@ import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
 import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees } from "../../../Network/AdminApi";
 import Table from "../../../Dynamic/Table";
 import Button from "../../../Dynamic/utils/Button";
+import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
 
 
 function AdditionalFee() {
@@ -63,6 +64,29 @@ function AdditionalFee() {
     value: cls.className,
   }));
 
+  const feeType=[
+    {
+      label:"Select Fee Type",value:""
+    },
+    {
+      label:"Exam Fee",value:"Exam Fee"
+    },
+    {
+      label:"One Time",value:"One Time"
+    },
+    {
+      label:"Monthly",value:"Monthly"
+    },
+    {
+      label:"Quarterly",value:"Quarterly"
+    },
+    {
+      label:"Half Yearly",value:"Half Yearly"
+    },
+    {
+      label:"Annually",value:"Annually"
+    },
+  ]
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -98,6 +122,7 @@ function AdditionalFee() {
         setIsLoader(false)
         getfee()
         setModalOpen(false);
+        setSelectedClass("")
       }
       else {
         setIsLoader(false)
@@ -196,7 +221,7 @@ function AdditionalFee() {
 
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Additional Fee" : "Create Additional Fee"}>
         <div className="p-4 space-y-4 bg-gray-50">
-          <div className="grid gap-6 mb-6 md:grid-cols-2">
+          <div className="grid gap-6  md:grid-cols-2">
 
             <ReactSelect
               name="studentClass"
@@ -205,8 +230,33 @@ function AdditionalFee() {
               label="Select a Class"
               dynamicOptions={dynamicOptions}
             />
-
-            <div>
+            <ReactSelect
+              name="feeType"
+              value={formData.feeType}
+              handleChange={handleFieldChange}
+              label="Select a Class"
+              dynamicOptions={feeType}
+            />
+ 
+  <ReactInput
+              // resPClass="grid grid-cols-2 md:grid-cols-5"
+              type="text"
+              name="name"
+              required={true}
+              label="Name"
+              onChange={handleFieldChange}
+              value={formData.name}
+            />
+             <ReactInput
+              // resPClass="grid grid-cols-2 md:grid-cols-5"
+              type="number"
+              name="amount"
+              required={true}
+              label="Amount"
+              onChange={handleFieldChange}
+              value={formData.amount}
+            />
+            {/* <div>
               <label className="block mb-2 text-sm font-medium">Name</label>
               <input
                 type="text"
@@ -215,10 +265,10 @@ function AdditionalFee() {
                 onChange={handleFieldChange}
                 className="border rounded p-2 w-full"
               />
-            </div>
+            </div> */}
           </div>
 
-          <div className="grid gap-6 mb-6 md:grid-cols-2">
+          {/* <div className="grid gap-6 mb-6 md:grid-cols-2">
             <div>
               <label className="block mb-2 text-sm font-medium">Fee Type</label>
               <select
@@ -246,7 +296,7 @@ function AdditionalFee() {
                 className="border rounded p-2 w-full"
               />
             </div>
-          </div>
+          </div> */}
 
           <Button
           name="Submit"

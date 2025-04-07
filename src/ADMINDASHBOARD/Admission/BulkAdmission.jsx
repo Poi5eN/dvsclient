@@ -10,7 +10,7 @@ import { admissionbulk } from "../../Network/AdminApi.js";
 
 AOS.init();
 
-const BulkAdmission = ({ refreshRegistrations }) => {
+const BulkAdmission = ({ setRefreshRegistrations }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { currentColor } = useStateContext();
@@ -28,7 +28,7 @@ const BulkAdmission = ({ refreshRegistrations }) => {
       toast.error("Please select a file before submitting.");
       return;
     }
-
+    setRefreshRegistrations(true)
     setLoading(true);
     const reader = new FileReader();
 
@@ -46,7 +46,7 @@ const BulkAdmission = ({ refreshRegistrations }) => {
           setGeneratedCredentials(response.generatedCredentials || []);
           setCredentialsModal(true);
           setModalOpen(false);
-          // refreshRegistrations(); // Uncomment if needed
+          setRefreshRegistrations(false); // Uncomment if needed
         } else {
           toast.error(response.message);
         }

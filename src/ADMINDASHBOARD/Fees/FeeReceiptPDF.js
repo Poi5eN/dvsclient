@@ -1,178 +1,431 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useReactToPrint } from 'react-to-print';
-import "./FeeReceiptPDF.css"; // Keep your CSS for styling the receipt
+import "./FeeReceiptPDF.css"; // Keep for base styling & other print styles if needed
 import moment from "moment";
-import { FaPrint } from "react-icons/fa"; // Changed icon to Print (more appropriate)
+import { FaPrint, FaFileAlt } from "react-icons/fa"; // Added File icon variation
 import Button from "../../Dynamic/utils/Button";
 import { useStateContext } from "../../contexts/ContextProvider";
 import Table from "../../Dynamic/Table";
+
+// --- PrintableReceipt remains the same ---
 const PrintableReceipt = React.forwardRef(({ dataToPrint }, ref) => {
     if (!dataToPrint || dataToPrint.length === 0) {
-        return null; // Don't render anything if no data
+        return null;
     }
 
     const THEAD = [
-       
         { id: "SN", label: "#" },
-        { id: "Adm", label: "Adm. No." },
+        { id: "Receipt", label: "RcpNo." },
+        { id: "date", label: "Date" },
+        { id: "Adm", label: "Adm.No." },
         { id: "Name", label: "Name" },
+        { id: "father", label: "Father" },
         { id: "ClassName", label: "Class" },
-        { id: "Receipt", label: "Receipt No." },
-        { id: "Amount", label: "Amount" },
-        { id: "Paid", label: "Paid" },
-        { id: "Dues", label: "Dues" },
-        { id: "Date", label: "Date" },
+        { id: "mode", label: "Mode" },
+        { id: "tid", label: "TID" },
+        { id: "month", label: "Month" },
+        { id: "pdues", label: "Dues" },
+        { id: "fee", label: "Fee" },
+        { id: "paid", label: "Paid " },
+        { id: "status", label: "Status" },
+      
     ];
 
-      const tBody = dataToPrint?.map((val, ind) => ({
-            
-            "SN": ind + 1,
-            Adm: val.admissionNumber,
-            Name: val.studentName,
-            ClassName: val.studentClass,
-            Receipt: val.feeReceiptNumber,
-            Amount: val.totalFeeAmount,
-            Paid: val.totalAmountPaid,
-            Dues: val.totalDues,
-            Date: moment(val.date).format("DD-MM-YYYY"),
-           
-        }));
+    const tBody = dataToPrint?.map((val, ind) => ({
+        "SN": ind + 1,
+        Receipt: val.feeReceiptNumber,
+        date:  moment(val.date).format("DD-MM-YYYY"),
+        Adm: val.admissionNumber,
+        Name: val.studentName,
+        father: val.fatherName,
+        ClassName: val.studentClass,
+        mode: val.paymentMode,
+        tid: val.transactionId,
+        month: val.regularFees?.map((val)=>val?.month),
+        pdues: val.dues,
+        fee: val.totalFeeAmount,
+        paid: val.totalAmountPaid,
+        status: val.regularFees?.map((val)=>val?.status),
+     
+    }));
+
     return (
-        <div ref={ref} className="fee-receipt-pdf-content" style={{ padding: '15px', background: '#fff' }}> {/* Add some padding if needed */}
-             <h2 className="fee-receipt-pdf-title">Fee Receipt : {moment(Date.now()).format("DD-MMM-YYYY")}</h2>
-             <Table
-                            // isSearch={true}
-                            tHead={THEAD}
-                            tBody={tBody} />
-             {/* <table className="fee-receipt-pdf-table">
-                <thead>
-                    <tr>
-                        <th className="fee-receipt-pdf-th">S No.</th>
-                        <th className="fee-receipt-pdf-th">Adm. No</th>
-                        <th className="fee-receipt-pdf-th">Name</th>
-                        <th className="fee-receipt-pdf-th">Class</th>
-                        <th className="fee-receipt-pdf-th">Receipt No.</th>
-                        <th className="fee-receipt-pdf-th">Amount</th>
-                        <th className="fee-receipt-pdf-th">Paid</th>
-                        <th className="fee-receipt-pdf-th">Dues</th>
-                        <th className="fee-receipt-pdf-th">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dataToPrint.map((item, index) => (
-                        <tr key={index} className="fee-receipt-pdf-tr">
-                            <td className="fee-receipt-pdf-td">{index + 1}</td>
-                            <td className="fee-receipt-pdf-td">{item.admissionNumber}</td>
-                            <td className="fee-receipt-pdf-td">{item.studentName}</td>
-                            <td className="fee-receipt-pdf-td">{item.studentClass}</td>
-                            <td className="fee-receipt-pdf-td">{item.feeReceiptNumber}</td>
-                            <td className="fee-receipt-pdf-td">{item.totalFeeAmount}</td>
-                            <td className="fee-receipt-pdf-td">{item.totalAmountPaid}</td>
-                            <td className="fee-receipt-pdf-td">{item.totalDues}</td>
-                            <td className="fee-receipt-pdf-td">{moment(item.date).format("DD-MMM-YYYY")}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table> */}
+        <div ref={ref}
+          >
+            <h2 className="fee-receipt-pdf-title">Fee Receipt : {moment(Date.now()).format("DD-MMM-YYYY")}</h2>
+            <Table tHead={THEAD} tBody={tBody} />
         </div>
     );
 });
+
 function FeeReceiptPDF({ details }) {
-    const { setIsLoader } = useStateContext(); // Keep context if needed elsewhere
+    const { setIsLoader } = useStateContext();
     const [dataToPrint, setDataToPrint] = useState([]);
-    // State to indicate if we are preparing the data *before* triggering print
     const [isPreparingPrint, setIsPreparingPrint] = useState(false);
-    const componentToPrintRef = useRef(null); // Ref for the printable component
+    const [printOrientation, setPrintOrientation] = useState('portrait'); // 'portrait' or 'landscape'
+    const componentToPrintRef = useRef(null);
+    const styleTagRef = useRef(null); 
+    const managePrintStyle = (orientation) => {
+        // Remove existing dynamic style tag if it exists
+        if (styleTagRef.current) {
+            styleTagRef.current.remove();
+            styleTagRef.current = null;
+        }
+
+        // Create new style tag
+        const style = document.createElement('style');
+        style.id = 'dynamic-print-orientation'; // Assign an ID for easy removal
+        
+        style.innerHTML = `@page { size: ${orientation};margin:2px; }`; // Dynamic orientation
+        // style.innerHTML = `@page { size: ${orientation}; margin: 15mm; }`; // Dynamic orientation
+        // Append to head
+        document.head.appendChild(style);
+        styleTagRef.current = style; // Store reference
+    };
+
+    const removePrintStyle = () => {
+        if (styleTagRef.current) {
+            styleTagRef.current.remove();
+            styleTagRef.current = null;
+        }
+    };
+
+    // --- Configure useReactToPrint ---
     const handlePrint = useReactToPrint({
-        content: () => componentToPrintRef.current, // Get content from the ref
-        documentTitle: `Fee_Receipt_${moment().format('YYYY-MM-DD')}`, // Set document title for saving
+        content: () => componentToPrintRef.current,
+        documentTitle: `Fee_Receipt_${moment().format('YYYY-MM-DD')}`,
+
+        // Inject the style BEFORE getting content
         onBeforeGetContent: () => {
-            console.log("Preparing content for printing...");
-            return Promise.resolve();
+            console.log(`Preparing content for printing in ${printOrientation} mode...`);
+            setIsPreparingPrint(true); // Indicate preparation
+            return new Promise((resolve) => {
+                // Set the orientation style just before content capture
+                managePrintStyle(printOrientation);
+                // Use a short timeout to ensure the style is applied by the browser
+                setTimeout(() => {
+                    resolve();
+                }, 50); // Adjust timeout if needed, usually small is fine
+            });
         },
+
+        // Remove the style AFTER printing or cancelling
         onAfterPrint: () => {
             console.log("Printing finished or cancelled.");
+            removePrintStyle(); // Clean up the injected style
             setIsPreparingPrint(false);
-            setDataToPrint([]); // Clear the data
+            setDataToPrint([]);
         },
+
+        // Remove the style on ERROR as well
         onPrintError: (error) => {
             console.error("Error during printing:", error);
+            removePrintStyle(); // Clean up on error too
             alert("Failed to initiate print. Please try again.");
             setIsPreparingPrint(false);
             setDataToPrint([]);
-            // setIsLoader(false);
         },
-    
-    });
-    useEffect(() => {
-          if (isPreparingPrint && dataToPrint.length > 0 && componentToPrintRef.current) {
-             handlePrint(); // Call the print function provided by the hook
-        } }, [isPreparingPrint, dataToPrint]); // Re-run effect when these change
 
-    // --- Button Click Handlers ---
-    const prepareAndPrint = (data) => {
+         // --- Optional: You could also use onBeforePrint ---
+         // onBeforePrint: () => {
+         //    console.log(`Opening print dialog in ${printOrientation} mode...`);
+         //    managePrintStyle(printOrientation); // Could also inject here
+         //    return Promise.resolve();
+         // },
+    });
+
+    // --- Trigger print when data is ready ---
+    // We no longer need useEffect to trigger handlePrint,
+    // because handlePrint itself is now called directly by button clicks.
+    // useEffect(() => {
+    //      if (isPreparingPrint && dataToPrint.length > 0 && componentToPrintRef.current) {
+    //         handlePrint(); // This is handled differently now
+    //     }
+    // }, [isPreparingPrint, dataToPrint, handlePrint]); // Dependency array needs handlePrint if used
+
+
+    // --- Function to set data and trigger print process ---
+    const prepareAndPrint = (data, orientation = 'portrait') => { // Accept orientation
         if (!data || data.length === 0) {
             alert("No data available to print/save.");
             return;
         }
-        // setIsLoader(true); // Optional: Show a general loading indicator
-        setDataToPrint(data);       // 1. Set the data
-        setIsPreparingPrint(true);  // 2. Set state to trigger useEffect -> handlePrint
+        if (isPreparingPrint) {
+            console.log("Already preparing print, please wait.");
+            return; // Prevent multiple clicks while busy
+        }
+
+        console.log(`Setting orientation to: ${orientation}`);
+        setPrintOrientation(orientation); // 1. Set the desired orientation STATE
+        setDataToPrint(data);           // 2. Set the data
+
+        // 3. IMPORTANT: Trigger handlePrint directly AFTER state updates are likely processed.
+        // Using a microtask (Promise.resolve().then()) or setTimeout ensures
+        // that the state updates have been processed before handlePrint reads them,
+        // especially for setting the correct printOrientation in onBeforeGetContent.
+        // Or, we can rely on onBeforeGetContent reading the *latest* state, which usually works.
+        // Let's call handlePrint directly here. The hooks within handlePrint will manage the style.
+
+        // We need the component to render with the new data *before* handlePrint is called.
+        // A short timeout helps ensure PrintableReceipt has the data.
+        setTimeout(() => {
+            if (componentToPrintRef.current) {
+                 handlePrint(); // 4. Call the actual print trigger function
+            } else {
+                console.error("Printable component ref not ready.");
+                 // Maybe set isPreparingPrint back to false here if ref is null?
+                 // Or handle this state more robustly.
+            }
+        }, 0); // Small delay to allow state update and re-render
     };
 
-    const handlePrintClickAll = () => {
-        console.log("Preparing ALL data for print:", details);
-        prepareAndPrint(details);
+    // --- Button Click Handlers ---
+    const handlePrintClickAllPortrait = () => {
+        console.log("Preparing ALL data for PORTRAIT print:", details);
+        prepareAndPrint(details, 'portrait');
     };
 
-    const handlePrintClickCurrentDate = () => {
+    const handlePrintClickAllLandscape = () => {
+        console.log("Preparing ALL data for LANDSCAPE print:", details);
+        prepareAndPrint(details, 'landscape');
+    };
+
+    const handlePrintClickCurrentDatePortrait = () => {
         const currentDate = moment().format('YYYY-MM-DD');
-        const filteredDetails = details.filter(item => {
-            const itemDate = moment(item.date).format('YYYY-MM-DD');
-            return itemDate === currentDate;
-        });
-        console.log("Preparing TODAY's data for print:", filteredDetails);
-        prepareAndPrint(filteredDetails);
+        const filteredDetails = details.filter(item => moment(item.date).format('YYYY-MM-DD') === currentDate);
+        console.log("Preparing TODAY's data for PORTRAIT print:", filteredDetails);
+        prepareAndPrint(filteredDetails, 'portrait');
     };
-     const hiddenPrintComponentStyle = {
+
+     const handlePrintClickCurrentDateLandscape = () => {
+        const currentDate = moment().format('YYYY-MM-DD');
+        const filteredDetails = details.filter(item => moment(item.date).format('YYYY-MM-DD') === currentDate);
+        console.log("Preparing TODAY's data for LANDSCAPE print:", filteredDetails);
+        prepareAndPrint(filteredDetails, 'landscape');
+    };
+
+    // --- Style for the hidden component ---
+    const hiddenPrintComponentStyle = {
         position: 'absolute',
-        left: '-9999px', // Move off-screen
+        left: '-9999px',
         top: 'auto',
-        width: '210mm',   // Optional: Set a width hint if needed for layout
+        width: 'auto', // Let content dictate width initially
         height: 'auto',
         overflow: 'visible',
+        background: '#fff', // Ensure background for accurate print preview
     };
 
     return (
-        <div className="fee-receipt-pdf-container">
-            {/* Buttons remain visible */}
-            <div className="flex justify-end w-full gap-2">
-                <Button
+        <div 
+        className="fee-receipt-pdf-container no-print"
+        > {/* Added no-print class */}
+            <div 
+            className="flex flex-wrap justify-end w-full gap-2 "
+            >
+                 {/* Added mb-4 for spacing */}
+                {/* Print All Buttons */}
+                {/* <Button
                     color="blue"
-                    name={"Print"}
-                    Icon={<FaPrint />} // Use Print icon
-                    onClick={handlePrintClickAll}
-                    disabled={isPreparingPrint} // Disable while preparing
+                    name={"Print All (Portrait)"}
+                    Icon={<FaPrint />}
+                    onClick={handlePrintClickAllPortrait}
+                    disabled={isPreparingPrint}
+                /> */}
+                 <Button
+                    color="blue" // Maybe slightly different color?
+                    name={"Print "}
+                    Icon={<FaFileAlt />} // Different icon?
+                    onClick={handlePrintClickAllLandscape}
+                    disabled={isPreparingPrint}
                 />
-                <Button
+
+                {/* Print Today Buttons */}
+                {/* <Button
+                    color="teal"
+                    name={"Print Today (Portrait)"}
+                    Icon={<FaPrint />}
+                    onClick={handlePrintClickCurrentDatePortrait}
+                    disabled={isPreparingPrint}
+                /> */}
+                 <Button
                     color="teal"
                     name={"Print Today"}
-                    Icon={<FaPrint />} // Use Print icon
-                    onClick={handlePrintClickCurrentDate}
-                    disabled={isPreparingPrint} // Disable while preparing
+                    Icon={<FaFileAlt />} // Different icon?
+                    onClick={handlePrintClickCurrentDateLandscape}
+                    disabled={isPreparingPrint}
                 />
             </div>
-            {isPreparingPrint && dataToPrint.length > 0 && (
-                 <div style={hiddenPrintComponentStyle}>
+
+            {/* Hidden component area for printing */}
+            {/* Keep this rendered conditionally ONLY when data is ready,
+                to ensure the ref is attached to the correct content */}
+            {dataToPrint.length > 0 && (
+                 <div
+                  style={hiddenPrintComponentStyle}>
+                    {/* Pass orientation if PrintableReceipt needs it for styling */}
+                    {/* <PrintableReceipt ref={componentToPrintRef} dataToPrint={dataToPrint} printOrientation={printOrientation} /> */}
                     <PrintableReceipt ref={componentToPrintRef} dataToPrint={dataToPrint} />
                  </div>
             )}
+
+             {/* Optional: Show a loading indicator */}
+             {/* {isPreparingPrint && <div 
+             className="text-center p-4">Preparing print preview...</div>} */}
 
         </div>
     );
 }
 
 export default FeeReceiptPDF;
+
+
+
+
+// import React, { useRef, useState, useEffect } from "react";
+// import { useReactToPrint } from 'react-to-print';
+// import "./FeeReceiptPDF.css"; // Keep your CSS for styling the receipt
+// import moment from "moment";
+// import { FaPrint } from "react-icons/fa"; // Changed icon to Print (more appropriate)
+// import Button from "../../Dynamic/utils/Button";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import Table from "../../Dynamic/Table";
+// const PrintableReceipt = React.forwardRef(({ dataToPrint }, ref) => {
+//     if (!dataToPrint || dataToPrint.length === 0) {
+//         return null; // Don't render anything if no data
+//     }
+
+//     const THEAD = [
+       
+//         { id: "SN", label: "#" },
+//         { id: "Adm", label: "Adm. No." },
+//         { id: "Name", label: "Name" },
+//         { id: "ClassName", label: "Class" },
+//         { id: "Receipt", label: "Receipt No." },
+//         { id: "Amount", label: "Amount" },
+//         { id: "Paid", label: "Paid" },
+//         { id: "Dues", label: "Dues" },
+//         { id: "Date", label: "Date" },
+//     ];
+
+//       const tBody = dataToPrint?.map((val, ind) => ({
+            
+//             "SN": ind + 1,
+//             Adm: val.admissionNumber,
+//             Name: val.studentName,
+//             ClassName: val.studentClass,
+//             Receipt: val.feeReceiptNumber,
+//             Amount: val.totalFeeAmount,
+//             Paid: val.totalAmountPaid,
+//             Dues: val.totalDues,
+//             Date: moment(val.date).format("DD-MM-YYYY"),
+           
+//         }));
+        
+//     return (
+//         <div ref={ref} className="fee-receipt-pdf-content" style={{ padding: '15px', background: '#fff' }}> {/* Add some padding if needed */}
+//              <h2 className="fee-receipt-pdf-title">Fee Receipt : {moment(Date.now()).format("DD-MMM-YYYY")}</h2>
+//              <Table
+//                             // isSearch={true}
+//                             tHead={THEAD}
+//                             tBody={tBody} />
+             
+//         </div>
+//     );
+// });
+// function FeeReceiptPDF({ details }) {
+//     const { setIsLoader } = useStateContext(); // Keep context if needed elsewhere
+//     const [dataToPrint, setDataToPrint] = useState([]);
+//     const [isPreparingPrint, setIsPreparingPrint] = useState(false);
+//     const componentToPrintRef = useRef(null); // Ref for the printable component
+//     const handlePrint = useReactToPrint({
+//         content: () => componentToPrintRef.current, // Get content from the ref
+//         documentTitle: `Fee_Receipt_${moment().format('YYYY-MM-DD')}`, // Set document title for saving
+//         onBeforeGetContent: () => {
+//             console.log("Preparing content for printing...");
+//             return Promise.resolve();
+//         },
+//         onAfterPrint: () => {
+//             console.log("Printing finished or cancelled.");
+//             setIsPreparingPrint(false);
+//             setDataToPrint([]); // Clear the data
+//         },
+//         onPrintError: (error) => {
+//             console.error("Error during printing:", error);
+//             alert("Failed to initiate print. Please try again.");
+//             setIsPreparingPrint(false);
+//             setDataToPrint([]);
+//             // setIsLoader(false);
+//         },
+    
+//     });
+//     useEffect(() => {
+//           if (isPreparingPrint && dataToPrint.length > 0 && componentToPrintRef.current) {
+//              handlePrint(); // Call the print function provided by the hook
+//         } }, [isPreparingPrint, dataToPrint]); // Re-run effect when these change
+
+//     const prepareAndPrint = (data) => {
+//         if (!data || data.length === 0) {
+//             alert("No data available to print/save.");
+//             return;
+//         }
+//         setDataToPrint(data);       // 1. Set the data
+//         setIsPreparingPrint(true);  // 2. Set state to trigger useEffect -> handlePrint
+//     };
+
+//     const handlePrintClickAll = () => {
+//         console.log("Preparing ALL data for print:", details);
+//         prepareAndPrint(details);
+//     };
+
+//     const handlePrintClickCurrentDate = () => {
+//         const currentDate = moment().format('YYYY-MM-DD');
+//         const filteredDetails = details.filter(item => {
+//             const itemDate = moment(item.date).format('YYYY-MM-DD');
+//             return itemDate === currentDate;
+//         });
+//         console.log("Preparing TODAY's data for print:", filteredDetails);
+//         prepareAndPrint(filteredDetails);
+//     };
+//      const hiddenPrintComponentStyle = {
+//         position: 'absolute',
+//         left: '-9999px', // Move off-screen
+//         top: 'auto',
+//         width: '210mm',   // Optional: Set a width hint if needed for layout
+//         height: 'auto',
+//         overflow: 'visible',
+//     };
+
+//     return (
+//         <div className="fee-receipt-pdf-container">
+//             <div className="flex justify-end w-full gap-2">
+//                 <Button
+//                     color="blue"
+//                     name={"Print"}
+//                     Icon={<FaPrint />} // Use Print icon
+//                     onClick={handlePrintClickAll}
+//                     disabled={isPreparingPrint} // Disable while preparing
+//                 />
+//                 <Button
+//                     color="teal"
+//                     name={"Print Today"}
+//                     Icon={<FaPrint />} // Use Print icon
+//                     onClick={handlePrintClickCurrentDate}
+//                     disabled={isPreparingPrint} // Disable while preparing
+//                 />
+//             </div>
+//             {isPreparingPrint && dataToPrint.length > 0 && (
+//                  <div style={hiddenPrintComponentStyle}>
+//                     <PrintableReceipt ref={componentToPrintRef} dataToPrint={dataToPrint} />
+//                  </div>
+//             )}
+
+//         </div>
+//     );
+// }
+
+// export default FeeReceiptPDF;
+
+
 // import React, { useRef, useState, useEffect } from "react";
 // import { useReactToPrint } from 'react-to-print';
 // import "./FeeReceiptPDF.css"; // Keep your CSS for styling the receipt

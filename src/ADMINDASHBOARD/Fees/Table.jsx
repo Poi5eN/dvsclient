@@ -18,7 +18,7 @@ import { FeeReceipt } from "../../Dynamic/utils/Message";
 const Table = ({ reLoad }) => {
   const user = JSON.parse(localStorage.getItem("user"))
   // console.log("user",user)
-  const { currentColor } = useStateContext();
+  const { currentColor,setIsLoader } = useStateContext();
   const [modalData, setModalData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [feeHistory, setFeeHistory] = useState([]);
@@ -48,13 +48,16 @@ const Table = ({ reLoad }) => {
   }, [reLoad]);
 
   const getFeeHistory = async () => {
+    setIsLoader(true)
     try {
       const response =await feesfeeHistory()
       if(response?.success){
         setFeeHistory(response?.data);
         setFilteredFeeHistory(response?.data);
+        setIsLoader(false)
       }
       else{
+        setIsLoader(false)
         toast?.error(response?.message)
       }
      
