@@ -113,6 +113,7 @@ teacherapi:  "adminRoute/teacher",
    createStudentSpecificFee:"adminRoute/fees/student",
    getStudentSpecificFee:"fees/getStudentFeeInfo",
    promotionOfStudent:"adminRoute/promotionOfStudent",
+   getStudentsBySession:"adminRoute/getStudentsBySession",
    // fees End
 
 

@@ -3,7 +3,8 @@ import {
   ActiveStudents,
   adminapproveAdmissions,
   AdminGetAllClasses,
-  promotionOfStudent
+  promotionOfStudent,
+  getStudentsBySession
 } from '../../../Network/AdminApi';
 import Table from '../../../Dynamic/Table';
 import Button from '../../../Dynamic/utils/Button';
@@ -14,38 +15,36 @@ import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
 const Promotion = () => {
   const { currentColor, setIsLoader } = useStateContext();
   const [filteredStudents, setFilteredStudents] = useState([]);
-
   const [studentDetails, setStudentDetails] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [getClass, setGetClass] = useState([]);
   const [availableSections, setAvailableSections] = useState([]);
+  const [historicalStudents, setHistoricalStudents] = useState([]);
 
-  // State separation for clarity
-  const [fromClass, setFromClass] = useState(null);
-  const [fromSection, setFromSection] = useState(null);
-  const [toClass, setToClass] = useState(null);
-  const [toSection, setToSection] = useState(null);
-  const [values,setValues]=useState(
-    {
-      toClass:"",
-      toSection:"",
-      fromClass:"",
-      fromSection:""
-    }
-  )
-console.log("toSection",toSection)
+  const sessionOptions = [
+    { label: "2024-2025", value: "2024-2025" },
+    { label: "2025-2026", value: "2025-2026" }
+  ];
+
+  const [values, setValues] = useState({
+    fromClass: "",
+    fromSection: "",
+    toClass: "",
+    toSection: "",
+    toSession: ""
+  });
+
   const studentData = async () => {
     setIsLoader(true);
     try {
       const response = await ActiveStudents();
       if (response?.success) {
         setStudentDetails(response?.students?.data?.reverse());
-      } else {
-        console.log('No data found');
+        console.log("Active students:", response.students.data);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching active students:', error);
     } finally {
       setIsLoader(false);
     }
@@ -57,22 +56,44 @@ console.log("toSection",toSection)
       const response = await AdminGetAllClasses();
       if (response?.success) {
         setGetClass(response.classes || []);
-      } else {
-        toast.error(response?.message || "Failed to fetch classes.");
       }
     } catch (error) {
-      console.error("Error fetching classes:", error);
-      toast.error("An error occurred while fetching classes.");
+      toast.error("Error fetching classes");
     } finally {
       setIsLoader(false);
     }
   }, [setIsLoader]);
 
+  const fetchStudentsBySession = async (session) => {
+    console.log("Fetching students for session:", session);
+    if (!session) {
+      toast.error("Please select a session");
+      return;
+    }
+    setIsLoader(true);
+    try {
+      const response = await getStudentsBySession({ session });
+      console.log("API response:", response);
+      if (response.success) {
+        setHistoricalStudents(response.students);
+        if (response.students.length === 0) {
+          toast.info("No students found for this session");
+        }
+      } else {
+        toast.error(response.message || "Failed to fetch students");
+      }
+    } catch (error) {
+      toast.error("Error fetching historical students");
+      console.error("Fetch error:", error);
+    } finally {
+      setIsLoader(false);
+    }
+  };
+
   useEffect(() => {
     studentData();
     fetchAllClasses();
   }, []);
-
 
   const filterStudents = (cls, sec) => {
     const filtered = studentDetails.filter((student) => {
@@ -82,153 +103,94 @@ console.log("toSection",toSection)
     });
     setFilteredStudents(filtered);
   };
-  
-  const handleFromClassChange = (e) => {
-    const selected = e.target.value;
-    setValues((prev)=>({
-...prev,
-fromClass:selected
-    }))
-    setFromClass(selected);
-    const classObj = getClass.find((cls) => cls.className === selected);
-    setAvailableSections(classObj?.sections || []);
-    filterStudents(selected, fromSection);
-  };
-  
-  const handleFromSectionChange = (e) => {
-    console.log("first e",e)
-    const selected = e.target.value;
-    // setFromSection(selected);
-    // filterStudents(fromClass, selected);
-    setValues((prev)=>({
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({
       ...prev,
-      fromSection:selected
-          }))
+      [name]: value
+    }));
+
+    if (name === "fromClass") {
+      const classObj = getClass.find((cls) => cls.className === value);
+      setAvailableSections(classObj?.sections || []);
+      filterStudents(value, values.fromSection);
+    }
+    if (name === "fromSection") {
+      filterStudents(values.fromClass, value);
+    }
+    if (name === "toClass") {
+      const classObj = getClass.find((cls) => cls.className === value);
+      setAvailableSections(classObj?.sections || []);
+    }
   };
-  
-
-  // const handleFromSectionChange = (e) => setFromSection(e.target.value);
-
-  const handleToClassChange = (e) => {
-    const selected = e.target.value;
-    setToClass(selected);
-    setValues((prev)=>({
-      ...prev,
-      toClass:selected
-          }))
-    const classObj = getClass.find((cls) => cls.className === selected);
-    setAvailableSections(classObj?.sections || []);
-  };
-
-  const handleToSectionChange = (e) =>{
-    const selected = e.target.value;
-    // console.log("first",name,value)
-    setValues((prev)=>({
-      ...prev,
-    toSection:selected
-          }))
-    // setToSection(e.target.value)
-  };
-
 
   const handleSelectAllChange = () => {
-    if (!selectAll) {
-      const allStudentIds = studentDetails.map((student) => student._id);
-      setSelectedStudent(allStudentIds);
-    } else {
-      setSelectedStudent([]);
-    }
     setSelectAll(!selectAll);
+    setSelectedStudent(selectAll ? [] : filteredStudents.map(s => s._id));
   };
 
   const handleCheckboxChange = (studentId) => {
-    setSelectedStudent((prevSelected) =>
-      prevSelected.includes(studentId)
-        ? prevSelected.filter((id) => id !== studentId)
-        : [...prevSelected, studentId]
+    setSelectedStudent(prev => 
+      prev.includes(studentId) 
+        ? prev.filter(id => id !== studentId) 
+        : [...prev, studentId]
     );
   };
 
-  useEffect(() => {
-    setSelectAll(
-      studentDetails.length > 0 &&
-        selectedStudent.length === studentDetails.length
-    );
-  }, [studentDetails, selectedStudent]);
-
-
-
   const handlePromoteClick = async () => {
-    if (selectedStudent.length === 0) {
-      toast.error("No students selected for promotion");
+    if (!selectedStudent.length) {
+      toast.error("No students selected");
+      return;
+    }
+    if (!values.toClass || !values.toSection || !values.toSession) {
+      toast.error("Please fill all promotion details");
       return;
     }
 
-    if (!values?.toClass || !values?.toSection) {
-      toast.error("Please select both class and section for promotion");
-      return;
-    }
-    setIsLoader(true)
+    setIsLoader(true);
     const dataToUpdate = {
       students: selectedStudent,
-      promotedClass: values?.toClass,
-      promotedSection:values?.toSection
+      promotedClass: values.toClass,
+      promotedSection: values.toSection,
+      promotedSession: values.toSession
     };
 
     try {
       const response = await promotionOfStudent(dataToUpdate);
       if (response?.success) {
-        toast.success(response?.message);
+        toast.success(response.message);
         studentData();
-        setValues({})
-
-        setFilteredStudents([])
-        setIsLoader(false)
-      } else {
-        toast.error(response?.message);
+        setValues({});
+        setFilteredStudents([]);
+        setSelectedStudent([]);
       }
     } catch (error) {
-      toast.error("Student promotion failed");
-      console.error("Promotion Failed:", error);
+      toast.error("Promotion failed");
+    } finally {
+      setIsLoader(false);
     }
   };
 
-  const dynamicOptions = getClass.map((cls) => ({
+  const dynamicOptions = getClass.map(cls => ({
     label: cls.className,
     value: cls.className
   }));
 
-  const DynamicSection = availableSections?.map((item) => ({
+  const dynamicSection = availableSections.map(item => ({
     label: item,
     value: item
   }));
 
   const THEAD = [
-    {
-      id: 'select',
-      label: (
-        <input
-          type="checkbox"
-          checked={selectAll}
-          onChange={handleSelectAllChange}
-        />
-      )
-    },
+    { id: 'select', label: <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} /> },
     { id: 'SN', label: 'S No.' },
     { id: 'admissionNumber', label: 'Admission No' },
     { id: 'fullName', label: 'Name' },
-    { id: 'guardianName', label: 'Father Name' },
-    { id: 'gender', label: 'Gender' },
     { id: 'class', label: 'Class' },
     { id: 'section', label: 'Section' },
-    { id: 'contact', label: 'Contact' },
-   
+    { id: 'session', label: 'Session' },
   ];
-
-  // const filteredStudents = studentDetails.filter(student =>
-  //   (!fromClass || student.class === fromClass) &&
-  //   (!fromSection || student.section === fromSection)
-  // );
 
   const tBody = filteredStudents.map((val, ind) => ({
     select: (
@@ -239,70 +201,97 @@ fromClass:selected
       />
     ),
     SN: ind + 1,
-    admissionNumber: (
-      <span className="text-red-700 font-semibold">
-        {val.admissionNumber}
-      </span>
-    ),
+    admissionNumber: <span className="text-red-700 font-semibold">{val.admissionNumber}</span>,
     fullName: val.studentName,
-    guardianName: val.fatherName,
-    gender: val.gender,
     class: val.class,
     section: val.section,
-
-    contact: val.contact,
-
+    session: val.session,
   }));
 
+  const handleSessionChange = (selectedOption) => {
+    console.log("Selected option:", selectedOption);
+    const sessionValue = selectedOption ? selectedOption.value : null;
+    fetchStudentsBySession(sessionValue);
+  };
+
   return (
-    <>
-     
-      <div className="flex flex-wrap gap-8 mt-4">
+    <div className="p-4">
+      <div className="flex flex-wrap gap-8 mb-4">
         <div>
           <span className="font-semibold">From</span>
           <ReactSelect
             name="fromClass"
             label="Select a Class"
-            value={values?.fromClass}
-            // value={fromClass}
-            handleChange={(e)=>handleFromClassChange(e)}
+            value={values.fromClass}
+            handleChange={handleInputChange}
             dynamicOptions={dynamicOptions}
           />
-
           <ReactSelect
-  name="fromSection"
-  label="Section"
-  value={values?.fromSection}  // 👈 Fix here
-  // value={DynamicSection.find(opt => opt.value === fromSection)}  // 👈 Fix here
-  handleChange={(e) => handleFromSectionChange(e)}
-  dynamicOptions={DynamicSection}
-/>
+            name="fromSection"
+            label="Section"
+            value={values.fromSection}
+            handleChange={handleInputChange}
+            dynamicOptions={dynamicSection}
+          />
         </div>
         <div>
           <span className="font-semibold">To</span>
           <ReactSelect
             name="toClass"
             label="Select a Class"
-            value={values?.toClass}
-            // value={toClass}
-            handleChange={handleToClassChange}
+            value={values.toClass}
+            handleChange={handleInputChange}
             dynamicOptions={dynamicOptions}
           />
           <ReactSelect
             name="toSection"
             label="Section"
-            value={values?.toSection}
-            handleChange={(e)=>handleToSectionChange(e)}
-            dynamicOptions={DynamicSection}
+            value={values.toSection}
+            handleChange={handleInputChange}
+            dynamicOptions={dynamicSection}
           />
-           <Button color="Green" name="Promote" onClick={handlePromoteClick} />
+          <ReactSelect
+            name="toSession"
+            label="Session"
+            value={values.toSession}
+            handleChange={handleInputChange}
+            dynamicOptions={sessionOptions}
+          />
+          <Button color="Green" name="Promote" onClick={handlePromoteClick} />
         </div>
-       
       </div>
+      
+      <div className="mb-4">
+        <ReactSelect
+          name="viewSession"
+          label="View Students from Session"
+          handleChange={handleSessionChange}
+          dynamicOptions={sessionOptions}
+          isClearable
+        />
+      </div>
+
       <Table isSearch={false} tHead={THEAD} tBody={tBody} />
-    </>
+      
+      {historicalStudents.length > 0 && (
+        <div className="mt-4">
+          <h3>Historical Students</h3>
+          <Table 
+            isSearch={false} 
+            tHead={THEAD} 
+            tBody={historicalStudents.map((val, ind) => ({
+              SN: ind + 1,
+              admissionNumber: val.admissionNumber,
+              fullName: val.studentName,
+              class: val.class,
+              section: val.section,
+              session: val.session,
+            }))}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
 export default Promotion;
-

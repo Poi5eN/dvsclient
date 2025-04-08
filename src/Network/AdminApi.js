@@ -82,6 +82,47 @@ export const promotionOfStudent = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+
+// export const getStudentsBySession = async ({ session }) => {
+//   try {
+//     const url = `https://dvsserver.onrender.com/api/v1/adminRoute/getStudentsBySession?session=${encodeURIComponent(session)}`;
+//     console.log("API URL:", url); // Debug log
+//     const response = await fetch(url, {
+//       method: "GET",
+//       headers: {
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`, // Ensure token is present
+//         'Content-Type': 'application/json',
+//       },
+//     });
+//     const data = await response.json();
+//     console.log("API response:", data); // Debug log
+//     return data;
+//   } catch (error) {
+//     console.error("Error in getStudentsBySession:", error);
+//     throw error; // Re-throw to handle in the calling function
+//   }
+// };
+export const getStudentsBySession = async ({ session }) => {
+  try {
+    const url = 'https://dvsserver.onrender.com/api/v1/adminRoute/getStudentsBySession';
+    console.log("Sending POST request to:", url, "with session:", session); // Debug log
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ session }) // Send session in body
+    });
+    const data = await response.json();
+    console.log("API response:", data); // Debug log
+    return data;
+  } catch (error) {
+    console.error("Error in getStudentsBySession:", error);
+    throw error;
+  }
+};
+
 export const createteacher = async (payload) => {
   try {
     const option = {
