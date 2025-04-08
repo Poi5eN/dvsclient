@@ -75,6 +75,45 @@ export const FeeReceipt = async (fee) => {
     }
   };
   
+export const FeeResponse = async (fee) => {
+    console.log("fee",fee)
+    try {
+      toast.success("Message Send successfully!");
+      const receiptCard = `
+  -------------------------------------------
+       ✨ *Fee Receipt* ✨
+  -------------------------------------------
+  *Admission No:* \`${fee.admissionNumber?fee.admissionNumber:""}\`
+  *Name:* \`${fee.studentName}\`
+  *Class:* \`${fee.studentClass}\`
+  *Contact:* \`${fee.parentContact}\`
+  *Receipt No:* \`${fee.feeReceiptNumber}\`
+
+  *Total Amount Paid:* \`₹${fee.totalAmountPaid}\`
+  *Month:* \`${fee?.feeStatus?.feeHistory[0]?.regularFees?.month}\`
+  *Dues:* \`₹${fee?.feeStatus?.dues}\`
+  *Remarks:* _${fee?.feeStatus?.feeHistory[0]?.paymentMessage|| 'N/A'}_
+  -------------------------------------------
+             *Thank you!* 🙏
+         Welcome To Our Family
+          ${user?.schoolName}
+          ${user?.address}
+          ${user?.contact ?? ""}
+ If there are any issues, please contact the accountant.
+
+  `;
+  
+      const encodedMessage = encodeURIComponent(receiptCard);
+      const whatsappURL = `https://wa.me/91${fee?.parentContact}?text=${encodedMessage}`;
+      window.open(whatsappURL);
+    //   window.open(whatsappURL, "_blank");
+  
+    } catch (error) {
+      console.error("Error generating or sharing message:", error);
+      toast.error("Error sharing message.");
+    }
+  };
+  
 
 // export const FeeReceipt = async (fee, user) => {
 //     try {

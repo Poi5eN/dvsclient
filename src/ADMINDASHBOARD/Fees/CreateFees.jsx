@@ -4,6 +4,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import {
   ActiveStudents,
+  feescreateFeeStatus,
   LateFines,
   parentandchildwithID,
 } from "../../Network/AdminApi";
@@ -12,6 +13,8 @@ import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { useStateContext } from "../../contexts/ContextProvider";
 import MonthFeeCard from "./MonthFeeCard";
 import moment from "moment/moment";
+import { FeeResponse } from "../../Dynamic/utils/Message";
+import generatePdf from "../../Dynamic/utils/pdfGenerator";
 
 // Custom styles for react-select to display dues in dropdown options
 const customSelectStyles = {
@@ -33,6 +36,8 @@ const customSelectStyles = {
 const CreateFees = () => {
   const session = JSON.parse(localStorage.getItem("session"));
   const { setIsLoader } = useStateContext();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [responseData, setResponseData] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedChildren, setSelectedChildren] = useState([]);
   const [childFeeHistory, setChildFeeHistory] = useState([]);
@@ -426,6 +431,16 @@ const CreateFees = () => {
       remainingDues,
     };
   };
+  console.log("responseData",responseData)
+  const sendMessage=()=>{
+    console.log("responseData",responseData)
+    FeeResponse(responseData)
+  }
+
+
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -490,47 +505,33 @@ const CreateFees = () => {
         },
       };
 
-      feePromises.push(
-        axios
-          .post(
-            "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
-            payload,
-            {
-              withCredentials: true,
-              headers: { Authorization: `Bearer ${authToken}` },
-            }
-          )
-          .then((response) => ({
-            success: true,
-            studentName: child.studentName,
-            message: response.data.message,
-          }))
-          .catch((error) => ({
-            success: false,
-            studentName: child.studentName,
-            message: error.response?.data?.message || "Server error",
-          }))
-      );
-    }
+      // feePromises.push(
+      //   axios
+      //     .post(
+      //       "https://dvsserver.onrender.com/api/v1/a",
+      //       payload,
+      //       {
+      //         withCredentials: true,
+      //         headers: { Authorization: `Bearer ${authToken}` },
+      //       }
+      //     )
+      //     .then((response) => ({
+      //       success: true,
+      //       studentName: child.studentName,
+      //       message: response.data.message,
+      //     }))
+      //     .catch((error) => ({
+      //       success: false,
+      //       studentName: child.studentName,
+      //       message: error.response?.data?.message || "Server error",
+      //     }))
+      // );
+   
+   
+      try {
+        const response=await feescreateFeeStatus(payload)
+        if(response?.success){
 
-    try {
-      const results = await Promise.all(feePromises);
-      let allSuccess = true;
-
-      results.forEach((result) => {
-        if (result.success) {
-          toast.success(
-            `Fee created for ${result.studentName}: ${result.message}`
-          );
-           setSelectedChildren([])
-        setChildFeeHistory([])
-        } else {
-          toast.error(`Error for ${result.studentName}: ${result.message}`);
-          allSuccess = false;
-        }
-      });
-
-      if (allSuccess) {
         setSelectedChildren([]); // Clear selected students
         setChildFeeHistory([]); // Clear the history display
         setShowForm([]); // Clear form visibility flags
@@ -541,18 +542,62 @@ const CreateFees = () => {
          setSearchTerm("");
          setSearchTermbyadmissionNo("");
          setFilteredStudents([]);
+         setIsLoader(false);
+         setResponseData(response?.data)
+         toast?.success(response?.message)
+         setIsModalOpen(true)
+        //  handleDownloadPdf()
+        }
+else{
+  toast?.error(response?.message)
+  setIsLoader(false);
+}
+      } catch (error) {
+        console.log("error",error)
+        setIsLoader(false);
       }
-    } catch (error) {
-      toast.error("An unexpected error occurred during submission.");
-    } finally {
-      setIsLoader(false);
-
     }
+
+    // try {
+    //   const results = await Promise.all(feePromises);
+    //   let allSuccess = true;
+
+    //   results.forEach((result) => {
+    //     if (result.success) {
+    //       toast.success(
+    //         `Fee created for ${result.studentName}: ${result.message}`
+    //       );
+    //        setSelectedChildren([])
+    //     setChildFeeHistory([])
+    //     } else {
+    //       toast.error(`Error for ${result.studentName}: ${result.message}`);
+    //       allSuccess = false;
+    //     }
+    //   });
+
+    //   if (allSuccess) {
+    //     setSelectedChildren([]); // Clear selected students
+    //     setChildFeeHistory([]); // Clear the history display
+    //     setShowForm([]); // Clear form visibility flags
+    //     setModalOpen(false); // Close the modal
+    //     setReload((prev) => !prev); // Trigger reload/refresh if needed
+
+    //      // Also reset search terms if you want the search cleared as well
+    //      setSearchTerm("");
+    //      setSearchTermbyadmissionNo("");
+    //      setFilteredStudents([]);
+    //   }
+    // } catch (error) {
+    //   toast.error("An unexpected error occurred during submission.");
+    // } finally {
+    //   setIsLoader(false);
+
+    // }
   };
 
   return (
     <div className="px-2">
-    
+   
         <ReactInput
           type="text"
           label="Search by Name"
@@ -970,6 +1015,31 @@ const CreateFees = () => {
        
       </div>
     </div>
+     <Modal
+            setIsOpen={() => setIsModalOpen(false)}
+            isOpen={isModalOpen} title={"Addmission Successfully!"} maxWidth="100px">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <p>Do you want to send this</p>
+              <p> message to this number?</p>
+              <span className="text-indigo-800">{""}</span>
+              <span></span>
+              <div className="mt-4 flex justify-end space-x-4">
+    
+                <button
+                  onClick={() => sendMessage()}
+                  className="bg-green-500 text-white px-4 py-2 rounded w-full"
+                >
+                  OK
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gray-500 text-white px-4 py-2 rounded w-full"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </Modal>
     </div>
   );
 };

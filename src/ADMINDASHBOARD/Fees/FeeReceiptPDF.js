@@ -233,7 +233,7 @@ function FeeReceiptPDF({ details }) {
                 /> */}
                  <Button
                     color="blue" // Maybe slightly different color?
-                    name={"Print "}
+                    name={"Print"}
                     Icon={<FaFileAlt />} // Different icon?
                     onClick={handlePrintClickAllLandscape}
                     disabled={isPreparingPrint}

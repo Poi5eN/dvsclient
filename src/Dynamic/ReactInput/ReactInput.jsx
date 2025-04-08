@@ -16,7 +16,7 @@ export function ReactInput({
     <div className="containerr inline-block mr-1">
       <div className="did-floating-label-content ">
         <input
-          className={`did-floating-input ${value ? "has-value" : ""} ${required ?"border-b-[#ff0000] border-b-2 ":""}`}
+          className={`did-floating-input ${value ? "has-value" : ""} ${required ?"border-b-[#ff0000] ":""}`}
           readOnly={readOnly}
           value={value}
           type={type}

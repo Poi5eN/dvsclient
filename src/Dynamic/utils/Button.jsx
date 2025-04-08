@@ -10,7 +10,7 @@ const Button = ({ onClick, name, type, loading, width ,color,Icon}) => {
         style={{background:color?color:currentColor,display:""}}
         type={type}
         onClick={onClick}
-        className={` w-${width} text-center h-7 items-center flex justify-center gap-2 whitespace-nowrap rounded  px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none`}>
+        className={` w-${width} text-center h-[23px] items-center flex justify-center gap-2 whitespace-nowrap rounded  px-1 text-[11px] font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none`}>
        {
         Icon && <span>{Icon}</span>
        }

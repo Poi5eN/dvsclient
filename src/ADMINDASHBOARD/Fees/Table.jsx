@@ -15,6 +15,8 @@ import Modal from "../../Dynamic/Modal";
 import Button from "../../Dynamic/utils/Button";
 import moment from "moment";
 import { FeeReceipt } from "../../Dynamic/utils/Message";
+import generatePdf from "../../Dynamic/utils/pdfGenerator";
+import { FaPrint, FaFileAlt } from "react-icons/fa"; 
 const Table = ({ reLoad }) => {
   const user = JSON.parse(localStorage.getItem("user"))
   // console.log("user",user)
@@ -28,7 +30,7 @@ const Table = ({ reLoad }) => {
     return today.toISOString().split("T")[0];
   };
   const [cancel,setCencel]=useState(false)
-  
+  const [feeDetais,setFeeDetails]=useState([])
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
  
@@ -119,6 +121,62 @@ try {
     setCencel(true)
 
   }
+
+
+    const columns = [
+      { header: 'Rcpt No.', dataKey: 'feeReceiptNumber' },
+      { header: 'Date', dataKey: 'date' },
+      { header: 'Admission No.', dataKey: 'admissionNumber' },
+      { header: 'Student', dataKey: 'studentName' },
+      { header: 'Father Name', dataKey: 'fatherName' },
+      { header: 'Class', dataKey: 'studentClass' },
+      { header: 'Mode', dataKey: 'paymentMode' },
+      { header: 'TID', dataKey: 'transactionId' },
+      { header: 'Month', dataKey: 'month' },
+      { header: 'Dues', dataKey: 'dues' },
+      { header: 'Fee', dataKey: 'totalFeeAmount' },
+      { header: 'Paid ', dataKey: 'totalAmountPaid' },
+      { header: 'Status', dataKey: 'feeStatus' },
+      // { header: 'Remark', dataKey: 'remark' },
+    ];
+    
+useEffect(() => {
+  if (Array.isArray(feeHistory)) {
+    const updatedFeeHistory = filteredFeeHistory.map(item => ({
+      ...item,
+      month: item?.regularFees?.map(val => val?.month).join(', ') || '',
+      feeStatus: item?.regularFees?.map(val => val?.status).join(', ') || ''
+
+    }));
+    setFeeDetails(updatedFeeHistory);
+  }
+}, [filteredFeeHistory]);
+// useEffect(() => {
+//   if (Array.isArray(feeHistory)) {
+//     const updatedFeeHistory = feeHistory.map(item => ({
+//       ...item,
+//       month: item?.regularFees?.map(val => val?.month).join(', ') || '',
+//       feeStatus: item?.regularFees?.map(val => val?.status).join(', ') || ''
+
+//     }));
+//     setFeeDetails(updatedFeeHistory);
+//   }
+// }, [feeHistory]);
+
+const totalPaidAmountFromParent=filteredFeeHistory.reduce((sum,item)=>(
+  sum+item.totalAmountPaid
+),0);
+const dues=filteredFeeHistory.reduce((sum,item)=>(
+  sum+item.dues
+),0);
+
+    const handleDownloadPdf = () => {
+    
+      generatePdf(feeDetais,columns,totalPaidAmountFromParent,dues,'user-report.pdf'); // generatePdf ko call karein
+      // generatePdf(tableData,'user-report.pdf'); // generatePdf ko call karein
+    };
+  
+
   return (
     <div className="md:min-h-screen mt-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -153,10 +211,17 @@ try {
               onClick={clearDateFilter} >
               
             </Button>
+            <Button
+ color="teal"
+  name="PRINT"
+   Icon={<FaFileAlt />}
+              onClick={handleDownloadPdf} >
+              
+            </Button>
             <div
             //  id="printContent"
              >
-          <FeeReceiptPDF details={filteredFeeHistory} />
+          {/* <FeeReceiptPDF details={filteredFeeHistory} /> */}
         </div>
          
       </div>
