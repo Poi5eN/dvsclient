@@ -162,17 +162,64 @@ useEffect(() => {
 //     setFeeDetails(updatedFeeHistory);
 //   }
 // }, [feeHistory]);
+// console.log("filteredFeeHistory",filteredFeeHistory)
+// const totalPaidAmountFromParent=filteredFeeHistory.reduce((sum,item)=>(
+//   sum+item.totalAmountPaid
+// ),0);
+// const dues=filteredFeeHistory.reduce((sum,item)=>(
+//   sum+item.dues
+// ),0);
 
-const totalPaidAmountFromParent=filteredFeeHistory.reduce((sum,item)=>(
-  sum+item.totalAmountPaid
-),0);
-const dues=filteredFeeHistory.reduce((sum,item)=>(
-  sum+item.dues
-),0);
+
+const totalsByMode = filteredFeeHistory.reduce((accumulator, item) => {
+  const amountPaid = parseFloat(item?.totalAmountPaid);
+  const validAmount = isNaN(amountPaid) ? 0 : amountPaid;
+  const mode = item?.paymentMode?.toLowerCase(); 
+  switch (mode) {
+      case 'cash':
+          accumulator.cash += validAmount;
+          break;
+      case 'online':
+          accumulator.online += validAmount;
+          break;
+      case 'bank': // Assuming 'Bank' is a possible mode
+          accumulator.bank += validAmount;
+          break;
+      default:
+          accumulator.other += validAmount; // Track any other/undefined modes
+          break;
+  }
+  return accumulator; 
+
+}, { cash: 0, online: 0, bank: 0, other: 0 }); // Initial accumulator object
+
+const overallTotalPaid = filteredFeeHistory.reduce((sum, item) => {
+  const amountPaid = parseFloat(item?.totalAmountPaid);
+  return sum + (isNaN(amountPaid) ? 0 : amountPaid);
+}, 0);
+
+const overallTotalDuesSum = filteredFeeHistory.reduce((sum, item) => {
+  const duesValue = parseFloat(item?.totalDues);
+  return sum + (isNaN(duesValue) ? 0 : duesValue);
+}, 0);
+
+const cashpayment= totalsByMode.cash
+const onlinepayment= totalsByMode.online
+const bankpayment= totalsByMode.bank
+
+// --- Output Results ---
+console.log("Overall Total Paid:", overallTotalPaid);
+console.log("Overall Sum of Total Dues Field:", overallTotalDuesSum); // Clarified name
+console.log("--- Totals by Payment Mode ---");
+console.log("Cash Total:", totalsByMode.cash);
+console.log("Online Total:", totalsByMode.online);
+console.log("Bank Total:", totalsByMode.bank);
+console.log("Other/Unknown Mode Total:", totalsByMode.other);
+
 
     const handleDownloadPdf = () => {
     
-      generatePdf(feeDetais,columns,totalPaidAmountFromParent,dues,'user-report.pdf'); // generatePdf ko call karein
+      generatePdf(feeDetais,columns,overallTotalPaid,overallTotalDuesSum,cashpayment,onlinepayment,bankpayment,'user-report.pdf'); // generatePdf ko call karein
       // generatePdf(tableData,'user-report.pdf'); // generatePdf ko call karein
     };
   

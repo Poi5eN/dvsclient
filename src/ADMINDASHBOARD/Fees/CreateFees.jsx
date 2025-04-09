@@ -847,7 +847,13 @@ else{
                         </label>
                         <input
                           type="date"
-                          value={formData[index].date}
+                          value={
+                            formData[index]?.date
+                            ? moment(formData[index].date).format("YYYY-MM-DD") // Format stored date
+                            : moment().format("YYYY-MM-DD") // Default to today
+                        }
+                          // value={moment(new Date()).format("MM-DD-YYYY")?moment(new Date()).format("MM-DD-YYYY"):formData[index].date}
+                          // value={formData[index].date?formData[index].date:moment(new Date()).format("MM-DD-YYYY")}
                           onChange={(e) =>
                             handleInputChange(
                               index,
@@ -856,7 +862,7 @@ else{
                             )
                           }
                           className="w-full border rounded p-2"
-                          min="0"
+                          // min="0"
                         />
                       </div>
                        <div className="sm:col-span-2">
@@ -1002,19 +1008,28 @@ else{
           </div>
 
         </div>
-     
-      <div className="px-4 mt-2 "> 
-      <h2 className="text-2xl font-bold text-center text-gray-800">
-        Student Fee Overview
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"> {/* Responsive Grid */}
         {console.log("childFeeHistory",childFeeHistory)}
-        {childFeeHistory?.feeStatus?.feeHistory?.map((data) => (
-          <MonthFeeCard data={data} />
-        ))}
-       
-      </div>
-    </div>
+     {childFeeHistory?.monthlyStatus?.length>0 && 
+     
+     <div className="px-4 mt-2 "> 
+     <h2 className="text-2xl font-bold text-center text-gray-800">
+       Student Fee Overview
+     </h2>
+     <div > {/* Responsive Grid */}
+      
+       {
+       // childFeeHistory?.feeStatus?.feeHistory?.map((data) => (
+         <MonthFeeCard childFeeHistory={childFeeHistory} />
+       // ))
+       }
+       {/* {childFeeHistory?.feeStatus?.feeHistory?.map((data) => (
+         <MonthFeeCard data={data} />
+       ))} */}
+      
+     </div>
+   </div>
+     }
+     
      <Modal
             setIsOpen={() => setIsModalOpen(false)}
             isOpen={isModalOpen} title={"Addmission Successfully!"} maxWidth="100px">
