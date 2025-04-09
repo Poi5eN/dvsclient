@@ -18,9 +18,13 @@ const generatePdf = (
     columns,
     overallTotalPaid = 0,
     overallTotalDuesSum = 0,
-    cashPayment = 0,
-    onlinePayment = 0,
-    bankPayment = 0,
+    cashPayment=0,
+    onlinePayment=0,
+    chequePayment=0,
+    cardPayment=0,
+    // cashPayment = 0,
+    // onlinePayment = 0,
+    // bankPayment = 0,
     filename = 'fee-data.pdf' // Keep filename for context, though not directly used by output method
 ) => {
     // Ensure data is an array
@@ -63,7 +67,8 @@ const generatePdf = (
     const formattedTotalDues = parseAndFormat(overallTotalDuesSum, "overallTotalDuesSum");
     const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
     const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
-    const formattedBankPayment = parseAndFormat(bankPayment, "bankPayment");
+    const formattedChequePayment = parseAndFormat(chequePayment, "bankPayment");
+    const formattedCardPayment = parseAndFormat(cardPayment, "bankPayment");
 
     // === PDF Document Setup ===
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
@@ -168,8 +173,12 @@ const generatePdf = (
     currentY += lineSpacing;
 
     // Bank Payment
-    doc.text(`Bank Payments:`, xPosLabel, currentY);
-    doc.text(` ${formattedBankPayment}`, xPosValue, currentY, { align: 'right' });
+    doc.text(`Cheque Payments:`, xPosLabel, currentY);
+    doc.text(` ${formattedChequePayment}`, xPosValue, currentY, { align: 'right' });
+    currentY += lineSpacing * 1.5;
+
+    doc.text(`Card Payments:`, xPosLabel, currentY);
+    doc.text(` ${formattedCardPayment}`, xPosValue, currentY, { align: 'right' });
     currentY += lineSpacing * 1.5;
 
     // Overall Total Dues Sum
@@ -258,7 +267,7 @@ export default generatePdf;
 //     const formattedTotalDues = parseAndFormat(overallTotalDuesSum, "overallTotalDuesSum");
 //     const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
 //     const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
-//     const formattedBankPayment = parseAndFormat(bankPayment, "bankPayment");
+//     const chequePayment = parseAndFormat(bankPayment, "bankPayment");
 //     // Note: You could also calculate and format an "Other" category if needed
 
 //     // === PDF Document Setup ===
@@ -375,7 +384,7 @@ export default generatePdf;
 
 //     // Bank Payment
 //     doc.text(`Bank Payments:`, xPosLabel, currentY);
-//     doc.text(`${formattedBankPayment}`, xPosValue, currentY, { align: 'right' });
+//     doc.text(`${chequePayment}`, xPosValue, currentY, { align: 'right' });
 //     currentY += lineSpacing * 1.5; // Extra space before dues
 
 //     // Overall Total Dues Sum

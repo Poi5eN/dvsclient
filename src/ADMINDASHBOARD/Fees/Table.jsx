@@ -171,10 +171,61 @@ useEffect(() => {
 // ),0);
 
 
+// const totalsByMode = filteredFeeHistory.reduce((accumulator, item) => {
+//   const amountPaid = parseFloat(item?.totalAmountPaid);
+//   const validAmount = isNaN(amountPaid) ? 0 : amountPaid;
+//   const mode = item?.paymentMode?.toLowerCase(); 
+//   switch (mode) {
+//       case 'cash':
+//           accumulator.cash += validAmount;
+//           break;
+//       case 'online':
+//           accumulator.online += validAmount;
+//           break;
+//       case 'bank': // Assuming 'Bank' is a possible mode
+//           accumulator.bank += validAmount;
+//           break;
+//       default:
+//           accumulator.other += validAmount; // Track any other/undefined modes
+//           break;
+//   }
+//   return accumulator; 
+
+// }, { cash: 0, online: 0, bank: 0, other: 0 }); // Initial accumulator object
+
+// const overallTotalPaid = filteredFeeHistory.reduce((sum, item) => {
+//   const amountPaid = parseFloat(item?.totalAmountPaid);
+//   return sum + (isNaN(amountPaid) ? 0 : amountPaid);
+// }, 0);
+
+// const overallTotalDuesSum = filteredFeeHistory.reduce((sum, item) => {
+//   const duesValue = parseFloat(item?.totalDues);
+//   return sum + (isNaN(duesValue) ? 0 : duesValue);
+// }, 0);
+
+// const cashpayment= totalsByMode.cash
+// const onlinepayment= totalsByMode.online
+// const bankpayment= totalsByMode.bank
+
+// // --- Output Results ---
+// console.log("Overall Total Paid:", overallTotalPaid);
+// console.log("Overall Sum of Total Dues Field:", overallTotalDuesSum); // Clarified name
+// console.log("--- Totals by Payment Mode ---");
+// console.log("Cash Total:", totalsByMode.cash);
+// console.log("Online Total:", totalsByMode.online);
+// console.log("Bank Total:", totalsByMode.bank);
+// console.log("Other/Unknown Mode Total:", totalsByMode.other);
+
+
+
 const totalsByMode = filteredFeeHistory.reduce((accumulator, item) => {
+  // Safely parse the amount paid, default to 0 if invalid
   const amountPaid = parseFloat(item?.totalAmountPaid);
   const validAmount = isNaN(amountPaid) ? 0 : amountPaid;
-  const mode = item?.paymentMode?.toLowerCase(); 
+
+  // Get mode, convert to lower case for consistent matching
+  const mode = item?.paymentMode?.toLowerCase();
+
   switch (mode) {
       case 'cash':
           accumulator.cash += validAmount;
@@ -182,44 +233,68 @@ const totalsByMode = filteredFeeHistory.reduce((accumulator, item) => {
       case 'online':
           accumulator.online += validAmount;
           break;
-      case 'bank': // Assuming 'Bank' is a possible mode
-          accumulator.bank += validAmount;
+      case 'cheque': // Added Cheque
+          accumulator.cheque += validAmount;
           break;
+      case 'card':   // Added Card
+          accumulator.card += validAmount;
+          break;
+      // Remove 'bank' case if it's no longer used or group it into 'other'
+      // case 'bank':
+      //     accumulator.bank += validAmount;
+      //     break;
       default:
-          accumulator.other += validAmount; // Track any other/undefined modes
+          // Includes null, undefined, 'Bank', or any other unexpected modes
+          accumulator.other += validAmount;
           break;
   }
-  return accumulator; 
+  return accumulator; // Return the updated accumulator
 
-}, { cash: 0, online: 0, bank: 0, other: 0 }); // Initial accumulator object
+}, { // Updated Initial accumulator object
+  cash: 0,
+  online: 0,
+  cheque: 0, // Added
+  card: 0,   // Added
+  // bank: 0, // Remove if not needed
+  other: 0
+});
 
+// 2. Calculate Overall Total Paid Amount (Robustly) - No change needed here
 const overallTotalPaid = filteredFeeHistory.reduce((sum, item) => {
   const amountPaid = parseFloat(item?.totalAmountPaid);
   return sum + (isNaN(amountPaid) ? 0 : amountPaid);
 }, 0);
 
+// 3. Calculate Overall Sum of 'Total Dues' field (Robustly) - No change needed here
 const overallTotalDuesSum = filteredFeeHistory.reduce((sum, item) => {
   const duesValue = parseFloat(item?.totalDues);
   return sum + (isNaN(duesValue) ? 0 : duesValue);
 }, 0);
 
-const cashpayment= totalsByMode.cash
-const onlinepayment= totalsByMode.online
-const bankpayment= totalsByMode.bank
 
-// --- Output Results ---
+// --- Assign values to variables ---
+const cashPayment = totalsByMode.cash;
+const onlinePayment = totalsByMode.online;
+const chequePayment = totalsByMode.cheque; // Added
+const cardPayment = totalsByMode.card;     // Added
+// const bankPayment = totalsByMode.bank; // Remove if bank mode is removed/grouped
+const otherPayment = totalsByMode.other;   // Optional: capture any other modes
+
+// --- Log results for verification ---
 console.log("Overall Total Paid:", overallTotalPaid);
-console.log("Overall Sum of Total Dues Field:", overallTotalDuesSum); // Clarified name
+console.log("Overall Sum of Total Dues Field:", overallTotalDuesSum);
 console.log("--- Totals by Payment Mode ---");
-console.log("Cash Total:", totalsByMode.cash);
-console.log("Online Total:", totalsByMode.online);
-console.log("Bank Total:", totalsByMode.bank);
-console.log("Other/Unknown Mode Total:", totalsByMode.other);
+console.log("Cash Total:", cashPayment);
+console.log("Online Total:", onlinePayment);
+console.log("Cheque Total:", chequePayment);
+console.log("Card Total:", cardPayment);
+// console.log("Bank Total:", bankPayment); // Uncomment if kept
+console.log("Other Mode Total:", otherPayment);
 
 
     const handleDownloadPdf = () => {
     
-      generatePdf(feeDetais,columns,overallTotalPaid,overallTotalDuesSum,cashpayment,onlinepayment,bankpayment,'user-report.pdf'); // generatePdf ko call karein
+      generatePdf(feeDetais,columns,overallTotalPaid,overallTotalDuesSum,cashPayment,onlinePayment,chequePayment,cardPayment,'user-report.pdf'); // generatePdf ko call karein
       // generatePdf(tableData,'user-report.pdf'); // generatePdf ko call karein
     };
   
