@@ -17,7 +17,7 @@ const StudentStudyMaterial = () => {
     image: null,
   });
 
-  const API_BASE_URL = "https://eserver-i5sm.onrender.com/api/v1/teacher";
+  const API_BASE_URL = "https://dvsserver.onrender.com/api/v1/teacher";
 
   useEffect(() => {
     // Fetch materials from the server using a GET request

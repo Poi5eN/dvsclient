@@ -289,7 +289,7 @@ export default AddDues;
 //     const fetchData = async () => {
 //       try {
 //         const feesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents`,
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -304,7 +304,7 @@ export default AddDues;
 
 //       try {
 //         const classesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -541,7 +541,7 @@ export default AddDues;
 //     const fetchData = async () => {
 //       try {
 //         const feesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents`,
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -556,7 +556,7 @@ export default AddDues;
 
 //       try {
 //         const classesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -803,7 +803,7 @@ export default AddDues;
 //     const fetchData = async () => {  // use async/await for cleaner code
 //       try {
 //         const feesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents`,
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -820,7 +820,7 @@ export default AddDues;
 
 //       try {
 //         const classesResponse = await axios.get(
-//           `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//           `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //           {
 //             withCredentials: true,
 //             headers: {

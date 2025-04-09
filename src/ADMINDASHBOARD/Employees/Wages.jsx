@@ -22,7 +22,7 @@ function DynamicDataTable({ data, handleDelete }) {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllEmployees`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllEmployees`,
         {
           withCredentials: true,
           headers: {

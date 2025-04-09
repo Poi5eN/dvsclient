@@ -18,7 +18,7 @@ const Udise = () => {
     error: studentError,
     loading: studentLoading,
   } = useCustomQuery(
-    "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+    "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
   );
 
   useEffect(() => {
@@ -113,7 +113,7 @@ const Udise = () => {
 
     try {
       const response = await axios.put(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
         requestBody,
         {
           withCredentials: true,
@@ -260,7 +260,7 @@ export default Udise;
 //     error: studentError,
 //     loading: studentLoading,
 //   } = useCustomQuery(
-//     "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+//     "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
 //   );
 
 //   useEffect(() => {
@@ -353,7 +353,7 @@ export default Udise;
 
 //     try {
 //       const response = await axios.put(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
 //         requestBody,
 //         {
 //           withCredentials: true,
@@ -406,7 +406,7 @@ export default Udise;
 
 //   //   try {
 //   //     const response = await axios.put(
-//   //       "https://eserver-i5sm.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
+//   //       "https://dvsserver.onrender.com/api/v1/adminRoute/bulkUpdateStudents",
 //   //       requestBody,
 //   //       {
 //   //         withCredentials: true,
@@ -548,14 +548,14 @@ export default Udise;
 //     error: studentError,
 //     loading: studentLoading,
 //   } = useCustomQuery(
-//     "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+//     "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
 //   );
 
 
 //   const editstudent=async()=>{
 //     try {
 //       const response = await axios.put(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/bulkUpdateStudents`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/bulkUpdateStudents`,
 //         data, 
 //         {
 //           withCredentials: true,
@@ -762,7 +762,7 @@ export default Udise;
 
 //   const [submittedData, setSubmittedData] = useState([]);
 
-//   const { queryData: studentData, error: studentError, loading: studentLoading } = useCustomQuery("https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents");
+//   const { queryData: studentData, error: studentError, loading: studentLoading } = useCustomQuery("https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents");
   
 //   useEffect(()=>{
 //     if(studentData){

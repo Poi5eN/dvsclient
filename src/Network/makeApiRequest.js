@@ -1,9 +1,9 @@
 import axios from "axios";
 
 
-// const baseURL = "https://eserver-i5sm.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
+// const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
 const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
-// const baseURL = "https://eserver-i5sm.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
+// const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
@@ -102,7 +102,7 @@ export default makeApiRequest;
 // import Cookies from 'js-cookie';
 
 // const authToken = Cookies.get('token');
-// const baseURL = "https://eserver-i5sm.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
+// const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
 
 // const axiosInstance = axios.create({
 //   baseURL: baseURL,
@@ -203,7 +203,7 @@ export default makeApiRequest;
 // // import { notify } from "../utils/utils";
 // // import { useLocalStorage } from "../utils/hooks/useLocalStorage";
 // // const baseurl = import.meta.env.VITE_APP_REACT_APP_BASE_URL;
-// const baseURL =   "https://eserver-i5sm.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL ;
+// const baseURL =   "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL ;
 
 // const axiosInstance = axios.create({
 //   baseURL: baseURL,

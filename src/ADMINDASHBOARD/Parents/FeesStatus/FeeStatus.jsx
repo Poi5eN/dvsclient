@@ -11,7 +11,7 @@ function DynamicDataTable() {
     // Fetch data from the server when the component mounts
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllParents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllParents",
         {
           withCredentials: true,
           headers: {

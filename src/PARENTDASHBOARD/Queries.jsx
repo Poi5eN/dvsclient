@@ -11,7 +11,7 @@ const Queries = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdminInfo",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo",
         {
           withCredentials: true,
           headers: {

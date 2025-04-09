@@ -75,7 +75,7 @@ const EditStaff = () => {
 
   // useEffect(() => {
   //   axios.get(
-  //     `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllEmployees?email=${email}`,
+  //     `https://dvsserver.onrender.com/api/v1/adminRoute/getAllEmployees?email=${email}`,
   //     {
   //       withCredentials: true,
   //       headers: {
@@ -121,7 +121,7 @@ navigate("/admin/staff");
 else{
   toast.error(response?.message)
 }
-    // axios.put(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/updateEmployee`, data, {
+    // axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/updateEmployee`, data, {
     //   withCredentials: true,
     //   headers: {
     //     Authorization: `Bearer ${authToken}`,

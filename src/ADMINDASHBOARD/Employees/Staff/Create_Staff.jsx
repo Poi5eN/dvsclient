@@ -96,7 +96,7 @@ function Create_Staff() {
 
   const handleDelete = async (email) => {
     try {
-      await axios.put(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/deactivateEmployee`, 
+      await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee`, 
         { email },
         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
       );
@@ -230,7 +230,7 @@ export default Create_Staff;
 
 //   useEffect(() => {
 //     // Fetch data from the server when the component mounts
-//     axios.get('https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllEmployees', {
+//     axios.get('https://dvsserver.onrender.com/api/v1/adminRoute/getAllEmployees', {
 //       withCredentials: true,
 //       headers: {
 //         Authorization: `Bearer ${authToken}`,
@@ -298,7 +298,7 @@ export default Create_Staff;
 //   };
  
 //   const handleDelete = (email) => {
-//     axios.put(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/deactivateEmployee`, { email }, {
+//     axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee`, { email }, {
 //       withCredentials: true,
 //       headers: {
 //         Authorization: `Bearer ${authToken}`,

@@ -23,7 +23,7 @@ function ThirdPartyHome() {
 
   const { queryData: studentData, error: studentError, loading: studentLoading } =
     useCustomQuery(
-      "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+      "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
     );
 
   const printRef = useRef(); // Ref for the PrintTable component
@@ -31,7 +31,7 @@ function ThirdPartyHome() {
   // Fetch all classes
   useEffect(() => {
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -96,7 +96,7 @@ function ThirdPartyHome() {
   const handleDelete = (email) => {
     axios
       .put(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/deactivateStudent`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/deactivateStudent`,
         { email },
         {
           withCredentials: true,

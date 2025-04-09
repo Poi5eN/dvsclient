@@ -220,7 +220,7 @@ export default EarningChart;
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         "https://eserver-i5sm.onrender.com/api/v1/fees/feeIncomeMonths",
+// //         "https://dvsserver.onrender.com/api/v1/fees/feeIncomeMonths",
 // //         {
 // //           withCredentials: true,
 // //           headers: {
@@ -257,7 +257,7 @@ export default EarningChart;
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         "https://eserver-i5sm.onrender.com/api/v1/employee/salaryExpensesMonths",
+// //         "https://dvsserver.onrender.com/api/v1/employee/salaryExpensesMonths",
 // //         {
 // //           withCredentials: true,
 // //           headers: {

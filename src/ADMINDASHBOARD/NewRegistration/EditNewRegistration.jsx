@@ -58,7 +58,7 @@ const EditNewRegistration = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
         {
           withCredentials: true,
       headers: {
@@ -100,7 +100,7 @@ const EditNewRegistration = () => {
     }
   
     axios
-      .put(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/updateStudent`, data, {
+      .put(`https://dvsserver.onrender.com/api/v1/adminRoute/updateStudent`, data, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,

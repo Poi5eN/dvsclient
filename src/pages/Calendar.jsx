@@ -43,7 +43,7 @@ export default Calendar
 
 //           const data = args.data;
 //           // console.log(data)
-//             axios.delete(`https://eserver-i5sm.onrender.com/api/v1/events/deleteEvent/${data._id}`, 
+//             axios.delete(`https://dvsserver.onrender.com/api/v1/events/deleteEvent/${data._id}`, 
 //           {
 //             withCredentials: true,
 //             headers: {
@@ -75,7 +75,7 @@ export default Calendar
 //   useEffect(() => {
 //    const fetchData = async()=>{
 //     try {
-//       const response = await axios.get('https://eserver-i5sm.onrender.com/api/v1/events/getAllEvents', {
+//       const response = await axios.get('https://dvsserver.onrender.com/api/v1/events/getAllEvents', {
 //         withCredentials: true,
 //           headers: {
 //             Authorization: `Bearer ${authToken}`,
@@ -169,7 +169,7 @@ export default Calendar
 //           EndTime: endTime,
 //         };
      
-//       axios.post('https://eserver-i5sm.onrender.com/api/v1/events/createEvent', {
+//       axios.post('https://dvsserver.onrender.com/api/v1/events/createEvent', {
 //         updatedData
 //       }, {
 //         withCredentials: true,

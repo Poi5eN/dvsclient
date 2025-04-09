@@ -46,7 +46,7 @@ const NewCheckFee2 = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
         {
           withCredentials: true,
           headers: {
@@ -91,7 +91,7 @@ const NewCheckFee2 = () => {
   const handleStudentClick = (admissionNumber) => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
         {
           withCredentials: true,
           headers: {
@@ -130,7 +130,7 @@ const NewCheckFee2 = () => {
 
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
         {
           withCredentials: true,
           headers: {
@@ -155,7 +155,7 @@ const NewCheckFee2 = () => {
       });
 
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -365,7 +365,7 @@ const NewCheckFee2 = () => {
         // API Call inside try-catch
         try {
           const response = await axios.post(
-            "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+            "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
             newFeeData,
             {
               withCredentials: true,
@@ -1016,7 +1016,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -1061,7 +1061,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -1100,7 +1100,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -1125,7 +1125,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -1306,7 +1306,7 @@ export default NewCheckFee2;
 //         // API Call inside try-catch
 //         try {
 //           const response = await axios.post(
-//             "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//             "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //             newFeeData,
 //             {
 //               withCredentials: true,
@@ -1960,7 +1960,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -1991,7 +1991,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -2030,7 +2030,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -2055,7 +2055,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -2281,7 +2281,7 @@ export default NewCheckFee2;
 //         // API Call inside try-catch
 //         try {
 //           const response = await axios.post(
-//             "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//             "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //             newFeeData,
 //             {
 //               withCredentials: true,
@@ -2846,7 +2846,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -2877,7 +2877,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -2916,7 +2916,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -2941,7 +2941,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -3124,7 +3124,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -3684,7 +3684,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -3715,7 +3715,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -3754,7 +3754,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -3779,7 +3779,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -3974,7 +3974,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -4583,7 +4583,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -4614,7 +4614,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -4652,7 +4652,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -4677,7 +4677,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -4847,7 +4847,7 @@ export default NewCheckFee2;
   
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -4922,7 +4922,7 @@ export default NewCheckFee2;
 
 // //       axios
 // //         .post(
-// //           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+// //           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 // //           newFeeData,
 // //           {
 // //             withCredentials: true,
@@ -5451,7 +5451,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -5482,7 +5482,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -5520,7 +5520,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -5545,7 +5545,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -5708,7 +5708,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -6226,7 +6226,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -6257,7 +6257,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -6295,7 +6295,7 @@ export default NewCheckFee2;
 
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -6320,7 +6320,7 @@ export default NewCheckFee2;
 //       });
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -6479,7 +6479,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -6982,7 +6982,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7013,7 +7013,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7049,7 +7049,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7094,7 +7094,7 @@ export default NewCheckFee2;
 //     const studentClass = selectedChild.class;
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -7236,7 +7236,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -7691,7 +7691,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7722,7 +7722,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7758,7 +7758,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -7805,7 +7805,7 @@ export default NewCheckFee2;
 //     const studentClass = selectedChild.class;
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -7935,7 +7935,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -8325,7 +8325,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -8341,7 +8341,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -8401,7 +8401,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -8439,7 +8439,7 @@ export default NewCheckFee2;
 //     const studentClass = selectedChild.class;
 
 //     axios
-//       .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+//       .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -8558,7 +8558,7 @@ export default NewCheckFee2;
 
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,
@@ -8912,7 +8912,7 @@ export default NewCheckFee2;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -8927,7 +8927,7 @@ export default NewCheckFee2;
 
 //   useEffect(() => {
 //     axios
-//       .get("https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllFees", {
+//       .get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllFees", {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -8993,7 +8993,7 @@ export default NewCheckFee2;
 //   const handleStudentClick = (admissionNumber) => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getParentWithChildren/${admissionNumber}`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -9093,7 +9093,7 @@ export default NewCheckFee2;
 //       console.log("newFeeData", newFeeData);
 //       axios
 //         .post(
-//           "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus",
+//           "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus",
 //           newFeeData,
 //           {
 //             withCredentials: true,

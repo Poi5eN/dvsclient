@@ -12,8 +12,8 @@ const StudentIdCardNew = () => {
     const fetchStudentAndParentData = async (email, authToken) => {
       try {
         const response = await axios.get(
-          `https://eserver-i5sm.onrender.com/api/v1/admin Route/getStudentAndParent/${email}`,
-          // `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getDataByAdmissionNumber/${email}`,
+          `https://dvsserver.onrender.com/api/v1/admin Route/getStudentAndParent/${email}`,
+          // `https://dvsserver.onrender.com/api/v1/adminRoute/getDataByAdmissionNumber/${email}`,
           {
             withCredentials: true,
             headers: {
@@ -383,8 +383,8 @@ export default StudentIdCardNew
   //   const fetchStudentAndParentData = async (email, authToken) => {
   //     try {
   //       const response = await axios.get(
-  //         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getStudentAndParent/${email}`,
-  //         // `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getDataByAdmissionNumber/${email}`,
+  //         `https://dvsserver.onrender.com/api/v1/adminRoute/getStudentAndParent/${email}`,
+  //         // `https://dvsserver.onrender.com/api/v1/adminRoute/getDataByAdmissionNumber/${email}`,
   //         {
   //           withCredentials: true,
   //           headers: {
@@ -819,7 +819,7 @@ export default StudentIdCardNew
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+// //         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: {
@@ -1140,7 +1140,7 @@ export default StudentIdCardNew
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+// //         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: {

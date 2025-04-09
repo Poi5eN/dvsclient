@@ -18,7 +18,7 @@ const ViewBooks = () => {
     // Fetch teacher data based on the email parameter
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllBooks?_id=${_id}`, {withCredentials: true,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllBooks?_id=${_id}`, {withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
         },}

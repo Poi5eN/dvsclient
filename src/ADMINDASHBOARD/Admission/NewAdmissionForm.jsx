@@ -145,7 +145,7 @@ const Admission_form = () => {
 
     try {
       const response = await axios.post(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent",
         formDataToSend,
         {
           withCredentials: true,
@@ -181,7 +181,7 @@ const Admission_form = () => {
   //     // console.log("firstpayload",payload)
   //     try {
   //       console.log("firstpayload click",)
-  //      await axios.post("https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend,
+  //      await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend,
   //         {
   //           withCredentials: true,
   //           headers: {
@@ -253,7 +253,7 @@ const Admission_form = () => {
   //   console.log("payload", payload);
 
   //   try {
-  //     const response = await axios.post("https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent", payload);
+  //     const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent", payload);
   //     console.log("Form submitted successfully:", response.data);
   //   } catch (error) {
   //     console.error("Error submitting form:", error);
@@ -1302,7 +1302,7 @@ export default Admission_form;
 //     }
 
 //     try {
-//       const response = await axios.post("https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend, {
+//       const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -1335,7 +1335,7 @@ export default Admission_form;
 // //     // console.log("firstpayload",payload)
 // //     try {
 // //       console.log("firstpayload click",)
-// //      await axios.post("https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend,
+// //      await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent", formDataToSend,
 // //         {
 // //           withCredentials: true,
 // //           headers: {
@@ -1401,7 +1401,7 @@ export default Admission_form;
 //   //   console.log("payload", payload);
 
 //   //   try {
-//   //     const response = await axios.post("https://eserver-i5sm.onrender.com/api/v1/adminRoute/createStudentParent", payload);
+//   //     const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/createStudentParent", payload);
 //   //     console.log("Form submitted successfully:", response.data);
 //   //   } catch (error) {
 //   //     console.error("Error submitting form:", error);

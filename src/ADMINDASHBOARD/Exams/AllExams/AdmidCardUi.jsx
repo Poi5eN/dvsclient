@@ -84,7 +84,7 @@ const AdmitCardUi = () => {
   //   setLoading(true);
   //   try {
   //     const response = await axios.get(
-  //       "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+  //       "https://dvsserver.onrender.com/api/v1/exam/getExams",
   //       {
   //         withCredentials: true,
   //         headers: {
@@ -627,7 +627,7 @@ export default AdmitCardUi;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -646,7 +646,7 @@ export default AdmitCardUi;
 //         setLoading(true);
 //         try {
 //             const response = await axios.get(
-//                 "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+//                 "https://dvsserver.onrender.com/api/v1/exam/getExams",
                
 //                 {
 //                     withCredentials: true,
@@ -667,7 +667,7 @@ export default AdmitCardUi;
 //         setLoading(true);
 //         try {
 //             const response = await axios.get(
-//                 "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//                 "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //                 {
 //                     withCredentials: true,
 //                     headers: {
@@ -1111,7 +1111,7 @@ export default AdmitCardUi;
 //     loading: admitCardLoading,
 //     error: admitCardError,
 //   } = useCustomQuery(
-//     "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+//     "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
 //   );
 // // console.log("firstadmitCard".admitCard)
 //   const {
@@ -1119,7 +1119,7 @@ export default AdmitCardUi;
 //     loading: allExamLoading,
 //     error: allExamError,
 //   } = useCustomQuery(
-//     "https://eserver-i5sm.onrender.com/api/v1/exam/getAllExams"
+//     "https://dvsserver.onrender.com/api/v1/exam/getAllExams"
 //   );
 
 //   useEffect(() => {

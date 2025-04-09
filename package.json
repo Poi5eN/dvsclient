@@ -1,7 +1,7 @@
 {
   "name": "Digital-vidya-Sarthi",
   "version": "1.0.0",
-  "proxy": "https://eserver-i5sm.onrender.com",
+  "proxy": "https://dvsserver.onrender.com",
   "homepage": "https://edakshfy.app/",
   "private": true,
   "dependencies": {

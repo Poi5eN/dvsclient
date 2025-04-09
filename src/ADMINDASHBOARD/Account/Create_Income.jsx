@@ -46,7 +46,7 @@ const Create_Income = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdminInfo",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo",
         {
           withCredentials: true,
           headers: {
@@ -73,7 +73,7 @@ const Create_Income = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getTeachers",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers",
         {
           withCredentials: true,
           headers: {
@@ -98,7 +98,7 @@ const Create_Income = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
         {
           withCredentials: true,
           headers: {
@@ -121,7 +121,7 @@ const Create_Income = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllParents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllParents",
         {
           withCredentials: true,
           headers: {

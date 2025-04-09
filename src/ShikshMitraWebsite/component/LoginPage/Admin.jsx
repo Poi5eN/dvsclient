@@ -55,7 +55,7 @@ const Admin = () => {
 
             sessionStorage.setItem("userRole", formdata.Role);
 
-            const response = await axios.post("https://eserver-i5sm.onrender.com/api/v1/login", payload);
+            const response = await axios.post("https://dvsserver.onrender.com/api/v1/login", payload);
 
             setisLoggedIn(formdata.Role);
             Cookies.set("token", response?.data?.token, { expires: 2 });
@@ -395,7 +395,7 @@ export default Admin;
 //       };
 //       sessionStorage.setItem("userRole", formdata.Role);
 
-//       const response = await axios.post("https://eserver-i5sm.onrender.com/api/v1/login", payload);
+//       const response = await axios.post("https://dvsserver.onrender.com/api/v1/login", payload);
 
 //       setisLoggedIn(formdata.Role);
 //       Cookies.set("token", response?.data?.token, { expires: 2 });

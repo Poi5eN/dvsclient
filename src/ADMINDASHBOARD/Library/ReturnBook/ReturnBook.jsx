@@ -19,7 +19,7 @@ function ReturnBook() {
 
   useEffect(() => {
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllIssuedBookStudent?bookId=${_id}`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getAllIssuedBookStudent?bookId=${_id}`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,

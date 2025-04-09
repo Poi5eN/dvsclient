@@ -51,7 +51,7 @@ export default AttendenceCart
 
 //         try {
 //             const response = await axios.get(
-//                 "https://eserver-i5sm.onrender.com/api/v1/teacher/getAttendance",
+//                 "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
 //                 {
 //                     params: {
 //                         year: year,
@@ -161,7 +161,7 @@ export default AttendenceCart
 
 // //         try {
 // //             const response = await axios.get(
-// //                 "https://eserver-i5sm.onrender.com/api/v1/teacher/getAttendance",
+// //                 "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
 // //                 {
 // //                     params: {
 // //                         year: year,

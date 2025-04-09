@@ -73,7 +73,7 @@ const LeavingCertificate = () => {
     loading: admitCardLoading,
     error: admitCardError,
   } = useCustomQuery(
-    "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+    "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
   );
 
   const {
@@ -81,7 +81,7 @@ const LeavingCertificate = () => {
     loading: allExamLoading,
     error: allExamError,
   } = useCustomQuery(
-    "https://eserver-i5sm.onrender.com/api/v1/exam/getAllExams"
+    "https://dvsserver.onrender.com/api/v1/exam/getAllExams"
   );
 
   useEffect(() => {

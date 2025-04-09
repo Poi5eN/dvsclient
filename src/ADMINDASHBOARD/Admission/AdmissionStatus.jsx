@@ -14,7 +14,7 @@ function AdmissionStatus({ data }) {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getLastYearStudents",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getLastYearStudents",
         {
           withCredentials: true,
           headers: {
