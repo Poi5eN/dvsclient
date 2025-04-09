@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import Topbar from "../components/Topbar";
-
+import "../../src/App.css";
 const AdminDashboard = () => {
   const {
     currentMode,
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Padding to push content below the fixed navbar */}
-          <div className="mt-[90px] px-1">
+          <div className="mt-[75px] px-1">
             {themeSettings && <ThemeSettings />}
             <Outlet />
           </div>

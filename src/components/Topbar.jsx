@@ -12,7 +12,7 @@ import { Parentslinks } from "../data/dummy";
 import { useStateContext } from "../contexts/ContextProvider";
 import { BiSolidSchool } from "react-icons/bi";
 import logo from "../../src/ShikshMitraWebsite/digitalvidya.png"; // Verify path
-
+import '../App.css'
 // --- Constants ---
 const TOPBAR_HEIGHT_APPROX = '65px'; // Adjust if needed
 
@@ -233,7 +233,9 @@ const Topbar = () => {
 
   // --- Component Return ---
   return (
-    <div ref={topbarRef} className="relative flex justify-between items-center pt-1 bg-white dark:bg-main-dark-bg shadow-md border-b dark:border-gray-700 z-30 print:hidden">
+    <div 
+    ref={topbarRef} 
+    className="relative flex justify-between items-center pt-1 bg-white dark:bg-main-dark-bg  border-b dark:border-gray-700 z-30 print:hidden">
 
 
       <div className="flex-1 min-w-0 overflow-hidden mx-2  hidden md:block">
@@ -241,14 +243,7 @@ const Topbar = () => {
             flex items-center gap-1  overflow-x-auto flex-nowrap pb-[2px]
            
         `}>
-        {/* <nav className={`
-            flex items-center gap-1  overflow-x-auto flex-nowrap pb-[2px]
-            scrollbar scrollbar-h-[2px]
-            scrollbar-thumb-gray-400 scrollbar-track-gray-100
-            dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800
-            scrollbar-thumb-rounded-md scrollbar-track-rounded-md
-        `}> */}
-             {/* Render desktop items ONLY */}
+        
              {renderTopbarItems('desktop')}
         </nav>
       </div>

@@ -505,29 +505,6 @@ const CreateFees = () => {
         },
       };
 
-      // feePromises.push(
-      //   axios
-      //     .post(
-      //       "https://dvsserver.onrender.com/api/v1/a",
-      //       payload,
-      //       {
-      //         withCredentials: true,
-      //         headers: { Authorization: `Bearer ${authToken}` },
-      //       }
-      //     )
-      //     .then((response) => ({
-      //       success: true,
-      //       studentName: child.studentName,
-      //       message: response.data.message,
-      //     }))
-      //     .catch((error) => ({
-      //       success: false,
-      //       studentName: child.studentName,
-      //       message: error.response?.data?.message || "Server error",
-      //     }))
-      // );
-   
-   
       try {
         const response=await feescreateFeeStatus(payload)
         if(response?.success){
@@ -558,41 +535,6 @@ else{
       }
     }
 
-    // try {
-    //   const results = await Promise.all(feePromises);
-    //   let allSuccess = true;
-
-    //   results.forEach((result) => {
-    //     if (result.success) {
-    //       toast.success(
-    //         `Fee created for ${result.studentName}: ${result.message}`
-    //       );
-    //        setSelectedChildren([])
-    //     setChildFeeHistory([])
-    //     } else {
-    //       toast.error(`Error for ${result.studentName}: ${result.message}`);
-    //       allSuccess = false;
-    //     }
-    //   });
-
-    //   if (allSuccess) {
-    //     setSelectedChildren([]); // Clear selected students
-    //     setChildFeeHistory([]); // Clear the history display
-    //     setShowForm([]); // Clear form visibility flags
-    //     setModalOpen(false); // Close the modal
-    //     setReload((prev) => !prev); // Trigger reload/refresh if needed
-
-    //      // Also reset search terms if you want the search cleared as well
-    //      setSearchTerm("");
-    //      setSearchTermbyadmissionNo("");
-    //      setFilteredStudents([]);
-    //   }
-    // } catch (error) {
-    //   toast.error("An unexpected error occurred during submission.");
-    // } finally {
-    //   setIsLoader(false);
-
-    // }
   };
 
   return (
