@@ -11,7 +11,7 @@ const StudentFeeDetails = ({ modalData }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://eserver-i5sm.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
+          `https://dvsserver.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
           {
             withCredentials: true,
             headers: {
@@ -104,7 +104,7 @@ export default StudentFeeDetails;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
+//         `https://dvsserver.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
 //         {
 //           withCredentials: true,
 //           headers: {

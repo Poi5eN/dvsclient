@@ -45,7 +45,7 @@ console.log("first response",response)
           
         //     setLoading(true);
         //   await axios.post(
-        //     "https://eserver-i5sm.onrender.com/api/v1/adminRoute/createBulkRegistrations",
+        //     "https://dvsserver.onrender.com/api/v1/adminRoute/createBulkRegistrations",
         //     { registrations: worksheet },
         //     {
         //       withCredentials: true,

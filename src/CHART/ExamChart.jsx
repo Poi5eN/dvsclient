@@ -39,7 +39,7 @@ const ExamChart = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/exam/getAllExams`,
+        `https://dvsserver.onrender.com/api/v1/exam/getAllExams`,
         {
           withCredentials: true,
           headers: {

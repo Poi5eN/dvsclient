@@ -1,143 +1,123 @@
+// src/ADMINDASHBOARD/Inventory/Edit_Stocks.jsx
 import React, { useState, useEffect } from "react";
-import InputForm from "../../Dynamic/Form/InputForm";
-import { toast } from "react-toastify";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, Stack, TextField, Button } from "@mui/material";
 
-
-
-function Edit_Stocks() {
+const EditStocks = () => {
   const authToken = localStorage.getItem("token");
   const navigate = useNavigate();
   const { _id } = useParams();
- 
-  const [formData, setFormData] = useState({
-    itemName: "",
-    category: "",
-    quantity: "",
-    price: "",
-  });
-
-
-
-  const handleFieldChange = (fieldName, value) => {
-    setFormData({
-      ...formData,
-      [fieldName]: value,
-    });
-  };
-
-  const handleSubmit = async () => {
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key !== "image") {
-        formDataToSend.append(key, String(value));
-      }
-    });
-
-    try {
-      const response = await axios.put(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/updateItem/${_id}`,
-        formDataToSend,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-     
-      setFormData(response.data);
-      navigate("/admin/stocks");
-      toast.success("Item Updated successfully!");
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("An error occurred while updating the item.");
-    }
-  };
-  const handleclose = () => {
-    navigate("/admin/stocks");
-  }
+  const [formData, setFormData] = useState({ itemName: "", category: "", quantity: "", price: "", icon: "", color: "" });
 
   useEffect(() => {
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllItems?_id=${_id}`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/items?_id=${_id}`, {
         withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       })
       .then((response) => {
-      
-      
+        const item = response.data.items[0];
         setFormData({
-          itemName: response.data.listOfAllItems[0].itemName,
-          category: response.data.listOfAllItems[0].category,
-          quantity: response.data.listOfAllItems[0].quantity,
-          price: response.data.listOfAllItems[0].price,
+          itemName: item.itemName,
+          category: item.category,
+          quantity: item.quantity,
+          price: item.price,
+          icon: item.icon,
+          color: item.color,
         });
       })
-      .catch((error) => {
-        console.error("Error fetching item data:", error);
-      });
+      .catch((error) => toast.error("Failed to fetch item."));
   }, [_id]);
 
-  const formFields = [
-    {
-      label: "Item Name",
-      name: "itemName",
-      type: "text",
-      value: formData.itemName,
-      required: true,
-    },
-    {
-      label: "Category",
-      name: "category",
-      type: "text",
-      value: formData.category,
-      required: true,
-    },
-    {
-      label: "Quantity",
-      name: "quantity",
-      type: "number",
-      value: formData.quantity,
-      required: true,
-    },
-    {
-      label: "Price",
-      name: "price",
-      type: "number",
-      value: formData.price,
-      required: true,
-    },
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  ];
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/items/${_id}`, formData, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      if (response.data.success) {
+        navigate("/admin/stocks");
+        toast.success("Item updated");
+      } else toast.error(response.data.message);
+    } catch (error) {
+      toast.error("Failed to update item.");
+    }
+  };
 
   return (
-    <div className="mt-12 w-[900px] mx-auto p-3">
-
-      <InputForm
-        fields={formFields}
-        handleChange={handleFieldChange}
-      />
-      <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px" }}>
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-        >
-          Update Item
-        </button>
-        <button
-          onClick={handleclose}
-          className="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
+    <Box mt={3} maxWidth={900} mx="auto" p={2}>
+      <Typography variant="h6" gutterBottom>
+        Edit Stock
+      </Typography>
+      <Stack spacing={2}>
+        <TextField
+          name="itemName"
+          value={formData.itemName}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Item Name"
+          variant="outlined"
+        />
+        <TextField
+          name="category"
+          value={formData.category}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Category"
+          variant="outlined"
+        />
+        <TextField
+          type="number"
+          name="quantity"
+          value={formData.quantity}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Quantity"
+          variant="outlined"
+        />
+        <TextField
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Price"
+          variant="outlined"
+        />
+        <TextField
+          name="icon"
+          value={formData.icon}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Icon (e.g., 📓)"
+          variant="outlined"
+        />
+        <TextField
+          name="color"
+          value={formData.color}
+          onChange={handleInputChange}
+          fullWidth
+          placeholder="Color (e.g., #FF5733)"
+          variant="outlined"
+        />
+        <Stack direction="row" justifyContent="flex-end" spacing={2}>
+          <Button onClick={handleSubmit} variant="contained" color="primary">
+            Update
+          </Button>
+          <Button variant="outlined" onClick={() => navigate("/admin/stocks")}>
+            Cancel
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
-}
+};
 
-export default Edit_Stocks;
+export default EditStocks;

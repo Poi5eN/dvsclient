@@ -28,7 +28,7 @@ function CreatePayment() {
 
   useEffect(() => {
     // Fetch data from the server when the component mounts
-    axios.get('https://eserver-i5sm.onrender.com/api/v1/adminRoute/getTeachers', {
+    axios.get('https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers', {
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,

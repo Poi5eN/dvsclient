@@ -40,7 +40,7 @@ const EditBook = () => {
   useEffect(() => {
     axios
     .get(
-      `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllBooks?_id=${_id}`,
+      `https://dvsserver.onrender.com/api/v1/adminRoute/getAllBooks?_id=${_id}`,
       {withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -62,7 +62,7 @@ const EditBook = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/updateBook/${_id}`, formData, 
+      .put(`https://dvsserver.onrender.com/api/v1/adminRoute/updateBook/${_id}`, formData, 
       {
         withCredentials: true,
         headers: {

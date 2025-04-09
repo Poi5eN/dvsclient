@@ -22,7 +22,7 @@ const StudentFeeStatus = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
         {
           withCredentials: true,
           headers: {
@@ -63,7 +63,7 @@ const StudentFeeStatus = () => {
 
   const handleModalOpen = () => {
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getFees`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -118,7 +118,7 @@ const StudentFeeStatus = () => {
     };
 
     const apiUrl =
-      "https://eserver-i5sm.onrender.com/api/v1/fees/createFeeStatus";
+      "https://dvsserver.onrender.com/api/v1/fees/createFeeStatus";
     axios
       .post(apiUrl, newExamData, {
         withCredentials: true,
@@ -129,7 +129,7 @@ const StudentFeeStatus = () => {
       .then((response) => {
         axios
           .get(
-            `https://eserver-i5sm.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentId}`,
+            `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentId}`,
             {
               withCredentials: true,
               headers: {
@@ -169,7 +169,7 @@ const StudentFeeStatus = () => {
     if (studentId && Object.keys(studentData).length > 0) {
       axios
         .get(
-          `https://eserver-i5sm.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentId}`,
+          `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentId}`,
           {
             withCredentials: true,
             headers: {
@@ -211,7 +211,7 @@ const StudentFeeStatus = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
         {
           withCredentials: true,
           headers: {

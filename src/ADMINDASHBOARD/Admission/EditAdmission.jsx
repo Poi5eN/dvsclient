@@ -67,7 +67,7 @@ const EditAdmission = () => {
 
     axios
       .put(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/updateStudent`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/updateStudent`,
         data,
         {
           withCredentials: true,

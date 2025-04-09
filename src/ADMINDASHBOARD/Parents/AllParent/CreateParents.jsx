@@ -342,7 +342,7 @@ export default CreateParents;
 //   // const { queryData: allParent, loading: parentLoading, error: parentError } =
 //   //   useCustomQuery(
 //   //     "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllParents=true"
-//   //     // "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllParentsWithChildren"
+//   //     // "https://dvsserver.onrender.com/api/v1/adminRoute/getAllParentsWithChildren"
 //   //   );
 
 //   // useEffect(() => {
@@ -354,7 +354,7 @@ export default CreateParents;
 //   const handleDelete = (email) => {
 //     axios
 //       .put(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/deactivateParent`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/deactivateParent`,
 //         { email },
 //         {
 //           withCredentials: true,

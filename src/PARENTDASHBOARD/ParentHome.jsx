@@ -12,7 +12,7 @@ import MyKids from "./MyKids";
 import ParentNotice from "./ParentNotice";
 
 
-// const API_GET_DATA = "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents"
+// const API_GET_DATA = "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents"
 const ParentHome = () => {
   const authToken = localStorage.getItem("token");
   const [data, setData] = useState([]);
@@ -24,7 +24,7 @@ const ParentHome = () => {
 
   useEffect(() => {
     // GET Request to fetch existing notices
-    axios.get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+    axios.get(`https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
       {
         withCredentials: true,
       headers: {

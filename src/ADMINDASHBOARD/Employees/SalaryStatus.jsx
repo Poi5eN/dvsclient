@@ -21,7 +21,7 @@ const EmployeeSalaryStatus = () => {
 
   useEffect(() => {
     axios
-      .get(`https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllEmployees?email=${email}`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/getAllEmployees?email=${email}`, {
         withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -42,7 +42,7 @@ const EmployeeSalaryStatus = () => {
   useEffect(() => {
     if (employeeId) {
       axios
-        .get(`https://eserver-i5sm.onrender.com/api/v1/employee/getPaymentHistory?employeeId=${employeeId}`, {
+        .get(`https://dvsserver.onrender.com/api/v1/employee/getPaymentHistory?employeeId=${employeeId}`, {
           withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -103,7 +103,7 @@ const EmployeeSalaryStatus = () => {
       })),
     };
 
-    const apiUrl = `https://eserver-i5sm.onrender.com/api/v1/employee/salaryPay`;
+    const apiUrl = `https://dvsserver.onrender.com/api/v1/employee/salaryPay`;
     axios
       .post(apiUrl, newSalaryData, {
         withCredentials: true,
@@ -114,7 +114,7 @@ const EmployeeSalaryStatus = () => {
       .then((response) => {
 
         axios
-          .get(`https://eserver-i5sm.onrender.com/api/v1/employee/getPaymentHistory?employeeId=${employeeId}`, {
+          .get(`https://dvsserver.onrender.com/api/v1/employee/getPaymentHistory?employeeId=${employeeId}`, {
             withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,

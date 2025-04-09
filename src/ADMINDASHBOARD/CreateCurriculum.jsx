@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Api_GetAll =
-  "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClass";
+  "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClass";
 
 const CreateCurriculum = () => {
   const authToken = localStorage.getItem("token");
@@ -23,7 +23,7 @@ const CreateCurriculum = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClass",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClass",
         {
           withCredentials: true,
           headers: {
@@ -46,7 +46,7 @@ const CreateCurriculum = () => {
         setLoading(true);
         try {
           const response = await axios.get(
-            "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllCurriculum",
+            "https://dvsserver.onrender.com/api/v1/adminRoute/getAllCurriculum",
             {
               withCredentials: true,
               headers: {

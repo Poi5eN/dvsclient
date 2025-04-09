@@ -38,7 +38,7 @@ const Home = () => {
 
   const handleLogout = () => {
     axios
-      .get("https://eserver-i5sm.onrender.com/api/v1/logout")
+      .get("https://dvsserver.onrender.com/api/v1/logout")
       .then(() => {
         sessionStorage.clear();
         localStorage.clear();

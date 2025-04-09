@@ -12,7 +12,7 @@ function DynamicDataTable({ data, updateFetchData }) {
   const handleReturn = async (issueId) => {
     try {
        await axios.put(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/returnBook/${issueId}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/returnBook/${issueId}`,
         {},
         {
           withCredentials: true,

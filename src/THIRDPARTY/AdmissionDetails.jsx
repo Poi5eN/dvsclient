@@ -283,7 +283,7 @@ export default AdmissionDetails;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //         {
 //           withCredentials: true,
 //           headers: {

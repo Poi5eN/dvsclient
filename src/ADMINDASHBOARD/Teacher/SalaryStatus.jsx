@@ -25,7 +25,7 @@ const SalaryStatus = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getTeachers?email=${email}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers?email=${email}`,
         {
           withCredentials: true,
           headers: {
@@ -49,7 +49,7 @@ const SalaryStatus = () => {
     const selectedYear = selectedYearElement.value;
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/teacher/getPaymentHistory?teacherId=${teacherId}&year=${selectedYear}`,
+        `https://dvsserver.onrender.com/api/v1/teacher/getPaymentHistory?teacherId=${teacherId}&year=${selectedYear}`,
         {
           withCredentials: true,
           headers: {
@@ -112,7 +112,7 @@ const SalaryStatus = () => {
       })),
     };
 
-    const apiUrl = `https://eserver-i5sm.onrender.com/api/v1/teacher/salaryPay`;
+    const apiUrl = `https://dvsserver.onrender.com/api/v1/teacher/salaryPay`;
     axios
       .post(apiUrl, newSalaryData, {
         withCredentials: true,
@@ -123,7 +123,7 @@ const SalaryStatus = () => {
       .then((response) => {
         axios
           .get(
-            `https://eserver-i5sm.onrender.com/api/v1/teacher/getPaymentHistory?teacherId=${teacherId}`,
+            `https://dvsserver.onrender.com/api/v1/teacher/getPaymentHistory?teacherId=${teacherId}`,
             {
               withCredentials: true,
               headers: {

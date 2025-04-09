@@ -14,7 +14,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/myKids`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -36,7 +36,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getFees",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getFees",
         {
           withCredentials: true,
           headers: {
@@ -59,7 +59,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdditionalFees",
+        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
         {
           withCredentials: true,
           headers: {

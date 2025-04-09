@@ -35,7 +35,7 @@ const StudentsResult = () => {
       setLoading(true);
       try {
           const response = await axios.get(
-              "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+              "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
               {
                   withCredentials: true,
                   headers: {
@@ -55,7 +55,7 @@ const StudentsResult = () => {
   useEffect(() => {
     axios
         .get(
-            `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+            `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
             {
                 withCredentials: true,
                 headers: {
@@ -90,7 +90,7 @@ const StudentsResult = () => {
       try {
         const response = await axios.get(
           
-          "https://eserver-i5sm.onrender.com/api/v1/marks/getmarks",
+          "https://dvsserver.onrender.com/api/v1/marks/getmarks",
           {
             withCredentials: true,
             headers: { Authorization: `Bearer ${authToken}` },
@@ -113,7 +113,7 @@ const StudentsResult = () => {
       const fetchExams = async () => {
         try {
           const response = await axios.get(
-            "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+            "https://dvsserver.onrender.com/api/v1/exam/getExams",
             {
               withCredentials: true,
               headers: { Authorization: `Bearer ${authToken}` },
@@ -131,7 +131,7 @@ const StudentsResult = () => {
     useEffect(() => {
       axios
           .get(
-              `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+              `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
               {
                   withCredentials: true,
                   headers: {
@@ -592,7 +592,7 @@ const StudentsResult = () => {
 //       setLoading(true);
 //       try {
 //           const response = await axios.get(
-//               "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents",
+//               "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
 //               {
 //                   withCredentials: true,
 //                   headers: {
@@ -612,7 +612,7 @@ const StudentsResult = () => {
 //   useEffect(() => {
 //     axios
 //         .get(
-//             `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//             `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //             {
 //                 withCredentials: true,
 //                 headers: {
@@ -647,7 +647,7 @@ const StudentsResult = () => {
 //       try {
 //         const response = await axios.get(
           
-//           "https://eserver-i5sm.onrender.com/api/v1/marks/getmarks",
+//           "https://dvsserver.onrender.com/api/v1/marks/getmarks",
 //           {
 //             withCredentials: true,
 //             headers: { Authorization: `Bearer ${authToken}` },
@@ -670,7 +670,7 @@ const StudentsResult = () => {
 //       const fetchExams = async () => {
 //         try {
 //           const response = await axios.get(
-//             "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+//             "https://dvsserver.onrender.com/api/v1/exam/getExams",
 //             {
 //               withCredentials: true,
 //               headers: { Authorization: `Bearer ${authToken}` },
@@ -1127,7 +1127,7 @@ const StudentsResult = () => {
 //         const fetchStudents = async () => {
 //             try {
 //                 const response = await axios.get(
-//                     "https://eserver-i5sm.onrender.com/api/v1/student/getStudents",
+//                     "https://dvsserver.onrender.com/api/v1/student/getStudents",
 //                     {
 //                         withCredentials: true,
 //                         headers: {
@@ -1158,7 +1158,7 @@ const StudentsResult = () => {
 //     useEffect(() => {
 //         axios
 //             .get(
-//                 `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//                 `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //                 {
 //                     withCredentials: true,
 //                     headers: {
@@ -1188,7 +1188,7 @@ const StudentsResult = () => {
 //         setLoading(true);
 //         try {
 //             const response = await axios.get(
-//                 "https://eserver-i5sm.onrender.com/api/v1/marks/getmarks",
+//                 "https://dvsserver.onrender.com/api/v1/marks/getmarks",
 //                 {
 //                     withCredentials: true,
 //                     headers: { Authorization: `Bearer ${authToken}` },
@@ -1210,7 +1210,7 @@ const StudentsResult = () => {
 //         const fetchExams = async () => {
 //             try {
 //                 const response = await axios.get(
-//                     "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+//                     "https://dvsserver.onrender.com/api/v1/exam/getExams",
 //                     {
 //                         withCredentials: true,
 //                         headers: { Authorization: `Bearer ${authToken}` },
@@ -1757,7 +1757,7 @@ const StudentsResult = () => {
 //      useEffect(() => {
 //     axios
 //       .get(
-//         `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllClasses`,
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -1786,7 +1786,7 @@ const StudentsResult = () => {
 //         setLoading(true);
 //         try {
 //             const response = await axios.get(
-//                 "https://eserver-i5sm.onrender.com/api/v1/marks/getmarks",
+//                 "https://dvsserver.onrender.com/api/v1/marks/getmarks",
 //                 {
 //                     withCredentials: true,
 //                     headers: { Authorization: `Bearer ${authToken}` },
@@ -1808,7 +1808,7 @@ const StudentsResult = () => {
 //         const fetchExams = async () => {
 //             try {
 //                 const response = await axios.get(
-//                     "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+//                     "https://dvsserver.onrender.com/api/v1/exam/getExams",
 //                     {
 //                         withCredentials: true,
 //                         headers: { Authorization: `Bearer ${authToken}` },
@@ -2353,7 +2353,7 @@ const StudentsResult = () => {
 //     setLoading(true);
 //     try {
 //       const response = await axios.get(
-//         "https://eserver-i5sm.onrender.com/api/v1/marks/getmarks",
+//         "https://dvsserver.onrender.com/api/v1/marks/getmarks",
 //         {
 //           withCredentials: true,
 //           headers: { Authorization: `Bearer ${authToken}` },
@@ -2375,7 +2375,7 @@ const StudentsResult = () => {
 //     const fetchExams = async () => {
 //       try {
 //         const response = await axios.get(
-//           "https://eserver-i5sm.onrender.com/api/v1/exam/getExams",
+//           "https://dvsserver.onrender.com/api/v1/exam/getExams",
 //           {
 //             withCredentials: true,
 //             headers: { Authorization: `Bearer ${authToken}` },
@@ -2886,7 +2886,7 @@ const StudentsResult = () => {
 //   const [submittedData, setSubmittedData] = useState([]);
 
 //   useEffect(() => {
-//     axios.get("https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents", {
+//     axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents", {
 
 //       withCredentials: true,
 //       headers: {

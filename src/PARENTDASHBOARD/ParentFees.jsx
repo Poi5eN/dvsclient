@@ -67,7 +67,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/myKids`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -92,7 +92,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAdminInfo`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo`,
         {
           withCredentials: true,
           headers: {
@@ -117,7 +117,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentData._id}`,
+        `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentData._id}`,
         {
           withCredentials: true,
           headers: {

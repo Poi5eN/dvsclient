@@ -17,7 +17,7 @@ const Syllabus = () => {
     // GET Request to fetch existing notices
     axios
       .get(
-        `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
         {
           withCredentials: true,
           headers: {
@@ -41,7 +41,7 @@ const Syllabus = () => {
     if (studentData.class) {
       axios
         .get(
-          `https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllCurriculum?className=${studentData.class}`,
+          `https://dvsserver.onrender.com/api/v1/adminRoute/getAllCurriculum?className=${studentData.class}`,
           {
             withCredentials: true,
             headers: {
