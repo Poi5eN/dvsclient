@@ -18,7 +18,7 @@ const API_EDIT =
 const API_DELETE =
   "https://dvsserver.onrender.com/api/v1/adminRoute/deleteNotice/";
 const API_GET_DATA =
-  "https://dvsserver.onrender.com/api/v1/adminRoute/getAllNotice";
+  "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
 
 const TeacherNotice = () => {
     const [loading, setLoading] = useState(false);

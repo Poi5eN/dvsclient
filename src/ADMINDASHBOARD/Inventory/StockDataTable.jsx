@@ -1,94 +1,61 @@
-import React,{useState} from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { Link, useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
+// src/ADMINDASHBOARD/Inventory/StockDataTable.jsx
+import React from "react";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-function StockTable({data , handleDelete}) {
-
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deletingItemId, setDeletingItemId] = useState(null);
-
-  const handleDeleteClick = (itemId) => {
-    setDeletingItemId(itemId);
-    setDeleteDialogOpen(true);
+const StockDataTable = ({ data }) => {
+  const handleDelete = async (itemId) => {
+    if (window.confirm("Are you sure?")) {
+      try {
+        const response = await axios.delete(`https://dvsserver.onrender.com/api/v1/adminRoute/items/${itemId}`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (response.data.success) window.location.reload();
+        else toast.error(response.data.message);
+      } catch (error) {
+        toast.error("Failed to delete item.");
+      }
+    }
   };
 
-  const handleConfirmDelete = () => {
-    handleDelete(deletingItemId);
-    setDeleteDialogOpen(false);
-    setDeletingItemId(null);
-  };
+  // Fallback to empty array if data is undefined
+  const tableData = Array.isArray(data) ? data : [];
 
-  const handleCancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setDeletingItemId(null);
-  };
-
-    const columns = [
-      { field: "id", headerName: "S. No." , width:50 },
-      { field: "itemName", headerName: "Item Name" , flex:1 },
-      { field: "category", headerName: "Category",flex:1},
-      { field: "quantity", headerName: "Quantity",  flex:1 },
-      { field: "price", headerName: "Price", flex:1 },
-        { field: "actions", headerName: "Actions", flex:1,
-          renderCell: (params) => (
-            <div>
-        
-              <Link to={`/admin/stocks/editstock/${params.row._id}`}>
-                <IconButton>
-                  <EditIcon  className="text-green-600"/>
-                </IconButton>
-              </Link>
-              <IconButton onClick={() => handleDeleteClick(params.row._id)}>
-                <DeleteIcon  className="text-red-600" />
-              </IconButton>
-            </div>
-          ),
-        },
-      ];
-
- 
-  
-  const dataWithIds = Array.isArray(data) ? data.map((item, index) => ({ id: index + 1, ...item})) : [];
   return (
- 
-    // <div className="h-[350px]  mx-auto  bg-white mt-2 rounded-md">
-    <div className="h-[450px] dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full">
-    <div className=" w-full dark:text-white dark:bg-secondary-dark-bg">
-      <DataGrid
-        rows={dataWithIds}
-        columns={columns}
-        
-      />
-      </div>
-      <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Do you really want to delete this item?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">
-            No
-          </Button>
-          <Button onClick={handleConfirmDelete} color="primary">
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    <Table sx={{ mt: 3 }}>
+      <TableHead>
+        <TableRow>
+          <TableCell>S. No.</TableCell>
+          <TableCell>Item Name</TableCell>
+          <TableCell>Category</TableCell>
+          <TableCell>Quantity</TableCell>
+          <TableCell>Price</TableCell>
+          <TableCell>Actions</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {tableData.map((item, index) => (
+          <TableRow key={item._id}>
+            <TableCell>{index + 1}</TableCell>
+            <TableCell>{item.itemName}</TableCell>
+            <TableCell>{item.category}</TableCell>
+            <TableCell>{item.quantity}</TableCell>
+            <TableCell>₹{item.price}</TableCell>
+            <TableCell>
+              <Link to={`/admin/stocks/editstock/${item._id}`}>
+                <Button size="small" variant="outlined" sx={{ mr: 1 }}>Edit</Button>
+              </Link>
+              <Button size="small" color="error" onClick={() => handleDelete(item._id)}>Delete</Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
-}
+};
 
-export default StockTable;
-
-
+export default StockDataTable;

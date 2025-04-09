@@ -123,6 +123,7 @@ export const links = [
       name: 'Inventory',
       icon: <BiSolidStoreAlt />,
       children: [
+          { name: 'Records', link: 'records' },
           { name: 'Stocks', link: 'stocks' },
           { name: 'Sales', link: 'sales' }, 
         

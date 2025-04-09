@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 
-const API_GET_DATA = "https://eserver-i5sm.onrender.com/api/v1/adminRoute/getAllNotice";
+const API_GET_DATA = "https://eserver-i5sm.onrender.com/api/v1/adminRoute/notice";
 
 
 const ParentNotice = () => {
