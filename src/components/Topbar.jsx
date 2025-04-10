@@ -12,7 +12,7 @@ import { Parentslinks } from "../data/dummy";
 import { useStateContext } from "../contexts/ContextProvider";
 import { BiSolidSchool } from "react-icons/bi";
 import logo from "../../src/ShikshMitraWebsite/digitalvidya.png"; // Verify path
-import '../App.css'
+// import '../App.css'
 // --- Constants ---
 const TOPBAR_HEIGHT_APPROX = '65px'; // Adjust if needed
 
@@ -155,9 +155,9 @@ const Topbar = () => {
   }
 
 
-  const topbarActiveLink = `flex items-center gap-1 px-2 py-1 rounded-md text-white text-[10px] uppercase font-semibold whitespace-nowrap`;
-  const topbarNormalLink = `flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold whitespace-nowrap`;
-  const mobileActiveLink = `flex items-center gap-1 pl-4 pr-2 py-2.5 rounded-lg text-white text-md font-semibold`; // Added font-semibold
+  const topbarActiveLink = `flex items-center gap-1 px-2 py-1 rounded-md text-white text-[10px] uppercase  whitespace-nowrap`;
+  const topbarNormalLink = `flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 dark:hover:bg-gray-700  whitespace-nowrap`;
+  const mobileActiveLink = `flex items-center gap-1 pl-4 pr-2 py-2.5 rounded-lg text-white text-md `; // Added 
   const mobileNormalLink = `flex items-center gap-1 pl-4 pr-2 py-2.5 rounded-lg text-md text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-light-gray`;
 
   const renderTopbarItems = (linkStyleType) => {

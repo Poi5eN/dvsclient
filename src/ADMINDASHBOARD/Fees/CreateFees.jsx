@@ -8,6 +8,7 @@ import {
   LateFines,
   parentandchildwithID,
 } from "../../Network/AdminApi";
+import Button from "../../Dynamic/utils/Button";
 import Modal from "../../Dynamic/Modal";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { useStateContext } from "../../contexts/ContextProvider";
@@ -55,7 +56,7 @@ const CreateFees = () => {
   const [monthlyDues, setMonthlyDues] = useState({});
   const [mode, setMode] = useState("auto"); // Toggle between auto and manual, default to auto
   const authToken = localStorage.getItem("token");
-
+ const [credentialsModal, setCredentialsModal] = useState(false);
   const allMonths = [
     "April",
     "May",
@@ -508,7 +509,7 @@ const CreateFees = () => {
       try {
         const response=await feescreateFeeStatus(payload)
         if(response?.success){
-
+          setResponseData(response?.data)
         setSelectedChildren([]); // Clear selected students
         setChildFeeHistory([]); // Clear the history display
         setShowForm([]); // Clear form visibility flags
@@ -520,8 +521,9 @@ const CreateFees = () => {
          setSearchTermbyadmissionNo("");
          setFilteredStudents([]);
          setIsLoader(false);
-         setResponseData(response?.data)
+         
          toast?.success(response?.message)
+         setCredentialsModal(true);
          setIsModalOpen(true)
         //  handleDownloadPdf()
         }
@@ -972,7 +974,7 @@ else{
    </div>
      }
      
-     <Modal
+     {/* <Modal
             setIsOpen={() => setIsModalOpen(false)}
             isOpen={isModalOpen} title={"Addmission Successfully!"} maxWidth="100px">
             <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -996,7 +998,43 @@ else{
                 </button>
               </div>
             </div>
-          </Modal>
+          </Modal> */}
+
+<Modal isOpen={credentialsModal} setIsOpen={setCredentialsModal} title="Fee Receipt">
+        {/* <div className="p-5 max-h-96 overflow-y-auto">
+          {true ? (
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-200 dark:bg-secondary-dark-bg">
+                  <th className="border p-2">Student Name</th>
+                  <th className="border p-2">Student Email</th>
+                  <th className="border p-2">Student Password</th>
+                  <th className="border p-2">Parent Email</th>
+                  <th className="border p-2">Parent Password</th>
+                  <th className="border p-2">Parent Admission No.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {generatedCredentials.map((cred, index) => (
+                  <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <td className="border p-2">{cred.studentName}</td>
+                    <td className="border p-2">{cred.studentEmail}</td>
+                    <td className="border p-2">{cred.studentPassword}</td>
+                    <td className="border p-2">{cred.parentEmail}</td>
+                    <td className="border p-2">{cred.parentPassword}</td>
+                    <td className="border p-2">{cred.parentAdmissionNumber}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No credentials generated.</p>
+          )}
+          <div className="mt-4 flex justify-center">
+            <Button name="Close" onClick={() => setCredentialsModal(false)} width="full" color="gray" />
+          </div>
+        </div> */}
+      </Modal>
     </div>
   );
 };

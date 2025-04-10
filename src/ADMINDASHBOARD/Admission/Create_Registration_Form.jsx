@@ -342,10 +342,10 @@ const newAdmission=async()=>{
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create"} maxWidth="500px">
         <form onSubmit={handleSubmit} className="p-3">
           <div
-            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-gray-100 rounded-md "
+            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-white rounded-md "
           >
             <ReactInput
-              resPClass="grid grid-cols-2 md:grid-cols-5"
+              // resPClass="grid grid-cols-2 md:grid-cols-5"
               type="text"
               name="studentFullName"
               required={true}
@@ -364,14 +364,7 @@ const newAdmission=async()=>{
               value={payload.studentContact}
             />
 
-            <ReactInput
-              type="text"
-              name="studentAddress"
-              required={false}
-              label="Student Address"
-              onChange={handleChange}
-              value={payload.studentAddress}
-            />
+           
             
             <ReactSelect
               name="studentGender"
@@ -393,9 +386,7 @@ const newAdmission=async()=>{
               value={payload?.studentDateOfBirth}
             />
 
-            <div style={{ zIndex: "9999999999999" }}>
-
-            </div>
+            
             <ReactSelect
               required={true}
               name="studentClass"
@@ -413,6 +404,70 @@ const newAdmission=async()=>{
               dynamicOptions={DynamicSection}
             />
            
+           <ReactInput
+              type="text"
+              name="studentAddress"
+              required={false}
+              label="Student Address"
+              onChange={handleChange}
+              value={payload.studentAddress}
+            />
+           <ReactInput
+              type="text"
+              name="city"
+              required={false}
+              label="City"
+              onChange={handleChange}
+              value={payload.city}
+            />
+           <ReactInput
+              type="text"
+              name="pincode"
+              required={false}
+              label="Pincode"
+              onChange={handleChange}
+              value={payload.pincode}
+            />
+           <ReactInput
+              type="text"
+              name="state"
+              required={false}
+              label="State"
+              onChange={handleChange}
+              value={payload.state}
+            />
+           <ReactInput
+              type="text"
+              name="country"
+              required={false}
+              label="Country"
+              onChange={handleChange}
+              value={payload.country}
+            />
+           <ReactInput
+              type="text"
+              name="caste"
+              required={false}
+              label="Caste"
+              onChange={handleChange}
+              value={payload.caste}
+            />
+           <ReactInput
+              type="text"
+              name="religion"
+              required={false}
+              label="Religion"
+              onChange={handleChange}
+              value={payload.religion}
+            />
+           <ReactInput
+              type="text"
+              name="nationality"
+              required={false}
+              label="Nationality"
+              onChange={handleChange}
+              value={payload.nationality}
+            />
             <ReactInput
               type="file"
               name="studentImage"
@@ -432,7 +487,7 @@ const newAdmission=async()=>{
             )}
 
           </div>
-          <div className="flex flex-row gap-10 justify-center bg-gray-100 text-center">
+          <div className="flex flex-row gap-10 justify-center text-center">
             <span className="text-xl text-blue-900">Parent Details</span>
             <FormControlLabel
               control={<Switch onClick={() => setsibling(!sibling)} />}
@@ -440,7 +495,7 @@ const newAdmission=async()=>{
             />
           </div>
           {sibling ? (
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1 mx-auto bg-gray-100 rounded-md ">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1 mx-auto bg-white rounded-md ">
 
               <ReactInput
                 type="text"

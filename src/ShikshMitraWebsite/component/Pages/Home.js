@@ -3,6 +3,8 @@ import Hero from "../New/Hero";
 import Card from "../New/Card";
 import Related from "../New/Related";
 import Dashboard from "../New/Dashboard";
+import DashboardCards from "../FeacherCard";
+import SlidingCards from "../SlidingCards";
 // import Community from "../Community/Community";
 // import Testimonial from "../Testimonial/Testimonial";
 // import ContactForm from "../ContactForm/ContactForm";
@@ -12,10 +14,12 @@ import Dashboard from "../New/Dashboard";
 
 const Home = () => {
   return (
-    <div className="bg-[#1f2937]">
+    <div className="bg-white">
        <Hero/>
        <Card/>
-       <Related/>
+       <DashboardCards/>
+       <SlidingCards/>
+       {/* <Related/> */}
        <Dashboard/>
       {/* <Card />
       <Ourwork />
