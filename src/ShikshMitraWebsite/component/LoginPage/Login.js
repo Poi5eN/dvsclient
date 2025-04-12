@@ -22,7 +22,7 @@ const { loginUser } = useStateContext();
         Username: '',
         Password: '',
         Role: 'accountants',
-        session: '2024-2025' 
+        session: '2025-2026' 
     });
     // console.log("formdata",formdata)
     const [loading, setLoading] = useState(false);
@@ -185,9 +185,9 @@ const { loginUser } = useStateContext();
                                             name="session"
                                         >
                                             {/* <option value="">Select Session</option> */}
-                                            
-                                            <option value="2024-2025">2024-2025</option>
                                             <option value="2025-2026">2025-2026</option>
+                                            <option value="2024-2025">2024-2025</option>
+                                           
                                         </select>
                                     </div>
                                 )}
