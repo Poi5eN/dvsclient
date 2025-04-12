@@ -1,23 +1,5 @@
 
 
-// import React from 'react'
-// import ReportCard from './ReportCard'
-// import Report2 from './Report2'
-// import AdmissionForm from './AdmissionForm'
-
-// const Login = () => {
-//   return (
-//     <div className=' mt-20'>
-//         <ReportCard/>
-//         {/* <Report2/> */}
-//         {/* <AdmissionForm/> */}
-//     </div>
-//   )
-// }
-
-// export default Login
-
-
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -126,7 +108,7 @@ const { loginUser } = useStateContext();
     }
     return (
         <>
-            <div className="flex items-center justify-center min-h-screen bg-gray-100 ">
+            <div className="flex items-center justify-center min-h-screen bg-white ">
                 <div className=" grid md:grid-cols-5 overflow-hidden  w-full mx-auto p-4 md:p-0">
                     <div
                      className="w-full md:col-span-3 h-[100vh] hidden md:block relative overflow-hidden sm-hidden"
@@ -150,7 +132,7 @@ const { loginUser } = useStateContext();
                         </div>
                     </div>
                     <div 
-                    className="w-full md:col-span-2 md:p-8 mx-auto sm:bg-gray-100 bg-gray-100 md:bg-gray-50 flex flex-col items-center justify-center"
+                    className="w-full md:col-span-2 md:p-8 mx-auto bg-white flex flex-col items-center justify-center"
                     // className="w-full md:w-1/3 p-8 mx-auto sm:bg-gray-100 bg-gray-100 md:bg-gray-50 flex flex-col items-center justify-center"
                     >
                         <div className="flex justify-center ">

@@ -57,7 +57,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
              
                 {tHead.map((header) => (
                
-                  <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-[${header?.width}]`}
+                  <th class={`px-2 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-[${header?.width}]`}
                   // <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-${header?.width}`}
                     // style={{ background: currentColor, color: "white", }}
                     style={{ background: currentColor, color: "white"}}

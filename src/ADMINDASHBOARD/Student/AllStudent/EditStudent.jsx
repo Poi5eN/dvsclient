@@ -148,7 +148,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
 
     // Define the fields to include in the FormData
     const fieldsToInclude = [
-      "studentName", "email", "password", "fatherName", "motherName",
+      "studentName", "email", "password", "fatherName", "motherName","admissionNumber",
       "class", "section", "dateOfBirth", "transport", "rollNo", "gender",
       "address", "contact", "country", "caste", "nationality", "pincode",
       "state", "city", "guardian", "parentcontact", "parentemail", // Added missing parent fields if needed
@@ -227,9 +227,9 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         <ReactInput type="email" name="email" label="Student's Email" onChange={handleOnChange} value={studentData?.email || ""} />
         <ReactInput type="number" name="contact" label="Student's Contact" onChange={handleOnChange} value={studentData?.contact || ""} />
         <ReactInput
-          readOnly={true}
-          disabled={true} // Use disabled visually and functionally
-          type="text" name="admissionNumber" label="Admission Number" value={studentData?.admissionNumber || ""} />
+          // readOnly={true}
+          // disabled={true} // Use disabled visually and functionally
+          type="text" name="admissionNumber" label="Admission Number"  onChange={handleOnChange} value={studentData?.admissionNumber || ""} />
         <ReactInput
             type="date"
             label="Date Of Birth"

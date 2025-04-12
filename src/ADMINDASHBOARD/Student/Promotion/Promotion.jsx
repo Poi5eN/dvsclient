@@ -34,7 +34,7 @@ const Promotion = () => {
     toSection: "",
     toSession: ""
   });
-
+console.log("first values",values)
   const studentData = async () => {
     setIsLoader(true);
     try {
@@ -215,8 +215,8 @@ const Promotion = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex flex-wrap gap-8 mb-4">
+    <div className="px-4">
+      <div className="flex flex-wrap gap-8">
         <div>
           <span className="font-semibold">From</span>
           <ReactSelect
@@ -261,7 +261,7 @@ const Promotion = () => {
         </div>
       </div>
       
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <ReactSelect
           name="viewSession"
           label="View Students from Session"
@@ -269,7 +269,7 @@ const Promotion = () => {
           dynamicOptions={sessionOptions}
           isClearable
         />
-      </div>
+      </div> */}
 
       <Table isSearch={false} tHead={THEAD} tBody={tBody} />
       

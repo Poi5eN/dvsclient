@@ -57,7 +57,7 @@ const Modal = ({ children, isOpen, setIsOpen, title, dynamicWidth}) => {
                           </button>
                         </div>
                         <div
-                         className="max-h-[80vh]  overflow-auto bg-gray-50 "
+                         className="max-h-[80vh]  overflow-auto bg-white "
                          style={{ width:dynamicWidth}}
                          >
                         {children}

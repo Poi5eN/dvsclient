@@ -217,7 +217,8 @@ const MonthFeeCard = ({ childFeeHistory }) => {
               <tbody className="bg-white divide-y divide-gray-200">
                   {/* Check if feeHistory exists and is an array before mapping */}
                   {childFeeHistory?.feeStatus?.feeHistory && Array.isArray(childFeeHistory.feeStatus.feeHistory) && childFeeHistory.feeStatus.feeHistory.length > 0 ? (
-                      childFeeHistory.feeStatus.feeHistory.map((history) => (
+                     childFeeHistory.feeStatus.feeHistory?.slice().reverse().map((history) => (
+                    //   childFeeHistory.feeStatus.feeHistory?.reverse().map((history) => (
                           // Use history._id as the key
                           <tr key={history._id} className="hover:bg-gray-50">
 

@@ -1,6 +1,11 @@
-@import url('https://cdn.syncfusion.com/ej2/material.css');
+/* @import url('https://cdn.syncfusion.com/ej2/material.css'); */
 
 
+::-webkit-scrollbar {
+  width: 4px; 
+
+  height: 4px; 
+}
 
 .sidebar {
   box-shadow: rgb(113 122 131 / 11%) 0px 7px 30px 0px;
@@ -100,4 +105,131 @@
 
 .bg-yellow-200 {
   background-color: #fef08a; /* Light yellow */
+}
+
+/* date picker start */
+
+.form-group {
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+
+.labelPicker {
+  position: absolute;
+  background-color: white;
+  top: -5px !important;
+  /* padding: 5px 3px !important; */
+  padding: 5px 3px !important;
+  line-height: 3px;
+  left: 12px;
+  font-size: 9px !important;
+  font-weight: bolder !important;
+  /* margin-bottom: 0px !important; */
+}
+
+.lable {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 11px;
+  font-weight: 500 !important;
+  /* border-radius: 15px; */
+  display: inline-block;
+  max-width: 80%;
+  margin-left: 6px;
+  /* color: #4f90d6; */
+}
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+
+.slider {
+  height: auto;
+  position: relative;
+  width: 100%;
+
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.slide-track {
+  width: calc(250px * 20);
+  display: flex;
+  animation: scroll 20s linear infinite;
+  justify-content: space-between;
+}
+
+.slide-track2 {
+  width: calc(250px * 15);
+  display: flex;
+  animation: scroll2 15s linear infinite;
+  justify-content: space-between;
+}
+
+.slide {
+  width: 250px;
+  height: 250px;
+
+  display: grid;
+  place-items: center;
+  transition:0.5s;
+  cursor:pointer;
+}
+.slide:hover{
+  transform:scale(0.8)
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(calc(-150px * 10));
+  }
+}
+
+@keyframes scroll2 {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(calc(-150px * 5));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .slide-track {
+    width: calc(80px * 20);
+  }
+
+  .slide-track2 {
+    width: calc(80px * 15);
+  }
+
+  .slide {
+    width: 80px;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(calc(-80px * 10));
+    }
+  }
+
+  @keyframes scroll2 {
+    0% {
+      transform: translateX(0px);
+    }
+    100% {
+      transform: translateX(calc(-80px * 5));
+    }
+  }
 }

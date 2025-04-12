@@ -50,12 +50,12 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
       
       <Button Icon={<DownloadIcon className="text-2xl"/>} name="PRINT"/>
       </a>
-        <div className="w-full flex flex-1 p-2 gap-2 mx-auto ml-2" ref={componentPDF} >
-          <div className="w-[400px] pe-[15px] p-2 border-black border-1   rounded-sm dark:text-white">
+        <div className="w-full flex flex-1 p-2 gap-2 mx-auto " ref={componentPDF} >
+          <div className="w-[400px]  p-1 border-black border-1   rounded-sm dark:text-white">
             <div className="flex justify-between ">
               <div className=" h-auto w-[150px]  dark:text-white  ">
                 <img
-                  className="h-12 w-12 rounded-full "
+                  className="h-14 w-14 rounded-full "
                   src={user?.image?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUW0u5Eiiy3oM6wcpeEE6sXCzlh8G-tX1_Iw&s"}
                   alt="logo"
                 />
@@ -81,7 +81,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   Class: <strong> {modalData.studentClass}</strong>
                 </div>
                 <div className="text-[14px]">
-                  S/D. of: <strong>......</strong>
+                  S/D. of: <strong>{modalData?.fatherName}</strong>
                 </div>
                 {
                 modalData.transactionId.length>4 &&  <div className="text-[14px]">
@@ -192,7 +192,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                  
                   <tr>
                     <td class="border border-black pl-2">Concession Amount </td>
-                    <td class="border border-black pl-2"> ₹ {modalData.concessionFee?modalData.concessionFee:"0"}</td>
+                    <td class="border border-black pl-2"> ₹ {modalData.concessionApplied?modalData.concessionApplied:"0"}</td>
                   </tr>
                   
                   <tr>
@@ -219,7 +219,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </table>
             </div>
 
-           <div className="border-black p-2 border-1 my-2">
+           <div className="border-black p-1 border-1 my-2">
            <p class="text-[14px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
             <p className="text-[14px]">
               {" "}
@@ -250,11 +250,11 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               </ol>
             </div>
           </div>
-          <div className="w-[400px] pe-[15px] p-2 border-black border-1   rounded-sm dark:text-white">
+          <div className="w-[400px]  p-1 border-black border-1   rounded-sm dark:text-white">
             <div className="flex justify-between ">
               <div className=" h-auto w-[150px]  dark:text-white  ">
                 <img
-                  className="h-12 w-12 rounded-full "
+                  className="h-14 w-14 rounded-full "
                   src={user?.image?.url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUW0u5Eiiy3oM6wcpeEE6sXCzlh8G-tX1_Iw&s"}
                   alt="logo"
                 />
@@ -280,7 +280,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                   Class: <strong> {modalData.studentClass}</strong>
                 </div>
                 <div className="text-[14px]">
-                  S/D. of: <strong>......</strong>
+                  S/D. of: <strong>{modalData?.fatherName}</strong>
                 </div>
                 {
                 modalData.transactionId.length>4 &&  <div className="text-[14px]">
@@ -391,7 +391,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                  
                   <tr>
                     <td class="border border-black pl-2">Concession Amount </td>
-                    <td class="border border-black pl-2"> ₹ {modalData.concessionFee?modalData.concessionFee:"0"}</td>
+                    <td class="border border-black pl-2"> ₹ {modalData.concessionApplied?modalData.concessionApplied:"0"}</td>
                   </tr>
                   
                   <tr>

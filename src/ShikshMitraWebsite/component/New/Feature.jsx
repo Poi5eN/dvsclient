@@ -7,7 +7,7 @@ import Graph from './Page/Fetaure/Graph'
 
 const Feature = () => {
   return (
-    <div>
+    <div className='bg-white'>
      
     <Hero/>
     <Dashboard/>

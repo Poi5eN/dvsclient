@@ -1,5 +1,10 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+// import 'primereact/resources/themes/lara-light-indigo/theme.css'; 
+// import 'primereact/resources/primereact.min.css';      
+// import 'primeicons/primeicons.css';   
+
+
 
 import ExamSystem from "./ADMINDASHBOARD/Exams/ExamSystem";
 import Loading from "./Loading";
