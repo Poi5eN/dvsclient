@@ -12,7 +12,7 @@ import Button from "../Dynamic/utils/Button";
 Modal.setAppElement("#root");
 
 const API_BASE_URL =
-  "https://dvsserver.onrender.com/api/v1/adminRoute/createNotice";
+  "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
 const API_EDIT =
   "https://dvsserver.onrender.com/api/v1/adminRoute/updateNotice/";
 const API_DELETE =
