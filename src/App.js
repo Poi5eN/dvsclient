@@ -243,7 +243,7 @@ function App() {
               <Route path="stocks" element={<Stocks />} />
               <Route path="stocks/editstock/:_id" element={<EditStocks />} />
               <Route path="sales" element={<Sales />} />
-              <Route path="records" element={<InventoryDashboard />} /> {/* New Route */}
+              {/* <Route path="records" element={<InventoryDashboard />} /> New Route */}
               <Route path="books" element={<AllBooks />} />
               <Route path="books/edit-book/:_id" element={<EditBook />} />
               <Route path="books/view-book/:_id" element={<ViewBooks />} />

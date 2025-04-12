@@ -3,7 +3,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Stack, TextField, Button } from "@mui/material";
+import { Box, Typography, Stack, TextField, Button, Card, CardContent } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { motion } from "framer-motion";
+import theme from "../../theme"; // Adjust path as needed
+import { ThemeProvider } from "@mui/material/styles";
 
 const EditStocks = () => {
   const authToken = localStorage.getItem("token");
@@ -52,71 +56,35 @@ const EditStocks = () => {
   };
 
   return (
-    <Box mt={3} maxWidth={900} mx="auto" p={2}>
-      <Typography variant="h6" gutterBottom>
-        Edit Stock
-      </Typography>
-      <Stack spacing={2}>
-        <TextField
-          name="itemName"
-          value={formData.itemName}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Item Name"
-          variant="outlined"
-        />
-        <TextField
-          name="category"
-          value={formData.category}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Category"
-          variant="outlined"
-        />
-        <TextField
-          type="number"
-          name="quantity"
-          value={formData.quantity}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Quantity"
-          variant="outlined"
-        />
-        <TextField
-          type="number"
-          name="price"
-          value={formData.price}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Price"
-          variant="outlined"
-        />
-        <TextField
-          name="icon"
-          value={formData.icon}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Icon (e.g., 📓)"
-          variant="outlined"
-        />
-        <TextField
-          name="color"
-          value={formData.color}
-          onChange={handleInputChange}
-          fullWidth
-          placeholder="Color (e.g., #FF5733)"
-          variant="outlined"
-        />
-        <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
-            Update
-          </Button>
-          <Button variant="outlined" onClick={() => navigate("/admin/stocks")}>
-            Cancel
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
+    <ThemeProvider theme={theme}>
+      <Box mt={4} maxWidth={900} mx="auto" p={2}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Card sx={{ p: 4, background: "linear-gradient(45deg, #fff 0%, #f1f2f6 100%)", borderLeft: `4px solid ${theme.palette.accent.main}` }}>
+            <CardContent>
+              <Typography variant="h4" gutterBottom sx={{ color: theme.palette.primary.main }}>
+                Edit Stock <EditIcon sx={{ verticalAlign: "middle", color: theme.palette.accent.main }} />
+              </Typography>
+              <Stack spacing={3}>
+                <TextField name="itemName" value={formData.itemName} onChange={handleInputChange} fullWidth placeholder="Item Name" variant="outlined" />
+                <TextField name="category" value={formData.category} onChange={handleInputChange} fullWidth placeholder="Category" variant="outlined" />
+                <TextField type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} fullWidth placeholder="Quantity" variant="outlined" />
+                <TextField type="number" name="price" value={formData.price} onChange={handleInputChange} fullWidth placeholder="Price" variant="outlined" />
+                <TextField name="icon" value={formData.icon} onChange={handleInputChange} fullWidth placeholder="Icon (e.g., 📓)" variant="outlined" />
+                <TextField name="color" value={formData.color} onChange={handleInputChange} fullWidth placeholder="Color (e.g., #FF5733)" variant="outlined" />
+                <Stack direction="row" justifyContent="flex-end" spacing={2}>
+                  <Button onClick={handleSubmit} variant="contained" color="primary" sx={{ width: 120 }}>
+                    Update
+                  </Button>
+                  <Button variant="outlined" onClick={() => navigate("/admin/stocks")} sx={{ width: 120, color: theme.palette.text.primary }}>
+                    Cancel
+                  </Button>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Box>
+    </ThemeProvider>
   );
 };
 
