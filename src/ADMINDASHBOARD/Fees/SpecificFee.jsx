@@ -4,10 +4,10 @@ import Table from "../../Dynamic/Table.jsx";
 import {  FaEye } from "react-icons/fa"; // Changed MdVisibility to FaEye for consistency
 import { toast } from "react-toastify";
 import Modal from "../../Dynamic/Modal";
-import { Button } from "@mui/material";
 import { ActiveStudents, AdminGetAllClasses, createStudentSpecificFee } from "../../Network/AdminApi.js";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+import Button from "../../Dynamic/utils/Button.jsx";
 
 function SpecificFee() {
   const { currentColor, setIsLoader } = useStateContext();
@@ -123,6 +123,8 @@ function SpecificFee() {
         { id: "admissionNo", label: "Admission No" },
         { id: "name", label: "Name" },
         { id: "fatherName", label: "Father Name" },
+        { id: "class", label: "Class" },
+        { id: "section", label: "Section" },  
         { id: "contact", label: "Contact" },
         { id: "action", label: "Action" },
     ];
@@ -136,13 +138,17 @@ function SpecificFee() {
         ),
         name: student.studentName || 'N/A',
         fatherName: student.fatherName || 'N/A',
+        class: student.class || 'N/A',
+        section: student.section || 'N/A',
         contact: student.contact || 'N/A',
         gender: student.gender || 'N/A',
         action: (
             <div className="flex justify-center items-center gap-3">
-                <button title="View Details" onClick={() => handleViewClick(student)} className="text-blue-600 hover:text-blue-800 text-lg">
-                Set Fee
-                </button>
+                <Button  name="Set Fee" onClick={() => handleViewClick(student)} 
+                // className="text-blue-600 hover:text-blue-800 text-lg"
+                >
+               
+                </Button>
                
             </div>
         ),
@@ -197,11 +203,11 @@ function SpecificFee() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="contained" onClick={handleSubmit} style={{ backgroundColor: currentColor, color: "white" }}>
-              { "Submit"}
+            <Button name="Submit" onClick={handleSubmit} style={{ backgroundColor: currentColor, color: "white" }}>
+              { }
             </Button>
-            <Button variant="contained" onClick={closeModal} style={{ backgroundColor: "#616161", color: "white" }}>
-              Cancel
+            <Button name="Cancel" color="gray" onClick={closeModal} style={{ backgroundColor: "#616161", color: "white" }}>
+              
             </Button>
           </div>
         </div>
