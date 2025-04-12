@@ -46,8 +46,8 @@
    .did-floating-select {
     font-size: 12px;
     display: block;
-    /* width: 100%; */
-    width: 150px;
+    width: 100%;
+    /* width: 150px; */
     height: 23px;
     padding: 0px 9px;
     background: #fff;

@@ -147,10 +147,14 @@ const details=[
 console.log("allBday",allBday)
   return (
     <>
-     <div className="sm:block md:hidden">
-        <Mobile />
+     <div 
+    //  className="sm:block md:hidden"
+     >
+        {/* <Mobile /> */}
       </div>
-      <div className="mt:0 sm:hidden hidden md:block px-2">
+      <div 
+      // className="mt:0 sm:hidden hidden md:block px-2"
+      >
       <div className="sm:mt-20 mt-20 md:mt-0  dark:bg-main-dark-bg">
       <div class="grid grid-cols-1 gap-2 mt-6 sm:grid-cols-2 lg:grid-cols-4">
             {/* <template x-for="i in 4"> */}

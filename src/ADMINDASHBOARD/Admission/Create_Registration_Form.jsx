@@ -342,7 +342,7 @@ const newAdmission=async()=>{
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create"} maxWidth="500px">
         <form onSubmit={handleSubmit} className="p-3">
           <div
-            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-white rounded-md "
+            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 w-full gap-3 px-1 mx-auto bg-white rounded-md "
           >
             <ReactInput
               // resPClass="grid grid-cols-2 md:grid-cols-5"
@@ -495,7 +495,12 @@ const newAdmission=async()=>{
             />
           </div>
           {sibling ? (
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1 mx-auto bg-white rounded-md ">
+            <div
+            
+            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 w-full gap-3 px-1 mx-auto bg-white rounded-md "
+         
+            //  className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-1 mx-auto bg-white rounded-md "
+             >
 
               <ReactInput
                 type="text"
@@ -516,7 +521,7 @@ const newAdmission=async()=>{
               />
             </div>
           ) : (
-            <div className="bg-gray-100">
+            <div className="">
               <div className="px-5 md:max-w-[25%] w-full text-center ">
 
                 <ReactInput

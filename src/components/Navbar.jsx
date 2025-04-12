@@ -112,12 +112,12 @@ const Navbar = () => {
 
       {/* Center: School Name */}
       <div className="flex-1 text-center dark:text-white">
-        <span
-          className="text-[10px] md:text-[16px] font-semibold block"
+        <p
+          className="text-[10px] md:text-[16px] font-semibold hidden md:block"
           style={{ color: "white" }}
         >
           {user?.schoolName } ( {session } )
-        </span>
+        </p>
         {/* <span
           className="text-[10px] md:text-[10px] text-[#f15b25] font-semibold block"
           style={{ color: "white" }}

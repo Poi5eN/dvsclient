@@ -13,7 +13,10 @@ export function ReactInput({
   placeholder,
 }) {
   return (
-    <div className="containerr inline-block mr-1">
+    <div
+     className="containerr inline-block mr-1"
+    //  className=" inline-block mr-1"
+     >
       <div className="did-floating-label-content ">
         <input
           className={`did-floating-input ${value ? "has-value" : ""} ${required ?"border-b-[#ff0000] ":""}`}
