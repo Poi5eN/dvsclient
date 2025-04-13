@@ -144,7 +144,7 @@ const details=[
     logo:fees
   },
 ]
-console.log("allBday",allBday)
+
   return (
     <>
      <div 
@@ -188,7 +188,7 @@ console.log("allBday",allBday)
        style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
        className="p-2 rounded-md text-center bg-white dark:text-white dark:bg-secondary-dark-bg"
      >
-      <h1 className="text-[#33ace0] font-bold">Today Birthday</h1>
+      <h1 className="text-[#33ace0] font-bold">TODAY BIRTHDAY</h1>
         <Marquee list={allBday} time={6} height={"130px"}>
                 {allBday?.map((item, index) => (
                   <div class=" items-center gap-4 p-1 border rounded-sm shadow-sm bg-white my-[1px] mx-1 ">

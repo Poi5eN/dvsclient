@@ -147,7 +147,7 @@ const TeacherNotice = () => {
        
         <div className="flex justify-between px-1 ">
           <span className="text-[16px] text-start font-bold text-[#33ace0]">
-            Notifiactions{" "}
+          NOTICE 
           </span>
         </div>
       </div>

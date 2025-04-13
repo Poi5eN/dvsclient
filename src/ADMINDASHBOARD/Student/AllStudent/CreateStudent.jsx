@@ -204,10 +204,7 @@ function CreateStudent() {
       : "N/A",
     contact: student.contact || "N/A",
     gender: student.gender || "N/A",
-<<<<<<< HEAD
   
-=======
->>>>>>> f83d0cbf8993d9523595f2a4f3a4aa9d1839b06f
     action: (
       <div className="flex justify-center items-center gap-3">
         <button
@@ -298,11 +295,8 @@ function CreateStudent() {
           <NoDataFound message="No students found matching the criteria." />
         )}
         <div className="hidden">
-<<<<<<< HEAD
           <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} />{" "}
-=======
-          <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} />
->>>>>>> f83d0cbf8993d9523595f2a4f3a4aa9d1839b06f
+          {/* <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} /> */}
         </div>
       </div>
     );
