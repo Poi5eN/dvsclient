@@ -34,6 +34,19 @@ export const updateAdmin = async (payload) => {
     throw error; // Re-throw the error to allow the component to handle it.
   }
 };	
+export const editBulkstudentparent = async (payload) => {
+  try {
+    const option = {
+      method: "put", // Ensure the method is GET
+      payloadData: payload
+    };
+    const data = await makeApiRequest(`${apiUrls?.editBulkstudentparent}`, option);
+    return data;
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    throw error; // Re-throw the error to allow the component to handle it.
+  }
+};	
 export const getAdminInfo = async () => {
   try {
     const option = {

@@ -47,10 +47,23 @@ export const LinePrimaryYAxis = {
 export const links = [
   { name: 'Registration', link: 'registration' ,icon: <MdOutlineAppRegistration />},
   { name: 'Admission', link: 'admission' ,icon: <BsPersonFillAdd />},
-  { name: 'Student', link: 'allstudent' ,icon: <PiStudentFill />},
+  // { name: 'Student', link: 'allstudent' ,icon: <PiStudentFill />},
   // { name: 'Fees', link: 'fees' ,icon: <PiStudentFill />},
   // { name: 'Create fee', link: 'create-fees' ,icon: <PiStudentFill />},
 
+  {
+      name: 'Student',
+      id :2,
+      icon: <GiTakeMyMoney />,
+      children: [
+          { name: 'All Student', link: 'allstudent',id :22 , icon: <PiStudentFill />,},
+          { name: 'Bulk Edit', link: 'bulkedit' ,id :23 , icon: <GiTakeMyMoney />,},
+          // { name: 'Student History', link: 'StudentHistory' ,id :23 , icon: <GiTakeMyMoney />,},
+          // { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
+          // { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
+          
+      ],
+  },
   {
       name: 'Fees System',
       id :2,

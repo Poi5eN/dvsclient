@@ -26,6 +26,7 @@ import SpecificFee from "./ADMINDASHBOARD/Fees/SpecificFee";
 import Table from "./ADMINDASHBOARD/Fees/Table";
 import StudentFeeHistory from "./ADMINDASHBOARD/Fees/StudentFeeHistory";
 import InventoryDashboard from "./ADMINDASHBOARD/Inventory/InventoryDashboard"; // New import
+import BulkEdit from "./ADMINDASHBOARD/Student/AllStudent/BulkEdit";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -232,6 +233,7 @@ function App() {
               <Route path="StudentHistory" element={<StudentFeeHistory />} />
               <Route path="classwise/edit-fees/:_id" element={<EditClasswiseFees />} />
               <Route path="allstudent" element={<Allstudent />} />
+              <Route path="bulkedit" element={<BulkEdit />} />
               <Route path="allstudent/viewstudent/view-profile/:email" element={<StudentIdCardNew />} />
               <Route path="allstudent/editstudent/edit-profile/:email" element={<EditStudent />} />
               <Route path="allstudent/StudentFeeStatus/:email" element={<StudentFeeStatus />} />

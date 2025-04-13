@@ -453,11 +453,11 @@ const Attendance = () => {
          <Button
             name="Mark Today's Attendance"
             onClick={() => setModalOpen(true)}
-            bgColor={currentColor}
-            color="white"
+            // bgColor={currentColor}
+            color="green"
             borderRadius="10px"
             size="md"
-            disabled={students.length === 0}
+            // disabled={students.length === 0}
          />
        </div>
 
@@ -507,16 +507,16 @@ const Attendance = () => {
                  <Button
                     name="Cancel"
                     onClick={() => setModalOpen(false)}
-                    bgColor="bg-gray-400" // Use explicit color class
-                    color="white"
+                    // bgColor="bg-gray-400" // Use explicit color class
+                    color="gray"
                     borderRadius="8px"
                  />
                  <Button
                     // loading={loading}
                     name="Submit Attendance"
                     onClick={handleSubmit}
-                    bgColor={currentColor}
-                    color="white"
+                    // bgColor={currentColor}
+                    color="green"
                     borderRadius="8px"
                  />
               </div>

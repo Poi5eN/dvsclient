@@ -16,6 +16,7 @@ feeIncomeMonths: "fees/feeIncomeMonths",
 
 adminRoutestudents: "adminRoute/students",
 parentandchild: "adminRoute/parentandchild",
+editBulkstudentparent: "adminRoute/studentparent/many",
 
 // getAllStudents:"adminRoute/getAllStudents",
 // getLastYearStudent: "adminRoute/getLastYearStudents",

@@ -83,7 +83,7 @@ const TeacherHome = () => {
       <div className="sm:block md:hidden">
         <Mobile />
       </div>
-      <div className="mt:0 sm:hidden hidden md:block">
+      <div className="mt:0 sm:hidden hidden md:block w-full ">
         <div className="grid gap-3 p-3 sm:grid-cols-1 md:grid-cols-2 lg:flex">
           <div
             style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}

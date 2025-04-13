@@ -50,7 +50,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
       
       <Button Icon={<DownloadIcon className="text-2xl"/>} name="PRINT"/>
       </a>
-        <div className="w-full flex flex-1 p-2 gap-2 mx-auto " ref={componentPDF} >
+        <div className="w-full mx-auto flex justify-around p-2 pt-5 gap-2  " ref={componentPDF} >
           <div className="w-[400px]  p-1 border-black border-1   rounded-sm dark:text-white">
             <div className="flex justify-between ">
               <div className=" h-auto w-[150px]  dark:text-white  ">

@@ -220,20 +220,7 @@ function CreateStudent() {
       : "N/A",
     contact: student.contact || "N/A",
     gender: student.gender || "N/A",
-    // status: (
-    //   <button
-    //     onClick={() => handleToggleStatus(student?.studentId, student.status)}
-    //     title={
-    //       student.status === "active"
-    //         ? "Deactivate Student"
-    //         : "Activate Student"
-    //     }
-    //     className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
-    //   >
-    //     {" "}
-    //     <MdDelete />
-    //   </button>
-    // ),
+  
     action: (
       <div className="flex justify-center items-center gap-3">
         <button
@@ -326,7 +313,6 @@ function CreateStudent() {
         )}
         <div className="hidden">
           <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} />{" "}
-          {/* Adjust itemsPerPage if needed */}
         </div>
       </div>
     );
