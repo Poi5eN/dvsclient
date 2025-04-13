@@ -193,7 +193,7 @@ export const links = [
 //         // { name: 'Syllabus', link: 'curriculum' },
 //     ],
 // },
-// { name: 'ID Card', link: 'idcard' ,icon: <FaIdCard />},
+{ name: 'ID Card', link: 'idcard' ,icon: <FaIdCard />},
 // { name: 'Udise', link: 'udise' ,icon: <FaIdCard />},
 // { name: 'Admit Card', link: 'admitcards' ,icon: <BsFillCreditCard2FrontFill />},
 // { name: 'All Form', link: 'allforms' ,icon: <FaWpforms />},
