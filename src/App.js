@@ -54,6 +54,9 @@ const EditClasswiseFees = lazy(() =>
 const Allstudent = lazy(() =>
   import("./ADMINDASHBOARD/Student/AllStudent/Allstudent")
 );
+const BulkEditStudents = lazy(() =>
+  import("./ADMINDASHBOARD/Student/AllStudent/BulkEditStudents.")
+);
 const EditStudent = lazy(() =>
   import("./ADMINDASHBOARD/Student/AllStudent/EditStudent")
 );
@@ -233,7 +236,11 @@ function App() {
               <Route path="StudentHistory" element={<StudentFeeHistory />} />
               <Route path="classwise/edit-fees/:_id" element={<EditClasswiseFees />} />
               <Route path="allstudent" element={<Allstudent />} />
+<<<<<<< HEAD
               <Route path="bulkedit" element={<BulkEdit />} />
+=======
+              <Route path="bulk-edit-students" element={<BulkEditStudents />} />
+>>>>>>> f83d0cbf8993d9523595f2a4f3a4aa9d1839b06f
               <Route path="allstudent/viewstudent/view-profile/:email" element={<StudentIdCardNew />} />
               <Route path="allstudent/editstudent/edit-profile/:email" element={<EditStudent />} />
               <Route path="allstudent/StudentFeeStatus/:email" element={<StudentFeeStatus />} />

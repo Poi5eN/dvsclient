@@ -294,7 +294,7 @@ const Sales = () => {
   // Function to handle printing from the modal
   const handlePrint = () => {
     // Open the PDF in a new window and trigger print
-    const printWindow = window.open(pdfDataUrl, "_blank");
+    const printWindow = window.open(receiptPDFUrl, "_blank");
     printWindow.focus();
     printWindow.print();
   };
