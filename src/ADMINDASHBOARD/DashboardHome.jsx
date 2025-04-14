@@ -13,6 +13,8 @@ import { feeIncomeMonths, GetAdmissions, getAllStudents, getAllTeachers } from "
 import { toast } from "react-toastify";
 import teacherlogo from '../ShikshMitraWebsite/assets/teacher logo.png'
 import fees from '../ShikshMitraWebsite/assets/fees.jpg'
+import student from '../ShikshMitraWebsite/assets/student.png'
+import admission from '../ShikshMitraWebsite/assets/admission.png'
 import moment from "moment";
 const DashboardHome = () => {
   
@@ -125,12 +127,12 @@ const details=[
   {
     name:"ADMISSION",
     Count:admissionCount,
-    logo:"https://static.vecteezy.com/system/resources/thumbnails/008/154/360/small/student-logo-vector.jpg"
+    logo:admission
   },
   {
     name:"STUDENTS",
     Count:allStudents?.length,
-    logo:"https://static.vecteezy.com/system/resources/thumbnails/008/154/360/small/student-logo-vector.jpg"
+    logo:student
   
   },
   {
@@ -140,7 +142,7 @@ const details=[
   },
   {
     name:"FEES",
-    Count:`₹ ${monthlyFee?.reduce((acc,num)=>acc+num,0)}`,
+    Count:`₹ ${monthlyFee?.reduce((acc,num)=>acc+num,0) || 0}`,
     logo:fees
   },
 ]

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStateContext } from "../contexts/ContextProvider";
 import welcome from "../../src/ShikshMitraWebsite/assets/welcome.jpg";
-
+import admin from '../ShikshMitraWebsite/assets/admin.png'
 const Welcome = ({teacherRoleData}) => {
   const { currentColor } = useStateContext();
   const [greeting, setGreeting] = useState("Hello");
@@ -68,9 +68,9 @@ const Welcome = ({teacherRoleData}) => {
       </div>
       <div>
         <img
-          src={welcome}
+          src={admin}
           alt="Illustration"
-          className="h-20 w-20 object-contain"
+          className="h-28 w-28 object-contain"
         />
       </div>
     </div>
