@@ -1,126 +1,287 @@
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-/**
- * Generates a PDF document with a table and a summary page, then opens
- * it in a new browser window/tab for previewing or printing.
- * @param {Array<Object>} data - The array of data objects for the table body.
- * @param {Array<Object>} columns - The column definitions for the table.
- * @param {number|string} overallTotalPaid - The pre-calculated overall total paid amount.
- * @param {number|string} overallTotalDuesSum - The pre-calculated sum of the 'totalDues' field from records.
- * @param {number|string} cashPayment - The pre-calculated total paid via cash.
- * @param {number|string} onlinePayment - The pre-calculated total paid via online methods.
- * @param {number|string} bankPayment - The pre-calculated total paid via bank methods.
- * @param {string} [filename='fee-data.pdf'] - Optional: Can influence the suggested filename if saved from preview.
- */
 const generatePdf = (
-    data,
-    columns,
-    overallTotalPaid = 0,
-    overallTotalDuesSum = 0,
-    cashPayment=0,
-    onlinePayment=0,
-    chequePayment=0,
-    cardPayment=0,
-    // cashPayment = 0,
-    // onlinePayment = 0,
-    // bankPayment = 0,
-    filename = 'fee-data.pdf' // Keep filename for context, though not directly used by output method
+  data,
+  columns,
+  overallTotalPaid = 0,
+  overallTotalDuesSum = 0,
+  cashPayment = 0,
+  onlinePayment = 0,
+  chequePayment = 0,
+  cardPayment = 0,
+  filename = "fee-data.pdf"
 ) => {
-    // Ensure data is an array
-    const dataArray = Array.isArray(data) ? data : [data];
+  // Ensure data is an array
+  const dataArray = Array.isArray(data) ? data : [data];
+  const isUnified = Array.isArray(data?.students); // Detect unified receipt
 
-    // === Data Validation ===
-    if (!dataArray || dataArray.length === 0) {
-        console.error("PDF generate karne ke liye data nahi hai.");
-        alert("PDF generate karne ke liye data nahi hai.");
-        return;
+  // === Data Validation ===
+  if (!dataArray || dataArray.length === 0) {
+    console.error("PDF generate karne ke liye data nahi hai.");
+    alert("PDF generate karne ke liye data nahi hai.");
+    return;
+  }
+  if (!dataArray[0] && !isUnified) {
+    console.error(
+      "Data array mein valid objects nahi hain ya format galat hai."
+    );
+    alert("Data format sahi nahi hai. Objects ka array hona chahiye.");
+    return;
+  }
+
+  // === Helper to Parse and Format Currency ===
+  const parseAndFormat = (value, label = "value") => {
+    let numericValue = 0;
+    const parsedValue = parseFloat(value);
+    if (!isNaN(parsedValue)) {
+      numericValue = parsedValue;
     }
-    if (!dataArray[0] || typeof dataArray[0] !== 'object') {
-        console.error("Data array mein valid objects nahi hain ya format galat hai.");
-        alert("Data format sahi nahi hai. Objects ka array hona chahiye.");
-        return;
-    }
+    return numericValue.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
-    // === Helper to Parse and Format Currency ===
-    const parseAndFormat = (value, label = "value") => {
-        let numericValue = 0;
-        const parsedValue = parseFloat(value);
-        // Keep console logs for debugging if needed
-        // console.log(`[generatePdf] Received ${label}:`, value, "Type:", typeof value);
-        // console.log(`[generatePdf] Parsed ${label}:`, parsedValue);
-        if (!isNaN(parsedValue)) {
-            numericValue = parsedValue;
-        } else {
-            // console.warn(`[generatePdf] Could not parse ${label} '${value}'. Using 0.`);
-        }
-        const formattedValue = numericValue.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        // console.log(`[generatePdf] Formatted ${label}:`, formattedValue);
-        return formattedValue;
-    };
+  // --- Format all passed-in totals ---
+  const formattedTotalPaid = parseAndFormat(
+    overallTotalPaid,
+    "overallTotalPaid"
+  );
+  const formattedTotalDues = parseAndFormat(
+    overallTotalDuesSum,
+    "overallTotalDuesSum"
+  );
+  const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
+  const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
+  const formattedChequePayment = parseAndFormat(chequePayment, "chequePayment");
+  const formattedCardPayment = parseAndFormat(cardPayment, "cardPayment");
 
-    // --- Format all passed-in totals ---
-    const formattedTotalPaid = parseAndFormat(overallTotalPaid, "overallTotalPaid");
-    const formattedTotalDues = parseAndFormat(overallTotalDuesSum, "overallTotalDuesSum");
-    const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
-    const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
-    const formattedChequePayment = parseAndFormat(chequePayment, "bankPayment");
-    const formattedCardPayment = parseAndFormat(cardPayment, "bankPayment");
+  // === PDF Document Setup ===
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
-    // === PDF Document Setup ===
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-    // === Main Table Title ===
+  if (isUnified) {
+    // === Unified Receipt Generation ===
     doc.setFontSize(14);
-    doc.setFont(undefined, 'bold');
+    doc.setFont(undefined, "bold");
+    doc.text("Unified Fee Receipt", 14, 15);
+    doc.setFont(undefined, "normal");
+
+    let startY = 20;
+    let grandTotalPaid = 0;
+    let grandTotalDues = 0;
+
+    // Iterate over each student in the unified receipt
+    (data.students || []).forEach((student, index) => {
+      doc.setFontSize(12);
+      doc.text(
+        `Student ${index + 1}: ${student.studentName} (Adm: ${
+          student.admissionNumber
+        }, Class: ${student.studentClass})`,
+        14,
+        startY
+      );
+      startY += 10;
+
+      // Table for regular and additional fees
+      const tableSettings = {
+        startY,
+        theme: "grid",
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          halign: "center",
+        },
+        bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
+        alternateRowStyles: { fillColor: [236, 240, 241] },
+        styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+        head: [["Name", "Month", "Amount", "Dues", "Status"]],
+        body: [
+          ...(student.regularFees || []).map((fee) => [
+            "Class Fee",
+            fee.month,
+            parseAndFormat(fee.paidAmount),
+            parseAndFormat(fee.dueAmount),
+            fee.status,
+          ]),
+          ...(student.additionalFees || []).map((fee) => [
+            fee.name,
+            fee.month,
+            parseAndFormat(fee.paidAmount),
+            parseAndFormat(fee.dueAmount),
+            fee.status,
+          ]),
+        ],
+        didParseCell: function (hookData) {
+          const numericKeys = ["Amount", "Dues"];
+          if (numericKeys.includes(hookData.column.raw)) {
+            const numValue = parseFloat(
+              hookData.cell.text[0].replace(/,/g, "")
+            );
+            if (!isNaN(numValue)) {
+              hookData.cell.text = [
+                numValue.toLocaleString("en-IN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }),
+              ];
+            }
+          }
+        },
+      };
+
+      doc.autoTable(tableSettings);
+      startY = doc.lastAutoTable.finalY + 10;
+
+      // Calculate totals for this student
+      const studentTotalPaid =
+        (student.regularFees || []).reduce(
+          (sum, fee) => sum + (parseFloat(fee.paidAmount) || 0),
+          0
+        ) +
+        (student.additionalFees || []).reduce(
+          (sum, fee) => sum + (parseFloat(fee.paidAmount) || 0),
+          0
+        );
+      const studentTotalDues =
+        (student.regularFees || []).reduce(
+          (sum, fee) => sum + (parseFloat(fee.dueAmount) || 0),
+          0
+        ) +
+        (student.additionalFees || []).reduce(
+          (sum, fee) => sum + (parseFloat(fee.dueAmount) || 0),
+          0
+        );
+
+      // Display student summary
+      doc.setFontSize(11);
+      doc.text(`Total Paid (Student ${index + 1}):`, 14, startY);
+      doc.text(`${parseAndFormat(studentTotalPaid)}`, 200, startY, {
+        align: "right",
+      });
+      startY += 7;
+      doc.text(`Total Dues (Student ${index + 1}):`, 14, startY);
+      doc.text(`${parseAndFormat(studentTotalDues)}`, 200, startY, {
+        align: "right",
+      });
+      startY += 10;
+
+      grandTotalPaid += studentTotalPaid;
+      grandTotalDues += studentTotalDues;
+    });
+
+    // Grand totals
+    doc.setFontSize(12);
+    doc.setFont(undefined, "bold");
+    doc.text("Grand Total Paid:", 14, startY);
+    doc.text(`${parseAndFormat(grandTotalPaid)}`, 200, startY, {
+      align: "right",
+    });
+    startY += 7;
+    doc.text("Grand Total Dues:", 14, startY);
+    doc.text(`${parseAndFormat(grandTotalDues)}`, 200, startY, {
+      align: "right",
+    });
+
+    // Footer
+    const pageNumber = doc.internal.getNumberOfPages();
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    const pageHeight = doc.internal.pageSize.height;
+    doc.text("Page " + pageNumber, 14, pageHeight - 10);
+    const dateText = "Generated on: " + new Date().toLocaleDateString("en-IN");
+    const dateTextWidth =
+      (doc.getStringUnitWidth(dateText) * doc.internal.getFontSize()) /
+      doc.internal.scaleFactor;
+    doc.text(dateText, 280 - dateTextWidth, pageHeight - 10);
+
+    // Output PDF
+    try {
+      doc.output("dataurlnewwindow");
+      console.log(`Unified PDF opened for preview/print.`);
+    } catch (error) {
+      console.error("Unified PDF generation or preview failed:", error);
+      alert("Unified PDF ko generate karne ya preview karne mein error aayi.");
+    }
+  } else {
+    // === Standard Table Generation (Original Behavior) ===
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
     doc.text("Student Fee Receipt Details", 14, 15);
-    doc.setFont(undefined, 'normal');
+    doc.setFont(undefined, "normal");
 
     // === AutoTable Configuration ===
-    const tableSettings = { /* ... same as before ... */ };
-    // Copy the settings from your previous version here:
-    tableSettings.columns = columns;
-    tableSettings.body = dataArray;
-    tableSettings.startY = 20;
-    tableSettings.theme = 'grid';
-    tableSettings.headStyles = { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' };
-    tableSettings.bodyStyles = { textColor: [44, 62, 80], valign: 'middle' };
-    tableSettings.alternateRowStyles = { fillColor: [236, 240, 241] };
-    tableSettings.styles = { fontSize: 9, cellPadding: 3, overflow: 'linebreak' };
-    tableSettings.didParseCell = function (hookData) {
+    const tableSettings = {
+      startY: 20,
+      theme: "grid",
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "center",
+      },
+      bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
+      alternateRowStyles: { fillColor: [236, 240, 241] },
+      styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+      columns,
+      body: dataArray,
+      didParseCell: function (hookData) {
         // Date Formatting
-        if (hookData.column.dataKey === 'date' && hookData.cell.raw) {
-            try {
-                const formattedDate = new Date(hookData.cell.raw).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                hookData.cell.text = [formattedDate];
-            } catch (e) { hookData.cell.text = [String(hookData.cell.raw)]; }
+        if (hookData.column.dataKey === "date" && hookData.cell.raw) {
+          try {
+            const formattedDate = new Date(
+              hookData.cell.raw
+            ).toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+            hookData.cell.text = [formattedDate];
+          } catch (e) {
+            hookData.cell.text = [String(hookData.cell.raw)];
+          }
         }
         // Number Formatting
-        const numericKeys = ['totalAmountPaid', 'totalDues', 'totalFeeAmount'];
+        const numericKeys = ["totalAmountPaid", "totalDues", "totalFeeAmount"];
         if (numericKeys.includes(hookData.column.dataKey)) {
-            const numValue = parseFloat(hookData.cell.raw);
-            if (typeof hookData.cell.raw === 'number' || !isNaN(numValue)) {
-                 hookData.cell.text = [(isNaN(numValue)? 0 : numValue).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })];
-            } else {
-                 hookData.cell.text = [String(hookData.cell.raw)];
-            }
+          const numValue = parseFloat(hookData.cell.raw);
+          if (typeof hookData.cell.raw === "number" || !isNaN(numValue)) {
+            hookData.cell.text = [
+              (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }),
+            ];
+          } else {
+            hookData.cell.text = [String(hookData.cell.raw)];
+          }
         }
-    };
-    tableSettings.didDrawPage = function (hookData) {
+      },
+      didDrawPage: function (hookData) {
         let pageNumber = doc.internal.getNumberOfPages();
-        doc.setFontSize(8); doc.setTextColor(100);
-        const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-        const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
         const footerMargin = 10;
-        doc.text('Page ' + pageNumber, hookData.settings.margin.left, pageHeight - footerMargin);
-        const dateText = 'Generated on: ' + new Date().toLocaleDateString('en-IN');
-        const dateTextWidth = doc.getStringUnitWidth(dateText) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-        doc.text(dateText, pageWidth - hookData.settings.margin.right - dateTextWidth, pageHeight - footerMargin);
+        doc.text(
+          "Page " + pageNumber,
+          hookData.settings.margin.left,
+          pageHeight - footerMargin
+        );
+        const dateText =
+          "Generated on: " + new Date().toLocaleDateString("en-IN");
+        const dateTextWidth =
+          (doc.getStringUnitWidth(dateText) * doc.internal.getFontSize()) /
+          doc.internal.scaleFactor;
+        doc.text(
+          dateText,
+          pageWidth - hookData.settings.margin.right - dateTextWidth,
+          pageHeight - footerMargin
+        );
+      },
     };
-
 
     // === Generate the Table ===
     doc.autoTable(tableSettings);
@@ -129,8 +290,8 @@ const generatePdf = (
     doc.addPage();
 
     // Get dimensions and define margins/spacing
-    const summaryPageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
-    const summaryPageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+    const summaryPageWidth = doc.internal.pageSize.width;
+    const summaryPageHeight = doc.internal.pageSize.height;
     const summaryMarginLeft = 20;
     const summaryMarginRight = 20;
     const summaryMarginTop = 20;
@@ -139,78 +300,310 @@ const generatePdf = (
 
     // --- Summary Title ---
     doc.setFontSize(16);
-    doc.setFont(undefined, 'bold');
-    doc.text("Payment Summary", summaryPageWidth / 2, summaryMarginTop, { align: 'center' });
+    doc.setFont(undefined, "bold");
+    doc.text("Payment Summary", summaryPageWidth / 2, summaryMarginTop, {
+      align: "center",
+    });
 
-    // --- Summary Content (Left Aligned Labels, Right Aligned Values) ---
+    // --- Summary Content ---
     doc.setFontSize(12);
-    doc.setFont(undefined, 'normal');
+    doc.setFont(undefined, "normal");
     const xPosLabel = summaryMarginLeft;
     const xPosValue = summaryPageWidth - summaryMarginRight;
     let currentY = summaryMarginTop + 15;
 
     // Overall Total Paid
-    doc.setFont(undefined, 'bold');
+    doc.setFont(undefined, "bold");
     doc.text(`Total Amount Paid:`, xPosLabel, currentY);
-    doc.text(` ${formattedTotalPaid}`, xPosValue, currentY, { align: 'right' });
-    doc.setFont(undefined, 'normal');
+    doc.text(`${formattedTotalPaid}`, xPosValue, currentY, { align: "right" });
+    doc.setFont(undefined, "normal");
     currentY += lineSpacing * 1.5;
 
     // Payment Mode Breakdown Title
-    doc.setFontSize(11); doc.setFont(undefined, 'bold');
+    doc.setFontSize(11);
+    doc.setFont(undefined, "bold");
     doc.text(`Breakdown by Payment Mode:`, xPosLabel, currentY);
-    doc.setFontSize(12); doc.setFont(undefined, 'normal');
+    doc.setFontSize(12);
+    doc.setFont(undefined, "normal");
     currentY += lineSpacing;
 
     // Cash Payment
     doc.text(`Cash Payments:`, xPosLabel, currentY);
-    doc.text(` ${formattedCashPayment}`, xPosValue, currentY, { align: 'right' });
+    doc.text(`${formattedCashPayment}`, xPosValue, currentY, {
+      align: "right",
+    });
     currentY += lineSpacing;
 
     // Online Payment
     doc.text(`Online Payments:`, xPosLabel, currentY);
-    doc.text(` ${formattedOnlinePayment}`, xPosValue, currentY, { align: 'right' });
+    doc.text(`${formattedOnlinePayment}`, xPosValue, currentY, {
+      align: "right",
+    });
     currentY += lineSpacing;
 
-    // Bank Payment
+    // Cheque Payment
     doc.text(`Cheque Payments:`, xPosLabel, currentY);
-    doc.text(` ${formattedChequePayment}`, xPosValue, currentY, { align: 'right' });
-    currentY += lineSpacing * 1.5;
+    doc.text(`${formattedChequePayment}`, xPosValue, currentY, {
+      align: "right",
+    });
+    currentY += lineSpacing;
 
+    // Card Payment
     doc.text(`Card Payments:`, xPosLabel, currentY);
-    doc.text(` ${formattedCardPayment}`, xPosValue, currentY, { align: 'right' });
+    doc.text(`${formattedCardPayment}`, xPosValue, currentY, {
+      align: "right",
+    });
     currentY += lineSpacing * 1.5;
 
     // Overall Total Dues Sum
-    doc.setFont(undefined, 'bold');
+    doc.setFont(undefined, "bold");
     doc.text(`Total Dues Sum (All Records):`, xPosLabel, currentY);
-    doc.text(` ${formattedTotalDues}`, xPosValue, currentY, { align: 'right' });
-    doc.setFont(undefined, 'normal');
+    doc.text(`${formattedTotalDues}`, xPosValue, currentY, { align: "right" });
+    doc.setFont(undefined, "normal");
 
-    // === Add Footer to Summary Page (Manually) ===
+    // === Add Footer to Summary Page ===
     let finalPageNumber = doc.internal.getNumberOfPages();
-    doc.setFontSize(8); doc.setTextColor(100);
-    doc.text('Page ' + finalPageNumber, summaryMarginLeft, summaryPageHeight - footerMargin);
-    const dateTextFooter = 'Generated on: ' + new Date().toLocaleDateString('en-IN');
-    const dateTextWidthFooter = doc.getStringUnitWidth(dateTextFooter) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-    doc.text(dateTextFooter, summaryPageWidth - summaryMarginRight - dateTextWidthFooter, summaryPageHeight - footerMargin);
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text(
+      "Page " + finalPageNumber,
+      summaryMarginLeft,
+      summaryPageHeight - footerMargin
+    );
+    const dateTextFooter =
+      "Generated on: " + new Date().toLocaleDateString("en-IN");
+    const dateTextWidthFooter =
+      (doc.getStringUnitWidth(dateTextFooter) * doc.internal.getFontSize()) /
+      doc.internal.scaleFactor;
+    doc.text(
+      dateTextFooter,
+      summaryPageWidth - summaryMarginRight - dateTextWidthFooter,
+      summaryPageHeight - footerMargin
+    );
 
-    // === Open PDF in New Window/Tab for Print/Preview ===
-    // --- THIS IS THE KEY CHANGE ---
+    // === Open PDF in New Window/Tab ===
     try {
-        doc.output('dataurlnewwindow'); // Instead of doc.save()
-        console.log(`PDF opened for preview/print.`);
+      doc.output("dataurlnewwindow");
+      console.log(`PDF opened for preview/print.`);
     } catch (error) {
-        console.error("PDF generation or preview failed:", error);
-        alert("PDF ko generate karne ya preview karne mein error aayi. Details ke liye console check karein.");
+      console.error("PDF generation or preview failed:", error);
+      alert("PDF ko generate karne ya preview karne mein error aayi.");
     }
+  }
 };
 
 export default generatePdf;
 
+// import jsPDF from 'jspdf';
+// import 'jspdf-autotable';
+
+// /**
+//  * Generates a PDF document with a table and a summary page, then opens
+//  * it in a new browser window/tab for previewing or printing.
+//  * @param {Array<Object>} data - The array of data objects for the table body.
+//  * @param {Array<Object>} columns - The column definitions for the table.
+//  * @param {number|string} overallTotalPaid - The pre-calculated overall total paid amount.
+//  * @param {number|string} overallTotalDuesSum - The pre-calculated sum of the 'totalDues' field from records.
+//  * @param {number|string} cashPayment - The pre-calculated total paid via cash.
+//  * @param {number|string} onlinePayment - The pre-calculated total paid via online methods.
+//  * @param {number|string} bankPayment - The pre-calculated total paid via bank methods.
+//  * @param {string} [filename='fee-data.pdf'] - Optional: Can influence the suggested filename if saved from preview.
+//  */
+// const generatePdf = (
+//     data,
+//     columns,
+//     overallTotalPaid = 0,
+//     overallTotalDuesSum = 0,
+//     cashPayment=0,
+//     onlinePayment=0,
+//     chequePayment=0,
+//     cardPayment=0,
+//     // cashPayment = 0,
+//     // onlinePayment = 0,
+//     // bankPayment = 0,
+//     filename = 'fee-data.pdf' // Keep filename for context, though not directly used by output method
+// ) => {
+//     // Ensure data is an array
+//     const dataArray = Array.isArray(data) ? data : [data];
+
+//     // === Data Validation ===
+//     if (!dataArray || dataArray.length === 0) {
+//         console.error("PDF generate karne ke liye data nahi hai.");
+//         alert("PDF generate karne ke liye data nahi hai.");
+//         return;
+//     }
+//     if (!dataArray[0] || typeof dataArray[0] !== 'object') {
+//         console.error("Data array mein valid objects nahi hain ya format galat hai.");
+//         alert("Data format sahi nahi hai. Objects ka array hona chahiye.");
+//         return;
+//     }
+
+//     // === Helper to Parse and Format Currency ===
+//     const parseAndFormat = (value, label = "value") => {
+//         let numericValue = 0;
+//         const parsedValue = parseFloat(value);
+//         // Keep console logs for debugging if needed
+//         // console.log(`[generatePdf] Received ${label}:`, value, "Type:", typeof value);
+//         // console.log(`[generatePdf] Parsed ${label}:`, parsedValue);
+//         if (!isNaN(parsedValue)) {
+//             numericValue = parsedValue;
+//         } else {
+//             // console.warn(`[generatePdf] Could not parse ${label} '${value}'. Using 0.`);
+//         }
+//         const formattedValue = numericValue.toLocaleString('en-IN', {
+//             minimumFractionDigits: 2,
+//             maximumFractionDigits: 2
+//         });
+//         // console.log(`[generatePdf] Formatted ${label}:`, formattedValue);
+//         return formattedValue;
+//     };
+
+//     // --- Format all passed-in totals ---
+//     const formattedTotalPaid = parseAndFormat(overallTotalPaid, "overallTotalPaid");
+//     const formattedTotalDues = parseAndFormat(overallTotalDuesSum, "overallTotalDuesSum");
+//     const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
+//     const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
+//     const formattedChequePayment = parseAndFormat(chequePayment, "bankPayment");
+//     const formattedCardPayment = parseAndFormat(cardPayment, "bankPayment");
+
+//     // === PDF Document Setup ===
+//     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+//     // === Main Table Title ===
+//     doc.setFontSize(14);
+//     doc.setFont(undefined, 'bold');
+//     doc.text("Student Fee Receipt Details", 14, 15);
+//     doc.setFont(undefined, 'normal');
+
+//     // === AutoTable Configuration ===
+//     const tableSettings = { /* ... same as before ... */ };
+//     // Copy the settings from your previous version here:
+//     tableSettings.columns = columns;
+//     tableSettings.body = dataArray;
+//     tableSettings.startY = 20;
+//     tableSettings.theme = 'grid';
+//     tableSettings.headStyles = { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' };
+//     tableSettings.bodyStyles = { textColor: [44, 62, 80], valign: 'middle' };
+//     tableSettings.alternateRowStyles = { fillColor: [236, 240, 241] };
+//     tableSettings.styles = { fontSize: 9, cellPadding: 3, overflow: 'linebreak' };
+//     tableSettings.didParseCell = function (hookData) {
+//         // Date Formatting
+//         if (hookData.column.dataKey === 'date' && hookData.cell.raw) {
+//             try {
+//                 const formattedDate = new Date(hookData.cell.raw).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+//                 hookData.cell.text = [formattedDate];
+//             } catch (e) { hookData.cell.text = [String(hookData.cell.raw)]; }
+//         }
+//         // Number Formatting
+//         const numericKeys = ['totalAmountPaid', 'totalDues', 'totalFeeAmount'];
+//         if (numericKeys.includes(hookData.column.dataKey)) {
+//             const numValue = parseFloat(hookData.cell.raw);
+//             if (typeof hookData.cell.raw === 'number' || !isNaN(numValue)) {
+//                  hookData.cell.text = [(isNaN(numValue)? 0 : numValue).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })];
+//             } else {
+//                  hookData.cell.text = [String(hookData.cell.raw)];
+//             }
+//         }
+//     };
+//     tableSettings.didDrawPage = function (hookData) {
+//         let pageNumber = doc.internal.getNumberOfPages();
+//         doc.setFontSize(8); doc.setTextColor(100);
+//         const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+//         const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+//         const footerMargin = 10;
+//         doc.text('Page ' + pageNumber, hookData.settings.margin.left, pageHeight - footerMargin);
+//         const dateText = 'Generated on: ' + new Date().toLocaleDateString('en-IN');
+//         const dateTextWidth = doc.getStringUnitWidth(dateText) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+//         doc.text(dateText, pageWidth - hookData.settings.margin.right - dateTextWidth, pageHeight - footerMargin);
+//     };
+
+//     // === Generate the Table ===
+//     doc.autoTable(tableSettings);
+
+//     // === Add Summary Page ===
+//     doc.addPage();
+
+//     // Get dimensions and define margins/spacing
+//     const summaryPageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+//     const summaryPageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+//     const summaryMarginLeft = 20;
+//     const summaryMarginRight = 20;
+//     const summaryMarginTop = 20;
+//     const footerMargin = 10;
+//     const lineSpacing = 7;
+
+//     // --- Summary Title ---
+//     doc.setFontSize(16);
+//     doc.setFont(undefined, 'bold');
+//     doc.text("Payment Summary", summaryPageWidth / 2, summaryMarginTop, { align: 'center' });
+
+//     // --- Summary Content (Left Aligned Labels, Right Aligned Values) ---
+//     doc.setFontSize(12);
+//     doc.setFont(undefined, 'normal');
+//     const xPosLabel = summaryMarginLeft;
+//     const xPosValue = summaryPageWidth - summaryMarginRight;
+//     let currentY = summaryMarginTop + 15;
+
+//     // Overall Total Paid
+//     doc.setFont(undefined, 'bold');
+//     doc.text(`Total Amount Paid:`, xPosLabel, currentY);
+//     doc.text(` ${formattedTotalPaid}`, xPosValue, currentY, { align: 'right' });
+//     doc.setFont(undefined, 'normal');
+//     currentY += lineSpacing * 1.5;
+
+//     // Payment Mode Breakdown Title
+//     doc.setFontSize(11); doc.setFont(undefined, 'bold');
+//     doc.text(`Breakdown by Payment Mode:`, xPosLabel, currentY);
+//     doc.setFontSize(12); doc.setFont(undefined, 'normal');
+//     currentY += lineSpacing;
+
+//     // Cash Payment
+//     doc.text(`Cash Payments:`, xPosLabel, currentY);
+//     doc.text(` ${formattedCashPayment}`, xPosValue, currentY, { align: 'right' });
+//     currentY += lineSpacing;
+
+//     // Online Payment
+//     doc.text(`Online Payments:`, xPosLabel, currentY);
+//     doc.text(` ${formattedOnlinePayment}`, xPosValue, currentY, { align: 'right' });
+//     currentY += lineSpacing;
+
+//     // Bank Payment
+//     doc.text(`Cheque Payments:`, xPosLabel, currentY);
+//     doc.text(` ${formattedChequePayment}`, xPosValue, currentY, { align: 'right' });
+//     currentY += lineSpacing * 1.5;
+
+//     doc.text(`Card Payments:`, xPosLabel, currentY);
+//     doc.text(` ${formattedCardPayment}`, xPosValue, currentY, { align: 'right' });
+//     currentY += lineSpacing * 1.5;
+
+//     // Overall Total Dues Sum
+//     doc.setFont(undefined, 'bold');
+//     doc.text(`Total Dues Sum (All Records):`, xPosLabel, currentY);
+//     doc.text(` ${formattedTotalDues}`, xPosValue, currentY, { align: 'right' });
+//     doc.setFont(undefined, 'normal');
+
+//     // === Add Footer to Summary Page (Manually) ===
+//     let finalPageNumber = doc.internal.getNumberOfPages();
+//     doc.setFontSize(8); doc.setTextColor(100);
+//     doc.text('Page ' + finalPageNumber, summaryMarginLeft, summaryPageHeight - footerMargin);
+//     const dateTextFooter = 'Generated on: ' + new Date().toLocaleDateString('en-IN');
+//     const dateTextWidthFooter = doc.getStringUnitWidth(dateTextFooter) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+//     doc.text(dateTextFooter, summaryPageWidth - summaryMarginRight - dateTextWidthFooter, summaryPageHeight - footerMargin);
+
+//     // === Open PDF in New Window/Tab for Print/Preview ===
+//     // --- THIS IS THE KEY CHANGE ---
+//     try {
+//         doc.output('dataurlnewwindow'); // Instead of doc.save()
+//         console.log(`PDF opened for preview/print.`);
+//     } catch (error) {
+//         console.error("PDF generation or preview failed:", error);
+//         alert("PDF ko generate karne ya preview karne mein error aayi. Details ke liye console check karein.");
+//     }
+// };
+
+// export default generatePdf;
 
 // print Option..................................................................................................
-
 
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
@@ -410,8 +803,6 @@ export default generatePdf;
 
 // export default generatePdf;
 
-
-
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
 
@@ -473,7 +864,6 @@ export default generatePdf;
 //         maximumFractionDigits: 2
 //     });
 //     console.log("[generatePdf] Formatted Dues Amount:", formattedTotalDues);
-
 
 //     // === PDF Document Setup ===
 //     const doc = new jsPDF({
@@ -626,7 +1016,6 @@ export default generatePdf;
 // };
 
 // export default generatePdf;
-
 
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
@@ -804,7 +1193,6 @@ export default generatePdf;
 
 // export default generatePdf;
 
-
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
 
@@ -833,7 +1221,7 @@ export default generatePdf;
 //  doc.autoTable({
 //     columns: columns,
 //     body: data,
-//     startY: 20, 
+//     startY: 20,
 //     theme: 'grid',
 //     headStyles: {
 //       fillColor: [41, 128, 185],
@@ -848,7 +1236,7 @@ export default generatePdf;
 //     alternateRowStyles: {
 //       fillColor: [236, 240, 241]
 //     },
-   
+
 //     styles: {
 //       fontSize: 9,
 //       cellPadding: 3,
@@ -867,7 +1255,7 @@ export default generatePdf;
 //         }
 //       }
 //        if ((data.column.dataKey === 'totalAmountPaid' || data.column.dataKey === 'totalDues') && typeof data.cell.raw === 'number') {
-        
+
 //        }
 //     },
 
@@ -1033,8 +1421,6 @@ export default generatePdf;
 
 // export default generatePdf;
 
-
-
 // // src/pdfGenerator.js
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
@@ -1167,8 +1553,6 @@ export default generatePdf;
 
 // export default generatePdf;
 
-
-
 // // src/pdfGenerator.js
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable'; // Yeh import zaroori hai autoTable ko jsPDF instance par attach karne ke liye
@@ -1243,7 +1627,7 @@ export default generatePdf;
 //          // cellWidth: 40,    // Agar specific width deni hai
 //          halign: 'left'       // Left align karein
 //       },
-   
+
 //       1: { halign: 'center' }, // Doosre column ko center align karein
 //       [tableColumn.length - 1]: { // Last column ko right align karein
 //           halign: 'right'
@@ -1254,7 +1638,7 @@ export default generatePdf;
 //     styles: {
 //       fontSize: 10,
 //       cellPadding: 4, // Cells ke andar padding
-      
+
 //     },
 
 //   });
@@ -1264,7 +1648,6 @@ export default generatePdf;
 // };
 
 // export default generatePdf;
-
 
 // // src/pdfGenerator.js
 // import jsPDF from 'jspdf';

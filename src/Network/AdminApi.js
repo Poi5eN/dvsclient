@@ -634,6 +634,9 @@ export const cancelFeePayment = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+
+
+
 export const feescreateFeeStatus = async (payload) => {
   try {
     const option = {
@@ -646,6 +649,44 @@ export const feescreateFeeStatus = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+
+
+export const feescreateUnifiedFeeStatus = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload,
+    };
+    const data = await makeApiRequest(`${apiUrls.feescreateUnifiedFeeStatus}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+    throw error; // Rethrow to allow caller to handle
+  }
+};
+
+
+
+
+export const fetchFeeReceipt = async (feeReceiptNumber) => {
+  try {
+    const option = {
+      method: "GET",
+      params: { feeReceiptNumber }, // Pass as URL param
+    };
+    const data = await makeApiRequest(
+      `${apiUrls.fetchFeeReceipt}/${feeReceiptNumber}`,
+      option
+    );
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+    throw error;
+  }
+};
+
+
+
 export const createStudentSpecificFee = async (payload) => {
   try {
     const option = {
