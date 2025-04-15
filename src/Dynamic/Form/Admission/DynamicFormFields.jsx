@@ -9,6 +9,7 @@ import Button from "../../utils/Button";
 // import { TextField, MenuItem } from "@mui/material";
 import {
   Admission,
+  initialstudentphoto,
   thirdpartymystudents,
 } from "../../../Network/ThirdPartyApi";
 import { toast } from "react-toastify";
@@ -141,31 +142,31 @@ const [availableSections, setAvailableSections] = useState([]);
 
 
   const handleSaveClick = async () => {
-    const requiredFields = [
-      { key: "fullName", message: "Please Enter Name" },
-      { key: "contact", message: "Please Enter Contact" },
-      { key: "fatherName", message: "Please Enter Father Name" },
-    ];
+  //   const requiredFields = [
+  //     { key: "fullName", message: "Please Enter Name" },
+  //     { key: "contact", message: "Please Enter Contact" },
+  //     { key: "fatherName", message: "Please Enter Father Name" },
+  //   ];
 
-    let missingFields = [];
-    for (const field of requiredFields) {
-      if (!values?.[field.key]) {
-        missingFields.push(field.message);
-      }
-    }
+  //   let missingFields = [];
+  //   for (const field of requiredFields) {
+  //     if (!values?.[field.key]) {
+  //       missingFields.push(field.message);
+  //     }
+  //   }
 
-    if (missingFields.length > 0) {
-      toast.warn(missingFields.join(", "));
-      return;
-    }
+  //   if (missingFields.length > 0) {
+  //     toast.warn(missingFields.join(", "));
+  //     return;
+  //   }
 
  
-    const contactRegex =
-      /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/;
-    if (!contactRegex.test(values.contact)) {
-      toast.warn("Please enter a valid contact number.");
-      return;
-    }
+  //   const contactRegex =
+  //     /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/;
+  //   if (!contactRegex.test(values.contact)) {
+  //     toast.warn("Please enter a valid contact number.");
+  //     return;
+  //   }
 
     
   const isValidEmail = (email) => {
@@ -180,44 +181,44 @@ const [availableSections, setAvailableSections] = useState([]);
     return email;
   };
     // Use the generateEmail function
-    const studentEmail = generateEmail(values.fullName, values.contact);
-    const parentEmail = generateEmail(values.fatherName, values.contact);
+    const studentEmail = generateEmail(values?.fullName, values?.contact);
+    const parentEmail = generateEmail(values?.fatherName, values?.contact);
 
-    if (!isValidEmail(studentEmail)) {
-      toast.warn("Please enter a valid student email format.");
-      return;
-    }
-    if (!isValidEmail(parentEmail)) {
-      toast.warn("Please enter a valid parent email format.");
-      return;
-    }
+    // if (!isValidEmail(studentEmail)) {
+    //   toast.warn("Please enter a valid student email format.");
+    //   return;
+    // }
+    // if (!isValidEmail(parentEmail)) {
+    //   toast.warn("Please enter a valid parent email format.");
+    //   return;
+    // }
 
-    setLoading(true);
+    // setLoading(true);
     setIsLoader(true);
 
     try {
       const studentData = {
         schoolId: schoolID,
-        studentFullName: values?.fullName || "",
-        studentEmail: studentEmail, // Use generated email
-        parentEmail: parentEmail, // Use generated email
-        studentPassword: values?.contact || "",
-        parentPassword: values?.contact || "",
-        studentDateOfBirth: moment(values?.DOB).format("DD-MMM-YYYY") || "",
-        studentJoiningDate: moment(new Date()).format("DD-MMM-YYYY") || "",
-        studentGender: values?.gender || "",
-        studentClass: values?.class || "",
-        studentSection: values?.section || "",
-        studentAddress: values?.address || "",
-        studentContact: values?.contact || "",
-        parentContact: values?.contact || "",
-        fatherName: values?.fatherName || "",
-        motherName: values?.motherName || "",
-        studentAdmissionNumber: values?.admissionNumber || "",
-        studentRollNo: values?.rollNo || "",
-        remarks: values?.remarks || "",
-        transport: values?.transport || "",
-         guardianName: values?.guardianName || "",
+        studentName: values?.fullName || "",
+        // studentEmail: studentEmail, // Use generated email
+        // parentEmail: parentEmail, // Use generated email
+        // studentPassword: values?.contact || "",
+        // parentPassword: values?.contact || "",
+        // studentDateOfBirth: moment(values?.DOB).format("DD-MMM-YYYY") || "",
+        // studentJoiningDate: moment(new Date()).format("DD-MMM-YYYY") || "",
+        // studentGender: values?.gender || "",
+        class: values?.class || "",
+        section: values?.section || "",
+        // studentAddress: values?.address || "",
+        // studentContact: values?.contact || "",
+        // parentContact: values?.contact || "",
+        // fatherName: values?.fatherName || "",
+        // motherName: values?.motherName || "",
+        // studentAdmissionNumber: values?.admissionNumber || "",
+        // studentRollNo: values?.rollNo || "",
+        // remarks: values?.remarks || "",
+        // transport: values?.transport || "",
+        //  guardianName: values?.guardianName || "",
       };
 
       const formDataToSend = new FormData();
@@ -229,17 +230,17 @@ const [availableSections, setAvailableSections] = useState([]);
       if (values.studentImage) {
         formDataToSend.append("studentImage", values.studentImage);
       }
-      if (values.fatherImage) {
-        formDataToSend.append("fatherImage", values.fatherImage);
-      }
-      if (values.motherImage) {
-        formDataToSend.append("motherImage", values.motherImage);
-      }
-      if (values.guardianImage) {
-        formDataToSend.append("guardianImage", values.guardianImage);
-      }
-
-      const response = await Admission(formDataToSend);
+      // if (values.fatherImage) {
+      //   formDataToSend.append("fatherImage", values.fatherImage);
+      // }
+      // if (values.motherImage) {
+      //   formDataToSend.append("motherImage", values.motherImage);
+      // }
+      // if (values.guardianImage) {
+      //   formDataToSend.append("guardianImage", values.guardianImage);
+      // }
+console.log("formDataToSend",formDataToSend)
+      const response = await initialstudentphoto(formDataToSend);
 
       if (response.success) {
         setIsLoader(false);
@@ -284,20 +285,164 @@ const [availableSections, setAvailableSections] = useState([]);
       setIsLoader(false);
     }
   };
+  // const handleSaveClick = async () => {
+  //   const requiredFields = [
+  //     { key: "fullName", message: "Please Enter Name" },
+  //     { key: "contact", message: "Please Enter Contact" },
+  //     { key: "fatherName", message: "Please Enter Father Name" },
+  //   ];
+
+  //   let missingFields = [];
+  //   for (const field of requiredFields) {
+  //     if (!values?.[field.key]) {
+  //       missingFields.push(field.message);
+  //     }
+  //   }
+
+  //   if (missingFields.length > 0) {
+  //     toast.warn(missingFields.join(", "));
+  //     return;
+  //   }
+
+ 
+  //   const contactRegex =
+  //     /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/;
+  //   if (!contactRegex.test(values.contact)) {
+  //     toast.warn("Please enter a valid contact number.");
+  //     return;
+  //   }
+
+    
+  // const isValidEmail = (email) => {
+  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  //   return emailRegex.test(email);
+  // };
+
+  // const generateEmail = (name, contact) => {
+  //   let emailPrefix = name.toLowerCase();
+  //   emailPrefix = emailPrefix.replace(/[^a-z0-9]/g, "");
+  //   const email = `${emailPrefix}${contact}@gmail.com`;
+  //   return email;
+  // };
+  //   // Use the generateEmail function
+  //   const studentEmail = generateEmail(values.fullName, values.contact);
+  //   const parentEmail = generateEmail(values.fatherName, values.contact);
+
+  //   if (!isValidEmail(studentEmail)) {
+  //     toast.warn("Please enter a valid student email format.");
+  //     return;
+  //   }
+  //   if (!isValidEmail(parentEmail)) {
+  //     toast.warn("Please enter a valid parent email format.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setIsLoader(true);
+
+  //   try {
+  //     const studentData = {
+  //       schoolId: schoolID,
+  //       studentFullName: values?.fullName || "",
+  //       studentEmail: studentEmail, // Use generated email
+  //       parentEmail: parentEmail, // Use generated email
+  //       studentPassword: values?.contact || "",
+  //       parentPassword: values?.contact || "",
+  //       studentDateOfBirth: moment(values?.DOB).format("DD-MMM-YYYY") || "",
+  //       studentJoiningDate: moment(new Date()).format("DD-MMM-YYYY") || "",
+  //       studentGender: values?.gender || "",
+  //       studentClass: values?.class || "",
+  //       studentSection: values?.section || "",
+  //       studentAddress: values?.address || "",
+  //       studentContact: values?.contact || "",
+  //       parentContact: values?.contact || "",
+  //       fatherName: values?.fatherName || "",
+  //       motherName: values?.motherName || "",
+  //       studentAdmissionNumber: values?.admissionNumber || "",
+  //       studentRollNo: values?.rollNo || "",
+  //       remarks: values?.remarks || "",
+  //       transport: values?.transport || "",
+  //        guardianName: values?.guardianName || "",
+  //     };
+
+  //     const formDataToSend = new FormData();
+
+  //     Object.entries(studentData).forEach(([key, value]) => {
+  //       formDataToSend.append(key, String(value));
+  //     });
+
+  //     if (values.studentImage) {
+  //       formDataToSend.append("studentImage", values.studentImage);
+  //     }
+  //     if (values.fatherImage) {
+  //       formDataToSend.append("fatherImage", values.fatherImage);
+  //     }
+  //     if (values.motherImage) {
+  //       formDataToSend.append("motherImage", values.motherImage);
+  //     }
+  //     if (values.guardianImage) {
+  //       formDataToSend.append("guardianImage", values.guardianImage);
+  //     }
+
+  //     const response = await Admission(formDataToSend);
+
+  //     if (response.success) {
+  //       setIsLoader(false);
+  //       setValues({
+  //         admissionNumber: "",
+  //         fullName: "",
+  //         class: "",
+  //         section: "",
+  //         gender: "",
+  //         DOB: moment("01-01-2010").format("DD-MMM-YYYY"),
+  //         fatherName: "",
+  //         motherName: "",
+  //         guardianName: "",
+  //         contact: "",
+  //         address: "",
+  //         studentImage: null,
+  //         motherImage: null,
+  //         fatherImage: null,
+  //         guardianImage: null,
+  //         remarks: "",
+  //       });
+  //       toast.success("Admission successfully!");
+  //       setReRender(true);
+  //       setIsOpen(false);
+  //     } else {
+  //       toast.error(response?.message)
+  //       setIsLoader(false);
+  //       toast.error(response?.data?.message);
+  //     }
+  //   } catch (error) {
+  //     setIsLoader(false);
+  //     console.error("Error during admission:", error);
+  //     if (error.response && error.response.status === 400) {
+  //       toast.error("Invalid data. Please check your inputs.");
+  //     } else if (error.response && error.response.status === 500) {
+  //       toast.error("Server error. Please try again later.");
+  //     } else {
+  //       console.log("An unexpected error occurred.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //     setIsLoader(false);
+  //   }
+  // };
 
   const handleUpDateClick = async () => {
     setIsLoader(true);
     setReRender(false);
     setLoading(true);
     const studentId = studentData?.studentId;
-
+// console.log("values?.DOB",values?.DOB)
     try {
       const studentDataForUpdate = {
-        schoolId: schoolID,
+        schoolId: schoolID, 
         parentId: values?.parentId,
         studentFullName: values?.fullName || "",
         studentEmail: `${values?.fullName}${values?.contact}@gmail.com` || "",
-        studentDateOfBirth: moment(values?.DOB).format("DD-MMM-YYYY") || "",
+        studentDateOfBirth: values?.DOB?moment(values?.DOB).format("DD-MMM-YYYY"): "",
         studentJoiningDate: moment(new Date()).format("DD-MMM-YYYY") || "",
         studentGender: values?.gender || "",
         studentClass: values?.class || "",
@@ -391,23 +536,7 @@ const [availableSections, setAvailableSections] = useState([]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
-    // if (name === "DOB") {
-    
-    //   const formattedDate = moment(
-    //     value,
-    //     ["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY"],
-    //     true
-    //   );
 
-    //   setValues({
-    //     ...values,
-    //     [name]: formattedDate.isValid()
-    //       ? formattedDate.format("YYYY-MM-DD")
-    //       : value,
-    //   });
-    // } else {
-    //   setValues({ ...values, [name]: value });
-    // }
   };
  
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -481,12 +610,6 @@ const [availableSections, setAvailableSections] = useState([]);
   const handleMoreDetails = () => {
     setModalOpen(true);
   };
-
-
-
-  // const handleSectionChange = (e) => {
-  //   setSelectedSection(e.target.value);
-  // };
 
   if (croppedImageSource) {
     return (
@@ -622,43 +745,7 @@ const [availableSections, setAvailableSections] = useState([]);
                       Father Name
                     </label>
                   </div>
-                  {/* <TextField
-      label="Class"
-      name="class"
-      select
-      value={values.class} // Yahan ensure karein ki values.class mil raha ho
-      onChange={handleClassChange}
-      required
-      style={{ width: "100%", paddingBottom: "20px" }}
-    >
-      <MenuItem value="" disabled>Select a Class</MenuItem>
-      {getClass.length > 0 ? (
-        getClass.map((cls, index) => (
-          <MenuItem key={index} value={cls.className}>{cls.className}</MenuItem>
-        ))
-      ) : (
-        <MenuItem disabled>No Classes Available</MenuItem>
-      )}
-    </TextField> */}
-
-    {/* <TextField
-      label="Section"
-      name="section"
-      select
-      value={values.section} // Ensure values.section is updated
-      onChange={handleSectionChange}
-      required
-      style={{ width: "100%", paddingBottom: "20px" }}
-    >
-      <MenuItem value="" disabled>Select a Section</MenuItem>
-      {availableSections.length > 0 ? (
-        availableSections.map((sec, index) => (
-          <MenuItem key={index} value={sec}>{sec}</MenuItem>
-        ))
-      ) : (
-        <MenuItem disabled>No Sections Available</MenuItem>
-      )}
-    </TextField> */}
+               
                   <div className="flex justify-center items-center gap-2">
                       <FormControl
                         variant="standard"
@@ -701,44 +788,7 @@ const [availableSections, setAvailableSections] = useState([]);
                           ))}
                         </Select>
                       </FormControl>
-                   
-{/* <FormControl fullWidth style={{ marginBottom: "20px" }}>
-  <InputLabel>Class</InputLabel>
-  <Select
-    name="class"
-    value={values.class} // Ensure value is set properly
-    onChange={handleClassChange}
-    required
-  >
-    <MenuItem value="" disabled>Select a Class</MenuItem>
-    {getClass.length > 0 ? (
-      getClass.map((cls, index) => (
-        <MenuItem key={index} value={cls.className}>{cls.className}</MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No Classes Available</MenuItem>
-    )}
-  </Select>
-</FormControl>
-
-<FormControl fullWidth style={{ marginBottom: "20px" }}>
-  <InputLabel>Section</InputLabel>
-  <Select
-    name="section"
-    value={values.section} // Ensure value is set properly
-    onChange={handleSectionChange}
-    required
-  >
-    <MenuItem value="" disabled>Select a Section</MenuItem>
-    {availableSections.length > 0 ? (
-      availableSections.map((sec, index) => (
-        <MenuItem key={index} value={sec}>{sec}</MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No Sections Available</MenuItem>
-    )}
-  </Select>
-</FormControl> */}
+     
 
                     <FormControl
                       variant="standard"

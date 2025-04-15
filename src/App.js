@@ -27,6 +27,10 @@ import Table from "./ADMINDASHBOARD/Fees/Table";
 import StudentFeeHistory from "./ADMINDASHBOARD/Fees/StudentFeeHistory";
 import InventoryDashboard from "./ADMINDASHBOARD/Inventory/InventoryDashboard"; // New import
 import BulkEdit from "./ADMINDASHBOARD/Student/AllStudent/BulkEdit";
+import AllStudent from "./THIRDPARTY/AllStudent";
+import Dashboard from "./THIRDPARTY/NewFolder/Dashboard";
+import ThirdpartStudent from "./THIRDPARTY/NewFolder/ThirdpartStudent";
+import AdmissionForm from "./THIRDPARTY/AdmissionForm";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -349,9 +353,12 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["thirdparty"]} />}>
+            {/* <Route path="/thirdparty/*" element={<Dashboard />}/> */}
             <Route path="/thirdparty/*" element={<ThirdPartyDashboard />}>
-              <Route index element={<ThirdPartyHome />} />
-              <Route path="school" element={<ThirdPartyMobile />} />
+              <Route index element={<Dashboard />} />
+              <Route path="student" element={<ThirdPartyMobile />} />
+              <Route path="all-student" element={<ThirdpartStudent />} />
+              <Route path="admision-form" element={<AdmissionForm />} />
             </Route>
           </Route>
 

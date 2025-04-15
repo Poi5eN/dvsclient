@@ -4,7 +4,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 import { AiOutlineMenu, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-import { links as adminLinks } from "../data/dummy";
+import { links as adminLinks, Thirdpartylinks } from "../data/dummy";
 import { Studentlinks, Teacherslinks, Parentslinks } from "../data/dummy";
 import { useStateContext } from "../contexts/ContextProvider";
 import { BiSolidSchool } from "react-icons/bi";
@@ -27,10 +27,17 @@ const Topbar = () => {
   } else if (userRole === "teacher") {
     linksToDisplay = Teacherslinks[0]?.links || [];
     dashboardPath = "/teacher";
-  } else if (userRole === "parent") {
+  } 
+  else if (userRole === "parent") {
     linksToDisplay = Parentslinks[0]?.links || [];
     dashboardPath = "/parent";
-  } else {
+  }
+  else if (userRole === "thirdparty") {
+    linksToDisplay = Thirdpartylinks[0]?.links || [];
+    // dashboardPath = "/school-details";///
+    dashboardPath = "/thirdparty";
+  }
+   else {
     linksToDisplay = adminLinks;
     dashboardPath = "/admin";
   }

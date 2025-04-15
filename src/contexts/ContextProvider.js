@@ -23,6 +23,8 @@ export const ContextProvider = ({ children }) => {
   const [isClicked, setIsClicked] = useState(initialState);
   const [allstudentdata,setAllStudentData] = useState([]);
   const [teacherRoleData,setTeacherRoleData]=useState({});
+  const [schoolDetails,setSchoolDetails]=useState({});
+  console.log("firstschoolDetails",schoolDetails)
   const [numberOfStudent,setNumberOfStudent]=useState(0);
   const [allFees,setAllFees]=useState()
    const [isFullScreen, setIsFullScreen] = useState(false);
@@ -98,7 +100,7 @@ const logoutUser = () => {
 
 
   return (
-    <StateContext.Provider value={{isLoggedIn, userRole, loginUser, logoutUser,isLoader,setIsLoader,toggleFullScreen,isFullScreen, setIsFullScreen,numberOfStudent,setNumberOfStudent,teacherRoleData,teacherData, currentColor, currentMode, activeMenu, screenSize, setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, setCurrentColor, setCurrentMode, setMode, setColor, themeSettings, setThemeSettings   , setIsLoggedIn , setAllStudentData , allstudentdata,setAllFees,allFees  }}>
+    <StateContext.Provider value={{ schoolDetails,setSchoolDetails,isLoggedIn, userRole, loginUser, logoutUser,isLoader,setIsLoader,toggleFullScreen,isFullScreen, setIsFullScreen,numberOfStudent,setNumberOfStudent,teacherRoleData,teacherData, currentColor, currentMode, activeMenu, screenSize, setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, setCurrentColor, setCurrentMode, setMode, setColor, themeSettings, setThemeSettings   , setIsLoggedIn , setAllStudentData , allstudentdata,setAllFees,allFees  }}>
          {isLoader && <Loading/>}  
       {children}
     </StateContext.Provider>

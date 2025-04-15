@@ -1,3 +1,16 @@
+// import React from 'react'
+// import SchoolDetails from './SchoolDetails'
+
+// const ThirdPartyHome = () => {
+//   return (
+//     <div>
+//       <SchoolDetails/>
+//     </div>
+//   )
+// }
+
+// export default ThirdPartyHome
+
 
 
 import React, { useState, useEffect, useRef } from "react";

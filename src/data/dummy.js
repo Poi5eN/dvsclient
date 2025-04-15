@@ -6,7 +6,7 @@ import { ImBookmarks } from "react-icons/im";
 import { FaCertificate } from "react-icons/fa6";
 import { FaWpforms } from "react-icons/fa6";
 import { FaArrowDownUpAcrossLine } from "react-icons/fa6";
-
+import { AiFillDashboard } from "react-icons/ai";
 import {
   BsPersonFillAdd,
 } from "react-icons/bs";
@@ -45,6 +45,12 @@ export const LinePrimaryYAxis = {
 
 
 export const links = [
+  {
+    id: "1",
+    name: "Dashboard",
+    icon: <AiFillDashboard />,
+    route: "admin",
+  },
   { name: 'Registration', link: 'registration' ,icon: <MdOutlineAppRegistration />},
   { name: 'Admission', link: 'admission' ,icon: <BsPersonFillAdd />},
   // { name: 'Student', link: 'allstudent' ,icon: <PiStudentFill />},
@@ -447,6 +453,33 @@ export const Parentslinks = [
         icon: <BiSolidStoreAlt />,
         route: "parent/queries",
       },
+    ],
+  },
+];
+export const Thirdpartylinks = [
+  {
+    title: "Thirdparty Dashboard",
+    links: [
+      {
+        id: "1",
+        name: "DashBoard",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty",
+      },
+      {
+        id: "1",
+        name: "Student",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/all-student",
+      },
+      {
+        id: "1",
+        name: "Admission",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/admision-form",
+      },
+   
+      
     ],
   },
 ];

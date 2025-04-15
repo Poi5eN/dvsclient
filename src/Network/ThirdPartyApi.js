@@ -102,6 +102,18 @@ export const Admission = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const initialstudentphoto = async (payload) => {
+  try {
+    const option = {
+        method: "POST",
+        payloadData: payload// Ensure the method is GET
+      };
+    const data = await makeApiRequest(`${apiUrls?.initialstudentphoto}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 // export const StudentCreateRegistrations = async (payload) => {
 //   try {

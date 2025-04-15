@@ -13,7 +13,7 @@ import Button from "../../Dynamic/utils/Button";
 function Classes() {
   const { currentColor, setIsLoader } = useStateContext();
   const [formData, setFormData] = useState({
-    className: "NURSERY",
+    className: "NUR",
     subjects: ["HINDI", "ENGLISH", "MATHS"],
     sections: ["A"],
   });
@@ -159,9 +159,9 @@ function Classes() {
             handleChange={handleFieldChange}
             label="class"
             dynamicOptions={[
-              { label: "KG", value: "KG" },
-              { label: "Extra class", value: "Extra class" },
-              { label: "NURSERY", value: "NURSERY" },
+             
+              { label: "PRE NUR", value: "PRE NUR" },
+              { label: "NUR", value: "NUR" },
               { label: "LKG", value: "LKG" },
               { label: "UKG", value: "UKG" },
               { label: "I", value: "I" },
@@ -176,6 +176,7 @@ function Classes() {
               { label: "X", value: "X" },
               { label: "XI", value: "XI" },
               { label: "XII", value: "XII" },
+              { label: "PASS OUT", value: "PASS OUT" },
             ]}
           />
           </div>

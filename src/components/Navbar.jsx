@@ -44,10 +44,12 @@ const Navbar = () => {
     screenSize,
     isFullScreen,
     setIsFullScreen,
-    themeSettings, setThemeSettings,
+    themeSettings, setThemeSettings
   } = useStateContext();
   // const { currentMode, activeMenu, currentColor, themeSettings, setThemeSettings, isLoggedIn, setIsLoggedIn } = useStateContext()
   const user = JSON.parse(localStorage.getItem("user"))
+  const SchoolDetails = JSON.parse(localStorage.getItem("SchoolDetails"))
+  // const SchoolDetails = JSON.parse(localStorage.getItem("SchoolDetails"))
   const session = JSON.parse(localStorage.getItem("session"))
   // State for User Info
   // const [user, setUser] = useState({});
@@ -106,7 +108,7 @@ const Navbar = () => {
          <Link to={dashboardPath} 
         //  onClick={closeAllMenus}
           className="flex items-center gap-2 flex-shrink-0 ml-2">
-           <img src={logo} alt="logo" className="h-8 object-contain " />
+           <img src={logo} alt="logo" className="h-8 object-contain " />  
          </Link>
       </div>
 
@@ -116,7 +118,7 @@ const Navbar = () => {
           className="text-[10px] md:text-[16px] font-semibold hidden md:block"
           style={{ color: "white" }}
         >
-          {user?.schoolName } ( {session } )
+          {user?.schoolName?user?.schoolName:SchoolDetails?.schoolName } ( {session } )
         </p>
         {/* <span
           className="text-[10px] md:text-[10px] text-[#f15b25] font-semibold block"

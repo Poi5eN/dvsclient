@@ -22,7 +22,7 @@ export function ReactSelect({
   };
 
   return (
-    <div className="did-floating-label-content inline-block px-1 ">
+    <div className="did-floating-label-content inline-block px-1 min-w-[170px] ">
       <select
         className={`did-floating-select ${value ? "has-value" : ""}`}
         name={name}

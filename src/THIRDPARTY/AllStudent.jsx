@@ -14,7 +14,7 @@ function AllStudent() {
   
   const SchoolID = localStorage.getItem("SchoolID");
   const [reRender, setReRender] = useState(false);
-  const { currentColor,setIsLoader } = useStateContext();
+  const { currentColor,setIsLoader,schoolDetails } = useStateContext();
   const [getClass, setGetClass] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSection, setSelectedSection] = useState("");
@@ -56,6 +56,7 @@ function AllStudent() {
   const Getclasses = async () => {
     try {
       // setIsLoader(true);
+      if (!SchoolID) return;
       const response = await thirdpartyclasses(SchoolID);
      
       if (response.success) {
@@ -72,6 +73,7 @@ function AllStudent() {
   };
 
   const getStudent = async () => {
+    if (!SchoolID) return;
     setIsLoader(true);
     try {
       
@@ -93,7 +95,8 @@ console.log("response aaaaa",response)
   useEffect(() => {
     getStudent();
     Getclasses();
-  }, [reRender]);
+  }, [SchoolID,reRender]);
+  // }, [reRender,schoolDetails?.schoolId]);
 
   useEffect(() => {
     let filtered = [...allStudents];
@@ -123,9 +126,16 @@ console.log("response aaaaa",response)
 
     setFilteredStudents(filtered);
 }, [selectedClass, selectedSection, allStudents, searchTerm]);
+if (!SchoolID) {
+  return <div className="text-center mt-10 text-red-500 font-semibold">Please Select School</div>;
+}
   return (
+    
     <>
-      <div
+   {
+      filteredStudents?.length>0 ?(
+        <>
+          <div
         className="bg-gray-800 py-[1px] fixed top-0 w-full  z-10"
         style={{ background: "#2fa7db" }}
       >
@@ -285,6 +295,12 @@ console.log("response aaaaa",response)
           <DynamicFormFileds studentData={student} buttonLabel={"Update"} setIsOpen={setModalOpen} setReRender={setReRender} />
         </Modal> */}
       </div>
+        </>
+      ):(<div className="text-center mt-10 text-red-500 font-semibold">No Students</div>)
+    }
+      
+    
+     
     </>
   );
 }
