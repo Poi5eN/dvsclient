@@ -8,8 +8,10 @@ export function ReactSelect({
   handleChange,
   name,
   required,
+  isDisabled
 }) {
   // Custom event handler to normalize React event
+ 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
 
@@ -30,6 +32,7 @@ export function ReactSelect({
         onChange={handleSelectChange}
         required={required}
         style={{ borderBottom: required? "1px solid red" : "" }}
+        disabled={isDisabled}
       >
         <option value="" disabled>
           {label}

@@ -16,11 +16,16 @@ import {
     ActiveStudents,
     AdminGetAllClasses,
     getAllStudents,
+    linkStudentToParent,
+    parentandchild,
     studentsStatus,
 } from "../../../Network/AdminApi.js";
 import { toast } from "react-toastify";
+import Button from "../../../Dynamic/utils/Button.jsx";
+import Modal from "../../../Dynamic/Modal.jsx";
+import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput.jsx";
 function CreateParents() {
-    const { setIsLoader } = useStateContext();
+    const { currentColor, setIsLoader } = useStateContext();
     const [getClass, setGetClass] = useState([]); // All classes { className: string, sections: string[] }[]
     const [selectedClass, setSelectedClass] = useState(null); // Store selected class object { value: string, label: string } | null
     const [selectedSection, setSelectedSection] = useState(null); // Store selected section object { value: string, label: string } | null
@@ -30,20 +35,21 @@ function CreateParents() {
     const [isEditing, setIsEditing] = useState(false); // State for edit mode
     const [studentToEdit, setStudentToEdit] = useState(null); // Student data for editing
     const [studentToView, setStudentToView] = useState(null); // Student data for viewing details
-
+ const [modalOpen, setModalOpen] = useState(false);
+  const [formData, setFormData] = useState({});
     const printRef = useRef();
 
     // --- Data Fetching ---
 
-    const fetchAllStudents = useCallback(async () => {
+    const fetchAllParent = useCallback(async () => {
         setIsLoader(true);
         try {
-            const response = await ActiveStudents();
-            console.log("response",response)
+            const response = await parentandchild();
+            console.log("response fetchAllParent",response)
             // const response = await getAllStudents();
             if (response?.success) {
                 // Assuming response.students.data is the array of students
-                const parents = response?.parents?.data?.reverse() || [];
+                const parents = response?.data || [];
                 console.log("parents",parents)
                 setAllParent(parents);
                 // Initial filter applied when data is fetched
@@ -81,9 +87,9 @@ function CreateParents() {
     }, [setIsLoader]); // Include dependencies
 
     useEffect(() => {
-        fetchAllStudents();
+        fetchAllParent();
         fetchAllClasses();
-    }, [fetchAllStudents, fetchAllClasses]); // Use the useCallback functions
+    }, [ fetchAllClasses]); // Use the useCallback functions
 
     // --- Filtering Logic ---
 
@@ -118,7 +124,7 @@ function CreateParents() {
                 // setAllStudents(prev =>
                 //     prev.map(s => s.studentId === studentId ? { ...s, status: response.newStatus } : s) // Assuming API returns new status
                 // );
-                await fetchAllStudents(); // Refetch to ensure data consistency
+                await fetchAllParent(); // Refetch to ensure data consistency
             } else {
                 toast.error(response?.message || "Failed to update student status.");
             }
@@ -158,16 +164,16 @@ function CreateParents() {
         setStudentToView(null);    // Ensure view mode is off
     };
 
-    const handleViewClick = (student) => {
-        setStudentToView(student); // Set the student to view
-        setIsEditing(false);       // Ensure edit mode is off
-    };
+    // const handleViewClick = (student) => {
+    //     setStudentToView(student); // Set the student to view
+    //     setIsEditing(false);       // Ensure edit mode is off
+    // };
 
     const handleCloseEdit = (shouldRefetch = false) => {
         setIsEditing(false);
         setStudentToEdit(null);
         if (shouldRefetch) {
-            fetchAllStudents(); // Refetch if changes were made
+            fetchAllParent(); // Refetch if changes were made
         }
     };
 
@@ -175,9 +181,54 @@ function CreateParents() {
         setStudentToView(null);
     };
 
-
+console.log("firstformData",formData)
     // --- Table Definition ---
+     const handleSubmit = async () => {
+        alert("clicled")
+          const payload={
+            "parentAdmissionNumber": formData?.parentAdmissionNumber,
+            "studentAdmissionNumber": formData?.studentAdmissionNumber,
+           
+          }
+         
+            setIsLoader(true);
+            try {
+              const response = await linkStudentToParent(payload);
+              if (response?.success) {
+                toast.success("Fees set successfully !");
+                fetchAllParent()
+                closeModal();
+                setModalOpen(false);
+              } else {
+                toast.error(response?.message);
+              }
+            } catch (error) {
+              console.error("Error:", error);
+            } finally {
+              setIsLoader(false);
+            }
+          };
+          const handleFieldChange = (e) => {
+            const { name, value } = e.target;
+            setFormData((prev) => ({ ...prev, [name]: value }));
+          };
+    const closeModal = () => {
+        setModalOpen(false);
+        setFormData({ className: "", feeType: "", amount: "" ,studentId:""});
+      };
+    const handleViewClick = (val) => {
+        console.log("val",val)
+        setModalOpen(true);
+          setFormData(
+            (preV)=>({
+  ...preV,
+  parentAdmissionNumber: val?.admissionNumber, 
 
+  
+            })
+          );
+               // Ensure edit mode is off
+      };
     const THEAD = [
         { id: "SN", label: "S No.", width: "5" },
         { id: "photo", label: "Photo", width: "7" },
@@ -189,56 +240,45 @@ function CreateParents() {
         // { id: "dateOfBirth", label: "DOB" },
         { id: "contact", label: "Contact" },
         { id: "child", label: "Child" },
+        
         // { id: "gender", label: "Gender" },
         // { id: "status", label: "Status" },
-        // { id: "action", label: "Action" },
+        { id: "action", label: "Action" },
     ];
 
-    const tBody = filteredData?.map((student, ind) => ({
+    const tBody = filteredData?.map((val, ind) => ({
         SN: ind + 1,
         photo: (
+            
             <img
-                src={student?.fatherImage?.url || "https://via.placeholder.com/40?text=No+Img"} // Placeholder
-                alt="student"
+                src={val?.fatherImage?.url || "https://via.placeholder.com/40?text=No+Img"} // Placeholder
+                alt="val"
                 className="w-6 h-6 object-cover rounded-md mx-auto" // Centered and slightly larger
             />
         ),
         admissionNo: (
             <span className="text-indigo-700 font-semibold">
-                {student.admissionNumber || 'N/A'}
+                {val.parent?.admissionNumber || 'N/A'}
             </span>
         ),
-        name: student.fatherName || 'N/A',
-        email: student.email || 'N/A',
-        // fatherName: student.fatherName || 'N/A',
-        // class: <span>{student.class || 'N/A'} - {student?.section || 'N/A'}</span>,
-        // dateOfBirth: student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MMM-YYYY") : 'N/A',
-        contact: student.contact || 'N/A',
-        child: student.studentNames?.map((val)=>val) || 'N/A',
-        // gender: student.gender || 'N/A',
-        // status: (
-        //     <button
-        //         onClick={() => handleToggleStatus(student?.studentId, student.status)}
-        //         title={student.status === "active" ? "Deactivate Student" : "Activate Student"}
+        name: val?.parent?.fatherName || 'N/A',
+        email: val?.parent?.email || 'N/A',
+        // fatherName: val.fatherName || 'N/A',
+        // class: <span>{val.class || 'N/A'} - {val?.section || 'N/A'}</span>,
+        // dateOfBirth: val.dateOfBirth ? moment(val.dateOfBirth).format("DD-MMM-YYYY") : 'N/A',
+        contact: val?.parent?.contact || 'N/A',
+        child: val?.parent?.children?.map((item)=><p>{item?.studentName}</p>) || 'N/A',
+        action: (
+            <div className="flex justify-center items-center gap-3">
+                <Button  name="Bind Sibling" onClick={() => handleViewClick(val?.parent)} 
+                // className="text-blue-600 hover:text-blue-800 text-lg"
+                >
                
-        //         className={`p-1 rounded-full text-2xl text-red-600 hover:text-red-800`}
-        //     >
-        //         <MdDelete/>
-        //     </button>
-             
-        // ),
-        // action: (
-        //     <div className="flex justify-center items-center gap-3">
-        //         <button title="View Details" onClick={() => handleViewClick(student)} className="text-blue-600 hover:text-blue-800 text-lg">
-        //             <FaEye />
-        //         </button>
-        //         <button title="Edit Student" onClick={() => handleEditClick(student)} className="text-yellow-600 hover:text-yellow-800 text-lg">
-        //             <FaEdit />
-        //         </button>
-                
-        //     </div>
-        // ),
-        rowClassName: student.status === "deactivated" || student.status === "inactive" ? "bg-gray-100 opacity-80" : "", // Adjust class for inactive
+                </Button>
+               
+            </div>
+        ),
+        // rowClassName: student.status === "deactivated" || student.status === "inactive" ? "bg-gray-100 opacity-80" : "", // Adjust class for inactive
     }));
 
     // --- Options for ReactSelect ---
@@ -290,10 +330,57 @@ function CreateParents() {
                     <NoDataFound message="No students found matching the criteria." />
                 )}
 
-                {/* Hidden Print Component */}
-                {/* <div className="hidden">
-                    <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} /> 
-                </div> */}
+               <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={ "Specific Student Fee"}>
+                       <div className="p-4 space-y-4 bg-gray-50">
+                         <div className="grid gap-6 mb-6 md:grid-cols-1">
+                           <div>
+                          
+                         <span> Name : 
+                            {/* {formData?.studentName} */}
+                         </span>
+                         <br />
+                         <span> parentAdmissionNumber : 
+                           {formData?.parentAdmissionNumber}
+                         </span>
+                            
+                           </div>
+                           <div>
+                               {/* <ReactSelect
+                               name="feeType"
+                               value={formData.feeType}
+                               handleChange={handleFieldChange}
+                               label="Fee Type"
+                               dynamicOptions={[
+                                 { label: "Monthly", value: "Monthly" },
+                                
+                               ]}
+                             /> */}
+               
+               
+                           </div>
+                         </div>
+               
+                         <div>
+                           <ReactInput  
+                             type="text"
+                             name="studentAdmissionNumber"
+                             required={false}
+                             label="studentAdmissionNumber"
+                             onChange={handleFieldChange}
+                             value={formData.studentAdmissionNumber}
+                           />
+                         </div>
+               
+                         <div className="flex justify-end gap-3">
+                           <Button name="Submit" onClick={handleSubmit} style={{ backgroundColor: currentColor, color: "white" }}>
+                             { }
+                           </Button>
+                           <Button name="Cancel" color="gray" onClick={closeModal} style={{ backgroundColor: "#616161", color: "white" }}>
+                             
+                           </Button>
+                         </div>
+                       </div>
+                     </Modal>
             </div>
         );
     }

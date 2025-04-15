@@ -699,6 +699,18 @@ export const createStudentSpecificFee = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const linkStudentToParent = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.linkStudentToParent}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const getStudentSpecificFee = async (ID,session) => {
   try {
     const option = {
@@ -808,6 +820,18 @@ export const parentandchildwithID = async (ID) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const parentandchild = async (ID) => {
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.parentandchild}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const feeIncomeMonths = async (ID) => {
   try {
     const option = {
@@ -904,6 +928,20 @@ export const editStaff = async (payload,ID) => {
       payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.adminRoutestaff}/${ID}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const editFees = async (payload,ID) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRoutefees}/${ID}`, option);
     // setIsLoader(false)
     return data;
   } catch (error) {
