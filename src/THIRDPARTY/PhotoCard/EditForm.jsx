@@ -1,23 +1,27 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Camera } from "lucide-react";
 import Cropper from "react-easy-crop";
-import getCroppedImg from "./getCroppedImg";
-import Modal from "../../Modal";
+
+
 import { FormControl, InputLabel, Select, TextField,MenuItem  } from "@mui/material";
-import Button from "../../utils/Button";
+
 // import {  MenuItem } from "@mui/material";
 // import { TextField, MenuItem } from "@mui/material";
 import {
   Admission,
   initialstudentphoto,
+  thirdpartycompleteadmission,
   thirdpartymystudents,
-} from "../../../Network/ThirdPartyApi";
+} from "../../Network/ThirdPartyApi";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { useStateContext } from "../../../contexts/ContextProvider";
+import { useStateContext } from "../../contexts/ContextProvider";
+import Button from "../../Dynamic/utils/Button";
+import Modal from "../../Dynamic/Modal";
+import getCroppedImg from "../../Dynamic/Form/Admission/getCroppedImg";
 
 
-function DynamicFormFileds(props) {
+function EditForm(props) {
   const { studentData, buttonLabel, setIsOpen, setReRender } = props;
   console.log("studentData",studentData)
   const { currentColor, isLoader, setIsLoader } = useStateContext();
@@ -81,7 +85,8 @@ const [availableSections, setAvailableSections] = useState([]);
         motherImage: studentData?.motherImage?.url || null,
         guardianImage: studentData?.guardianImage?.url || null,
         DOB: moment(studentData?.dateOfBirth).format("YYYY-MM-DD"),
-        parentId:studentData?.parentId
+        parentId:studentData?.parentId,
+        photoId:studentData?.photoId
       });
     }
   }, [studentData]);
@@ -134,7 +139,7 @@ const [availableSections, setAvailableSections] = useState([]);
     setCurrentPhotoType(photoType);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setCroppedImageSource(reader.result);
+      // setCroppedImageSource(reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -142,7 +147,9 @@ const [availableSections, setAvailableSections] = useState([]);
 
 
   
+
   const handleSaveClick = async () => {
+    // alert("submit")
     const requiredFields = [
       { key: "fullName", message: "Please Enter Name" },
       { key: "contact", message: "Please Enter Contact" },
@@ -288,6 +295,7 @@ const [availableSections, setAvailableSections] = useState([]);
   };
 
   const handleUpDateClick = async () => {
+    // alert("update")
     setIsLoader(true);
     setReRender(false);
     setLoading(true);
@@ -295,23 +303,27 @@ const [availableSections, setAvailableSections] = useState([]);
 // console.log("values?.DOB",values?.DOB)
     try {
       const studentDataForUpdate = {
-        schoolId: schoolID, 
-        parentId: values?.parentId,
+        schoolId: schoolID,
+        photoId:values?.photoId, 
+        // parentId: values?.parentId,
         studentFullName: values?.fullName || "",
         studentEmail: `${values?.fullName}${values?.contact}@gmail.com` || "",
+        parentEmail: `${values?.fatherName}${values?.contact}@gmail.com` || "",
+        parentPassword: values?.contact,
+        studentPassword:values?.contact,
         studentDateOfBirth: values?.DOB?moment(values?.DOB).format("DD-MMM-YYYY"): "",
         studentJoiningDate: moment(new Date()).format("DD-MMM-YYYY") || "",
         studentGender: values?.gender || "",
-        studentClass: values?.class || "",
-        studentSection: values?.section || "",
+        // studentClass: values?.class || "",
+        // studentSection: values?.section || "",
         studentAddress: values?.address || "",
         studentContact: values?.contact || "",
-        contact: values?.contact || "", // For parent compatibility
+        parentContact: values?.contact || "", // For parent compatibility
         fatherName: values?.fatherName || "",
         motherName: values?.motherName || "",
         guardianName: values?.guardianName || "",
         studentAdmissionNumber: values?.admissionNumber || "",
-        remarks: values?.remarks || "", // Assuming this maps to udisePlusDetails or another field if needed
+        // remarks: values?.remarks || "", // Assuming this maps to udisePlusDetails or another field if needed
       };
 
       const formDataToSend = new FormData();
@@ -335,20 +347,22 @@ const [availableSections, setAvailableSections] = useState([]);
       }
 
       // Update API call to match editAdmission endpoint
-      const response = await fetch(
-        `https://dvsserver.onrender.com/api/v1/thirdparty/admissions/${studentId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust based on your auth setup
-          },
-          body: formDataToSend,
-        }
-      );
+     
+      const response = await thirdpartycompleteadmission(formDataToSend);
+      // const response = await fetch(
+      //   `https://dvsserver.onrender.com/api/v1/thirdparty/admissions/${studentId}`,
+      //   {
+      //     method: "PUT",
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust based on your auth setup
+      //     },
+      //     body: formDataToSend,
+      //   }
+      // );
 
-      const result = await response.json();
+      // const result = await response.json();
 
-      if (result.success) {
+      if (response.success) {
         setIsLoader(false);
         setReRender(true);
         setIsOpen(false);
@@ -373,7 +387,7 @@ const [availableSections, setAvailableSections] = useState([]);
         });
       } else {
         setIsLoader(false);
-        toast.error(result.message || "Failed to update admission");
+        toast.error(response.message || "Failed to update admission");
       }
     } catch (error) {
       console.error("Error updating student:", error);
@@ -559,7 +573,7 @@ const [availableSections, setAvailableSections] = useState([]);
                         type="file"
                         className="hidden"
                         accept="image/*"
-                        // capture="environment" // Opens the back camera; use "user" for the front camera
+                        capture="environment" // Opens the back camera; use "user" for the front camera
                         onChange={(e) => handleImageChange(e, "studentImage")}
                       />
                     </label>
@@ -758,7 +772,7 @@ const [availableSections, setAvailableSections] = useState([]);
                   </div>
 
                   <div className="flex justify-center items-center gap-2 w-full mt-4">
-                    <div class="relative w-full">
+                    {/* <div class="relative w-full">
                       <input
                         maxLength="3"
                         type="text"
@@ -775,7 +789,7 @@ const [availableSections, setAvailableSections] = useState([]);
                       >
                         Roll Number
                       </label>
-                    </div>
+                    </div> */}
                     <div class="relative  w-full">
                       <input
                         type="text"
@@ -1062,4 +1076,4 @@ const [availableSections, setAvailableSections] = useState([]);
   );
 }
 
-export default DynamicFormFileds;
+export default EditForm;

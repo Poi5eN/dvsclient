@@ -59,6 +59,8 @@ thirdpartymystudents: "thirdparty/my-students/",
 getAllstudents: "thirdparty/students",
 thirdpartyclasses: "thirdparty/classes",
 initialstudentphoto: "thirdparty/photo",
+thirdpartyphotorecords: "thirdparty/photorecords",
+thirdpartycompleteadmission: "thirdparty/completeadmission",
 
    //    ThirdPartyApi End 
   

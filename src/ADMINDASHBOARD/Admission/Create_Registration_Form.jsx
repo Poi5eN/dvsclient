@@ -105,18 +105,18 @@ const newAdmission=async()=>{
     setIsLoader(true)
     e.preventDefault();
     const payloadData = {
-      studentFullName: payload.studentFullName,
+      studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: studentEmail,
       studentPassword: payload.studentContact,
       studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD MMMM YYYY") : "",
       studentGender: payload.studentGender ||"",
       studentJoiningDate: moment(Date.now()).format("DD MMMM YYYY") ||"",
-      studentAddress: payload.studentAddress ||"",
+      studentAddress: payload.studentAddress.charAt(0).toUpperCase() + payload.studentAddress.slice(1) ||"",
       studentContact: payload.studentContact ||"",
       studentClass: selectedClass ||"",
       studentSection: selectedSection ||"", // Use the selectedSection state
-      fatherName: payload.fatherName ||"",
-      motherName: payload.motherName ||"",
+      fatherName:  payload.fatherName.charAt(0).toUpperCase() + payload.fatherName.slice(1) ||"",
+      motherName:  payload.motherName.charAt(0).toUpperCase() + payload.motherName.slice(1) ||"",
       parentEmail: parentEmail ||"",
       parentPassword: payload.studentContact ||"",
       parentContact: payload.studentContact ||"",

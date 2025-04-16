@@ -43,6 +43,7 @@ export const thirdpartyclasses = async (SchoolID) => {
     throw error; // Re-throw the error to allow the component to handle it.
   }
 };	
+
 export const thirdpartymystudents = async (studentId,studentData) => {
   try {
     const option = {
@@ -114,6 +115,31 @@ export const initialstudentphoto = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const thirdpartycompleteadmission = async (payload) => {
+  try {
+    const option = {
+        method: "POST",
+        payloadData: payload// Ensure the method is GET
+      };
+    const data = await makeApiRequest(`${apiUrls?.thirdpartycompleteadmission}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const thirdpartyphotorecords = async (SchoolID) => {
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+
+    const data = await makeApiRequest(`${apiUrls?.thirdpartyphotorecords}?schoolId=${SchoolID}`, option);
+    return data;
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    throw error; // Re-throw the error to allow the component to handle it.
+  }
+};	
 
 // export const StudentCreateRegistrations = async (payload) => {
 //   try {

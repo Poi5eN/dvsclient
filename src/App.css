@@ -233,3 +233,191 @@
     }
   }
 }
+/* 
+.p-multiselect-item {
+  padding: 10px;
+  background-color: #69aad8;
+  color: white;
+  margin: 1px;
+}
+.p-multiselect-checkbox .p-multiselect-select-all{
+  margin-right: 5px;
+}
+.multiselect {
+  padding: 10px;
+  background: aquamarine;
+
+}
+.p-multiselect-header{
+  padding: 10px;
+  background: cadetblue;
+  gap: 5px;
+
+} */
+
+/* === General MultiSelect Styling === */
+
+/* Style the main component wrapper/input area */
+.multiselect .p-multiselect {
+  border: 1px solid #ced4da; /* Softer border color */
+  border-radius: 6px; /* Slightly rounded corners */
+  background-color: #ffffff; /* Clean white background */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transitions */
+  width: 100%; /* Make it take full width of its container */
+  min-height: 40px; /* Ensure a minimum height */
+  display: flex;
+  align-items: center;
+}
+
+/* Style when the component is focused */
+.multiselect .p-multiselect.p-focus {
+  border-color: #80bdff; /* Highlight border on focus */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a glow effect */
+}
+
+/* Style the placeholder and selected items text area */
+.multiselect .p-multiselect-label {
+  padding: 0.6rem 0.8rem; /* Adjust padding for better spacing */
+  color: #495057; /* Standard text color */
+}
+
+/* Style the placeholder text specifically */
+.multiselect .p-multiselect-label.p-placeholder {
+  color: #6c757d; /* Lighter color for placeholder */
+}
+
+/* Style the dropdown trigger icon */
+.multiselect .p-multiselect-trigger {
+  color: #6c757d; /* Icon color */
+}
+
+/* === Dropdown Panel Styling === */
+
+/* Style the dropdown panel itself */
+.p-multiselect-panel {
+  border: 1px solid #dee2e6; /* Consistent border */
+  border-radius: 6px; /* Match component rounding */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  background-color: #ffffff;
+}
+
+/* Style the header (filter, select all) */
+.p-multiselect-header {
+  padding: 0.75rem 1rem; /* Good padding */
+  background-color: #f8f9fa; /* Very light background for separation */
+  border-bottom: 1px solid #dee2e6; /* Separator line */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between elements */
+}
+
+/* Style the filter input */
+.p-multiselect-filter-container .p-inputtext {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 100%; /* Make filter input take available space */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.p-multiselect-filter-container .p-inputtext:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Style the filter icon (if present) */
+.p-multiselect-filter-icon {
+ margin-left: -25px; /* Position icon inside the input */
+ color:#6c757d;
+}
+
+/* Style the "Select All" checkbox container */
+.p-multiselect-select-all {
+  margin-right: 0.5rem; /* Space before the label */
+}
+
+/* === Dropdown Item Styling === */
+
+/* Style individual items in the dropdown */
+.p-multiselect-item {
+  padding: 0.75rem 1rem; /* Comfortable padding */
+  margin: 0; /* Remove default margins if any */
+  color: #495057; /* Standard text color */
+  background-color: transparent; /* Remove the old blue background */
+  border-radius: 0; /* Items shouldn't usually be rounded */
+  transition: background-color 0.2s ease-in-out; /* Smooth hover */
+  cursor: pointer;
+  display: flex; /* Align checkbox and label nicely */
+  align-items: center;
+  gap: 0.5rem; /* Space between checkbox and label */
+}
+
+/* Style item on hover (when NOT selected) */
+.p-multiselect-item:not(.p-highlight):hover {
+  background-color: #e9ecef; /* Light grey hover background */
+  color: #1d2124; /* Slightly darker text on hover */
+}
+
+/* Style selected items */
+.p-multiselect-item.p-highlight {
+  background-color: #007bff; /* Primary blue for selected */
+  color: #ffffff; /* White text for selected */
+  font-weight: 500; /* Slightly bolder text */
+}
+
+/* Style the checkbox within items */
+.p-multiselect-item .p-checkbox {
+  margin-right: 0.5rem; /* Ensure spacing if gap isn't enough */
+}
+
+/* Style the checkbox box */
+.p-checkbox .p-checkbox-box {
+  border: 1px solid #adb5bd;
+  border-radius: 4px;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Style the checkbox box when checked */
+.p-checkbox .p-checkbox-box.p-highlight {
+  border-color: #007bff;
+  background: #007bff;
+}
+
+/* Style the check icon inside the checkbox */
+.p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
+  color: #ffffff;
+}
+
+
+/* === Required Field Styling === */
+
+/* Add a visual indicator for required fields */
+.multiselect.required-fields .p-multiselect {
+  border-left: 3px solid #dc3545; /* Red indicator on the left */
+  /* Or use border-color: #dc3545; for the whole border */
+}
+
+/* === Selected Label Chips (Tokens) in the input === */
+.p-multiselect-token {
+  padding: 0.25rem 0.5rem;
+  background-color: #e9ecef; /* Light background for chips */
+  color: #495057;
+  border-radius: 4px;
+  margin: 2px; /* Spacing between chips */
+}
+
+.p-multiselect-token .p-multiselect-token-icon {
+  margin-left: 0.5rem; /* Space before the close icon */
+  cursor: pointer;
+}
+.p-multiselect-token .p-multiselect-token-icon:hover {
+  color: #dc3545; /* Red hover for close icon */
+}
+
+/* === Close Icon in Header === */
+.p-multiselect-close {
+  color: #6c757d;
+  transition: color 0.2s;
+}
+.p-multiselect-close:hover {
+   color: #343a40;
+}

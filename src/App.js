@@ -31,6 +31,8 @@ import AllStudent from "./THIRDPARTY/AllStudent";
 import Dashboard from "./THIRDPARTY/NewFolder/Dashboard";
 import ThirdpartStudent from "./THIRDPARTY/NewFolder/ThirdpartStudent";
 import AdmissionForm from "./THIRDPARTY/AdmissionForm";
+import Photo from "./THIRDPARTY/Photo";
+import IDCard from "./THIRDPARTY/PhotoCard/IDCard";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -359,6 +361,8 @@ function App() {
               <Route path="student" element={<ThirdPartyMobile />} />
               <Route path="all-student" element={<ThirdpartStudent />} />
               <Route path="admision-form" element={<AdmissionForm />} />
+              <Route path="photo" element={<Photo />} />
+              <Route path="card" element={<IDCard />} />
             </Route>
           </Route>
 

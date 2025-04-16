@@ -24,7 +24,7 @@ export const ContextProvider = ({ children }) => {
   const [allstudentdata,setAllStudentData] = useState([]);
   const [teacherRoleData,setTeacherRoleData]=useState({});
   const [schoolDetails,setSchoolDetails]=useState({});
-  console.log("firstschoolDetails",schoolDetails)
+  // console.log("firstschoolDetails",schoolDetails)
   const [numberOfStudent,setNumberOfStudent]=useState(0);
   const [allFees,setAllFees]=useState()
    const [isFullScreen, setIsFullScreen] = useState(false);

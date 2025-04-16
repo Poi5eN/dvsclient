@@ -40,20 +40,20 @@ const TeacherNotice = () => {
 
     // Populate newNotice with the data of the notice you are editing
     setNewNotice({
-      title: notice[index].title,
-      content: notice[index].content,
-      image: notice[index].image, // Include the existing image
+      title: notice[index]?.title,
+      content: notice[index]?.content,
+      image: notice[index]?.image, // Include the existing image
     });
   };
 
   const handleNoticeSubmit = () => {
     setLoading(true)
     const formData = new FormData();
-    formData.append("title", newNotice.title);
-    formData.append("content", newNotice.content);
+    formData.append("title", newNotice?.title);
+    formData.append("content", newNotice?.content);
 
     if (newNotice.image) {
-      formData.append("image", newNotice.image);
+      formData.append("image", newNotice?.image);
     } else if (editingNotice !== null && notice[editingNotice].image) {
       formData.append("image", notice[editingNotice].image);
     }
@@ -126,7 +126,7 @@ const TeacherNotice = () => {
         },
       })
       .then((response) => {
-        const { allNotice } = response.data;
+        const { allNotice } = response?.data;
 
         setNotices(allNotice);
       })
@@ -210,7 +210,7 @@ const TeacherNotice = () => {
       <ul>
         <div className="overflow-auto  ">
           <Marquee time={10} height={"130px"} >
-            {notice.length > 0 ? (
+            {notice?.length > 0 ? (
               notice?.map((notice, index) => (
                 <li
                   key={index}
@@ -219,7 +219,7 @@ const TeacherNotice = () => {
                 >
                   <div className="w-full bg-red-400 relative ">
                     <div className="absolute right-0 flex space-x-3 text-2xl">
-                      {notice.file && (
+                      {notice?.file && (
                         <a
                           href={notice.file.url}
                           target="_blank"

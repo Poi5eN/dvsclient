@@ -8,6 +8,7 @@ import { toWords } from "number-to-words";
 
 import "./Print.css";
 import Button from "../../Dynamic/utils/Button.jsx";
+import moment from "moment";
 
 const FeeRecipt = ({ modalData, handleCloseModal }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -127,14 +128,14 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             </div>
             <div className="text-[14px]">
               Name:{" "}
-              <strong>{isUnified ? unifiedStudentNames : studentName}</strong>
+              <strong>{isUnified ? unifiedStudentNames?.toUpperCase() : studentName?.toUpperCase()}</strong>
             </div>
             <div className="text-[14px]">
               Class:{" "}
               <strong>{isUnified ? unifiedClasses : studentClass}</strong>
             </div>
             <div className="text-[14px]">
-              S/D. of: <strong>{fatherName}</strong>
+              S/D. of: <strong>{fatherName?.toUpperCase()}</strong>
             </div>
             {transactionId.length > 4 && (
               <div className="text-[14px]">
@@ -144,7 +145,8 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
           </div>
           <div>
             <div className="text-[14px]">
-              Date: <strong>{date()}</strong>
+              Date: <strong>{moment(normalizedData.date).format("DD-MM-YYYY")}</strong>
+              {/* Date: <strong>{date()}</strong> */}
             </div>
             <div className="text-[14px]">
               Adm No:{" "}
@@ -155,17 +157,20 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             <div className="text-[14px]">
               Mode: <strong>{paymentMode}</strong>
             </div>
+            <div className="text-[14px]">
+              Month: <strong>{regularFees.map((addFee, index) => (addFee?.month))}</strong>
+            </div>
           </div>
         </div>
         {regularFees.length > 0 || additionalFees.length > 0 ? (
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
-                <th className="border border-black pl-2 text-[14px]">Name</th>
-                <th className="border border-black pl-2 text-[14px]">Month</th>
-                <th className="border border-black pl-2 text-[14px]">Amount</th>
-                <th className="border border-black pl-2 text-[14px]">Dues</th>
-                <th className="border border-black pl-2 text-[14px]">Status</th>
+                <th className="border border-black pl-2 text-[14px] text-start">FEE HEAD</th>
+                {/* <th className="border border-black pl-2 text-[14px]">Month</th> */}
+                <th className="border border-black pl-2 text-[14px] text-start">AMOUNT (Rs.)</th>
+                {/* <th className="border border-black pl-2 text-[14px] text-start">DUES</th> */}
+                {/* <th className="border border-black pl-2 text-[14px] text-start">STATUS</th> */}
               </tr>
             </thead>
             {regularFees.length > 0 && (
@@ -175,18 +180,19 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                     <td className="border border-black pl-2 text-[14px]">
                       FEE
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.month || "N/A"}
-                    </td>
+                    </td> */}
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.paidAmount || 0}
+                      {addFee.feeStructureAmount || 0}
+                      {/* {addFee.paidAmount || 0} */}
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.dueAmount || 0}
-                    </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    </td> */}
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.status || "N/A"}
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -198,18 +204,19 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                     <td className="border border-black pl-2 text-[14px]">
                       {addFee.name || "N/A"}
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.month || "N/A"}
-                    </td>
+                    </td> */}
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.paidAmount || 0}
+                      {addFee.feeStructureAmount || 0}
+                      {/* {addFee.paidAmount || 0} */}
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.dueAmount || 0}
-                    </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    </td> */}
+                    {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.status || "N/A"}
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

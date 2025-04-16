@@ -121,7 +121,7 @@ export const links = [
       icon: <ImManWoman />,
       children: [
           { name: 'All Parents', link: 'allparents', icon: <ImManWoman />, },
-          { name: 'Fees Status', link: 'feestatus', icon: <GiTakeMyMoney />, },
+          // { name: 'Fees Status', link: 'feestatus', icon: <GiTakeMyMoney />, },
       ],
   },
 //   {
@@ -477,6 +477,18 @@ export const Thirdpartylinks = [
         name: "Admission",
         icon: <GiTakeMyMoney />,
         route: "thirdparty/admision-form",
+      },
+      {
+        id: "1",
+        name: "Photo",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/photo",
+      },
+      {
+        id: "1",
+        name: "Card",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/card",
       },
    
       

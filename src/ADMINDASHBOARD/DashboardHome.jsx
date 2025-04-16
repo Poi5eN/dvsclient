@@ -95,9 +95,10 @@ const DashboardHome = () => {
       setIsLoader(false)
     }
   }
+  // console.log("allStudents",allStudents)
 useEffect(()=>{
   const matchingStudents = allStudents?.filter((student) => {
-    const studentDOB = format(new Date(student?.dateOfBirth), "dd-MM");
+    const studentDOB = student?.dateOfBirth? format(new Date(student?.dateOfBirth), "dd-MM") :"";
     // console.log("firststudentDOB",studentDOB)
     return studentDOB === formattedToday;
   });
@@ -191,7 +192,7 @@ const details=[
        className="p-2 rounded-md text-center bg-white dark:text-white dark:bg-secondary-dark-bg"
      >
       <h1 className="text-[#33ace0] font-bold">TODAY BIRTHDAY</h1>
-        <Marquee list={allBday} time={6} height={"130px"}>
+        {/* <Marquee list={allBday} time={6} height={"130px"}>
                 {allBday?.map((item, index) => (
                   <div class=" items-center gap-4 p-1 border rounded-sm shadow-sm bg-white my-[1px] mx-1 ">
                     <span class="px-2 py-1  text-gray-800 text-[10px] font-semibold rounded">
@@ -200,13 +201,13 @@ const details=[
 
                     <div class="flex justify-between w-full">
                       <div>
-                        <h4 class=" font-bold text-[12px] text-start"> {item.studentName}</h4>
+                        <h4 class=" font-bold text-[12px] text-start"> {item?.studentName}</h4>
                         <p class="text-gray-600 font-bold text-[10px] text-start">
                           {" "}
-                          Class : {item.class}-{item.section}{" "}
+                          Class : {item?.class}-{item?.section}{" "}
                         </p>
                         <p class="text-gray-600 text-lg">
-                         <span className="text-blue-800"> {`${Number(moment(today).format("YYYY"))-Number(moment(item.dateOfBirth).format("YYYY"))}th`}</span> Birthday 🎂 🎉
+                         <span className="text-blue-800"> {`${Number(moment(today).format("YYYY"))-Number(moment(item?.dateOfBirth).format("YYYY"))}th`}</span> Birthday 🎂 🎉
                         </p>
                       </div>
 
@@ -220,7 +221,7 @@ const details=[
                     </div>
                   </div>
                 ))}
-              </Marquee>
+              </Marquee> */}
      </div>
      <div
        style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
