@@ -3,6 +3,9 @@
 
 import { apiUrls } from './ApiEndpoints';
 import makeApiRequest from './makeApiRequest'; // Provide the correct path
+import axios from "axios";
+
+const API_URL = "https://dvsserver.onrender.com/api/v1/thirdparty";
 
 
 export const thirdpartyadmissions = async (SchoolID) => {
@@ -179,3 +182,19 @@ export const createAttendance = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+
+
+
+// export const thirdpartyphotorecords = async (schoolId) => {
+//   try {
+//     const response = await axios.get(`${API_URL}/photorecords`, {
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem("token")}`,
+//       },
+//       params: { schoolId },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     throw error.response?.data || error;
+//   }
+// };

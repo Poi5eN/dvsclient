@@ -489,6 +489,15 @@ export const Thirdpartylinks = [
         name: "Card",
         icon: <GiTakeMyMoney />,
         route: "thirdparty/card",
+        name: "Capture",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/photo-form",
+      },
+      {
+        id: "1",
+        name: "Photos",
+        icon: <GiTakeMyMoney />,
+        route: "thirdparty/photos",
       },
    
       

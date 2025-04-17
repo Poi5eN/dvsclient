@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { FaEdit } from "react-icons/fa";
-import { AdminGetAllClasses, createClass, deleteClassebyID } from "../../Network/AdminApi";
+import { MdDelete } from "react-icons/md"; // Import delete icon
+import {
+  AdminGetAllClasses,
+  createClass,
+  deleteClassebyID,
+} from "../../Network/AdminApi";
 import Table from "../../Dynamic/Table";
 import Modal from "../../Dynamic/Modal";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
@@ -13,231 +18,443 @@ import Button from "../../Dynamic/utils/Button";
 function Classes() {
   const { currentColor, setIsLoader } = useStateContext();
   const [formData, setFormData] = useState({
-    className: "NUR",
-    subjects: ["HINDI", "ENGLISH", "MATHS"],
-    sections: ["A"],
+    className: "", // Empty default
+    subjects: "",
+    sections: "",
   });
   const [submittedData, setSubmittedData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
-  };
 
+  const toggleModal = () => setIsOpen(!isOpen);
 
   const getclasses = async () => {
-    setIsLoader(true)
+    setIsLoader(true);
     try {
-
-      const response = await AdminGetAllClasses()
+      const response = await AdminGetAllClasses();
       if (response?.success) {
-
         setSubmittedData(response?.classes);
+      } else {
+        toast.error(response?.error || "Failed to fetch classes");
       }
-      else {
-        toast.error(response?.error)
-      }
-
     } catch (error) {
-      console.log("error", error)
-    }
-    finally {
-      setIsLoader(false)
+      console.log("error", error);
+      toast.error("An error occurred");
+    } finally {
+      setIsLoader(false);
     }
   };
 
   useEffect(() => {
-    getclasses()
-  }, [])
+    getclasses();
+  }, []);
 
-
-  const handleFieldChange = (e) => {
+  // Handler for ReactInput
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(() => ({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      setIsLoader(true)
+  // Handler for ReactSelect
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prev) => ({
+      ...prev,
+      className: selectedOption.value,
+    }));
+  };
 
-      // Ensure subjects and sections are arrays before converting to strings
+  const handleSubmit = async () => {
+    if (!formData.className || !formData.sections || !formData.subjects) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    setIsLoader(true);
+    try {
       const formattedFormData = {
-        ...formData,
-        subjects: Array.isArray(formData.subjects)
-          ? formData.subjects.join(",")
-          : formData.subjects,
-        sections: Array.isArray(formData.sections)
-          ? formData.sections.join(",")
-          : formData.sections,
+        className: formData.className,
+        subjects: formData.subjects,
+        sections: formData.sections,
       };
 
-      const response = await createClass(formattedFormData)
-    
+      const response = await createClass(formattedFormData);
       if (response?.success) {
-        setIsLoader(false)
-        toast.success(response?.message)
+        setIsLoader(false);
+        toast.success(response?.message);
         setIsOpen(false);
-        getclasses()
+        setFormData({ className: "", subjects: "", sections: "" }); // Reset form
+        getclasses();
+      } else {
+        toast.error(response?.message);
       }
-      else{
-        toast.error(response?.message)
-      }
-
     } catch (error) {
       console.error("Error:", error);
-
-    }
-    finally {
-      setIsLoader(false)
+      toast.error("Failed to create class");
+    } finally {
+      setIsLoader(false);
     }
   };
 
   const handleDelete = async (classId) => {
+    setIsLoader(true);
     try {
       const response = await deleteClassebyID(classId);
       if (response?.success) {
         toast.success(response?.message);
-        getclasses()
+        getclasses();
       } else {
         toast.error(response?.message);
       }
     } catch (error) {
       console.log("error", error);
+      toast.error("Failed to delete class");
+    } finally {
+      setIsLoader(false);
     }
   };
 
   const THEAD = [
     { id: "SN", label: "S No.", width: "5" },
     { id: "class", label: "Class", width: "7" },
-    { id: "section", label: "section", width: "7" },
+    { id: "section", label: "Section", width: "7" },
     { id: "subject", label: "Subject" },
     { id: "action", label: "Action" },
   ];
- 
+
   const tBody = submittedData.map((val, ind) => ({
     SN: ind + 1,
     class: val?.className,
-    section: val.sections?.map((item) => <span>{item},</span>),
-    subject: val.subjects?.map((item) => <span>{item},</span>),
-   action: (<div className="flex gap-5">
-      <Link to={`/admin/classes/edit-classes/${val?.classId}`}>
-        <FaEdit className="text-[20px] text-yellow-800" />
-      </Link>
-      {/* <span onClick={() => handleDelete(val?.classId)} className="cursor-pointer">
-        <MdDelete className="text-[20px] text-red-700" />
-      </span> */}
-
-    </div>
+    section: val.section || "N/A", // Use individual section
+    subject: val.subjects?.join(", ") || "N/A", // Join subjects for clean display
+    action: (
+      <div className="flex gap-5">
+        <Link to={`/admin/classes/edit-classes/${val?.classId}`}>
+          <FaEdit className="text-[20px] text-yellow-800" />
+        </Link>
+        <span
+          onClick={() => handleDelete(val?.classId)}
+          className="cursor-pointer"
+        >
+          <MdDelete className="text-[20px] text-red-700" />
+        </span>
+      </div>
     ),
   }));
+
   return (
     <>
-      {/* <h1
-        className="text-xl font-bold mb-4 uppercase text-center hover-text"
-        style={{ color: currentColor }}
-      >
-        Class
-      </h1> */}
-      <Button
-        onClick={toggleModal}
-        name="Add Class"
-        // variant="contained"
-        // style={{ color: "white", backgroundColor: currentColor }}
-      >
-        
-      </Button>
+      <Button onClick={toggleModal} name="Add Class" />
       <Modal
-        setIsOpen={() => setIsOpen(false)}
-        isOpen={isOpen} title={"Create Class"} maxWidth="100px">
-        <div className=" px-4 py-2 text-center gap-y-3 ">
+        setIsOpen={toggleModal}
+        isOpen={isOpen}
+        title="Create Class"
+        maxWidth="100px"
+      >
+        <div className="px-4 py-2 text-center gap-y-3">
           <div className="my-2">
-          <ReactSelect
-            name="className"
-            value={formData?.className}
-            handleChange={handleFieldChange}
-            label="class"
-            dynamicOptions={[
-             
-              { label: "PRE NUR", value: "PRE NUR" },
-              { label: "NUR", value: "NUR" },
-              { label: "LKG", value: "LKG" },
-              { label: "UKG", value: "UKG" },
-              { label: "I", value: "I" },
-              { label: "II", value: "II" },
-              { label: "III", value: "III" },
-              { label: "IV", value: "IV" },
-              { label: "V", value: "V" },
-              { label: "VI", value: "VI" },
-              { label: "VII", value: "VII" },
-              { label: "VIII", value: "VIII" },
-              { label: "IX", value: "IX" },
-              { label: "X", value: "X" },
-              { label: "XI", value: "XI" },
-              { label: "XII", value: "XII" },
-              { label: "PASS OUT", value: "PASS OUT" },
-            ]}
-          />
+            <ReactSelect
+              name="className"
+              value={
+                formData.className
+                  ? { label: formData.className, value: formData.className }
+                  : null
+              }
+              onChange={handleSelectChange}
+              label="Class"
+              options={[
+                { label: "PRE NUR", value: "PRE NUR" },
+                { label: "NUR", value: "NUR" },
+                { label: "LKG", value: "LKG" },
+                { label: "UKG", value: "UKG" },
+                { label: "I", value: "I" },
+                { label: "II", value: "II" },
+                { label: "III", value: "III" },
+                { label: "IV", value: "IV" },
+                { label: "V", value: "V" },
+                { label: "VI", value: "VI" },
+                { label: "VII", value: "VII" },
+                { label: "VIII", value: "VIII" },
+                { label: "IX", value: "IX" },
+                { label: "X", value: "X" },
+                { label: "XI", value: "XI" },
+                { label: "XII", value: "XII" },
+                { label: "PASS OUT", value: "PASS OUT" },
+              ]}
+            />
           </div>
-        <div className="my-5">
-        <ReactInput
-            type="text"
-            name="subjects"
-            // required={true}
-            label="Subjects"
-            onChange={handleFieldChange}
-            value={Array.isArray(formData.subjects)
-              ? formData.subjects.join(",")
-              : formData.subjects}
-          />
-        </div>
+          <div className="my-5">
+            <ReactInput
+              type="text"
+              name="subjects"
+              label="Subjects"
+              onChange={handleInputChange}
+              value={formData.subjects}
+              required
+            />
+          </div>
           <ReactInput
             type="text"
             name="sections"
-            // required={true}
             label="Sections"
-            onChange={handleFieldChange}
-            value={Array.isArray(formData.sections)
-              ? formData.sections.join(",")
-              : formData.sections}
+            onChange={handleInputChange}
+            value={formData.sections}
+            required
           />
-          <div className="flex items-center gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
-            <Button
-              // type="submit"
-              name="Submit"
-              // // variant="contained"
-              onClick={handleSubmit}
-              // // style={{
-              // //   backgroundColor: currentColor,
-              // //   color: "white",
-              // //   width: "100%",
-              // }}
-            > 
-
-            </Button>
-            <Button
-              // variant="contained"
-              onClick={toggleModal}
-              // style={{
-              //   backgroundColor: "#616161",
-              //   color: "white",
-              //   width: "100%",
-              // }}
-              name="Cancel"
-            >
-              
-            </Button>
+          <div className="flex items-center gap-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <Button name="Submit" onClick={handleSubmit} />
+            <Button name="Cancel" onClick={toggleModal} />
           </div>
         </div>
       </Modal>
-
       <div>
         <Table tHead={THEAD} tBody={tBody} />
-
       </div>
     </>
   );
 }
 
 export default Classes;
+
+// import React, { useState, useEffect } from "react";
+// import { toast } from "react-toastify";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import { FaEdit } from "react-icons/fa";
+// import { AdminGetAllClasses, createClass, deleteClassebyID } from "../../Network/AdminApi";
+// import Table from "../../Dynamic/Table";
+// import Modal from "../../Dynamic/Modal";
+// import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// import { Link } from "react-router-dom";
+// import Button from "../../Dynamic/utils/Button";
+
+// function Classes() {
+//   const { currentColor, setIsLoader } = useStateContext();
+//   const [formData, setFormData] = useState({
+//     className: "NUR",
+//     subjects: ["HINDI", "ENGLISH", "MATHS"],
+//     sections: ["A"],
+//   });
+//   const [submittedData, setSubmittedData] = useState([]);
+//   const [isOpen, setIsOpen] = useState(false);
+//   const toggleModal = () => {
+//     setIsOpen(!isOpen);
+//   };
+
+//   const getclasses = async () => {
+//     setIsLoader(true)
+//     try {
+
+//       const response = await AdminGetAllClasses()
+//       if (response?.success) {
+
+//         setSubmittedData(response?.classes);
+//       }
+//       else {
+//         toast.error(response?.error)
+//       }
+
+//     } catch (error) {
+//       console.log("error", error)
+//     }
+//     finally {
+//       setIsLoader(false)
+//     }
+//   };
+
+//   useEffect(() => {
+//     getclasses()
+//   }, [])
+
+//   const handleFieldChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(() => ({
+//       ...formData,
+//       [name]: value,
+//     }));
+//   };
+
+//   const handleSubmit = async () => {
+//     try {
+//       setIsLoader(true)
+
+//       // Ensure subjects and sections are arrays before converting to strings
+//       const formattedFormData = {
+//         ...formData,
+//         subjects: Array.isArray(formData.subjects)
+//           ? formData.subjects.join(",")
+//           : formData.subjects,
+//         sections: Array.isArray(formData.sections)
+//           ? formData.sections.join(",")
+//           : formData.sections,
+//       };
+
+//       const response = await createClass(formattedFormData)
+
+//       if (response?.success) {
+//         setIsLoader(false)
+//         toast.success(response?.message)
+//         setIsOpen(false);
+//         getclasses()
+//       }
+//       else{
+//         toast.error(response?.message)
+//       }
+
+//     } catch (error) {
+//       console.error("Error:", error);
+
+//     }
+//     finally {
+//       setIsLoader(false)
+//     }
+//   };
+
+//   const handleDelete = async (classId) => {
+//     try {
+//       const response = await deleteClassebyID(classId);
+//       if (response?.success) {
+//         toast.success(response?.message);
+//         getclasses()
+//       } else {
+//         toast.error(response?.message);
+//       }
+//     } catch (error) {
+//       console.log("error", error);
+//     }
+//   };
+
+//   const THEAD = [
+//     { id: "SN", label: "S No.", width: "5" },
+//     { id: "class", label: "Class", width: "7" },
+//     { id: "section", label: "section", width: "7" },
+//     { id: "subject", label: "Subject" },
+//     { id: "action", label: "Action" },
+//   ];
+
+//   const tBody = submittedData.map((val, ind) => ({
+//     SN: ind + 1,
+//     class: val?.className,
+//     section: val.sections?.map((item) => <span>{item},</span>),
+//     subject: val.subjects?.map((item) => <span>{item},</span>),
+//    action: (<div className="flex gap-5">
+//       <Link to={`/admin/classes/edit-classes/${val?.classId}`}>
+//         <FaEdit className="text-[20px] text-yellow-800" />
+//       </Link>
+//       {/* <span onClick={() => handleDelete(val?.classId)} className="cursor-pointer">
+//         <MdDelete className="text-[20px] text-red-700" />
+//       </span> */}
+
+//     </div>
+//     ),
+//   }));
+//   return (
+//     <>
+//       {/* <h1
+//         className="text-xl font-bold mb-4 uppercase text-center hover-text"
+//         style={{ color: currentColor }}
+//       >
+//         Class
+//       </h1> */}
+//       <Button
+//         onClick={toggleModal}
+//         name="Add Class"
+//         // variant="contained"
+//         // style={{ color: "white", backgroundColor: currentColor }}
+//       >
+
+//       </Button>
+//       <Modal
+//         setIsOpen={() => setIsOpen(false)}
+//         isOpen={isOpen} title={"Create Class"} maxWidth="100px">
+//         <div className=" px-4 py-2 text-center gap-y-3 ">
+//           <div className="my-2">
+//           <ReactSelect
+//             name="className"
+//             value={formData?.className}
+//             handleChange={handleFieldChange}
+//             label="class"
+//             dynamicOptions={[
+
+//               { label: "PRE NUR", value: "PRE NUR" },
+//               { label: "NUR", value: "NUR" },
+//               { label: "LKG", value: "LKG" },
+//               { label: "UKG", value: "UKG" },
+//               { label: "I", value: "I" },
+//               { label: "II", value: "II" },
+//               { label: "III", value: "III" },
+//               { label: "IV", value: "IV" },
+//               { label: "V", value: "V" },
+//               { label: "VI", value: "VI" },
+//               { label: "VII", value: "VII" },
+//               { label: "VIII", value: "VIII" },
+//               { label: "IX", value: "IX" },
+//               { label: "X", value: "X" },
+//               { label: "XI", value: "XI" },
+//               { label: "XII", value: "XII" },
+//               { label: "PASS OUT", value: "PASS OUT" },
+//             ]}
+//           />
+//           </div>
+//         <div className="my-5">
+//         <ReactInput
+//             type="text"
+//             name="subjects"
+//             // required={true}
+//             label="Subjects"
+//             onChange={handleFieldChange}
+//             value={Array.isArray(formData.subjects)
+//               ? formData.subjects.join(",")
+//               : formData.subjects}
+//           />
+//         </div>
+//           <ReactInput
+//             type="text"
+//             name="sections"
+//             // required={true}
+//             label="Sections"
+//             onChange={handleFieldChange}
+//             value={Array.isArray(formData.sections)
+//               ? formData.sections.join(",")
+//               : formData.sections}
+//           />
+//           <div className="flex items-center gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
+//             <Button
+//               // type="submit"
+//               name="Submit"
+//               // // variant="contained"
+//               onClick={handleSubmit}
+//               // // style={{
+//               // //   backgroundColor: currentColor,
+//               // //   color: "white",
+//               // //   width: "100%",
+//               // }}
+//             >
+
+//             </Button>
+//             <Button
+//               // variant="contained"
+//               onClick={toggleModal}
+//               // style={{
+//               //   backgroundColor: "#616161",
+//               //   color: "white",
+//               //   width: "100%",
+//               // }}
+//               name="Cancel"
+//             >
+
+//             </Button>
+//           </div>
+//         </div>
+//       </Modal>
+
+//       <div>
+//         <Table tHead={THEAD} tBody={tBody} />
+
+//       </div>
+//     </>
+//   );
+// }
+
+// export default Classes;

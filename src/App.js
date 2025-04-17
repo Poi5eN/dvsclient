@@ -3,6 +3,9 @@ import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 // import 'primereact/resources/themes/lara-light-indigo/theme.css'; 
 // import 'primereact/resources/primereact.min.css';      
 // import 'primeicons/primeicons.css';   
+// in App.jsx or main file
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 
 
@@ -33,6 +36,8 @@ import ThirdpartStudent from "./THIRDPARTY/NewFolder/ThirdpartStudent";
 import AdmissionForm from "./THIRDPARTY/AdmissionForm";
 import Photo from "./THIRDPARTY/Photo";
 import IDCard from "./THIRDPARTY/PhotoCard/IDCard";
+import ThirdpartPhotos from "./THIRDPARTY/NewFolder/ThirdpartPhotos";
+import PhotoForm from "./THIRDPARTY/PhotoForm";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -363,6 +368,8 @@ function App() {
               <Route path="admision-form" element={<AdmissionForm />} />
               <Route path="photo" element={<Photo />} />
               <Route path="card" element={<IDCard />} />
+              <Route path="photo-form" element={<PhotoForm />} />
+              <Route path="photos" element={<ThirdpartPhotos />} />
             </Route>
           </Route>
 
