@@ -86,7 +86,7 @@ const BirthdayCarousel = ({ allBday, today }) => {
           pagination={{ clickable: true }}
           autoplay={{ delay: 5000 }}
           loop={true}
-          onSlideChange={() => playPopSound()}
+          // onSlideChange={() => playPopSound()}
         >
           {allBday?.map((item, index) => (
             <SwiperSlide key={index}>
