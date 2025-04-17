@@ -320,7 +320,9 @@ const BulkEdit = () => {
         { id: 'rollNo', label: "Roll" },
         { id: 'email', label: "Email" },
         { id: 'dateOfBirth', label: "DOB" },
+        { id: 'contact', label: "Contact" },
         { id: 'class', label: 'Class' },
+        { id: 'section', label: 'Sec' },
         { id: "address", label: "Address" },
         // Add other headers matching fields in handleEditClick and handleFieldChange
         // { id: "email", label: "Email" },
@@ -400,7 +402,7 @@ const BulkEdit = () => {
             email: canEdit ? (
                 <input
                     type="text"
-                    className="border p-1 w-[130px] bg-gray-300 dark:bg-gray-700 rounded"
+                    className="border p-1  bg-gray-300 dark:bg-gray-700 rounded"
                     value={currentEditData.email ?? student.email ?? ''}
                     onChange={(e) => handleFieldChange(student.studentId, 'email', e.target.value)}
                 />
@@ -422,9 +424,35 @@ const BulkEdit = () => {
             ) : (
                 moment(student.dateOfBirth).format("YYYY-MM-DD")
             ),
+            contact: canEdit ? (
+                <input
+                    type="number"
+                    className="border p-1 w-[120px] bg-gray-300 dark:bg-gray-700 rounded"
+                    // value={
+                    //     currentEditData.contact ??
+                    //     (student.contact ? moment(student.contact).format("YYYY-MM-DD") : '')
+                    // }
+                    value={currentEditData.contact ?? student.contact ?? ''}
+                    onChange={(e) =>
+                        handleFieldChange(student.studentId, 'contact', e.target.value)
+                    }
+                />
+            ) : (
+               (student.contact || "N/A")
+            ),
 
-            class: `${student.class} - ${student.section}`, // Not editable
-            section: student.section, // Not editable
+            class: `${student.class}`, // Not editable
+            // section: student.section, // Not editable
+            section: canEdit ? (
+                <input
+                    type="text"
+                    className="border p-1 w-full bg-gray-300 dark:bg-gray-700 rounded"
+                    value={currentEditData.section ?? student.section ?? ''}
+                    onChange={(e) => handleFieldChange(student.studentId, 'section', e.target.value)}
+                />
+            ) : (
+                student.section || 'N/A'
+            ),
             address: canEdit ? (
                 <input
                     type="text"

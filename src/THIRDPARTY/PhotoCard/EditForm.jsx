@@ -567,7 +567,7 @@ const [availableSections, setAvailableSections] = useState([]);
                         <span className="text-[#ee582c]">NO IMAGE</span>
                       </div>
                     )}
-                    <label className="absolute bottom-0 right-0 bg-[#ee582c] text-white p-2 rounded-full cursor-pointer">
+                    {/* <label className="absolute bottom-0 right-0 bg-[#ee582c] text-white p-2 rounded-full cursor-pointer">
                       <Camera size={18} />
                       <input
                         type="file"
@@ -576,7 +576,7 @@ const [availableSections, setAvailableSections] = useState([]);
                         capture="environment" // Opens the back camera; use "user" for the front camera
                         onChange={(e) => handleImageChange(e, "studentImage")}
                       />
-                    </label>
+                    </label> */}
                   </div>
                 </div>
               </div>
@@ -617,7 +617,7 @@ const [availableSections, setAvailableSections] = useState([]);
                     </label>
                   </div>
                
-                  <div className="flex justify-center items-center gap-2">
+                  {/* <div className="flex justify-center items-center gap-2">
                       <FormControl
                         variant="standard"
                         sx={{
@@ -703,14 +703,10 @@ const [availableSections, setAvailableSections] = useState([]);
       ) : (
         <MenuItem disabled>No Sections Available</MenuItem>
       )}
-                        {/* {availableSections?.map((item, index) => (
-                          <MenuItem key={index} value={item}>
-                            {item}
-                          </MenuItem>
-                        ))} */}
+                        
                       </Select>
                     </FormControl>
-                  </div>
+                  </div> */}
                   <div className="flex justify-center items-center gap-2">
                     <FormControl
                       variant="standard"

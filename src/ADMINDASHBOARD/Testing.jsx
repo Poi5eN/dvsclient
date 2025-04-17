@@ -93,11 +93,11 @@ const ImageTest = () => {
         </div>
 
         {/* Front Template Editor */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1 ,backgroundColor:"gray"}} >
           <h2>Edit Front Template</h2>
           <textarea
             rows={12}
-            style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre", padding: "1rem" }}
+            style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre", padding: "1rem",border:"2px solid gray" }}
             value={frontTemplate}
             onChange={(e) => setFrontTemplate(e.target.value)}
           />
@@ -118,7 +118,7 @@ const ImageTest = () => {
           <div dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, student) }} />
         </div>
 
-        {/* Back Template Editor */}
+      
         <div style={{ flex: 1 }}>
           <h2>Edit Back Template</h2>
           <textarea

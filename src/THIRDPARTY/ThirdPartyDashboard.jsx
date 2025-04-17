@@ -43,7 +43,7 @@ const ThirdPartyDashboard = () => {
           </div>
 
           {/* Padding to push content below the fixed navbar */}
-          <div className="mt-[75px] px-1">
+          <div className="mt-[90px] px-1">
             {themeSettings && <ThemeSettings />}
             <Outlet />
           </div>

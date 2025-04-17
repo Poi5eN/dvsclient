@@ -136,8 +136,9 @@ if (!SchoolID) {
       filteredStudents?.length>0 ?(
         <>
           <div
-        className="bg-gray-800 py-[1px] fixed top-0 w-full  z-10"
-        style={{ background: "#2fa7db" }}
+        // className="bg-gray-800 py-[1px] fixed top-0 w-full  z-10"
+           className="py-[1px] fixed top-[70px] w-full  z-10"
+        // style={{ background: "#2fa7db" }}
       >
         <div className="flex justify-around max-w-md mx-auto gap-1">
           <input
@@ -145,12 +146,12 @@ if (!SchoolID) {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-[#2fa7db] text-[#f0592e] border border-white rounded-md px-2  outline-none w-[40vw]"
+            className=" text-[#f0592e] border-1  px-2  outline-none w-[40vw]"
           />
-          <div className="flex flex-col space-y-1 ">
+          <div className="flex flex-col  w-[160px] ">
             <select
               name="studentClass"
-              className=" w-full border-1 bg-gray-800 border-white text-white outline-none py-[3px] bg-inherit"
+              className=" w-full border-1 bg-gray-800  outline-none py-[3px] bg-inherit"
               onFocus={(e) => (e.target.style.borderColor = currentColor)}
               onBlur={(e) => (e.target.style.borderColor = "#ccc")}
               value={selectedClass}
@@ -171,10 +172,10 @@ if (!SchoolID) {
               ))}
             </select>
           </div>
-          <div className="flex flex-col space-y-1 mt-[2px]">
+          <div className="flex flex-col  w-[160px] ">
             <select
               name="studentSection"
-              className=" w-full border-1 border-white text-white outline-none py-[3px] bg-inherit"
+              className=" w-full border-1  outline-none py-[3px] bg-inherit"
               onFocus={(e) => (e.target.style.borderColor = currentColor)}
               onBlur={(e) => (e.target.style.borderColor = "#ccc")}
               value={selectedSection}
