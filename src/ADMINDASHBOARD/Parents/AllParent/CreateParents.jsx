@@ -45,28 +45,30 @@ function CreateParents() {
         setIsLoader(true);
         try {
             const response = await parentandchild();
-            console.log("response fetchAllParent",response)
+            
             // const response = await getAllStudents();
             if (response?.success) {
                 // Assuming response.students.data is the array of students
                 const parents = response?.data || [];
-                console.log("parents",parents)
+                setIsLoader(false)
                 setAllParent(parents);
                 // Initial filter applied when data is fetched
                 // setFilteredData(students); // Filtering is now handled by useEffect
             } else {
+              setIsLoader(false)
                 toast.error(response?.message || "Failed to fetch students.");
             }
         } catch (error) {
+          setIsLoader(false)
             console.error("Error fetching students:", error);
             toast.error("An error occurred while fetching students.");
         } finally {
-            setIsLoader(false);
+            // setIsLoader(false);
         }
     }, [setIsLoader]); // Include dependencies
 
     const fetchAllClasses = useCallback(async () => {
-        setIsLoader(true); // Potentially set loader again or manage it globally
+        // setIsLoader(true); // Potentially set loader again or manage it globally
         try {
             const response = await AdminGetAllClasses();
             if (response?.success) {
@@ -82,7 +84,7 @@ function CreateParents() {
             toast.error("An error occurred while fetching classes.");
         } finally {
            // Consider loader management if fetchAllStudents is also setting it
-           setIsLoader(false);
+          //  setIsLoader(false);
         }
     }, [setIsLoader]); // Include dependencies
 

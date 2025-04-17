@@ -213,11 +213,11 @@ export const links = [
   icon: <FaArrowDownUpAcrossLine />, link: 'userdetails'
 
 },
-// {
-//   name: 'Testing',
-//   icon: <FaArrowDownUpAcrossLine />, link: 'testing'
+{
+  name: 'Testing',
+  icon: <FaArrowDownUpAcrossLine />, link: 'testing'
 
-// },
+},
 // {
 //   name: 'Admit Design',
 //   icon: <FaArrowDownUpAcrossLine />, link: 'admitdesign'
