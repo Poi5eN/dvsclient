@@ -208,22 +208,14 @@ function Classes() {
               name="Submit"
               // // variant="contained"
               onClick={handleSubmit}
-              // // style={{
-              // //   backgroundColor: currentColor,
-              // //   color: "white",
-              // //   width: "100%",
-              // }}
+             
             > 
 
             </Button>
             <Button
-              // variant="contained"
+           
               onClick={toggleModal}
-              // style={{
-              //   backgroundColor: "#616161",
-              //   color: "white",
-              //   width: "100%",
-              // }}
+             
               name="Cancel"
             >
               

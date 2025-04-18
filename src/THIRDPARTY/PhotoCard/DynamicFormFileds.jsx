@@ -9,14 +9,14 @@ import {
     MenuItem,
     Modal,
     Box,
-    Button,
+    Button, // Using MUI Button consistently
     IconButton,
 } from "@mui/material";
-// Assume these imports are correct
-import { initialstudentphoto } from "../../Network/ThirdPartyApi";
+// Assume these imports are correct and function as expected
+import { initialstudentphoto } from "../../Network/ThirdPartyApi"; // Your API function
 import { toast } from "react-toastify";
 import { useStateContext } from "../../contexts/ContextProvider";
-import getCroppedImg from "../../Dynamic/Form/Admission/getCroppedImg";
+import getCroppedImg from "../../Dynamic/Form/Admission/getCroppedImg"; // Your cropping utility
 
 // --- Modal Style ---
 const modalStyle = {
@@ -36,69 +36,82 @@ const modalStyle = {
     alignItems: 'center',
 };
 
-// --- Helper to convert Base64/Data URL to Blob/File ---
+// --- Helper to convert Base64/Data URL to File ---
+// (Keep your existing helper or use a more robust one if needed)
 const dataURLtoFile = (dataurl, filename) => {
-    if (!dataurl) return null;
+    if (!dataurl || typeof dataurl !== 'string' || !dataurl.includes(',')) {
+         console.error("Invalid data URL provided to dataURLtoFile:", dataurl);
+         return null;
+    }
     try {
         let arr = dataurl.split(','),
             mimeMatch = arr[0].match(/:(.*?);/);
         if (!mimeMatch || mimeMatch.length < 2) {
             console.error("Invalid data URL format for MIME type extraction");
-            return null; // Or throw an error
+            // Fallback MIME type if extraction fails but data seems present
+             const mime = 'image/jpeg'; // Or derive from expected input if possible
+             console.warn("Using fallback MIME type:", mime);
+             // return null; // Or throw an error, or attempt fallback
         }
-        let mime = mimeMatch[1],
-            bstr = atob(arr[arr.length - 1]),
-            n = bstr.length,
-            u8arr = new Uint8Array(n);
+        const mime = mimeMatch[1] || 'image/jpeg'; // Default if match fails but split worked
+        const bstr = atob(arr[arr.length - 1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
         while (n--) {
             u8arr[n] = bstr.charCodeAt(n);
         }
         return new File([u8arr], filename, { type: mime });
     } catch (e) {
         console.error("Error converting data URL to File:", e);
-        toast.error("Error processing image data.");
+        // Avoid toast here, let the calling function handle user feedback
+        // toast.error("Error processing image data.");
         return null;
     }
 };
 
 
 function DynamicFormFileds(props) {
-    const { studentData, buttonLabel = "Save", setIsOpen, setReRender } = props;
+    // Destructure props with defaults
+    const { studentData, buttonLabel = "Save Initial Details", setIsOpen, setReRender } = props;
     const { isLoader, setIsLoader } = useStateContext();
     const [getClass, setGetClass] = useState([]);
     const [availableSections, setAvailableSections] = useState([]);
+
+    // --- Core State ---
     const [values, setValues] = useState({
         fullName: "",
         class: "",
         section: "",
-        studentImage: null, // Can be File object or URL string initially
+        studentImage: null, // Holds the final image: File object (preferred) or initial URL string
     });
 
-    // --- Webcam State ---
+    // --- UI State ---
     const [showWebcam, setShowWebcam] = useState(false);
+    const [croppedImageSource, setCroppedImageSource] = useState(null); // Base64 string FROM webcam/file FOR cropper
+    const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // URL for the <img> tag (Blob URL or web URL)
+    const [croppingLoading, setCroppingLoading] = useState(false); // Specific loading for crop operation
+    const [savingLoading, setSavingLoading] = useState(false); // Specific loading for save operation
+
+    // --- Webcam State ---
     const webcamRef = useRef(null);
-    const [currentPhotoType, setCurrentPhotoType] = useState(null); // Keeps track of which image field is being captured (only 'studentImage' here)
-    const [facingMode, setFacingMode] = useState("user");
+    const [facingMode, setFacingMode] = useState("user"); // 'user' (front) or 'environment' (back)
 
     // --- Cropper State ---
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-    const [croppedImageSource, setCroppedImageSource] = useState(null); // Base64 string from webcam *before* cropping
-    const [croppingLoading, setCroppingLoading] = useState(false); // Specific loading state for crop operation
-
-    // --- Derived State for Preview ---
-    const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // URL for the <img> tag
 
     // --- Effect Hooks ---
 
-    // Fetch classes from localStorage
+    // Fetch classes from localStorage safely
     useEffect(() => {
         try {
             const classesString = localStorage.getItem("classes");
             if (classesString) {
                 const classes = JSON.parse(classesString);
                 setGetClass(Array.isArray(classes) ? classes : []);
+            } else {
+                 setGetClass([]);
             }
         } catch (error) {
             console.error("Failed to parse classes from localStorage:", error);
@@ -107,55 +120,51 @@ function DynamicFormFileds(props) {
     }, []);
 
     // Update available sections when class changes
-    useEffect(() => {
-        if (values.class && getClass.length > 0) {
-            const selectedClassObj = getClass.find((cls) => cls.className === values.class);
-            const sectionsRaw = selectedClassObj?.sections;
-            const sectionsArray = sectionsRaw
-                ? (Array.isArray(sectionsRaw)
-                    ? sectionsRaw
-                    // Handle comma-separated string, trim whitespace, filter empty
-                    : String(sectionsRaw).split(/\s*,\s*/).filter(Boolean))
-                : [];
-            setAvailableSections(sectionsArray);
-            // Reset section if the new class doesn't have the currently selected section
-            if (!sectionsArray.includes(values.section)) {
-                setValues(prev => ({ ...prev, section: "" }));
-            }
-        } else {
-            setAvailableSections([]);
-            // Ensure section is reset if class is cleared
-            if (!values.class) {
-                 setValues(prev => ({ ...prev, section: "" }));
-            }
-        }
+     useEffect(() => {
+         let sectionsArray = [];
+         if (values.class && getClass.length > 0) {
+             const selectedClassObj = getClass.find((cls) => cls.className === values.class);
+             const sectionsRaw = selectedClassObj?.sections;
+             sectionsArray = sectionsRaw
+                 ? (Array.isArray(sectionsRaw)
+                     ? sectionsRaw
+                     : String(sectionsRaw).split(/\s*,\s*/).filter(Boolean)) // Handle comma-separated strings
+                 : [];
+         }
+         setAvailableSections(sectionsArray);
+
+         // Reset section if the new class doesn't have the currently selected one OR if class is cleared
+         if (!values.class || !sectionsArray.includes(values.section)) {
+             setValues(prev => ({ ...prev, section: "" }));
+         }
     // Only re-run if class changes or the source list of classes changes
-    }, [values.class, getClass]); // Removed values.section dependency - resetting is handled inside
+    }, [values.class, getClass, values.section]); // Include values.section to react if it becomes invalid
 
 
     // Initialize form with studentData or reset
     useEffect(() => {
         if (studentData) {
-            // Determine the initial image source (prefer URL if available)
-            const initialStudentImage = studentData.studentImage?.url || studentData.studentImage || null;
+            // Use optional chaining and provide null fallback
+            const initialStudentImage = studentData.studentImage?.url ?? studentData.studentImage ?? null;
             setValues({
                 fullName: studentData.fullName || "",
                 class: studentData.class || "",
                 section: studentData.section || "",
                 studentImage: initialStudentImage, // Store the initial source (URL or null)
             });
-            // Note: Section will be validated/reset by the effect above if needed after class is set
+            // Section validation/reset is handled by the previous effect
         } else {
-            // Reset form if studentData is not provided
+            // Reset form if no studentData
             setValues({
                 fullName: "",
                 class: "",
                 section: "",
                 studentImage: null,
             });
+             setAvailableSections([]); // Ensure sections are cleared too
         }
-        // This effect should run when studentData changes or when classes load (for initial section setting)
-    }, [studentData, getClass]);
+        // Only re-run if the studentData prop itself changes
+    }, [studentData]);
 
     // Effect to manage the image preview URL and cleanup blob URLs
     useEffect(() => {
@@ -166,21 +175,23 @@ function DynamicFormFileds(props) {
             objectUrl = URL.createObjectURL(currentImageSource);
             setImagePreviewUrl(objectUrl);
         } else if (typeof currentImageSource === 'string' && currentImageSource.startsWith('http')) {
-            // Assuming it's a valid web URL
+            // Assume it's a valid web URL
             setImagePreviewUrl(currentImageSource);
         } else {
-            setImagePreviewUrl(null); // No valid image source
+            setImagePreviewUrl(null); // Reset if no valid source or source is cleared
         }
 
-        // Cleanup function: This runs when the component unmounts OR before the effect runs again
+        // Cleanup function
         return () => {
             if (objectUrl) {
                 // console.log("Revoking Blob URL:", objectUrl); // Debugging
                 URL.revokeObjectURL(objectUrl);
-                setImagePreviewUrl(prevUrl => prevUrl === objectUrl ? null : prevUrl); // Optionally clear preview immediately on cleanup if it was the blob url
+                // Optionally clear preview immediately on cleanup ONLY if the URL being revoked is the one displayed
+                // setImagePreviewUrl(prevUrl => (prevUrl === objectUrl ? null : prevUrl));
             }
         };
-    }, [values.studentImage]); // Re-run ONLY when the studentImage in values changes
+    }, [values.studentImage]); // Re-run ONLY when the studentImage value in state changes
+
 
     // --- Callback Hooks ---
 
@@ -194,7 +205,7 @@ function DynamicFormFileds(props) {
         setValues((prevData) => ({
             ...prevData,
             class: selectedClassName,
-            section: "", // Reset section when class changes
+            // Section reset is now handled by the useEffect watching values.class
         }));
     }, []);
 
@@ -205,15 +216,14 @@ function DynamicFormFileds(props) {
         }));
     }, []);
 
-    const openWebcam = useCallback((photoType) => {
-        setCurrentPhotoType(photoType); // Set which image field we are capturing for
+    // --- Webcam Callbacks ---
+    const openWebcam = useCallback(() => {
         setShowWebcam(true);
-        // setFacingMode("user"); // Reset to front camera each time?
+        setCroppedImageSource(null); // Ensure cropper isn't shown
     }, []);
 
     const closeWebcam = useCallback(() => {
         setShowWebcam(false);
-        setCurrentPhotoType(null);
     }, []);
 
     const capturePhoto = useCallback(() => {
@@ -222,185 +232,122 @@ function DynamicFormFileds(props) {
             toast.error("Webcam not ready. Please try again.");
             return;
         }
-        // Use PNG for potentially better quality capture before cropping
-        const imageSrc = webcamRef.current.getScreenshot({ type: 'image/png', quality: 1 });
+        // Capture as PNG initially for potentially better quality before cropping to JPEG
+        const imageSrc = webcamRef.current.getScreenshot({ type: 'image/png' });
 
         if (imageSrc) {
             setShowWebcam(false); // Close webcam modal
             setCroppedImageSource(imageSrc); // Set the base64 source for the cropper
         } else {
-            console.error("Could not capture screenshot. Webcam might not be ready or permissions denied.");
+            console.error("Could not capture screenshot.");
             toast.error("Could not capture photo. Please check camera permissions and try again.");
-            closeWebcam(); // Close webcam modal on error
+            closeWebcam(); // Close webcam on error
         }
-    }, [webcamRef, closeWebcam]); // Add dependencies
+    }, [webcamRef, closeWebcam]);
 
     const handleSwitchCamera = useCallback(() => {
         setFacingMode(prevMode => (prevMode === "user" ? "environment" : "user"));
     }, []);
 
+
+    // --- Cropper Callbacks ---
     const onCropComplete = useCallback((_croppedArea, croppedAreaPixelsValue) => {
-        // Note: react-easy-crop calls this on mouse/touch up. Store the final value.
         setCroppedAreaPixels(croppedAreaPixelsValue);
     }, []);
 
     const cancelCrop = useCallback(() => {
         setCroppedImageSource(null); // Hide cropper
-        setCurrentPhotoType(null);   // Reset photo type context
         setCroppedAreaPixels(null);
-        setCrop({ x: 0, y: 0 });      // Reset crop position
-        setZoom(1);                  // Reset zoom
-        setCroppingLoading(false);   // Ensure loading state is reset
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppingLoading(false); // Ensure loading state is reset
     }, []);
 
-    const showCroppedImage = useCallback(async () => {
-      if (!croppedImageSource || !croppedAreaPixels || !currentPhotoType) {
-          console.error("Cropping prerequisites missing.");
-          toast.warn("Cannot process crop. Please try capturing again.");
-          cancelCrop();
-          return;
-      }
-  
-      setCroppingLoading(true);
-      try {
-          // Call getCroppedImg
-          const croppedImageResult = await getCroppedImg(
-              croppedImageSource,
-              croppedAreaPixels,
-              0 // Assuming rotation is 0
-          );
-  
-          // *** ADD THESE LOGS ***
-          console.log("Result from getCroppedImg:", croppedImageResult);
-          console.log("Type of result:", typeof croppedImageResult);
-          if (croppedImageResult instanceof Blob) {
-              console.log("Result is a Blob object. Size:", croppedImageResult.size, "Type:", croppedImageResult.type);
-          }
-          // *** END OF LOGS ***
-  
-          // Now check the type and act accordingly
-          let imageFile = null;
-          const filename = `${currentPhotoType}_${Date.now()}.jpeg`;
-  
-          if (typeof croppedImageResult === 'string' && croppedImageResult.startsWith('data:')) {
-              // --- Case 1: It's a Data URL (Expected) ---
-              console.log("Result is a Data URL. Converting to File...");
-              imageFile = dataURLtoFile(croppedImageResult, filename);
-  
-          } else if (croppedImageResult instanceof Blob) {
-              // --- Case 2: It's a Blob Object ---
-              console.log("Result is a Blob. Creating File directly...");
-              // Ensure the blob has a type, default if necessary
-              const blobType = croppedImageResult.type || 'image/jpeg';
-              imageFile = new File([croppedImageResult], filename, { type: blobType });
-  
-          } else if (typeof croppedImageResult === 'string' && croppedImageResult.startsWith('blob:')) {
-              // --- Case 3: It's a Blob URL ---
-              console.log("Result is a Blob URL. Fetching Blob...");
-              try {
-                  const response = await fetch(croppedImageResult);
-                  if (!response.ok) {
-                      throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
-                  }
-                  const blob = await response.blob();
-                   // IMPORTANT: Revoke the temporary blob URL after fetching
-                  URL.revokeObjectURL(croppedImageResult);
-                  const blobType = blob.type || 'image/jpeg';
-                  imageFile = new File([blob], filename, { type: blobType });
-                  console.log("Blob fetched and File created from Blob URL.");
-              } catch (fetchError) {
-                  console.error("Error fetching blob from Blob URL:", fetchError);
-                  toast.error("Could not retrieve image data. Please try again.");
-                  cancelCrop();
-                  return; // Exit if fetch fails
-              }
-          } else {
-              // --- Case 4: Unexpected Format ---
-              console.error("getCroppedImg returned an unexpected format:", typeof croppedImageResult);
-              toast.error("Failed to process cropped image format. Please try again."); // Your original error
-              cancelCrop();
-              return; // Exit
-          }
-  
-          // --- Process the imageFile if created successfully ---
-          if (imageFile) {
-              console.log("Image File created successfully:", imageFile.name, imageFile.size, imageFile.type);
-              setValues((prev) => ({ ...prev, [currentPhotoType]: imageFile }));
-              cancelCrop(); // Close cropper and reset states
-          } else {
-              // This might happen if dataURLtoFile returned null or File creation failed
-              console.error("Failed to create final image file object.");
-              toast.error("Error finalizing image processing.");
-              cancelCrop();
-          }
-  
-      } catch (error) {
-          // Catch errors from getCroppedImg itself or other await calls
-          console.error("Error during image cropping process:", error);
-          toast.error(`Failed to crop image: ${error.message || 'Please try again.'}`);
-          cancelCrop();
-      } finally {
-          setCroppingLoading(false);
-      }
-  // Add dependencies properly
-  }, [croppedImageSource, croppedAreaPixels, currentPhotoType, cancelCrop, getCroppedImg, dataURLtoFile]); // Ensure dataURLtoFile is stable or memoized if defined inside component
-    const schoolID = localStorage.getItem("SchoolID");
-
-    const handleSaveClick = useCallback(async () => {
-        setCroppingLoading(true); // Use the same loading state or a general one
-        setIsLoader(true);
-
-        // --- Validation ---
-        if (!values.fullName || !values.class || !values.section) {
-            toast.warn("Please fill in Full Name, Class, and Section.");
-            setIsLoader(false);
-            setCroppingLoading(false);
+    // --- Apply Cropped Image (Main Image Processing Logic) ---
+    const applyCroppedImage = useCallback(async () => {
+        if (!croppedImageSource || !croppedAreaPixels) {
+            console.error("Cropping prerequisites missing (source or pixels).");
+            toast.warn("Cannot process crop. Please try capturing again.");
+            cancelCrop(); // Reset state
             return;
         }
-        if (!values.studentImage) {
-            toast.warn("Please capture or provide a student photo.");
-             setIsLoader(false);
-             setCroppingLoading(false);
-             return;
+
+        setCroppingLoading(true);
+        try {
+            // --- 1. Get Cropped Image Data ---
+            // Assuming getCroppedImg returns a Data URL (base64 string) based on previous implementation.
+            // If it returns a Blob or Blob URL, adjust the logic below.
+            const croppedDataUrl = await getCroppedImg(
+                croppedImageSource,
+                croppedAreaPixels,
+                0 // Rotation = 0
+            );
+
+            if (!croppedDataUrl || typeof croppedDataUrl !== 'string' || !croppedDataUrl.startsWith('data:')) {
+                 // Handle cases where getCroppedImg failed or returned unexpected format
+                 console.error("getCroppedImg did not return a valid Data URL:", croppedDataUrl);
+                 throw new Error("Failed to get cropped image data.");
+            }
+
+            // --- 2. Convert Data URL to File ---
+            // Use a consistent filename, maybe incorporating student name if available
+            const filename = `student_photo_${Date.now()}.jpeg`;
+            const imageFile = dataURLtoFile(croppedDataUrl, filename);
+
+            if (!imageFile) {
+                // Handle failure in conversion
+                console.error("Failed to convert cropped Data URL to File.");
+                throw new Error("Failed to process cropped image.");
+            }
+
+            // --- 3. Update State ---
+            console.log("Cropped image File created:", imageFile.name, imageFile.size, imageFile.type);
+            setValues((prev) => ({ ...prev, studentImage: imageFile })); // Update main state with the File
+
+            cancelCrop(); // Close cropper and reset its state
+
+        } catch (error) {
+            console.error("Error during image cropping/processing:", error);
+            toast.error(`Failed to apply crop: ${error.message || 'Please try again.'}`);
+            cancelCrop(); // Ensure cropper is closed on error
+        } finally {
+            setCroppingLoading(false); // Stop loading indicator
+        }
+    // Add dependencies
+    }, [croppedImageSource, croppedAreaPixels, cancelCrop, getCroppedImg]);
+
+
+    // --- Form Submission ---
+    const handleSaveClick = useCallback(async () => {
+        setSavingLoading(true); // Start saving indicator
+        setIsLoader(true);      // Start global loader
+
+        // --- Validation ---
+        const requiredFields = [
+            { key: "fullName", label: "Full Name" },
+            { key: "class", label: "Class" },
+            { key: "section", label: "Section" },
+        ];
+        const missingFields = requiredFields.filter(f => !values[f.key]);
+
+        if (missingFields.length > 0) {
+            toast.warn(`Please fill in: ${missingFields.map(f => f.label).join(', ')}.`);
+            setIsLoader(false);
+            setSavingLoading(false);
+            return;
         }
 
-        // --- Prepare Data ---
-        let imageToSend = null;
-        if (values.studentImage instanceof File) {
-            imageToSend = values.studentImage;
-        } else if (typeof values.studentImage === 'string') {
-             // If it's a string, it must be the initial URL from studentData.
-             // We require a new capture/crop if any changes are made.
-             // Check if it's *exactly* the initial image URL (if editing)
-             const initialImageUrl = studentData?.studentImage?.url || studentData?.studentImage;
-             if (values.studentImage === initialImageUrl) {
-                 // Option 1: Allow saving without image change (backend needs to handle this)
-                 // console.log("Image unchanged. Proceeding without file upload.");
-                 // imageToSend = null; // Or send a flag
-
-                 // Option 2 (Implemented): Force re-capture if saving/updating
-                 toast.error("Please capture or re-capture the student photo before saving.");
-                 setIsLoader(false);
-                 setCroppingLoading(false);
-                 return;
-             } else {
-                  // This case shouldn't be reachable if state management is correct
-                  toast.error("Invalid image state. Please re-capture the photo.");
-                  setIsLoader(false);
-                  setCroppingLoading(false);
-                  return;
-             }
-        } else {
-             // Should not happen, but catch just in case
-             toast.error("Invalid student image state. Please capture a photo.");
-             setIsLoader(false);
-             setCroppingLoading(false);
-             return;
+        // Crucial check: Ensure a *new* photo has been captured and processed
+        if (!(values.studentImage instanceof File)) {
+            toast.warn("Please capture and confirm the student photo before saving.");
+            setIsLoader(false);
+            setSavingLoading(false);
+            return;
         }
 
-        // --- Create FormData ---
+        // --- Prepare FormData ---
         const studentPayload = {
-            schoolId: schoolID,
+            schoolId: localStorage.getItem("SchoolID"), // Get fresh value
             studentName: values.fullName,
             class: values.class,
             section: values.section,
@@ -408,117 +355,108 @@ function DynamicFormFileds(props) {
 
         const formDataToSend = new FormData();
         Object.entries(studentPayload).forEach(([key, value]) => {
-            formDataToSend.append(key, String(value ?? '')); // Ensure values are strings, handle null/undefined
+            // Ensure values are strings and handle null/undefined gracefully
+            formDataToSend.append(key, String(value ?? ''));
         });
 
-        // Only append image if it's a File object ready for upload
-        if (imageToSend) {
-            // Use a more robust filename if possible
-            const studentImageFilename = `${values.fullName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'student'}_image.jpeg`;
-            formDataToSend.append("studentImage", imageToSend, studentImageFilename);
-        }
-        // If imageToSend is null (Option 1 above), the 'studentImage' field is just not appended.
+        // Append the File object
+        formDataToSend.append("studentImage", values.studentImage, values.studentImage.name); // Use the File's name
 
         // --- API Call ---
         try {
-            console.log("Submitting student data..."); // Avoid logging FormData directly in production
+            console.log("Submitting initial student data..."); // Avoid logging FormData in production
 
-            const response = await initialstudentphoto(formDataToSend);
+            const response = await initialstudentphoto(formDataToSend); // Call your API function
 
             if (response?.success) {
                 toast.success("Student data saved successfully!");
-                setValues({ // Reset form
+                setValues({ // Reset form after successful save
                     fullName: "",
                     class: "",
                     section: "",
                     studentImage: null,
                 });
-                // imagePreviewUrl will reset via its useEffect
-                if (setReRender) setReRender(prev => !prev);
-                if (setIsOpen) setIsOpen(false);
+                setImagePreviewUrl(null); // Clear preview explicitly
+                if (setReRender) setReRender(prev => !prev); // Trigger re-render if function provided
+                if (setIsOpen) setIsOpen(false); // Close modal/container if function provided
             } else {
-                // Try to get a meaningful error message
-                const message = response?.message || response?.data?.message || response?.error || "An error occurred during saving.";
-                toast.error(message);
+                // Handle API error response
+                const message = response?.message || response?.data?.message || response?.error || "An error occurred while saving.";
+                toast.error(`Save failed: ${message}`);
             }
         } catch (error) {
             console.error("Error during saving API call:", error);
-            let errorMessage = "An unexpected error occurred.";
+            let errorMessage = "An unexpected error occurred during save.";
             if (error.response) {
-                // Server responded with a status code outside 2xx range
-                errorMessage = `Error: ${error.response.status} - ${error.response.data?.message || error.response.statusText || 'Server error'}`;
+                // Error from server response
+                errorMessage = `Server Error: ${error.response.status} - ${error.response.data?.message || error.response.statusText || 'Unknown server error'}`;
             } else if (error.request) {
-                // Request was made but no response received
-                errorMessage = "No response from server. Check network connection or API endpoint.";
+                // No response received
+                errorMessage = "Could not reach server. Please check your network connection.";
             } else {
-                // Something else happened in setting up the request
-                errorMessage = error.message || "Error setting up the request.";
+                // Error setting up the request
+                errorMessage = error.message || "Error setting up the save request.";
             }
             toast.error(errorMessage);
         } finally {
-            setCroppingLoading(false);
-            setIsLoader(false);
+            setSavingLoading(false); // Stop saving indicator
+            setIsLoader(false);      // Stop global loader
         }
     }, [
-        values, // Includes fullName, class, section, studentImage
-        schoolID,
+        values, // Includes fullName, class, section, studentImage (File object)
         setIsLoader,
         setReRender,
         setIsOpen,
-        studentData, // Needed to compare initial image URL
-        initialstudentphoto, // API function
-        isLoader // Include isLoader if used for disabling button
+        initialstudentphoto, // API function dependency
     ]);
 
+    // Combine loading states for disabling the final save button
+    const isProcessing = croppingLoading || savingLoading || isLoader;
 
-    // --- Main Render ---
     return (
         <>
             {/* --- Webcam Modal --- */}
             <Modal
                 open={showWebcam}
-                onClose={closeWebcam} // Allow closing by clicking backdrop
+                onClose={closeWebcam}
                 aria-labelledby="webcam-modal-title"
-                aria-describedby="webcam-modal-description"
             >
                 <Box sx={modalStyle}>
                     <h2 id="webcam-modal-title" className="text-lg font-semibold mb-4">
                         Capture Photo
                     </h2>
-                    {/* Conditionally render Webcam *only when modal is open* to ensure it initializes correctly */}
+                    {/* Conditional rendering of Webcam to ensure it initializes correctly */}
                     {showWebcam && (
-                        <div className="w-full relative mb-4">
+                        <div className="w-full relative mb-4 border border-gray-300">
                             <Webcam
                                 audio={false}
                                 ref={webcamRef}
-                                screenshotFormat="image/png" // Capture as PNG
+                                screenshotFormat="image/png" // Capture high quality PNG
                                 width="100%"
                                 height="auto"
                                 videoConstraints={{ facingMode: facingMode }}
-                                className="rounded"
+                                className="rounded block" // Ensure it's a block element
                                 mirrored={facingMode === 'user'} // Mirror front camera
                                 onUserMediaError={(err) => {
                                     console.error("Webcam UserMedia Error:", err);
-                                    toast.error(`Camera Error: ${err.name}. Check permissions.`);
+                                    toast.error(`Camera Error: ${err.name}. Check permissions or device.`);
                                     closeWebcam();
                                 }}
-                                onUserMedia={() => {
-                                    console.log("Webcam stream started");
-                                    // Optional: Add a brief delay or check if ref is ready before enabling capture
-                                }}
+                                onUserMedia={() => console.log("Webcam stream active")}
                             />
                             <IconButton
                                 onClick={handleSwitchCamera}
                                 size="small"
                                 sx={{
                                     position: 'absolute',
-                                    bottom: 8, // Position at bottom-right
+                                    bottom: 8,
                                     right: 8,
                                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                                     color: 'white',
                                     '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
                                 }}
                                 aria-label="Switch camera"
+                                title="Switch Camera"
                             >
                                 <SwitchCamera size={20} />
                             </IconButton>
@@ -538,39 +476,34 @@ function DynamicFormFileds(props) {
             {/* --- Conditional Rendering: Cropper OR Form --- */}
             {croppedImageSource ? (
                 // --- Render Cropper UI ---
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
-                    {/* Increased z-index and darker overlay */}
+                <div className="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center p-4 z-[1500]"> {/* High z-index */}
                     <div className="bg-white rounded-lg p-4 w-full max-w-md relative shadow-xl">
-                        {/* Loading indicator for cropping */}
                         {croppingLoading && (
-                            <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
-                                <p className="text-lg font-medium">Processing...</p>
+                            <div className="absolute inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center z-10 rounded-lg">
+                                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+                                <p className="text-base font-medium text-gray-700">Processing...</p>
                             </div>
                         )}
                         <p className="text-center font-semibold text-lg mb-3">Crop Your Photo</p>
-                        {/* Ensure Cropper container has defined height */}
                         <div className="relative h-64 w-full mb-4 bg-gray-200 rounded overflow-hidden border border-gray-300">
                             <Cropper
-                                image={croppedImageSource} // Use the base64 source from capture
+                                image={croppedImageSource} // Base64 source from capture
                                 crop={crop}
                                 zoom={zoom}
-                                aspect={1} // Keep aspect ratio 1:1 (square)
+                                aspect={1} // Square aspect ratio
                                 onCropChange={setCrop}
                                 onZoomChange={setZoom}
-                                onCropComplete={onCropComplete} // Sets croppedAreaPixels on interaction end
-                                // Consider adding showGrid={false} if preferred
+                                onCropComplete={onCropComplete}
+                                showGrid={true}
                             />
                         </div>
+                        {/* Zoom Slider */}
                         <div className="flex justify-center items-center mb-4 px-4">
                             <span className="mr-2 text-sm text-gray-600">Zoom:</span>
                             <input
-                                type="range"
-                                min="1"
-                                max="3"
-                                step="0.1"
-                                value={zoom}
+                                type="range" min="1" max="3" step="0.1" value={zoom}
                                 onChange={(e) => setZoom(Number(e.target.value))}
-                                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer dark:bg-gray-600 accent-[#2fa7db]" // Use accent color
+                                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-[#2fa7db]"
                                 disabled={croppingLoading}
                             />
                         </div>
@@ -578,182 +511,173 @@ function DynamicFormFileds(props) {
                             <Button variant="outlined" color="secondary" onClick={cancelCrop} disabled={croppingLoading}>
                                 Cancel
                             </Button>
-                            <Button variant="contained" color="primary" onClick={showCroppedImage} disabled={croppingLoading}>
-                                {croppingLoading ? "Cropping..." : "Crop & Use"}
+                            <Button variant="contained" color="primary" onClick={applyCroppedImage} disabled={croppingLoading}>
+                                {croppingLoading ? "Applying..." : "Crop & Use"}
                             </Button>
                         </div>
                     </div>
                 </div>
             ) : (
                 // --- Render Main Form UI ---
-                <div className="selection:bg-[#2fa7db] selection:text-white">
-                    <div className="flex justify-center" style={{ minWidth: "min(90vw, 500px)" }}> {/* Adjusted minWidth */}
-                        <div className="flex-1 m-2 max-w-lg w-full"> {/* Ensure it takes available width up to max */}
-                            <div className="w-full bg-white mx-auto overflow-hidden rounded-lg shadow-md border border-gray-200"> {/* Added subtle border */}
-                                <div className="px-6 pt-5 pb-6"> {/* Adjusted padding */}
-                                    <h1 className="text-xl font-semibold text-gray-800 mb-5 text-center"> {/* Centered title */}
-                                        Student Details
-                                    </h1>
+                 <div className="selection:bg-[#2fa7db] selection:text-white">
+                    {/* Centering container with responsive width */}
+                    <div className="flex justify-center p-2">
+                         {/* Max width container for the form card */}
+                        <div className="w-full max-w-lg bg-white mx-auto overflow-hidden rounded-lg shadow-lg border border-gray-200">
+                            <div className="px-6 pt-5 pb-6">
+                                <h1 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+                                    Add Initial Student Details
+                                </h1>
 
-                                    {/* Image Preview and Name Section */}
-                                    <div className="flex items-center mb-6 gap-4"> {/* Added gap */}
-                                        {/* Image Preview Area */}
-                                        <div className="relative flex-shrink-0"> {/* Prevent shrinking */}
-                                            <div className="relative w-24 h-24 group"> {/* Added group for hover effect */}
-                                                {imagePreviewUrl ? (
-                                                    <img
-                                                        src={imagePreviewUrl}
-                                                        alt="Student Preview"
-                                                        className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-sm"
-                                                        // onError handling can be added if needed
-                                                    />
-                                                ) : (
-                                                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300"> {/* Dashed border */}
-                                                        <Camera size={30} className="text-gray-400" />
-                                                    </div>
-                                                )}
-                                                {/* Capture Button */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openWebcam('studentImage')}
-                                                    className="absolute -bottom-1 -right-1 bg-[#ee582c] text-white p-2 rounded-full cursor-pointer hover:bg-[#d74f20] transition duration-200 shadow-md transform group-hover:scale-110" // Hover effect
-                                                    aria-label="Capture or change student photo"
-                                                    title="Capture Photo" // Tooltip
-                                                >
-                                                    <Camera size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {/* Full Name Input (Floating Label Style) */}
-                                        <div className="relative flex-grow">
-                                            <input
-                                                type="text"
-                                                name="fullName"
-                                                placeholder=" " // Necessary for floating label effect
-                                                value={values.fullName}
-                                                onChange={handleInputChange}
-                                                id="fullName"
-                                                className="peer h-10 w-full border-b-2 border-[#ee582c] text-[#2fa7db] placeholder-transparent focus:outline-none focus:border-rose-600 bg-transparent text-base"
-                                                required
-                                                autoComplete="name"
-                                            />
-                                            <label
-                                                htmlFor="fullName"
-                                                className="absolute left-0 -top-3.5 text-[#ee582c] text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[#d74f20] peer-focus:text-sm" // Adjusted focus color
+                                {/* Image Preview and Name Section */}
+                                <div className="flex items-center mb-6 gap-5">
+                                    {/* Image Preview Area */}
+                                    <div className="relative flex-shrink-0">
+                                        <div className="relative w-24 h-24 group">
+                                            {imagePreviewUrl ? (
+                                                <img
+                                                    src={imagePreviewUrl}
+                                                    alt="Student Preview"
+                                                    className="w-full h-full rounded-full object-cover border-2 border-gray-300 shadow-sm"
+                                                    onError={(e) => { e.target.style.display='none'; /* Hide broken img */ }}
+                                                />
+                                            ) : (
+                                                // Placeholder
+                                                <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300">
+                                                    <Camera size={30} className="text-gray-400" />
+                                                </div>
+                                            )}
+                                            {/* Capture/Change Button Overlay */}
+                                            <button
+                                                type="button"
+                                                onClick={openWebcam}
+                                                className="absolute -bottom-1 -right-1 bg-[#ee582c] text-white p-2 rounded-full cursor-pointer hover:bg-[#d74f20] transition duration-200 shadow-md transform group-hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ee582c]"
+                                                aria-label="Capture or change student photo"
+                                                title="Capture Photo"
                                             >
-                                                Student Full Name *
-                                            </label>
+                                                <Camera size={16} />
+                                            </button>
                                         </div>
                                     </div>
-
-                                    {/* Class and Section Selects */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6 mt-4"> {/* Responsive grid and gap */}
-                                        {/* Class Select */}
-                                        <FormControl
-                                            variant="standard"
+                                    {/* Full Name Input (Floating Label Style) */}
+                                    <div className="relative flex-grow mt-2"> {/* Added margin-top */}
+                                        <input
+                                            type="text"
+                                            name="fullName"
+                                            placeholder=" " // Required for floating effect
+                                            value={values.fullName}
+                                            onChange={handleInputChange}
+                                            id="fullName"
+                                            className="peer h-10 w-full border-b-2 border-[#ee582c] text-[#2fa7db] placeholder-transparent focus:outline-none focus:border-[#d74f20] bg-transparent text-base" // Focus border color changed
                                             required
-                                            fullWidth
-                                            sx={{
-                                                "& .MuiInputLabel-root": { color: "#ee582c" },
-                                                "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" }, // Focused label color
-                                                "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 }, // Input text color + padding bottom
-                                                "& .MuiSelect-icon": { color: "#ee582c" },
-                                                "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" },
-                                                "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' },
-                                                "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" }, // Focused underline
-                                                "& .MuiInputBase-root": { marginTop: '16px' } // Adjust spacing if needed
-                                            }}
+                                            autoComplete="name"
+                                        />
+                                        <label
+                                            htmlFor="fullName"
+                                            className="absolute left-0 -top-3.5 text-[#ee582c] text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[#d74f20] peer-focus:text-sm" // Adjusted colors
                                         >
-                                            <InputLabel id="class-select-label">Class *</InputLabel>
-                                            <Select
-                                                labelId="class-select-label"
-                                                id="class-select"
-                                                value={values.class}
-                                                onChange={handleClassChange}
-                                                name="class"
-                                                label="Class *" // Accessibility
-                                                sx={{ "&:focus": { backgroundColor: 'transparent' } }} // Remove focus background
-                                            >
-                                                <MenuItem value="" disabled><em>Select a Class</em></MenuItem>
-                                                {getClass?.map((cls, index) => (
-                                                    <MenuItem key={`${cls.className}-${index}`} value={cls.className}>
-                                                        {cls?.className}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
+                                            Student Full Name *
+                                        </label>
+                                    </div>
+                                </div>
 
-                                        {/* Section Select */}
-                                        <FormControl
-                                            variant="standard"
-                                            required
-                                            fullWidth
-                                            disabled={!values.class || availableSections.length === 0}
-                                            sx={{
-                                                "& .MuiInputLabel-root": { color: "#ee582c" },
-                                                 "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" },
-                                                "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 },
-                                                "& .MuiSelect-icon": { color: "#ee582c" },
-                                                "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" },
-                                                "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' },
-                                                "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" },
-                                                "& .MuiInputBase-root": { marginTop: '16px' },
-                                                // Disabled state styles
-                                                "&.Mui-disabled": {
-                                                    "& .MuiInput-underline:before": { borderBottomStyle: 'dotted', borderBottomColor: "#bdbdbd" }, // Dotted line when disabled
-                                                    "& .MuiInputLabel-root": { color: "#bdbdbd" },
-                                                    "& .MuiSelect-icon": { color: "#bdbdbd" },
-                                                    "& .MuiInputBase-input": { color: "#bdbdbd" },
-                                                }
-                                            }}
+                                {/* Class and Section Selects */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 mt-4">
+                                    {/* Class Select */}
+                                    <FormControl
+                                        variant="standard" required fullWidth
+                                        sx={{
+                                            "& .MuiInputLabel-root": { color: "#ee582c" }, // Label color
+                                            "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" }, // Focused label
+                                            "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 }, // Input text color
+                                            "& .MuiSelect-icon": { color: "#ee582c" }, // Arrow icon color
+                                            "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" }, // Underline
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' }, // Hover underline
+                                            "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" }, // Focused underline
+                                            "& .MuiInputBase-root": { marginTop: '16px' } // Spacing adjustment
+                                        }}
+                                    >
+                                        <InputLabel id="class-select-label">Class *</InputLabel>
+                                        <Select
+                                            labelId="class-select-label" id="class-select"
+                                            value={values.class} onChange={handleClassChange}
+                                            name="class" label="Class *"
+                                            sx={{ "&:focus": { backgroundColor: 'transparent' } }} // Remove focus bg highlight
                                         >
-                                            <InputLabel id="section-select-label">Section *</InputLabel>
-                                            <Select
-                                                labelId="section-select-label"
-                                                id="section-select"
-                                                value={values.section}
-                                                onChange={handleSectionChange}
-                                                name="section"
-                                                label="Section *" // Accessibility
-                                                sx={{ "&:focus": { backgroundColor: 'transparent' } }}
-                                            >
-                                                {/* Provide clearer placeholder/disabled messages */}
-                                                <MenuItem value="" disabled>
-                                                    <em>{!values.class ? 'Select Class First' : 'Select a Section'}</em>
+                                            <MenuItem value="" disabled><em>Select a Class</em></MenuItem>
+                                            {getClass.map((cls, index) => (
+                                                <MenuItem key={`${cls.className}-${index}`} value={cls.className}>
+                                                    {cls?.className ?? 'Unnamed Class'}
                                                 </MenuItem>
-                                                {availableSections.length > 0 ? (
-                                                    availableSections.map((sec, index) => (
-                                                        <MenuItem key={`${sec}-${index}`} value={sec}>{sec}</MenuItem>
-                                                    ))
-                                                ) : (
-                                                     values.class && <MenuItem disabled sx={{ fontStyle: 'italic', color: '#9e9e9e' }}>No Sections Available</MenuItem>
-                                                )}
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                {/* Save Button Area */}
-                                <div className="px-6 pb-5 pt-3 bg-gray-50 rounded-b-lg border-t border-gray-200"> {/* Subtle background */}
-                                    {buttonLabel && (
-                                        <Button
-                                            type="button"
-                                            variant="contained" // Use contained button for primary action
-                                            fullWidth
-                                            onClick={handleSaveClick}
-                                            disabled={croppingLoading || isLoader} // Use combined loading state
-                                            sx={{
-                                                py: 1.2, // Adjust padding
-                                                textTransform: 'none', // Keep button text case
-                                                fontSize: '1rem',
-                                                backgroundColor: '#2fa7db',
-                                                '&:hover': { backgroundColor: '#248db4' },
-                                                '&.Mui-disabled': { backgroundColor: '#bdbdbd', color: '#757575' } // Disabled style
-                                            }}
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+
+                                    {/* Section Select */}
+                                    <FormControl
+                                        variant="standard" required fullWidth
+                                        disabled={!values.class || availableSections.length === 0} // Disable logic
+                                        sx={{
+                                            "& .MuiInputLabel-root": { color: "#ee582c" },
+                                            "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" },
+                                            "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 },
+                                            "& .MuiSelect-icon": { color: "#ee582c" },
+                                            "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" },
+                                            "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' },
+                                            "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" },
+                                            "& .MuiInputBase-root": { marginTop: '16px' },
+                                            // Disabled state styles
+                                            "&.Mui-disabled": {
+                                                "& .MuiInput-underline:before": { borderBottomStyle: 'dotted', borderBottomColor: "#bdbdbd" },
+                                                "& .MuiInputLabel-root": { color: "#bdbdbd" },
+                                                "& .MuiSelect-icon": { color: "#bdbdbd" },
+                                                "& .MuiInputBase-input": { color: "#bdbdbd" },
+                                            }
+                                        }}
+                                    >
+                                        <InputLabel id="section-select-label">Section *</InputLabel>
+                                        <Select
+                                            labelId="section-select-label" id="section-select"
+                                            value={values.section} onChange={handleSectionChange}
+                                            name="section" label="Section *"
+                                            sx={{ "&:focus": { backgroundColor: 'transparent' } }}
                                         >
-                                            {croppingLoading || isLoader ? "Saving..." : buttonLabel}
-                                        </Button>
-                                    )}
+                                            <MenuItem value="" disabled>
+                                                <em>{!values.class ? 'Select Class First' : 'Select a Section'}</em>
+                                            </MenuItem>
+                                            {availableSections.map((sec, index) => (
+                                                <MenuItem key={`${sec}-${index}`} value={sec}>{sec}</MenuItem>
+                                            ))}
+                                            {/* Message when class is selected but no sections exist */}
+                                            {values.class && availableSections.length === 0 && (
+                                                <MenuItem disabled sx={{ fontStyle: 'italic', color: '#9e9e9e' }}>No Sections Available</MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
                                 </div>
+                            </div>
+                            {/* Save Button Area */}
+                            <div className="px-6 pb-5 pt-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
+                                {buttonLabel && (
+                                    <Button
+                                        type="button"
+                                        variant="contained"
+                                        fullWidth
+                                        onClick={handleSaveClick}
+                                        disabled={isProcessing} // Use combined loading state
+                                        sx={{
+                                            py: 1.3, // Slightly more padding
+                                            textTransform: 'none',
+                                            fontSize: '1rem',
+                                            fontWeight: 'medium', // Medium weight
+                                            backgroundColor: '#2fa7db',
+                                            '&:hover': { backgroundColor: '#248db4' },
+                                            '&.Mui-disabled': { backgroundColor: '#c5cae9', color: '#757575' } // Adjusted disabled style
+                                        }}
+                                    >
+                                        {savingLoading ? "Saving..." : (croppingLoading ? "Processing..." : buttonLabel)}
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -764,6 +688,757 @@ function DynamicFormFileds(props) {
 }
 
 export default DynamicFormFileds;
+
+
+// import React, { useState, useCallback, useEffect, useRef } from "react";
+// import { Camera, SwitchCamera } from "lucide-react";
+// import Cropper from "react-easy-crop";
+// import Webcam from "react-webcam";
+// import {
+//     FormControl,
+//     InputLabel,
+//     Select,
+//     MenuItem,
+//     Modal,
+//     Box,
+//     Button,
+//     IconButton,
+// } from "@mui/material";
+// // Assume these imports are correct
+// import { initialstudentphoto } from "../../Network/ThirdPartyApi";
+// import { toast } from "react-toastify";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import getCroppedImg from "../../Dynamic/Form/Admission/getCroppedImg";
+
+// // --- Modal Style ---
+// const modalStyle = {
+//     position: 'absolute',
+//     top: '50%',
+//     left: '50%',
+//     transform: 'translate(-50%, -50%)',
+//     width: '90%', // Responsive width
+//     maxWidth: 500, // Max width for larger screens
+//     bgcolor: 'background.paper',
+//     border: '1px solid #ccc', // Softer border
+//     borderRadius: '8px', // Rounded corners
+//     boxShadow: 24,
+//     p: 4,
+//     display: 'flex',
+//     flexDirection: 'column',
+//     alignItems: 'center',
+// };
+
+// // --- Helper to convert Base64/Data URL to Blob/File ---
+// const dataURLtoFile = (dataurl, filename) => {
+//     if (!dataurl) return null;
+//     try {
+//         let arr = dataurl.split(','),
+//             mimeMatch = arr[0].match(/:(.*?);/);
+//         if (!mimeMatch || mimeMatch.length < 2) {
+//             console.error("Invalid data URL format for MIME type extraction");
+//             return null; // Or throw an error
+//         }
+//         let mime = mimeMatch[1],
+//             bstr = atob(arr[arr.length - 1]),
+//             n = bstr.length,
+//             u8arr = new Uint8Array(n);
+//         while (n--) {
+//             u8arr[n] = bstr.charCodeAt(n);
+//         }
+//         return new File([u8arr], filename, { type: mime });
+//     } catch (e) {
+//         console.error("Error converting data URL to File:", e);
+//         toast.error("Error processing image data.");
+//         return null;
+//     }
+// };
+
+
+// function DynamicFormFileds(props) {
+//     const { studentData, buttonLabel = "Save", setIsOpen, setReRender } = props;
+//     const { isLoader, setIsLoader } = useStateContext();
+//     const [getClass, setGetClass] = useState([]);
+//     const [availableSections, setAvailableSections] = useState([]);
+//     const [values, setValues] = useState({
+//         fullName: "",
+//         class: "",
+//         section: "",
+//         studentImage: null, // Can be File object or URL string initially
+//     });
+
+//     // --- Webcam State ---
+//     const [showWebcam, setShowWebcam] = useState(false);
+//     const webcamRef = useRef(null);
+//     const [currentPhotoType, setCurrentPhotoType] = useState(null); // Keeps track of which image field is being captured (only 'studentImage' here)
+//     const [facingMode, setFacingMode] = useState("user");
+
+//     // --- Cropper State ---
+//     const [crop, setCrop] = useState({ x: 0, y: 0 });
+//     const [zoom, setZoom] = useState(1);
+//     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+//     const [croppedImageSource, setCroppedImageSource] = useState(null); // Base64 string from webcam *before* cropping
+//     const [croppingLoading, setCroppingLoading] = useState(false); // Specific loading state for crop operation
+
+//     // --- Derived State for Preview ---
+//     const [imagePreviewUrl, setImagePreviewUrl] = useState(null); // URL for the <img> tag
+
+//     // --- Effect Hooks ---
+
+//     // Fetch classes from localStorage
+//     useEffect(() => {
+//         try {
+//             const classesString = localStorage.getItem("classes");
+//             if (classesString) {
+//                 const classes = JSON.parse(classesString);
+//                 setGetClass(Array.isArray(classes) ? classes : []);
+//             }
+//         } catch (error) {
+//             console.error("Failed to parse classes from localStorage:", error);
+//             setGetClass([]);
+//         }
+//     }, []);
+
+//     // Update available sections when class changes
+//     useEffect(() => {
+//         if (values.class && getClass.length > 0) {
+//             const selectedClassObj = getClass.find((cls) => cls.className === values.class);
+//             const sectionsRaw = selectedClassObj?.sections;
+//             const sectionsArray = sectionsRaw
+//                 ? (Array.isArray(sectionsRaw)
+//                     ? sectionsRaw
+//                     // Handle comma-separated string, trim whitespace, filter empty
+//                     : String(sectionsRaw).split(/\s*,\s*/).filter(Boolean))
+//                 : [];
+//             setAvailableSections(sectionsArray);
+//             // Reset section if the new class doesn't have the currently selected section
+//             if (!sectionsArray.includes(values.section)) {
+//                 setValues(prev => ({ ...prev, section: "" }));
+//             }
+//         } else {
+//             setAvailableSections([]);
+//             // Ensure section is reset if class is cleared
+//             if (!values.class) {
+//                  setValues(prev => ({ ...prev, section: "" }));
+//             }
+//         }
+//     // Only re-run if class changes or the source list of classes changes
+//     }, [values.class, getClass]); // Removed values.section dependency - resetting is handled inside
+
+
+//     // Initialize form with studentData or reset
+//     useEffect(() => {
+//         if (studentData) {
+//             // Determine the initial image source (prefer URL if available)
+//             const initialStudentImage = studentData.studentImage?.url || studentData.studentImage || null;
+//             setValues({
+//                 fullName: studentData.fullName || "",
+//                 class: studentData.class || "",
+//                 section: studentData.section || "",
+//                 studentImage: initialStudentImage, // Store the initial source (URL or null)
+//             });
+//             // Note: Section will be validated/reset by the effect above if needed after class is set
+//         } else {
+//             // Reset form if studentData is not provided
+//             setValues({
+//                 fullName: "",
+//                 class: "",
+//                 section: "",
+//                 studentImage: null,
+//             });
+//         }
+//         // This effect should run when studentData changes or when classes load (for initial section setting)
+//     }, [studentData, getClass]);
+
+//     // Effect to manage the image preview URL and cleanup blob URLs
+//     useEffect(() => {
+//         const currentImageSource = values.studentImage;
+//         let objectUrl = null;
+
+//         if (currentImageSource instanceof File) {
+//             objectUrl = URL.createObjectURL(currentImageSource);
+//             setImagePreviewUrl(objectUrl);
+//         } else if (typeof currentImageSource === 'string' && currentImageSource.startsWith('http')) {
+//             // Assuming it's a valid web URL
+//             setImagePreviewUrl(currentImageSource);
+//         } else {
+//             setImagePreviewUrl(null); // No valid image source
+//         }
+//   return () => {
+//             if (objectUrl) {
+//                 // console.log("Revoking Blob URL:", objectUrl); // Debugging
+//                 URL.revokeObjectURL(objectUrl);
+//                 setImagePreviewUrl(prevUrl => prevUrl === objectUrl ? null : prevUrl); // Optionally clear preview immediately on cleanup if it was the blob url
+//             }
+//         };
+//     }, [values.studentImage]); // Re-run ONLY when the studentImage in values changes
+
+//     // --- Callback Hooks ---
+
+//     const handleInputChange = useCallback((e) => {
+//         const { name, value } = e.target;
+//         setValues(prev => ({ ...prev, [name]: value }));
+//     }, []);
+
+//     const handleClassChange = useCallback((e) => {
+//         const selectedClassName = e.target.value;
+//         setValues((prevData) => ({
+//             ...prevData,
+//             class: selectedClassName,
+//             section: "", // Reset section when class changes
+//         }));
+//     }, []);
+
+//     const handleSectionChange = useCallback((e) => {
+//         setValues((prevData) => ({
+//             ...prevData,
+//             section: e.target.value,
+//         }));
+//     }, []);
+
+//     const openWebcam = useCallback((photoType) => {
+//         setCurrentPhotoType(photoType); // Set which image field we are capturing for
+//         setShowWebcam(true);
+//         // setFacingMode("user"); // Reset to front camera each time?
+//     }, []);
+
+//     const closeWebcam = useCallback(() => {
+//         setShowWebcam(false);
+//         setCurrentPhotoType(null);
+//     }, []);
+
+//     const capturePhoto = useCallback(() => {
+//         if (!webcamRef.current) {
+//             console.error("Webcam ref not available.");
+//             toast.error("Webcam not ready. Please try again.");
+//             return;
+//         }
+//         // Use PNG for potentially better quality capture before cropping
+//         const imageSrc = webcamRef.current.getScreenshot({ type: 'image/png', quality: 1 });
+
+//         if (imageSrc) {
+//             setShowWebcam(false); // Close webcam modal
+//             setCroppedImageSource(imageSrc); // Set the base64 source for the cropper
+//         } else {
+//             console.error("Could not capture screenshot. Webcam might not be ready or permissions denied.");
+//             toast.error("Could not capture photo. Please check camera permissions and try again.");
+//             closeWebcam(); // Close webcam modal on error
+//         }
+//     }, [webcamRef, closeWebcam]); // Add dependencies
+
+//     const handleSwitchCamera = useCallback(() => {
+//         setFacingMode(prevMode => (prevMode === "user" ? "environment" : "user"));
+//     }, []);
+
+//     const onCropComplete = useCallback((_croppedArea, croppedAreaPixelsValue) => {
+//         // Note: react-easy-crop calls this on mouse/touch up. Store the final value.
+//         setCroppedAreaPixels(croppedAreaPixelsValue);
+//     }, []);
+
+//     const cancelCrop = useCallback(() => {
+//         setCroppedImageSource(null); // Hide cropper
+//         setCurrentPhotoType(null);   // Reset photo type context
+//         setCroppedAreaPixels(null);
+//         setCrop({ x: 0, y: 0 });      // Reset crop position
+//         setZoom(1);                  // Reset zoom
+//         setCroppingLoading(false);   // Ensure loading state is reset
+//     }, []);
+
+//     const showCroppedImage = useCallback(async () => {
+//       if (!croppedImageSource || !croppedAreaPixels || !currentPhotoType) {
+//           console.error("Cropping prerequisites missing.");
+//           toast.warn("Cannot process crop. Please try capturing again.");
+//           cancelCrop();
+//           return;
+//       }
+  
+//       setCroppingLoading(true);
+//       try {
+//           // Call getCroppedImg
+//           const croppedImageResult = await getCroppedImg(
+//               croppedImageSource,
+//               croppedAreaPixels,
+//               0 // Assuming rotation is 0
+//           );
+  
+//           // *** ADD THESE LOGS ***
+//           console.log("Result from getCroppedImg:", croppedImageResult);
+//           console.log("Type of result:", typeof croppedImageResult);
+//           if (croppedImageResult instanceof Blob) {
+//               console.log("Result is a Blob object. Size:", croppedImageResult.size, "Type:", croppedImageResult.type);
+//           }
+//           // *** END OF LOGS ***
+  
+//           // Now check the type and act accordingly
+//           let imageFile = null;
+//           const filename = `${currentPhotoType}_${Date.now()}.jpeg`;
+  
+//           if (typeof croppedImageResult === 'string' && croppedImageResult.startsWith('data:')) {
+//               // --- Case 1: It's a Data URL (Expected) ---
+//               console.log("Result is a Data URL. Converting to File...");
+//               imageFile = dataURLtoFile(croppedImageResult, filename);
+  
+//           } else if (croppedImageResult instanceof Blob) {
+//               // --- Case 2: It's a Blob Object ---
+//               console.log("Result is a Blob. Creating File directly...");
+//               // Ensure the blob has a type, default if necessary
+//               const blobType = croppedImageResult.type || 'image/jpeg';
+//               imageFile = new File([croppedImageResult], filename, { type: blobType });
+  
+//           } else if (typeof croppedImageResult === 'string' && croppedImageResult.startsWith('blob:')) {
+//               // --- Case 3: It's a Blob URL ---
+//               console.log("Result is a Blob URL. Fetching Blob...");
+//               try {
+//                   const response = await fetch(croppedImageResult);
+//                   if (!response.ok) {
+//                       throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
+//                   }
+//                   const blob = await response.blob();
+//                    // IMPORTANT: Revoke the temporary blob URL after fetching
+//                   URL.revokeObjectURL(croppedImageResult);
+//                   const blobType = blob.type || 'image/jpeg';
+//                   imageFile = new File([blob], filename, { type: blobType });
+//                   console.log("Blob fetched and File created from Blob URL.");
+//               } catch (fetchError) {
+//                   console.error("Error fetching blob from Blob URL:", fetchError);
+//                   toast.error("Could not retrieve image data. Please try again.");
+//                   cancelCrop();
+//                   return; // Exit if fetch fails
+//               }
+//           } else {
+//               // --- Case 4: Unexpected Format ---
+//               console.error("getCroppedImg returned an unexpected format:", typeof croppedImageResult);
+//               toast.error("Failed to process cropped image format. Please try again."); // Your original error
+//               cancelCrop();
+//               return; // Exit
+//           }
+  
+//           // --- Process the imageFile if created successfully ---
+//           if (imageFile) {
+//               console.log("Image File created successfully:", imageFile.name, imageFile.size, imageFile.type);
+//               setValues((prev) => ({ ...prev, [currentPhotoType]: imageFile }));
+//               cancelCrop(); // Close cropper and reset states
+//           } else {
+//               // This might happen if dataURLtoFile returned null or File creation failed
+//               console.error("Failed to create final image file object.");
+//               toast.error("Error finalizing image processing.");
+//               cancelCrop();
+//           }
+  
+//       } catch (error) {
+//           // Catch errors from getCroppedImg itself or other await calls
+//           console.error("Error during image cropping process:", error);
+//           toast.error(`Failed to crop image: ${error.message || 'Please try again.'}`);
+//           cancelCrop();
+//       } finally {
+//           setCroppingLoading(false);
+//       }
+//   // Add dependencies properly
+//   }, [croppedImageSource, croppedAreaPixels, currentPhotoType, cancelCrop, getCroppedImg, dataURLtoFile]); // Ensure dataURLtoFile is stable or memoized if defined inside component
+//     const schoolID = localStorage.getItem("SchoolID");
+
+//     const handleSaveClick = useCallback(async () => {
+//         setCroppingLoading(true); // Use the same loading state or a general one
+//         setIsLoader(true);
+
+//         // --- Validation ---
+//         if (!values.class || !values.section) {
+//             toast.warn("Please fill in Full Name, Class, and Section.");
+//             setIsLoader(false);
+//             setCroppingLoading(false);
+//             return;
+//         }
+//         if (!values.studentImage) {
+//             toast.warn("Please capture or provide a student photo.");
+//              setIsLoader(false);
+//              setCroppingLoading(false);
+//              return;
+//         }
+
+//         // --- Prepare Data ---
+//         let imageToSend = null;
+//         if (values.studentImage instanceof File) {
+//             imageToSend = values.studentImage;
+//         } else if (typeof values.studentImage === 'string') {
+            
+//              const initialImageUrl = studentData?.studentImage?.url || studentData?.studentImage;
+//              if (values.studentImage === initialImageUrl) {
+               
+//                  toast.error("Please capture or re-capture the student photo before saving.");
+//                  setIsLoader(false);
+//                  setCroppingLoading(false);
+//                  return;
+//              } else {
+//                   // This case shouldn't be reachable if state management is correct
+//                   toast.error("Invalid image state. Please re-capture the photo.");
+//                   setIsLoader(false);
+//                   setCroppingLoading(false);
+//                   return;
+//              }
+//         } else {
+//              // Should not happen, but catch just in case
+//              toast.error("Invalid student image state. Please capture a photo.");
+//              setIsLoader(false);
+//              setCroppingLoading(false);
+//              return;
+//         }
+
+//         // --- Create FormData ---
+//         const studentPayload = {
+//             schoolId: schoolID,
+//             studentName: values.fullName,
+//             class: values.class,
+//             section: values.section,
+//         };
+
+//         const formDataToSend = new FormData();
+//         Object.entries(studentPayload).forEach(([key, value]) => {
+//             formDataToSend.append(key, String(value ?? '')); // Ensure values are strings, handle null/undefined
+//         });
+
+//         if (imageToSend) {
+//             // Use a more robust filename if possible
+//             const studentImageFilename = `${values.fullName.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'student'}_image.jpeg`;
+//             formDataToSend.append("studentImage", imageToSend, studentImageFilename);
+//         }
+
+//         try {
+//             console.log("Submitting student data..."); // Avoid logging FormData directly in production
+
+//             const response = await initialstudentphoto(formDataToSend);
+
+//             if (response?.success) {
+//                 toast.success("Student data saved successfully!");
+//                 setValues({ // Reset form
+//                     fullName: "",
+//                     class: "",
+//                     section: "",
+//                     studentImage: null,
+//                 });
+//                 if (setReRender) setReRender(prev => !prev);
+//                 if (setIsOpen) setIsOpen(false);
+//             } else {
+//                 // Try to get a meaningful error message
+//                 const message = response?.message || response?.data?.message || response?.error || "An error occurred during saving.";
+//                 toast.error(message);
+//             }
+//         } catch (error) {
+//             console.error("Error during saving API call:", error);
+//             let errorMessage = "An unexpected error occurred.";
+//             if (error.response) {
+//                 errorMessage = `Error: ${error.response.status} - ${error.response.data?.message || error.response.statusText || 'Server error'}`;
+//             } else if (error.request) {
+//                 errorMessage = "No response from server. Check network connection or API endpoint.";
+//             } else {
+//                 // Something else happened in setting up the request
+//                 errorMessage = error.message || "Error setting up the request.";
+//             }
+//             toast.error(errorMessage);
+//         } finally {
+//             setCroppingLoading(false);
+//             setIsLoader(false);
+//         }
+//     }, [
+//         values, // Includes fullName, class, section, studentImage
+//         schoolID,
+//         setIsLoader,
+//         setReRender,
+//         setIsOpen,
+//         studentData, // Needed to compare initial image URL
+//         initialstudentphoto, // API function
+//         isLoader // Include isLoader if used for disabling button
+//     ]);
+
+//     return (
+//         <>
+           
+//             <Modal
+//                 open={showWebcam}
+//                 onClose={closeWebcam} // Allow closing by clicking backdrop
+//                 aria-labelledby="webcam-modal-title"
+//                 aria-describedby="webcam-modal-description"
+//             >
+//                 <Box sx={modalStyle}>
+//                     <h2 id="webcam-modal-title" className="text-lg font-semibold mb-4">
+//                         Capture Photo
+//                     </h2>
+//                     {showWebcam && (
+//                         <div className="w-full relative mb-4">
+//                             <Webcam
+//                                 audio={false}
+//                                 ref={webcamRef}
+//                                 screenshotFormat="image/png" // Capture as PNG
+//                                 width="100%"
+//                                 height="auto"
+//                                 videoConstraints={{ facingMode: facingMode }}
+//                                 className="rounded"
+//                                 mirrored={facingMode === 'user'} // Mirror front camera
+//                                 onUserMediaError={(err) => {
+//                                     console.error("Webcam UserMedia Error:", err);
+//                                     toast.error(`Camera Error: ${err.name}. Check permissions.`);
+//                                     closeWebcam();
+//                                 }}
+//                                 onUserMedia={() => {
+//                                     console.log("Webcam stream started");
+//                                     // Optional: Add a brief delay or check if ref is ready before enabling capture
+//                                 }}
+//                             />
+//                             <IconButton
+//                                 onClick={handleSwitchCamera}
+//                                 size="small"
+//                                 sx={{
+//                                     position: 'absolute',
+//                                     bottom: 8, // Position at bottom-right
+//                                     right: 8,
+//                                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//                                     color: 'white',
+//                                     '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+//                                 }}
+//                                 aria-label="Switch camera"
+//                             >
+//                                 <SwitchCamera size={20} />
+//                             </IconButton>
+//                         </div>
+//                     )}
+//                     <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
+//                         <Button variant="contained" color="primary" onClick={capturePhoto} disabled={!showWebcam}>
+//                             Capture
+//                         </Button>
+//                         <Button variant="outlined" color="secondary" onClick={closeWebcam}>
+//                             Cancel
+//                         </Button>
+//                     </Box>
+//                 </Box>
+//             </Modal>
+
+//             {/* --- Conditional Rendering: Cropper OR Form --- */}
+//             {croppedImageSource ? (
+//                 // --- Render Cropper UI ---
+//                 <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+//                     {/* Increased z-index and darker overlay */}
+//                     <div className="bg-white rounded-lg p-4 w-full max-w-md relative shadow-xl">
+//                         {/* Loading indicator for cropping */}
+//                         {croppingLoading && (
+//                             <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+//                                 <p className="text-lg font-medium">Processing...</p>
+//                             </div>
+//                         )}
+//                         <p className="text-center font-semibold text-lg mb-3">Crop Your Photo</p>
+//                         {/* Ensure Cropper container has defined height */}
+//                         <div className="relative h-64 w-full mb-4 bg-gray-200 rounded overflow-hidden border border-gray-300">
+//                             <Cropper
+//                                 image={croppedImageSource} // Use the base64 source from capture
+//                                 crop={crop}
+//                                 zoom={zoom}
+//                                 aspect={1} // Keep aspect ratio 1:1 (square)
+//                                 onCropChange={setCrop}
+//                                 onZoomChange={setZoom}
+//                                 onCropComplete={onCropComplete} // Sets croppedAreaPixels on interaction end
+//                                 // Consider adding showGrid={false} if preferred
+//                             />
+//                         </div>
+//                         <div className="flex justify-center items-center mb-4 px-4">
+//                             <span className="mr-2 text-sm text-gray-600">Zoom:</span>
+//                             <input
+//                                 type="range"
+//                                 min="1"
+//                                 max="3"
+//                                 step="0.1"
+//                                 value={zoom}
+//                                 onChange={(e) => setZoom(Number(e.target.value))}
+//                                 className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer dark:bg-gray-600 accent-[#2fa7db]" // Use accent color
+//                                 disabled={croppingLoading}
+//                             />
+//                         </div>
+//                         <div className="flex justify-end gap-3 mt-2">
+//                             <Button variant="outlined" color="secondary" onClick={cancelCrop} disabled={croppingLoading}>
+//                                 Cancel
+//                             </Button>
+//                             <Button variant="contained" color="primary" onClick={showCroppedImage} disabled={croppingLoading}>
+//                                 {croppingLoading ? "Cropping..." : "Crop & Use"}
+//                             </Button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             ) : (
+//                 // --- Render Main Form UI ---
+//                 <div className="selection:bg-[#2fa7db] selection:text-white">
+//                     <div className="flex justify-center" style={{ minWidth: "min(90vw, 500px)" }}> {/* Adjusted minWidth */}
+//                         <div className="flex-1 m-2 max-w-lg w-full"> {/* Ensure it takes available width up to max */}
+//                             <div className="w-full bg-white mx-auto overflow-hidden rounded-lg shadow-md border border-gray-200"> {/* Added subtle border */}
+//                                 <div className="px-6 pt-5 pb-6"> {/* Adjusted padding */}
+//                                     <h1 className="text-xl font-semibold text-gray-800 mb-5 text-center"> {/* Centered title */}
+//                                         Student Details
+//                                     </h1>
+
+//                                     {/* Image Preview and Name Section */}
+//                                     <div className="flex items-center mb-6 gap-4"> {/* Added gap */}
+//                                         {/* Image Preview Area */}
+//                                         <div className="relative flex-shrink-0"> {/* Prevent shrinking */}
+//                                             <div className="relative w-24 h-24 group"> {/* Added group for hover effect */}
+//                                                 {imagePreviewUrl ? (
+//                                                     <img
+//                                                         src={imagePreviewUrl}
+//                                                         alt="Student Preview"
+//                                                         className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-sm"
+//                                                         // onError handling can be added if needed
+//                                                     />
+//                                                 ) : (
+//                                                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center border-2 border-dashed border-gray-300"> {/* Dashed border */}
+//                                                         <Camera size={30} className="text-gray-400" />
+//                                                     </div>
+//                                                 )}
+//                                                 {/* Capture Button */}
+//                                                 <button
+//                                                     type="button"
+//                                                     onClick={() => openWebcam('studentImage')}
+//                                                     className="absolute -bottom-1 -right-1 bg-[#ee582c] text-white p-2 rounded-full cursor-pointer hover:bg-[#d74f20] transition duration-200 shadow-md transform group-hover:scale-110" // Hover effect
+//                                                     aria-label="Capture or change student photo"
+//                                                     title="Capture Photo" // Tooltip
+//                                                 >
+//                                                     <Camera size={16} />
+//                                                 </button>
+//                                             </div>
+//                                         </div>
+//                                         {/* Full Name Input (Floating Label Style) */}
+//                                         <div className="relative flex-grow">
+//                                             <input
+//                                                 type="text"
+//                                                 name="fullName"
+//                                                 placeholder=" " // Necessary for floating label effect
+//                                                 value={values.fullName}
+//                                                 onChange={handleInputChange}
+//                                                 id="fullName"
+//                                                 className="peer h-10 w-full border-b-2 border-[#ee582c] text-[#2fa7db] placeholder-transparent focus:outline-none focus:border-rose-600 bg-transparent text-base"
+//                                                 required
+//                                                 autoComplete="name"
+//                                             />
+//                                             <label
+//                                                 htmlFor="fullName"
+//                                                 className="absolute left-0 -top-3.5 text-[#ee582c] text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-[#d74f20] peer-focus:text-sm" // Adjusted focus color
+//                                             >
+//                                                 Student Full Name *
+//                                             </label>
+//                                         </div>
+//                                     </div>
+
+//                                     {/* Class and Section Selects */}
+//                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6 mt-4"> {/* Responsive grid and gap */}
+//                                         {/* Class Select */}
+//                                         <FormControl
+//                                             variant="standard"
+//                                             required
+//                                             fullWidth
+//                                             sx={{
+//                                                 "& .MuiInputLabel-root": { color: "#ee582c" },
+//                                                 "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" }, // Focused label color
+//                                                 "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 }, // Input text color + padding bottom
+//                                                 "& .MuiSelect-icon": { color: "#ee582c" },
+//                                                 "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" },
+//                                                 "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' },
+//                                                 "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" }, // Focused underline
+//                                                 "& .MuiInputBase-root": { marginTop: '16px' } // Adjust spacing if needed
+//                                             }}
+//                                         >
+//                                             <InputLabel id="class-select-label">Class *</InputLabel>
+//                                             <Select
+//                                                 labelId="class-select-label"
+//                                                 id="class-select"
+//                                                 value={values.class}
+//                                                 onChange={handleClassChange}
+//                                                 name="class"
+//                                                 label="Class *" // Accessibility
+//                                                 sx={{ "&:focus": { backgroundColor: 'transparent' } }} // Remove focus background
+//                                             >
+//                                                 <MenuItem value="" disabled><em>Select a Class</em></MenuItem>
+//                                                 {getClass?.map((cls, index) => (
+//                                                     <MenuItem key={`${cls.className}-${index}`} value={cls.className}>
+//                                                         {cls?.className}
+//                                                     </MenuItem>
+//                                                 ))}
+//                                             </Select>
+//                                         </FormControl>
+
+//                                         {/* Section Select */}
+//                                         <FormControl
+//                                             variant="standard"
+//                                             required
+//                                             fullWidth
+//                                             disabled={!values.class || availableSections.length === 0}
+//                                             sx={{
+//                                                 "& .MuiInputLabel-root": { color: "#ee582c" },
+//                                                  "& .MuiInputLabel-root.Mui-focused": { color: "#d74f20" },
+//                                                 "& .MuiInputBase-input": { color: "#2fa7db", pb: 0.5 },
+//                                                 "& .MuiSelect-icon": { color: "#ee582c" },
+//                                                 "& .MuiInput-underline:before": { borderBottom: "2px solid #ee582c" },
+//                                                 "& .MuiInput-underline:hover:not(.Mui-disabled):before": { borderBottomColor: '#d74f20' },
+//                                                 "& .MuiInput-underline:after": { borderBottom: "2px solid #d74f20" },
+//                                                 "& .MuiInputBase-root": { marginTop: '16px' },
+//                                                 // Disabled state styles
+//                                                 "&.Mui-disabled": {
+//                                                     "& .MuiInput-underline:before": { borderBottomStyle: 'dotted', borderBottomColor: "#bdbdbd" }, // Dotted line when disabled
+//                                                     "& .MuiInputLabel-root": { color: "#bdbdbd" },
+//                                                     "& .MuiSelect-icon": { color: "#bdbdbd" },
+//                                                     "& .MuiInputBase-input": { color: "#bdbdbd" },
+//                                                 }
+//                                             }}
+//                                         >
+//                                             <InputLabel id="section-select-label">Section *</InputLabel>
+//                                             <Select
+//                                                 labelId="section-select-label"
+//                                                 id="section-select"
+//                                                 value={values.section}
+//                                                 onChange={handleSectionChange}
+//                                                 name="section"
+//                                                 label="Section *" // Accessibility
+//                                                 sx={{ "&:focus": { backgroundColor: 'transparent' } }}
+//                                             >
+//                                                 {/* Provide clearer placeholder/disabled messages */}
+//                                                 <MenuItem value="" disabled>
+//                                                     <em>{!values.class ? 'Select Class First' : 'Select a Section'}</em>
+//                                                 </MenuItem>
+//                                                 {availableSections.length > 0 ? (
+//                                                     availableSections.map((sec, index) => (
+//                                                         <MenuItem key={`${sec}-${index}`} value={sec}>{sec}</MenuItem>
+//                                                     ))
+//                                                 ) : (
+//                                                      values.class && <MenuItem disabled sx={{ fontStyle: 'italic', color: '#9e9e9e' }}>No Sections Available</MenuItem>
+//                                                 )}
+//                                             </Select>
+//                                         </FormControl>
+//                                     </div>
+//                                 </div>
+//                                 {/* Save Button Area */}
+//                                 <div className="px-6 pb-5 pt-3 bg-gray-50 rounded-b-lg border-t border-gray-200"> {/* Subtle background */}
+//                                     {buttonLabel && (
+//                                         <Button
+//                                             type="button"
+//                                             variant="contained" // Use contained button for primary action
+//                                             fullWidth
+//                                             onClick={handleSaveClick}
+//                                             disabled={croppingLoading || isLoader} // Use combined loading state
+//                                             sx={{
+//                                                 py: 1.2, // Adjust padding
+//                                                 textTransform: 'none', // Keep button text case
+//                                                 fontSize: '1rem',
+//                                                 backgroundColor: '#2fa7db',
+//                                                 '&:hover': { backgroundColor: '#248db4' },
+//                                                 '&.Mui-disabled': { backgroundColor: '#bdbdbd', color: '#757575' } // Disabled style
+//                                             }}
+//                                         >
+//                                             {croppingLoading || isLoader ? "Saving..." : buttonLabel}
+//                                         </Button>
+//                                     )}
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+//         </>
+//     );
+// }
+
+// export default DynamicFormFileds;
 
 
 

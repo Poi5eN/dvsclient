@@ -541,12 +541,12 @@ const [availableSections, setAvailableSections] = useState([]);
                   Student Details
                 </h1>
                 <div className="flex justify-end  items-center mb-6">
-                  <Button
+                  {/* <Button
                     name=" More Details"
                     color="#59b3da"
                     onClick={() => handleMoreDetails()}
                     className="text-[#ee582c] m-2"
-                  />
+                  /> */}
                 </div>
                 {/* {console.log("values",values)} */}
                 <div className="flex ml-2 mb-6">

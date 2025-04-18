@@ -163,10 +163,6 @@ function AdditionalFee() {
     setModalOpen(true);
   };
 
-
-
-
-
   const THEAD = [
     { id: "SN", label: "S No.", width: "5" },
     { id: "class", label: "Class", width: "7" },
@@ -186,7 +182,7 @@ function AdditionalFee() {
     name: val.name,
     feetype: val.feeType,
     amount: val.amount,
-    // class: val.className,
+ 
 
     action: (<div className="flex justify-center">
 
@@ -200,9 +196,7 @@ function AdditionalFee() {
 
   return (
     <div className="mx-auto">
-      {/* <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
-        Additional Fee
-      </h1> */}
+     
       <div className="">
         <Button
         name="Set Additional Fee"
@@ -256,47 +250,10 @@ function AdditionalFee() {
               onChange={handleFieldChange}
               value={formData.amount}
             />
-            {/* <div>
-              <label className="block mb-2 text-sm font-medium">Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleFieldChange}
-                className="border rounded p-2 w-full"
-              />
-            </div> */}
+            
           </div>
 
-          {/* <div className="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
-              <label className="block mb-2 text-sm font-medium">Fee Type</label>
-              <select
-                name="feeType"
-                value={formData.feeType}
-                onChange={handleFieldChange}
-                className="border rounded p-2 w-full"
-              >
-                <option value="">Select Fee Type</option>
-                <option value="Exam Fee">Exam Fee</option>
-                <option value="One Time">One Time</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Quarterly">Quarterly</option>
-                <option value="Half Yearly">Half Yearly</option>
-                <option value="Annually">Annually</option>
-              </select>
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium">Amount</label>
-              <input
-                type="number"
-                name="amount"
-                value={formData.amount}
-                onChange={handleFieldChange}
-                className="border rounded p-2 w-full"
-              />
-            </div>
-          </div> */}
+          
 
           <Button
           name="Submit"

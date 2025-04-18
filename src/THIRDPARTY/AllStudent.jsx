@@ -78,7 +78,6 @@ function AllStudent() {
     try {
       
       const response = await thirdpartyadmissions(SchoolID);
-console.log("response aaaaa",response)
       if (response.success) {
         setAllStudents(response?.data);
         setFilteredStudents(response?.data);

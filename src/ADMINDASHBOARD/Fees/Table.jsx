@@ -304,6 +304,7 @@ const Table = ({ reLoad }) => {
       { header: "Mode", dataKey: "paymentMode" },
       { header: "TID", dataKey: "transactionId" },
       { header: "Month", dataKey: "month" },
+      { header: "Fee Amount", dataKey: "totalFeeAmount" },
       { header: "Dues", dataKey: "totalDues" },
       { header: "Paid", dataKey: "totalAmountPaid" },
       { header: "Status", dataKey: "feeStatus" },
@@ -328,7 +329,7 @@ const Table = ({ reLoad }) => {
   // Render table for single or unified receipts
   const renderTable = (data, isUnified = false) => (
     <div className="relative md:max-h-screen overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+      <table className="w-full border text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead
           style={{
             background: currentColor,
@@ -363,10 +364,15 @@ const Table = ({ reLoad }) => {
               Pay Date
             </th>
             <th scope="col" className="px-6 py-3">
-              Dues
+            Fee Amount
             </th>
+          
+            
             <th scope="col" className="px-6 py-3">
               Paid
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Dues
             </th>
             <th scope="col" className="px-1 py-3">
               Action
@@ -497,9 +503,9 @@ const Table = ({ reLoad }) => {
                                   </p>
                                 </td>
                                 <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
+                                  {/* <p className="text-gray-900 whitespace-no-wrap">
                                     {addFee.month || "N/A"}
-                                  </p>
+                                  </p> */}
                                 </td>
                                 <td className="px-1 border-b border-gray-200 bg-white text-sm">
                                   <p className="text-gray-900 whitespace-no-wrap">
@@ -545,8 +551,10 @@ const Table = ({ reLoad }) => {
                     ? format(parseISO(fees.date), "dd/MM/yyyy")
                     : "N/A"}
                 </td>
-                <td className="px-6 py-4">{fees.totalDues || 0}</td>
+                <td className="px-6 py-4">{fees.totalFeeAmount || 0}</td>
                 <td className="px-6 py-4">{fees.totalAmountPaid || 0}</td>
+                <td className="px-6 py-4">{fees.totalDues || 0}</td>
+             
                 <td className="px-4 py-4">
                   <a
                     onClick={() => {
