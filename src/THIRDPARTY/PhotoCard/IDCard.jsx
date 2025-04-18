@@ -142,9 +142,10 @@ if (!SchoolID) {
     
     <>
    {
-      filteredStudents?.length>0
+      // filteredStudents?.length>0
       // true
-       ?(
+      //  ?
+       (
         <>
           <div
         className="py-[1px] fixed top-[70px] w-full  z-10"
@@ -307,7 +308,9 @@ if (!SchoolID) {
         </Modal> */}
       </div>
         </>
-      ):(<div className="text-center mt-10 text-red-500 font-semibold">No Students</div>)
+      )
+      // :
+      // (<div className="text-center mt-10 text-red-500 font-semibold">No Students</div>)
     }
       
     
