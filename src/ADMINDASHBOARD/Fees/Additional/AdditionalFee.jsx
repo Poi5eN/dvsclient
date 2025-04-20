@@ -68,24 +68,24 @@ function AdditionalFee() {
     {
       label:"Select Fee Type",value:""
     },
-    {
-      label:"Exam Fee",value:"Exam Fee"
-    },
+    // {
+    //   label:"Exam Fee",value:"Exam Fee"
+    // },
     {
       label:"One Time",value:"One Time"
     },
     {
       label:"Monthly",value:"Monthly"
     },
-    {
-      label:"Quarterly",value:"Quarterly"
-    },
-    {
-      label:"Half Yearly",value:"Half Yearly"
-    },
-    {
-      label:"Annually",value:"Annually"
-    },
+    // {
+    //   label:"Quarterly",value:"Quarterly"
+    // },
+    // {
+    //   label:"Half Yearly",value:"Half Yearly"
+    // },
+    // {
+    //   label:"Annually",value:"Annually"
+    // },
   ]
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -114,9 +114,19 @@ function AdditionalFee() {
     getfee()
   }, [])
   const handleSubmit = async () => {
+    const payload={
+      className:formData?.className,
+      name:formData?.name,
+      feeType:formData?.feeType,
+      amount:formData?.amount,
+      // frequency:String(formData?.feeType==="One Time"?"one-time":"monthly"),
+        // enum: ["monthly", "one-time", "annual"],
+        // default: "monthly"
+      
+    }
     setIsLoader(true)
     try {
-      const response = await feesadditional(formData)
+      const response = await feesadditional(payload)
       if (response?.success) {
         toast.success("Fees set successfully !")
         setIsLoader(false)
@@ -228,7 +238,7 @@ function AdditionalFee() {
               name="feeType"
               value={formData.feeType}
               handleChange={handleFieldChange}
-              label="Select a Class"
+              label="Select Fee Type"
               dynamicOptions={feeType}
             />
  

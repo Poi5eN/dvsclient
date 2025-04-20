@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
-import { ActiveStudents } from "../../Network/AdminApi";
+import { ActiveStudents, getAdditionalfees } from "../../Network/AdminApi";
 import Button from "../../Dynamic/utils/Button";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { useStateContext } from "../../contexts/ContextProvider";
@@ -35,14 +35,15 @@ const AllocateAdditionalFees = () => {
   const fetchAdditionalFeeStructures = useCallback(async () => {
     setIsLoader(true);
     try {
-      const response = await axios.get(
-        `https://dvsserver.onrender.com/api/v1/fees/getAdditionalFeeStructures?session=${session}`,
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
-      if (response.data.success) {
-        setFeeStructures(response.data.data || []);
+         const response = await getAdditionalfees()
+    //   const response = await axios.get(
+    //     `https://dvsserver.onrender.com/api/v1/fees/getAdditionalFeeStructures?session=${session}`,
+    //     {
+    //       headers: { Authorization: `Bearer ${authToken}` },
+    //     }
+    //   );
+      if (response.success) {
+        setFeeStructures(response?.data || []);
       } else {
         toast.error("Failed to fetch additional fee structures.");
       }
@@ -111,7 +112,7 @@ const AllocateAdditionalFees = () => {
     setIsLoader(true);
     try {
       const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/fees/AllocateAdditionalFees",
+        "https://dvsserver.onrender.com/api/v1/fees/allotAdditionalFees",
         payload,
         {
           headers: { Authorization: `Bearer ${authToken}` },

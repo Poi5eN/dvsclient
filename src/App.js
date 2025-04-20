@@ -38,6 +38,7 @@ import Photo from "./THIRDPARTY/Photo";
 import IDCard from "./THIRDPARTY/PhotoCard/IDCard";
 import ThirdpartPhotos from "./THIRDPARTY/NewFolder/ThirdpartPhotos";
 import PhotoForm from "./THIRDPARTY/PhotoForm";
+import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -239,6 +240,7 @@ function App() {
               <Route path="allteachers/edit-profile/:email" element={<EditTeacher />} />
               <Route path="admin/allteachers/salaryStatus/:email" element={<SalaryStatus />} />
               <Route path="additional" element={<AdditionalFee />} />
+              <Route path="allocate-additional" element={<AllocateAdditionalFees />} />
               <Route path="classwise" element={<ClasswiseFee />} />
               <Route path="add-dues" element={<AddDues />} />
               <Route path="lateFine" element={<LateFine />} />
