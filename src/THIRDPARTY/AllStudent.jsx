@@ -100,9 +100,9 @@ function AllStudent() {
       console.log("error", error);
     }
   };
-// useEffect(()=>{
-//   getStudent()
-// },[reRender])
+useEffect(()=>{
+  getStudent()
+},[reRender])
 
   useEffect(() => {
     // getStudent();

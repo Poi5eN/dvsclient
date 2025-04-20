@@ -83,11 +83,11 @@ console.log("schoolDetails",schoolDetails)
     }
   };
 
-  useEffect(() => {
-    if (SchoolID) {
-      getStudent();
-    }
-  }, [SchoolID]);
+  // useEffect(() => {
+  //   if (SchoolID) {
+  //     getStudent();
+  //   }
+  // }, [SchoolID]);
 
   const studentdata = student?.data
     ?.filter((val) => val?.studentImage?.url)
