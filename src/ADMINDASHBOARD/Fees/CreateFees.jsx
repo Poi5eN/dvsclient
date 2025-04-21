@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -22,9 +23,9 @@ import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSel
 const fetchAdditionalFeesForClass = async (className, authToken) => {
   try {
     const response = await axios.get(
-      // Use environment variable for base URL if possible
-      // `https://dvsserver.onrender.com/api/v1/adminRoute/fees/?additional=true&className=${className}`,
-      `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+      `${
+        process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+      }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
       {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },
@@ -34,21 +35,26 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
       const filteredFees = response.data.data.filter(
         (fee) => fee.className === className
       );
-      // Map response including feeType (used for filtering dropdowns later)
       return filteredFees.map((fee) => ({
         label: `${fee.name} (${fee.feeType}) - ₹${fee.amount}`,
-        value: fee.amount, // Amount associated with the fee type
+        value: fee.amount,
         name: fee.name,
-        type: fee.feeType, // Crucial for filtering ('Monthly', 'One-Time', 'Optional', etc.)
-        id: fee._id, // Use the database ID as the unique identifier
+        type: fee.feeType,
+        id: fee._id,
       }));
     } else {
-      console.error(`Failed to fetch additional fees for class ${className}:`, response?.data?.message); // Log error
+      console.error(
+        `Failed to fetch additional fees for class ${className}:`,
+        response?.data?.message
+      );
       toast.error(`Failed to fetch additional fees for class ${className}.`);
       return [];
     }
   } catch (error) {
-    console.error(`Error fetching additional fees for class ${className}:`, error); // Log error
+    console.error(
+      `Error fetching additional fees for class ${className}:`,
+      error
+    );
     toast.error(
       `Error fetching additional fees for class ${className}: ${error.message}`
     );
@@ -57,7 +63,6 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
 };
 
 const CreateFees = () => {
-  // --- State variables ---
   const session = JSON.parse(localStorage.getItem("session"));
   const { setIsLoader } = useStateContext();
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
@@ -72,7 +77,7 @@ const CreateFees = () => {
   const [searchTermbyadmissionNo, setSearchTermbyadmissionNo] = useState("");
   const [parentData, setParentData] = useState([]);
   const [allStudent, setAllStudent] = useState([]);
-  const [formData, setFormData] = useState([]); // Array to hold form data for each selected child
+  const [formData, setFormData] = useState([]);
   const authToken = localStorage.getItem("token");
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
   const [unifiedReceiptModalOpen, setUnifiedReceiptModalOpen] = useState(false);
@@ -81,20 +86,27 @@ const CreateFees = () => {
   const [isPreviewReady, setIsPreviewReady] = useState(false);
 
   const allMonths = [
-    "April", "May", "June", "July", "August", "September",
-    "October", "November", "December", "January", "February", "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+    "January",
+    "February",
+    "March",
   ];
 
-  // --- Fetch students ---
   const getAllStudent = useCallback(async () => {
-    // console.log("Fetching all active students..."); // Log fetch start
     setIsLoader(true);
     try {
       const response = await ActiveStudents();
       setAllStudent(response?.students?.data || []);
-      // console.log("Active students fetched:", response?.students?.data?.length); // Log fetch success
     } catch (error) {
-       console.error("Failed to fetch student list:", error); // Log fetch error
+      console.error("Failed to fetch student list:", error);
       toast.error("Failed to fetch student list.");
       setAllStudent([]);
     } finally {
@@ -106,7 +118,6 @@ const CreateFees = () => {
     getAllStudent();
   }, [getAllStudent, triggerRefresh]);
 
-  // --- Search Handlers ---
   const handleSearch = (event) => {
     const searchValue = event.target.value.toLowerCase().trim();
     setSearchTerm(searchValue);
@@ -139,31 +150,36 @@ const CreateFees = () => {
     setSearchTerm("");
   };
 
-  // --- Fetch Fee Info ---
   const fetchStudentFeeInfo = async (studentId) => {
-    // console.log(`Fetching fee info for student ID: ${studentId}`); // Log fetch start
     try {
       const response = await axios.get(
-        // Use environment variable for base URL if possible
-        // `https://dvsserver.onrender.com/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
-        `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+        `${
+          process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+        }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
       if (response.data.success) {
-        // console.log(`Fee info fetched successfully for ${studentId}:`, response.data.data); // Log success
         return response.data.data;
       } else {
-        console.error(`Fee info fetch failed for student ID ${studentId}:`, response.data.message || "Unknown error"); // Log failure
+        console.error(
+          `Fee info fetch failed for student ID ${studentId}:`,
+          response.data.message || "Unknown error"
+        );
         toast.error(
-          `Fee info fetch failed for student ID ${studentId}: ${response.data.message || "Unknown error"}`
+          `Fee info fetch failed for student ID ${studentId}: ${
+            response.data.message || "Unknown error"
+          }`
         );
         return null;
       }
     } catch (error) {
-      console.error(`Error fetching fee info for student ID ${studentId}:`, error); // Log error
+      console.error(
+        `Error fetching fee info for student ID ${studentId}:`,
+        error
+      );
       toast.error(
         `Error fetching fee info for student ID ${studentId}: ${error.message}`
       );
@@ -171,9 +187,7 @@ const CreateFees = () => {
     }
   };
 
-  // --- Reset State ---
   const resetState = () => {
-    // console.log("Resetting component state."); // Log state reset
     setSelectedChildrenIndices([]);
     setChildFeeHistory(null);
     setShowFormFlags([]);
@@ -192,31 +206,34 @@ const CreateFees = () => {
     setIsPreviewReady(false);
   };
 
-  // --- Handle Student Click (from search results) ---
   const handleStudentClick = async (parentId) => {
-    console.log(`handleStudentClick called for parentId: ${parentId}`); // Log entry
+    console.log(`handleStudentClick called for parentId: ${parentId}`);
     setIsLoader(true);
-    resetState(); // Reset previous state first
+    resetState();
     try {
       const parentResponse = await parentandchildwithID(parentId);
       if (!parentResponse?.success) {
-        console.error("Failed to fetch parent/child data:", parentResponse?.message); // Log error
-        toast.error(parentResponse?.message || "Failed to fetch parent/child data.");
-        setIsLoader(false); // Ensure loader stops on error
+        console.error(
+          "Failed to fetch parent/child data:",
+          parentResponse?.message
+        );
+        toast.error(
+          parentResponse?.message || "Failed to fetch parent/child data."
+        );
+        setIsLoader(false);
         return;
       }
 
       const children = parentResponse?.children || [];
-      console.log("Fetched children:", children); // Log children data
+      console.log("Fetched children:", children);
       if (children.length === 0) {
         toast.info("No children found for this parent.");
-        setIsLoader(false); // Ensure loader stops if no children
+        setIsLoader(false);
         return;
       }
 
-      setParentData(children); // Set parent data (list of children)
+      setParentData(children);
 
-      // Fetch fee info and available additional fees for ALL children concurrently
       console.log("Fetching fee info and additional fees for all children...");
       const promises = children.map((child) =>
         Promise.all([
@@ -226,76 +243,145 @@ const CreateFees = () => {
       );
 
       const results = await Promise.all(promises);
-      console.log("Results from fee info and additional fees fetches:", results); // Log results
+      console.log(
+        "Results from fee info and additional fees fetches:",
+        results
+      );
 
       const initialFormData = [];
       const initialShowFormFlags = [];
 
-      // Process results for each child
       results.forEach(([feeInfo, availableAdditionalFees], index) => {
         const child = children[index];
-        console.log(`Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`);
+        console.log(
+          `Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`
+        );
 
-        // Handle case where fee info fetch failed
         if (!feeInfo) {
-          console.warn(`Could not load fee details for ${child.studentName}. Setting error flag.`); // Log warning
-          toast.error(`Could not load fee details for ${child.studentName}. Skipping.`);
+          console.warn(
+            `Could not load fee details for ${child.studentName}. Setting error flag.`
+          );
+          toast.error(
+            `Could not load fee details for ${child.studentName}. Skipping.`
+          );
           initialShowFormFlags.push(false);
           initialFormData.push({
             admissionNumber: child.admissionNumber,
             studentId: child.studentId,
             studentName: child.studentName,
             className: child.class,
-            error: true, // Mark this entry as having an error
+            error: true,
           });
-          return; // Skip adding full form data for this child
+          return;
         }
 
-        // Extract data from feeInfo
-        const regularFeeAmount = feeInfo.feeStructure?.regularFees?.[0]?.amount || 0;
-        const additionalFeesStructure = feeInfo.feeStructure?.additionalFees || [];
+        const regularFeeAmount =
+          feeInfo.feeStructure?.regularFees?.[0]?.amount || 0;
+        const additionalFeesStructure =
+          feeInfo.feeStructure?.additionalFees || [];
         const monthlyStatus = feeInfo.monthlyStatus || [];
         const oneTimeAdditionalDues = feeInfo.oneTimeAdditionalDues || [];
+        const feeHistory = feeInfo.feeStatus?.feeHistory?.[0] || {};
 
-        // Prepare regular fee status for each month
+        // Prepare regular fee status
         const regularFees = allMonths.map((month) => {
           const monthData = monthlyStatus.find((m) => m.month === month);
           const due = monthData?.regularFee?.due ?? regularFeeAmount;
           const status = monthData?.regularFee?.status || "Unpaid";
           return {
-            month, paidAmount: "", dueAmount: status === "Paid" ? 0 : due,
-            totalAmount: regularFeeAmount, status: status,
-            label: `${month} (Due: ₹${(status === "Paid" ? 0 : due).toFixed(2)})`,
+            month,
+            paidAmount: "",
+            dueAmount: status === "Paid" ? 0 : due,
+            totalAmount: regularFeeAmount,
+            status,
+            label: `${month} (Due: ₹${(status === "Paid" ? 0 : due).toFixed(
+              2
+            )})`,
           };
         });
 
-        // Prepare detailed status for *structured* additional fees (for display/history, not direct selection)
+        // Prepare detailed status for additional fees
         const additionalFeeDetails = additionalFeesStructure.map((fee) => ({
-          name: fee.name, type: fee.feeType, amount: fee.amount,
+          name: fee.name,
+          type: fee.feeType,
+          amount: fee.amount,
           months: allMonths.map((month) => {
             const monthData = monthlyStatus.find((m) => m.month === month);
-            const addFee = monthData?.additionalFees.find((af) => af.name === fee.name);
+            const addFee = monthData?.additionalFees.find(
+              (af) => af.name === fee.name
+            );
             const due = addFee?.due ?? fee.amount;
             const status = addFee?.status || "Unpaid";
-            return { month, paidAmount: "", dueAmount: status === "Paid" ? 0 : due, totalAmount: fee.amount, status: status };
+            return {
+              month,
+              paidAmount: "",
+              dueAmount: status === "Paid" ? 0 : due,
+              totalAmount: fee.amount,
+              status,
+            };
           }),
         }));
 
-        // Prepare one-time fee options from oneTimeAdditionalDues
-        // ***MODIFICATION: Filter out one-time fees with zero due amount***
         const oneTimeFeeOptions = oneTimeAdditionalDues
-            .filter(d => d.dueAmount > 0) // Only show fees with dues > 0
-            .map((d) => ({
-                label: `${d.name} (Due: ₹${d.dueAmount.toFixed(2)})`,
-                name: d.name,
-                code: d.name, // Use name as unique code for one-time fees
-                dueAmount: d.dueAmount,
-                // Assuming these implicitly have frequency 'one-time'
-                type: 'One-Time' // Explicitly add type if needed for consistency
-           }));
+          .filter((d) => d.dueAmount > 0)
+          .map((d) => ({
+            label: `${d.name} (Due: ₹${d.dueAmount.toFixed(2)})`,
+            name: d.name,
+            code: d.name,
+            dueAmount: d.dueAmount,
+            type: "One-Time",
+          }));
 
+        // Pre-select only unpaid regular fees from feeHistory
+        const preSelectedMonths =
+          feeHistory?.regularFees
+            ?.filter((fee) => fee.dueAmount > 0 && fee.status === "Unpaid")
+            .map((fee) => {
+              const originalFee = regularFees.find(
+                (rf) => rf.month === fee.month
+              );
+              return {
+                value: fee.month,
+                label:
+                  originalFee?.label ||
+                  `${fee.month} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+                due: fee.dueAmount,
+              };
+            }) || [];
 
-        // Initialize form data for this child
+        // Pre-select only unpaid additional fees from feeHistory
+        const preSelectedAdditionalFees = [];
+        feeHistory?.additionalFees
+          ?.filter((fee) => fee.dueAmount > 0 && fee.status === "Unpaid")
+          .forEach((fee) => {
+            const availableFeeOption = availableAdditionalFees.find(
+              (opt) => opt.name === fee.name && opt.type === "Monthly"
+            );
+            if (availableFeeOption) {
+              const existingFee = preSelectedAdditionalFees.find(
+                (pf) => pf.name === fee.name && pf.type === "Monthly"
+              );
+              if (existingFee) {
+                existingFee.dueMonths.push(fee.month);
+                existingFee.amount += fee.dueAmount;
+              } else {
+                preSelectedAdditionalFees.push({
+                  id: availableFeeOption.id,
+                  name: availableFeeOption.name,
+                  amount: fee.dueAmount,
+                  type: availableFeeOption.type,
+                  dueMonths: [fee.month],
+                });
+              }
+            }
+          });
+
+        // Pre-select unpaid one-time fees
+        const preSelectedOneTimeFees = oneTimeFeeOptions.map((opt) => ({
+          name: opt.name,
+          dueAmount: opt.dueAmount,
+        }));
+
         const childFormData = {
           admissionNumber: child.admissionNumber,
           studentId: child.studentId,
@@ -303,9 +389,9 @@ const CreateFees = () => {
           className: child.class,
           classFee: regularFeeAmount,
           totalAmount: "",
-          selectedMonths: [],
-          selectedAdditionalFees: [], // Will store selected { id, name, amount, type }
-          selectedOneTimeFees: [],    // Will store selected { name, dueAmount }
+          selectedMonths: preSelectedMonths,
+          selectedAdditionalFees: preSelectedAdditionalFees,
+          selectedOneTimeFees: preSelectedOneTimeFees,
           paymentMode: "Cash",
           transactionId: "",
           chequeBookNo: "",
@@ -313,257 +399,305 @@ const CreateFees = () => {
           concession: "",
           date: moment().format("YYYY-MM-DD"),
           remarks: "",
-          monthlyDues: feeInfo.feeStatus?.monthlyDues || { regularDues: [], additionalDues: [] },
-          additionalFeeDetails: additionalFeeDetails,
+          monthlyDues: feeInfo.feeStatus?.monthlyDues || {
+            regularDues: [],
+            additionalDues: [],
+          },
+          additionalFeeDetails,
           pastDues: feeInfo.feeStatus?.pastDues || 0,
           totalDues: feeInfo.feeStatus?.dues || 0,
           regularFees,
-          availableAdditionalFees: availableAdditionalFees || [], // Holds fetched additional fees { label, value, name, type, id }
-          oneTimeFeeOptions, // Holds prepared & filtered one-time options { label, name, code, dueAmount, type }
+          availableAdditionalFees: availableAdditionalFees || [],
+          oneTimeFeeOptions,
           feeInfo,
-          error: false, // No error for this entry
+          error: false,
         };
-        console.log(`Generated initial form data for ${child.studentName}:`, childFormData); // Log generated data
+        console.log(
+          `Generated initial form data for ${child.studentName}:`,
+          childFormData
+        );
         initialFormData.push(childFormData);
-        initialShowFormFlags.push(false); // Start with form hidden
+        initialShowFormFlags.push(false);
       });
 
-      console.log("Setting final formData state:", initialFormData); // Log before setting state
-      console.log("Setting final showFormFlags state:", initialShowFormFlags); // Log before setting state
-      setFormData(initialFormData); // Update state with all children's form data
-      setSelectedChildrenIndices([]); // No children selected initially
-      setShowFormFlags(initialShowFormFlags); // Set visibility flags
-      setShowChildForms(true); // Show the child forms section
+      console.log("Setting final formData state:", initialFormData);
+      console.log("Setting final showFormFlags state:", initialShowFormFlags);
+      setFormData(initialFormData);
+      setShowFormFlags(initialShowFormFlags);
+      setShowChildForms(true);
       console.log("Child forms should now be visible.");
-
     } catch (error) {
-      console.error("An error occurred during handleStudentClick:", error); // Log unexpected errors
+      console.error("An error occurred during handleStudentClick:", error);
       toast.error("An error occurred while fetching student data.");
     } finally {
       setIsLoader(false);
     }
   };
 
-  // --- Handle Child Selection (clicking on the card header) ---
   const handleChildSelection = (index) => {
-    console.log(`handleChildSelection called for index: ${index}`); // Log entry
-    // Ensure formData[index] exists before accessing properties
+    console.log(`handleChildSelection called for index: ${index}`);
     if (!formData || index < 0 || index >= formData.length) {
-        console.error(`Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`);
-        toast.error("An internal error occurred. Please try again.");
-        return;
+      console.error(
+        `Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`
+      );
+      toast.error("An internal error occurred. Please try again.");
+      return;
     }
     const currentChildData = formData[index];
-    console.log('Current formData[index]:', currentChildData); // Log data for this child
+    console.log("Current formData[index]:", currentChildData);
 
-    // Check if data exists and the error flag is not set
     if (!currentChildData || currentChildData.error) {
       toast.warn(
-        `Cannot select ${parentData[index]?.studentName || 'this student'}. Fee data may be missing or failed to load.`
+        `Cannot select ${
+          parentData[index]?.studentName || "this student"
+        }. Fee data may be missing or failed to load.`
       );
-       console.warn('Selection blocked due to missing data or error flag.'); // Log blocking reason
+      console.warn("Selection blocked due to missing data or error flag.");
       return;
     }
 
     const isCurrentlySelected = selectedChildrenIndices.includes(index);
-    console.log('Is currently selected:', isCurrentlySelected); // Log current selection state
+    console.log("Is currently selected:", isCurrentlySelected);
 
     let updatedSelectedChildren;
     let updatedShowFormFlags = [...showFormFlags];
 
     if (isCurrentlySelected) {
-      // If currently selected, deselect it
-      updatedSelectedChildren = selectedChildrenIndices.filter((i) => i !== index);
-      updatedShowFormFlags[index] = false; // Hide form on deselect
-      console.log('Deselecting child.');
+      updatedSelectedChildren = selectedChildrenIndices.filter(
+        (i) => i !== index
+      );
+      updatedShowFormFlags[index] = false;
+      console.log("Deselecting child.");
     } else {
-      // If not selected, select it
       updatedSelectedChildren = [...selectedChildrenIndices, index];
-      updatedShowFormFlags[index] = true; // Show form on select
-       console.log('Selecting child.');
+      updatedShowFormFlags[index] = true;
+      console.log("Selecting child.");
     }
 
-    // Sort selected indices to maintain a consistent order
     updatedSelectedChildren.sort((a, b) => a - b);
 
-    console.log('Updating selected indices to:', updatedSelectedChildren); // Log new selection array
-    console.log('Updating showForm flags to:', updatedShowFormFlags); // Log visibility flags
+    console.log("Updating selected indices to:", updatedSelectedChildren);
+    console.log("Updating showForm flags to:", updatedShowFormFlags);
 
-    setSelectedChildrenIndices(updatedSelectedChildren); // Update selected indices state
-    setShowFormFlags(updatedShowFormFlags); // Update visibility flags state
+    setSelectedChildrenIndices(updatedSelectedChildren);
+    setShowFormFlags(updatedShowFormFlags);
 
-    // Update fee history display: Show history of the *first* selected child
     if (updatedSelectedChildren.length > 0) {
       const firstSelectedIndex = updatedSelectedChildren[0];
-      console.log('Updating fee history for index:', firstSelectedIndex);
-      // Ensure formData[firstSelectedIndex] exists before accessing feeInfo
+      console.log("Updating fee history for index:", firstSelectedIndex);
       setChildFeeHistory(formData[firstSelectedIndex]?.feeInfo || null);
     } else {
-      console.log('Clearing fee history.');
-      setChildFeeHistory(null); // No selection, no history
+      console.log("Clearing fee history.");
+      setChildFeeHistory(null);
     }
   };
 
-
-  // --- Handle Input Change ---
   const handleInputChange = (index, field, value) => {
     const updatedFormData = [...formData];
-    // Ensure the index is valid before updating
-    if(updatedFormData[index]) {
-        updatedFormData[index] = { ...updatedFormData[index], [field]: value };
+    if (updatedFormData[index]) {
+      updatedFormData[index] = { ...updatedFormData[index], [field]: value };
 
-        // Clear irrelevant fields based on payment mode
-        if (field === "paymentMode") {
-          if (value !== "Online" && value !== "Card") {
-            updatedFormData[index].transactionId = "";
-          }
-          if (value !== "Cheque") {
-            updatedFormData[index].chequeBookNo = "";
-          }
+      if (field === "paymentMode") {
+        if (value !== "Online" && value !== "Card") {
+          updatedFormData[index].transactionId = "";
         }
-        setFormData(updatedFormData);
+        if (value !== "Cheque") {
+          updatedFormData[index].chequeBookNo = "";
+        }
+      }
+      setFormData(updatedFormData);
     } else {
-        console.error(`Attempted to handle input change for invalid index: ${index}`);
+      console.error(
+        `Attempted to handle input change for invalid index: ${index}`
+      );
     }
   };
 
- // --- Handler for DynamicMultiSelect (Months/Regular Fees) ---
- const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
-    // console.log(`Month selection changed for index ${index}:`, selectedOptions); // Log month selection
+  const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
+    console.log(`Month selection changed for index ${index}:`, selectedOptions);
     const selectedOptionsData = selectedOptions || [];
     const updatedFormData = [...formData];
-    // Ensure data exists for the index
     if (!updatedFormData[index]) {
-         console.error(`Cannot handle month change, formData missing for index: ${index}`);
-         return;
+      console.error(
+        `Cannot handle month change, formData missing for index: ${index}`
+      );
+      return;
     }
     const currentChildData = updatedFormData[index];
 
-    // --- Sequential Month Check ---
     const selectedMonthNames = selectedOptionsData.map((opt) => opt.code);
     if (selectedMonthNames.length > 1) {
-        const indicesInAllMonths = selectedMonthNames.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
-        let isSequential = true;
-        for (let i = 1; i < indicesInAllMonths.length; i++) {
-          if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
-            isSequential = false; break;
-          }
+      const indicesInAllMonths = selectedMonthNames
+        .map((month) => allMonths.indexOf(month))
+        .sort((a, b) => a - b);
+      let isSequential = true;
+      for (let i = 1; i < indicesInAllMonths.length; i++) {
+        if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
+          isSequential = false;
+          break;
         }
-        if (!isSequential) {
-          toast.warn(`Please select months in a continuous sequence (e.g., April, May, June). Deselect and reselect if needed.`);
-          // Revert selection visually (optional but good UX) - This requires more complex state management in DynamicMultiSelect or here
-          // For now, just prevent state update and show warning
-          return;
-        }
+      }
+      if (!isSequential) {
+        toast.warn(
+          `Please select months in a continuous sequence (e.g., April, May, June). Deselect and reselect if needed.`
+        );
+        return;
+      }
     }
 
-    // Map selected options back to the required format for selectedMonths state
-    const newSelectedMonths = selectedOptionsData.map((opt) => {
-      const originalFee = currentChildData.regularFees.find((fee) => fee.month === opt.code);
-      if (!originalFee) { console.error(`Could not find original fee data for month: ${opt.code}`); return null; }
-      return { value: originalFee.month, label: originalFee.label, due: originalFee.dueAmount };
-    }).filter(Boolean);
+    const newSelectedMonths = selectedOptionsData
+      .map((opt) => {
+        const originalFee = currentChildData.regularFees.find(
+          (fee) => fee.month === opt.code
+        );
+        if (!originalFee) {
+          console.error(
+            `Could not find original fee data for month: ${opt.code}`
+          );
+          return null;
+        }
+        return {
+          value: originalFee.month,
+          label: originalFee.label,
+          due: originalFee.dueAmount,
+        };
+      })
+      .filter(Boolean);
 
     updatedFormData[index].selectedMonths = newSelectedMonths;
 
-    // --- Auto-select associated monthly additional fees ---
-    const structuredMonthlyAddFees = currentChildData.feeInfo?.feeStructure?.additionalFees?.filter(fee => fee.feeType === 'Monthly') || [];
-    const requiredAdditionalFeeIds = new Set();
-    const selectedMonthValues = newSelectedMonths.map(m => m.value); // ['April', 'May']
+    // Auto-select additional monthly fees for selected months
+    const newSelectedAdditionalFees = [];
+    const structuredMonthlyAddFees =
+      currentChildData.feeInfo?.feeStructure?.additionalFees?.filter(
+        (fee) => fee.feeType === "Monthly"
+      ) || [];
 
-    selectedMonthValues.forEach(monthName => {
-        const monthStatus = currentChildData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
-        if (monthStatus?.additionalFees?.length > 0) {
-            monthStatus.additionalFees.forEach(dueAddFee => {
-                // Check if this fee is a structured monthly fee AND it's due
-                if (dueAddFee.status !== 'Paid' && dueAddFee.due > 0) {
-                     const isStructuredMonthly = structuredMonthlyAddFees.some(f => f.name === dueAddFee.name);
-                     if (isStructuredMonthly) {
-                         // Find the corresponding option in availableAdditionalFees to get its ID
-                         const availableFeeOption = currentChildData.availableAdditionalFees.find(opt => opt.name === dueAddFee.name && opt.type === 'Monthly');
-                         if (availableFeeOption?.id) {
-                             requiredAdditionalFeeIds.add(availableFeeOption.id);
-                         } else {
-                             console.warn(`Could not find matching available option for structured monthly fee: ${dueAddFee.name} required by month ${monthName}`);
-                         }
-                     }
-                 }
-            });
+    structuredMonthlyAddFees.forEach((fee) => {
+      const availableFeeOption = currentChildData.availableAdditionalFees.find(
+        (opt) => opt.name === fee.name && opt.type === "Monthly"
+      );
+      if (availableFeeOption) {
+        const feeDetail = currentChildData.additionalFeeDetails.find(
+          (fd) => fd.name === fee.name && fd.type === "Monthly"
+        );
+        if (!feeDetail) {
+          console.warn(`No fee detail found for ${fee.name}`);
+          return;
         }
+        const dueMonths = newSelectedMonths
+          .map((m) => {
+            const monthData = feeDetail.months.find(
+              (fm) => fm.month === m.value
+            );
+            if (monthData && monthData.dueAmount > 0) {
+              return monthData.month;
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        if (dueMonths.length > 0) {
+          // Calculate total amount for the selected months
+          const totalAmount = dueMonths.reduce((sum, month) => {
+            const monthData = feeDetail.months.find(
+              (fm) => fm.month === month
+            );
+            return sum + (monthData?.dueAmount || 0);
+          }, 0);
+
+          newSelectedAdditionalFees.push({
+            id: availableFeeOption.id,
+            name: availableFeeOption.name,
+            amount: totalAmount,
+            type: availableFeeOption.type,
+            dueMonths,
+          });
+        }
+      }
     });
 
-    // Combine automatically required fees with currently selected *non-monthly* additional fees
-    const currentSelectedAddFeeIds = new Set(currentChildData.selectedAdditionalFees.map(fee => fee.id));
-    const finalSelectedAddFeeIds = new Set(requiredAdditionalFeeIds); // Start with auto-selected monthly
+    // Preserve non-monthly additional fees that were manually selected
+    const existingNonMonthlyFees = currentChildData.selectedAdditionalFees.filter(
+      (fee) => fee.type !== "Monthly"
+    );
 
-    // Add back any previously selected non-monthly ('Optional', 'Yearly' etc.) fees
-    currentChildData.selectedAdditionalFees.forEach(selectedFee => {
-        if (selectedFee.type !== 'Monthly') { // Keep selected optional/yearly fees
-           finalSelectedAddFeeIds.add(selectedFee.id);
-        }
-    });
+    updatedFormData[index].selectedAdditionalFees = [
+      ...newSelectedAdditionalFees,
+      ...existingNonMonthlyFees,
+    ];
 
-    // Reconstruct the selectedAdditionalFees array based on the final IDs
-    const newSelectedAdditionalFees = Array.from(finalSelectedAddFeeIds).map(id => {
-        // Find details from available options first
-        const feeDetails = currentChildData.availableAdditionalFees.find(opt => opt.id === id);
-        if (feeDetails) {
-            return { id: feeDetails.id, name: feeDetails.name, amount: feeDetails.value, type: feeDetails.type };
-        }
-        // Fallback to check if it was in the previously selected list (in case it's not in available options somehow)
-        const existingFee = currentChildData.selectedAdditionalFees.find(f => f.id === id);
-        if (existingFee) return existingFee;
-
-        console.warn(`Could not find details for additional fee ID: ${id} during reconstruction.`);
-        return null;
-    }).filter(Boolean); // Remove any nulls
-
-    updatedFormData[index].selectedAdditionalFees = newSelectedAdditionalFees;
-
-    setFormData(updatedFormData); // Update the main state
+    setFormData(updatedFormData);
   };
 
-
-  // --- Handler for DynamicMultiSelect (Additional Fees & One-Time Fees) ---
   const handleDynamicMultiSelectChange = (index, field, selectedOptions) => {
-    // console.log(`Dynamic multiselect changed for index ${index}, field ${field}:`, selectedOptions); // Log change
+    console.log(
+      `Dynamic multiselect changed for index ${index}, field ${field}:`,
+      selectedOptions
+    );
     const updatedFormData = [...formData];
-    if (!updatedFormData[index]) { console.error(`Cannot handle dynamic multiselect change, formData missing for index: ${index}`); return; }
+    if (!updatedFormData[index]) {
+      console.error(
+        `Cannot handle dynamic multiselect change, formData missing for index: ${index}`
+      );
+      return;
+    }
     const currentChildData = updatedFormData[index];
 
-    // Handle changes for the 'Additional Fees (Monthly/Other)' dropdown
     if (field === "selectedAdditionalFees") {
-      const newSelectedAdditionalFees = (selectedOptions || []).map((opt) => {
-        // Find the original fee details from the available options list
-        // Note: availableAdditionalFees includes all types initially fetched
-        const originalFee = currentChildData.availableAdditionalFees.find((fee) => fee.id === opt.code);
-        if (originalFee) {
-            // Store the necessary details: id, name, amount, and type
-            return { id: originalFee.id, name: originalFee.name, amount: originalFee.value, type: originalFee.type };
-        }
-        console.warn("Could not find original additional fee details for option code:", opt.code); return null;
-      }).filter(Boolean); // Filter out any nulls if a fee wasn't found
+      const newSelectedAdditionalFees = (selectedOptions || [])
+        .map((opt) => {
+          const originalFee = currentChildData.availableAdditionalFees.find(
+            (fee) => fee.id === opt.code
+          );
+          if (originalFee) {
+            return {
+              id: originalFee.id,
+              name: originalFee.name,
+              amount: originalFee.value,
+              type: originalFee.type,
+              dueMonths:
+                originalFee.type === "Monthly"
+                  ? currentChildData.selectedMonths.map((m) => m.value)
+                  : [],
+            };
+          }
+          console.warn(
+            "Could not find original additional fee details for option code:",
+            opt.code
+          );
+          return null;
+        })
+        .filter(Boolean);
 
-      // Preserve any auto-selected monthly fees that might not be in the *current* dropdown options
-      // but were added by handleMonthMultiSelectChange
-      const autoSelectedMonthly = currentChildData.selectedAdditionalFees.filter(fee =>
-        fee.type === 'Monthly' && !newSelectedAdditionalFees.some(nf => nf.id === fee.id)
-      );
+      // Preserve auto-selected monthly fees
+      const autoSelectedMonthly =
+        currentChildData.selectedAdditionalFees.filter(
+          (fee) =>
+            fee.type === "Monthly" &&
+            !newSelectedAdditionalFees.some((nf) => nf.id === fee.id)
+        );
 
-      updatedFormData[index].selectedAdditionalFees = [...newSelectedAdditionalFees, ...autoSelectedMonthly];
-
-    // Handle changes for the 'One-Time / Due Fees' dropdown
+      updatedFormData[index].selectedAdditionalFees = [
+        ...newSelectedAdditionalFees,
+        ...autoSelectedMonthly,
+      ];
     } else if (field === "selectedOneTimeFees") {
-      const newSelectedOneTimeFees = (selectedOptions || []).map((opt) => {
-        // Find the original fee details from the oneTimeFeeOptions list
-        // This list was already filtered for dueAmount > 0 in handleStudentClick
-        const originalFee = currentChildData.oneTimeFeeOptions.find((fee) => fee.code === opt.code); // code is the fee name here
-        if (originalFee) {
-            // Store the necessary details: name and due amount
+      const newSelectedOneTimeFees = (selectedOptions || [])
+        .map((opt) => {
+          const originalFee = currentChildData.oneTimeFeeOptions.find(
+            (fee) => fee.code === opt.code
+          );
+          if (originalFee) {
             return { name: originalFee.name, dueAmount: originalFee.dueAmount };
-        }
-        console.warn("Could not find original one-time fee details for option code:", opt.code); return null;
-      }).filter(Boolean); // Filter out any nulls
+          }
+          console.warn(
+            "Could not find original one-time fee details for option code:",
+            opt.code
+          );
+          return null;
+        })
+        .filter(Boolean);
 
       updatedFormData[index].selectedOneTimeFees = newSelectedOneTimeFees;
     }
@@ -571,7 +705,6 @@ const CreateFees = () => {
     setFormData(updatedFormData);
   };
 
-  // --- Calculations ---
   const calculateNetPayableAmount = useCallback(
     (index) => {
       const data = formData[index];
@@ -580,203 +713,354 @@ const CreateFees = () => {
       total += parseFloat(data.pastDues) || 0;
       total += parseFloat(data.lateFine) || 0;
 
-      // Sum of regular monthly fees selected
-      total += data.selectedMonths.reduce((sum, monthState) => sum + (monthState?.due || 0), 0);
+      // Add regular fees for selected months
+      total += data.selectedMonths.reduce(
+        (sum, monthState) => sum + (monthState?.due || 0),
+        0
+      );
 
-      // Sum of additional fees selected (Monthly, Optional, Yearly etc.)
-      // Use the stored amount associated with the selected fee ID/Name
-      total += data.selectedAdditionalFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+      // Add additional fees, respecting due amounts for selected months
+      total += data.selectedAdditionalFees.reduce((sum, fee) => {
+        if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+          // For monthly fees, sum the due amounts for each selected month
+          return (
+            sum +
+            fee.dueMonths.reduce((monthSum, month) => {
+              const feeDetail = data.additionalFeeDetails.find(
+                (fd) => fd.name === fee.name && fd.type === "Monthly"
+              );
+              if (feeDetail) {
+                const monthData = feeDetail.months.find(
+                  (m) => m.month === month
+                );
+                return monthSum + (monthData?.dueAmount || 0);
+              }
+              return monthSum;
+            }, 0)
+          );
+        }
+        // For non-monthly fees, use the fee amount directly
+        return sum + (parseFloat(fee?.amount) || 0);
+      }, 0);
 
-      // Sum of one-time fees selected
-      // Use the stored due amount associated with the selected fee name
-      total += data.selectedOneTimeFees.reduce((sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0), 0);
+      // Add one-time fees
+      total += data.selectedOneTimeFees.reduce(
+        (sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0),
+        0
+      );
 
       // Subtract concession
       total -= parseFloat(data.concession) || 0;
-      return Math.max(0, total); // Ensure it doesn't go below zero
+      return Math.max(0, total);
     },
-    [formData] // Dependency: formData which contains all selections and amounts
+    [formData]
   );
 
   const calculateAutoDistribution = useCallback(
     (index) => {
       const data = formData[index];
-      if (!data || data.error) return { remainingAfterDistribution: 0, remainingDues: 0 };
-      const netPayable = calculateNetPayableAmount(index); // Total amount required based on selections
-      const totalAmountPaid = parseFloat(data.totalAmount) || 0; // Amount entered by user
-      const remainingDues = Math.max(0, netPayable - totalAmountPaid); // How much is still owed for selected items
-      const remainingAfterDistribution = Math.max(0, totalAmountPaid - netPayable); // How much extra was paid (advance/excess)
+      if (!data || data.error)
+        return { remainingAfterDistribution: 0, remainingDues: 0 };
+      const netPayable = calculateNetPayableAmount(index);
+      const totalAmountPaid = parseFloat(data.totalAmount) || 0;
+      const remainingDues = Math.max(0, netPayable - totalAmountPaid);
+      const remainingAfterDistribution = Math.max(
+        0,
+        totalAmountPaid - netPayable
+      );
       return { remainingAfterDistribution, remainingDues };
     },
-    [formData, calculateNetPayableAmount] // Dependencies: formData and the calculation function
+    [formData, calculateNetPayableAmount]
   );
 
-  // --- Fetch Receipt Data ---
-  const fetchReceiptData = async (receiptNumber) => {
+  const fetchReceiptData = async (receiptNumber, isUnified = false) => {
     setIsPreviewReady(false);
     setIsLoader(true);
-    // console.log(`Fetching receipt data for number: ${receiptNumber}`); // Log fetch start
     try {
-      const response = await axios.get(
-        // Use environment variable for base URL if possible
-        // `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
-        `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
+      const url = isUnified
+        ? `${
+            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+          }/api/v1/fees/generateUnifiedFeeReceipt?unifiedReceiptNumber=${receiptNumber}`
+        : `${
+            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+          }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
       if (response.data.success) {
-        // console.log("Receipt data fetched successfully:", response.data); // Log success
         setReceiptData(response.data);
         setIsPreviewReady(true);
         return response.data;
       } else {
-        console.error(`Failed to fetch receipt data ${receiptNumber}:`, response.data.message); // Log error
-        toast.error(`Failed to fetch receipt data: ${response.data.message || 'Unknown error'}`);
+        console.error(
+          `Failed to fetch receipt data ${receiptNumber}:`,
+          response.data.message
+        );
+        toast.error(
+          `Failed to fetch receipt data: ${
+            response.data.message || "Unknown error"
+          }`
+        );
         return null;
       }
     } catch (error) {
-      console.error(`Error fetching receipt data ${receiptNumber}:`, error); // Log error
-      toast.error("Error fetching receipt data: " + error.message);
-      return null;
+      console.error(`Error fetching receipt data ${receiptNumber}:`, error);
+      if (isUnified && error.response?.status === 404) {
+        // Fallback to single receipt if unified receipt fails
+        try {
+          const fallbackResponse = await axios.get(
+            `${
+              process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+            { headers: { Authorization: `Bearer ${authToken}` } }
+          );
+          if (fallbackResponse.data.success) {
+            setReceiptData(fallbackResponse.data);
+            setIsPreviewReady(true);
+            return fallbackResponse.data;
+          } else {
+            toast.error(
+              `Fallback receipt fetch failed: ${
+                fallbackResponse.data.message || "Unknown error"
+              }`
+            );
+            return null;
+          }
+        } catch (fallbackError) {
+          console.error(
+            `Error fetching fallback receipt data ${receiptNumber}:`,
+            fallbackError
+          );
+          toast.error("Error fetching receipt data: " + fallbackError.message);
+          return null;
+        }
+      } else {
+        toast.error("Error fetching receipt data: " + error.message);
+        return null;
+      }
     } finally {
-        setIsLoader(false);
+      setIsLoader(false);
     }
   };
 
-  // --- Validation ---
   const validateFormData = (childFormData, child, isUnified = false) => {
-    // console.log(`Validating form data for ${child?.studentName}`, childFormData); // Log validation start
+    console.log(
+      `Validating form data for ${child?.studentName}`,
+      childFormData
+    );
     if (!childFormData || childFormData.error) {
-      toast.error(`Cannot submit for ${child?.studentName || "this student"} due to missing or failed data loading.`);
+      toast.error(
+        `Cannot submit for ${
+          child?.studentName || "this student"
+        } due to missing or failed data loading.`
+      );
       return false;
     }
     const totalAmount = parseFloat(childFormData.totalAmount) || 0;
-    if (totalAmount <= 0) { toast.warn(`Please enter a valid amount (> 0) to pay for ${child.studentName}.`); return false; }
-    if (!childFormData.paymentMode) { toast.error(`Payment mode is required for ${child.studentName}.`); return false; }
-    if ((childFormData.paymentMode === "Online" || childFormData.paymentMode === "Card") && !childFormData.transactionId) { toast.error(`Transaction ID is required for Online/Card payment for ${child.studentName}.`); return false; }
-    if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) { toast.error(`Cheque Number is required for Cheque payment for ${child.studentName}.`); return false; }
-    if (!childFormData.date || !moment(childFormData.date, "YYYY-MM-DD", true).isValid()) { toast.error(`Please select a valid payment date for ${child.studentName}.`); return false; }
-
-    // Warning if amount paid exceeds dues/fines but nothing else is selected
-    const payableExcludingDuesFines = calculateNetPayableAmount(formData.findIndex(fd => fd.studentId === child.studentId))
-                                        - (parseFloat(childFormData.pastDues) || 0)
-                                        - (parseFloat(childFormData.lateFine) || 0);
-    const onlyPayingDuesAndFines = (parseFloat(childFormData.pastDues) || 0) + (parseFloat(childFormData.lateFine) || 0);
-
-    if (totalAmount > 0 &&
-        childFormData.selectedMonths.length === 0 &&
-        childFormData.selectedAdditionalFees.length === 0 &&
-        childFormData.selectedOneTimeFees.length === 0 &&
-        totalAmount > onlyPayingDuesAndFines)
-    {
-      toast.warn(`Amount paid for ${child.studentName} (₹${totalAmount.toFixed(2)}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(2)}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`, { autoClose: 8000 });
-      // Consider returning false here if selection is strictly required when overpaying dues/fines
-      // return false;
+    if (totalAmount <= 0) {
+      toast.warn(
+        `Please enter a valid amount (> 0) to pay for ${child.studentName}.`
+      );
+      return false;
     }
-    return true; // Validation passed
+    if (!childFormData.paymentMode) {
+      toast.error(`Payment mode is required for ${child.studentName}.`);
+      return false;
+    }
+    if (
+      (childFormData.paymentMode === "Online" ||
+        childFormData.paymentMode === "Card") &&
+      !childFormData.transactionId
+    ) {
+      toast.error(
+        `Transaction ID is required for Online/Card payment for ${child.studentName}.`
+      );
+      return false;
+    }
+    if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) {
+      toast.error(
+        `Cheque Number is required for Cheque payment for ${child.studentName}.`
+      );
+      return false;
+    }
+    if (
+      !childFormData.date ||
+      !moment(childFormData.date, "YYYY-MM-DD", true).isValid()
+    ) {
+      toast.error(
+        `Please select a valid payment date for ${child.studentName}.`
+      );
+      return false;
+    }
+
+    const payableExcludingDuesFines =
+      calculateNetPayableAmount(
+        formData.findIndex((fd) => fd.studentId === child.studentId)
+      ) -
+      (parseFloat(childFormData.pastDues) || 0) -
+      (parseFloat(childFormData.lateFine) || 0);
+    const onlyPayingDuesAndFines =
+      (parseFloat(childFormData.pastDues) || 0) +
+      (parseFloat(childFormData.lateFine) || 0);
+
+    if (
+      totalAmount > 0 &&
+      childFormData.selectedMonths.length === 0 &&
+      childFormData.selectedAdditionalFees.length === 0 &&
+      childFormData.selectedOneTimeFees.length === 0 &&
+      totalAmount > onlyPayingDuesAndFines
+    ) {
+      toast.warn(
+        `Amount paid for ${child.studentName} (₹${totalAmount.toFixed(
+          2
+        )}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(
+          2
+        )}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`,
+      );
+    }
+    return true;
   };
 
-   // --- Unified Fee Payment ---
-   const handleUnifiedFeePayment = async () => {
-     console.log("Attempting unified fee payment..."); // Log start
-    if (selectedChildrenIndices.length < 2) { toast.warn("Please select at least two students for unified payment."); return; }
+  const handleUnifiedFeePayment = async () => {
+    console.log("Attempting unified fee payment...");
+    if (selectedChildrenIndices.length < 2) {
+      toast.warn("Please select at least two students for unified payment.");
+      return;
+    }
 
-    let isValid = true; let totalUnifiedAmount = 0; const studentsPayload = [];
+    let isValid = true;
+    let totalUnifiedAmount = 0;
+    const studentsPayload = [];
 
-    // First pass: Validation and prepare payload structure for each student
     for (const index of selectedChildrenIndices) {
-        const childFormData = formData[index];
-        const child = parentData[index];
+      const childFormData = formData[index];
+      const child = parentData[index];
 
-        if (!validateFormData(childFormData, child, true)) { isValid = false; break; }
+      if (!validateFormData(childFormData, child, true)) {
+        isValid = false;
+        break;
+      }
 
-        const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
-        if (amountForThisChild <= 0) { toast.warn(`Please enter an amount (> 0) to pay for ${child.studentName} in the unified payment.`); isValid = false; break; }
-        totalUnifiedAmount += amountForThisChild;
+      const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
+      if (amountForThisChild <= 0) {
+        toast.warn(
+          `Please enter an amount (> 0) to pay for ${child.studentName} in the unified payment.`
+        );
+        isValid = false;
+        break;
+      }
+      totalUnifiedAmount += amountForThisChild;
 
-        // --- Prepare additionalFees part of the payload FOR THIS CHILD ---
-        const additionalFeesPayload = [];
-        const selectedMonthNames = childFormData.selectedMonths.map(m => m.value);
+      const additionalFeesPayload = [];
+      const selectedMonthNames = childFormData.selectedMonths.map(
+        (m) => m.value
+      );
 
-        // Process selected additional fees (Monthly, Optional, etc.)
-        childFormData.selectedAdditionalFees.forEach(fee => {
-            if (fee.type === 'Monthly') {
-                // For monthly fees, associate with each selected month it's applicable to
-                selectedMonthNames.forEach(monthName => {
-                    const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
-                    const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(mf => mf.name === fee.name && mf.status !== 'Paid');
-                    if (isFeeDueForThisMonth) {
-                        additionalFeesPayload.push({ name: fee.name, month: monthName });
-                    }
-                });
-            } else if (fee.type !== 'One-Time') {
-                // For other types (Optional, Yearly), just include the name
-                additionalFeesPayload.push({ name: fee.name });
+      childFormData.selectedAdditionalFees.forEach((fee) => {
+        if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+          fee.dueMonths.forEach((monthName) => {
+            const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(
+              (m) => m.month === monthName
+            );
+            const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
+              (mf) => mf.name === fee.name && mf.status !== "Paid"
+            );
+            if (isFeeDueForThisMonth) {
+              additionalFeesPayload.push({ name: fee.name, month: monthName });
             }
-            // One-Time fees are handled next
-        });
+          });
+        } else if (fee.type !== "One-Time") {
+          additionalFeesPayload.push({ name: fee.name });
+        }
+      });
 
-        // Process selected one-time fees (just the name)
-        childFormData.selectedOneTimeFees.forEach(fee => {
-            additionalFeesPayload.push({ name: fee.name });
-        });
-        // --- End of preparing additionalFees payload for this child ---
+      childFormData.selectedOneTimeFees.forEach((fee) => {
+        additionalFeesPayload.push({ name: fee.name });
+      });
 
-        studentsPayload.push({
-            studentId: child.studentId,
-            paymentDetails: {
-              // Regular fees: still just the month names
-              regularFees: childFormData.selectedMonths.map((monthState) => ({ month: monthState.value })),
-              // Use the structured additional fees array for this child
-              additionalFees: additionalFeesPayload,
-              pastDuesPaid: 0, // Backend calculates allocation
-              lateFinesPaid: 0, // Backend calculates allocation
-              concession: parseFloat(childFormData.concession) || 0,
-              totalAmount: amountForThisChild, // Amount allocated to this specific child
-            },
-        });
-    } // End loop through selected children
-
+      studentsPayload.push({
+        studentId: child.studentId,
+        paymentDetails: {
+          regularFees: childFormData.selectedMonths.map((monthState) => ({
+            month: monthState.value,
+          })),
+          additionalFees: additionalFeesPayload,
+          pastDuesPaid: 0,
+          lateFinesPaid: 0,
+          concession: parseFloat(childFormData.concession) || 0,
+          totalAmount: amountForThisChild,
+        },
+      });
+    }
 
     if (!isValid || studentsPayload.length !== selectedChildrenIndices.length) {
       console.error("Unified payment validation failed or payload mismatch.");
-      return; // Exit if validation failed or payload construction error
+      return;
     }
 
-    // Use payment details from the *first* selected child for the unified transaction
     const firstChildIndex = selectedChildrenIndices[0];
     const firstChildFormData = formData[firstChildIndex];
 
-    // Re-validate the first child's payment method details specifically
-    if (!firstChildFormData.paymentMode) { toast.error(`Payment mode is required (using details from ${parentData[firstChildIndex].studentName}).`); return; }
-    if ((firstChildFormData.paymentMode === "Online" || firstChildFormData.paymentMode === "Card") && !firstChildFormData.transactionId) { toast.error(`Transaction ID is required for Online/Card payment (using details from ${parentData[firstChildIndex].studentName}).`); return; }
-    if (firstChildFormData.paymentMode === "Cheque" && !firstChildFormData.chequeBookNo) { toast.error(`Cheque Number is required for Cheque payment (using details from ${parentData[firstChildIndex].studentName}).`); return; }
-    if (!firstChildFormData.date || !moment(firstChildFormData.date, "YYYY-MM-DD", true).isValid()) { toast.error(`Please select a valid payment date (using details from ${parentData[firstChildIndex].studentName}).`); return false; }
-
+    if (!firstChildFormData.paymentMode) {
+      toast.error(
+        `Payment mode is required (using details from ${parentData[firstChildIndex].studentName}).`
+      );
+      return;
+    }
+    if (
+      (firstChildFormData.paymentMode === "Online" ||
+        firstChildFormData.paymentMode === "Card") &&
+      !firstChildFormData.transactionId
+    ) {
+      toast.error(
+        `Transaction ID is required for Online/Card payment (using details from ${parentData[firstChildIndex].studentName}).`
+      );
+      return;
+    }
+    if (
+      firstChildFormData.paymentMode === "Cheque" &&
+      !firstChildFormData.chequeBookNo
+    ) {
+      toast.error(
+        `Cheque Number is required for Cheque payment (using details from ${parentData[firstChildIndex].studentName}).`
+      );
+      return;
+    }
+    if (
+      !firstChildFormData.date ||
+      !moment(firstChildFormData.date, "YYYY-MM-DD", true).isValid()
+    ) {
+      toast.error(
+        `Please select a valid payment date (using details from ${parentData[firstChildIndex].studentName}).`
+      );
+      return false;
+    }
 
     const unifiedPaymentDetails = {
       paymentMode: firstChildFormData.paymentMode,
       transactionId: firstChildFormData.transactionId || undefined,
       chequeNumber: firstChildFormData.chequeBookNo || undefined,
-      date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format date correctly
-      remark: firstChildFormData.remarks || "", // Unified remark from first child
+      date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      remark: firstChildFormData.remarks || "",
     };
 
     const payload = {
-      students: studentsPayload, // Contains detailed fee breakdown per student
+      students: studentsPayload,
       session,
       unifiedPaymentDetails,
     };
 
-    console.log("Unified Payload:", JSON.stringify(payload, null, 2)); // Log payload for debugging
+    console.log("Unified Payload:", JSON.stringify(payload, null, 2));
 
     setIsLoader(true);
     try {
       const response = await feescreateUnifiedFeeStatus(payload);
       if (response.success) {
-        toast.success(response.message || "Unified fees submitted successfully!");
-        setUnifiedReceiptData(response.data); // Store response data for modal/receipt
-        setIsMessageModalOpen(true); // Show confirmation modal
-        // No need to trigger refresh here, resetState in handleCloseMessageModal will do it implicitly via useEffect
+        toast.success(
+          response.message || "Unified fees submitted successfully!"
+        );
+        setUnifiedReceiptData(response.data);
+        setIsMessageModalOpen(true);
       } else {
         toast.error(response.message || "Unified fee submission failed.");
       }
@@ -789,221 +1073,272 @@ const CreateFees = () => {
     }
   };
 
-  // --- Single Submission ---
   const handleSubmit = async (e, childIndex) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`Attempting single submission for index: ${childIndex}`); // Log start
+    console.log(`Attempting single submission for index: ${childIndex}`);
     const childFormData = formData[childIndex];
     const child = parentData[childIndex];
 
     if (!validateFormData(childFormData, child)) {
-      return; // Stop if validation fails
+      return;
     }
 
     setIsLoader(true);
 
-    // --- Prepare additionalFees part of the payload ---
     const additionalFeesPayload = [];
-    const selectedMonthNames = childFormData.selectedMonths.map(m => m.value); // Get names: ['April', 'May']
+    const selectedMonthNames = childFormData.selectedMonths.map((m) => m.value);
 
-    // Process selected additional fees (Monthly, Optional, etc.)
-    childFormData.selectedAdditionalFees.forEach(fee => {
-        if (fee.type === 'Monthly') {
-            // For monthly fees, find which *selected* months it applies to
-            selectedMonthNames.forEach(monthName => {
-                // Check feeInfo to confirm this fee is actually due for this specific month
-                const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
-                const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
-                    mf => mf.name === fee.name && mf.status !== 'Paid' // Ensure it's the same fee and not already paid for this month
-                );
-
-                if (isFeeDueForThisMonth) {
-                    // Add an entry for each month this fee applies to
-                    additionalFeesPayload.push({
-                        name: fee.name,
-                        month: monthName // Include the specific month
-                    });
-                }
+    childFormData.selectedAdditionalFees.forEach((fee) => {
+      if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+        fee.dueMonths.forEach((monthName) => {
+          const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(
+            (m) => m.month === monthName
+          );
+          const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
+            (mf) => mf.name === fee.name && mf.status !== "Paid"
+          );
+          if (isFeeDueForThisMonth) {
+            additionalFeesPayload.push({
+              name: fee.name,
+              month: monthName,
             });
-        } else if (fee.type !== 'One-Time') {
-            // For other types like 'Optional', 'Yearly' (that aren't 'One-Time')
-            // Include just the name, assuming they don't need a specific month association in the payload
-             additionalFeesPayload.push({
-                name: fee.name
-             });
-        }
-        // 'One-Time' fees are handled next
-    });
-
-    // Process selected one-time fees (just the name)
-    childFormData.selectedOneTimeFees.forEach(fee => {
-        additionalFeesPayload.push({
-            name: fee.name
+          }
         });
+      } else if (fee.type !== "One-Time") {
+        additionalFeesPayload.push({
+          name: fee.name,
+        });
+      }
     });
-    // --- End of preparing additionalFees payload ---
 
+    childFormData.selectedOneTimeFees.forEach((fee) => {
+      additionalFeesPayload.push({
+        name: fee.name,
+      });
+    });
 
-    // Construct the final payload using additionalFeesPayload
     const payload = {
       studentId: child.studentId,
       session,
       paymentDetails: {
-         // Regular fees: send array of month names
-         regularFees: childFormData.selectedMonths.map((monthState) => ({ month: monthState.value })),
-
-         // Use the structured additional fees array (includes name and potentially month)
-         additionalFees: additionalFeesPayload,
-
-         pastDuesPaid: 0, // Backend calculates allocation based on total amount paid
-         lateFinesPaid: 0, // Backend calculates allocation
-         concession: parseFloat(childFormData.concession) || 0,
-         totalAmount: parseFloat(childFormData.totalAmount) || 0,
-         date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format date correctly
-         paymentMode: childFormData.paymentMode,
-         transactionId: childFormData.transactionId || undefined, // Send only if present
-         chequeNumber: childFormData.chequeBookNo || undefined, // Send only if present
-         remark: childFormData.remarks || "",
+        regularFees: childFormData.selectedMonths.map((monthState) => ({
+          month: monthState.value,
+        })),
+        additionalFees: additionalFeesPayload,
+        pastDuesPaid: 0,
+        lateFinesPaid: 0,
+        concession: parseFloat(childFormData.concession) || 0,
+        totalAmount: parseFloat(childFormData.totalAmount) || 0,
+        date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+        paymentMode: childFormData.paymentMode,
+        transactionId: childFormData.transactionId || undefined,
+        chequeNumber: childFormData.chequeBookNo || undefined,
+        remark: childFormData.remarks || "",
       },
     };
 
-    console.log("Single Submission Payload:", JSON.stringify(payload, null, 2)); // Log payload for debugging
+    console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
 
     try {
       const response = await feescreateFeeStatus(payload);
       if (response?.success) {
-        toast.success(response?.message || `Fees submitted successfully for ${child.studentName}!`);
-        setResponseData(response?.data); // Store response data for modal/receipt
-        setIsMessageModalOpen(true); // Show confirmation modal
-        // No need to trigger refresh here, resetState in handleCloseMessageModal will do it implicitly via useEffect
+        toast.success(
+          response?.message ||
+            `Fees submitted successfully for ${child.studentName}!`
+        );
+        setResponseData(response?.data);
+        setIsMessageModalOpen(true);
       } else {
-        toast.error(response?.message || `Fee submission failed for ${child.studentName}.`);
+        toast.error(
+          response?.message || `Fee submission failed for ${child.studentName}.`
+        );
       }
     } catch (error) {
-       const errorMsg = error.response?.data?.message || error.message;
-       toast.error(`An error occurred during submission for ${child.studentName}: ${errorMsg}`);
-       console.error("Single Submission Error:", error.response || error);
+      const errorMsg = error.response?.data?.message || error.message;
+      toast.error(
+        `An error occurred during submission for ${child.studentName}: ${errorMsg}`
+      );
+      console.error("Single Submission Error:", error.response || error);
     } finally {
       setIsLoader(false);
     }
   };
 
-  // --- Modal Handlers, PDF/Message Functions ---
   const handleCloseMessageModal = async (sendMsg = false) => {
-    console.log(`Closing message modal, sendMsg=${sendMsg}`); // Log close
+    console.log(`Closing message modal, sendMsg=${sendMsg}`);
     setIsMessageModalOpen(false);
-    let receiptNumber = null; let isUnified = false; let dataForActions = null;
+    let receiptNumber = null;
+    let isUnified = false;
+    let dataForActions = null;
 
-    // Determine which data source to use (single or unified response)
-    if (responseData) { // Single payment successful
+    if (responseData) {
       receiptNumber = responseData.feeReceiptNumber;
       isUnified = false;
       dataForActions = responseData;
-    } else if (unifiedReceiptData) { // Unified payment successful
+    } else if (unifiedReceiptData) {
       receiptNumber = unifiedReceiptData.unifiedReceiptNumber;
       isUnified = true;
       dataForActions = unifiedReceiptData;
     }
 
-    // Send message if requested and data is available
     if (sendMsg && dataForActions) {
-      if (isUnified) { sendUnifiedMessage(dataForActions); }
-      else { sendMessage(dataForActions); }
+      if (isUnified) {
+        sendUnifiedMessage(dataForActions);
+      } else {
+        sendMessage(dataForActions);
+      }
     }
 
-    // Store details needed *after* reset temporarily
     const tempReceiptNumber = receiptNumber;
     const tempIsUnified = isUnified;
-    const tempParentId = responseData?.student?.parentId || unifiedReceiptData?.parentId || null; // Get parent ID for refresh
+    const tempParentId =
+      responseData?.student?.parentId || unifiedReceiptData?.parentId || null;
 
-    // Reset component state AFTER deciding on message sending
-    resetState(); // This clears formData, selections etc.
-    setResponseData(null); // Clear single response data
-    setUnifiedReceiptData(null); // Clear unified response data
+    resetState();
+    setResponseData(null);
+    setUnifiedReceiptData(null);
 
-    // Trigger a refresh of the selected student's data if applicable
-    // This is better than triggerRefresh which reloads all students
     if (tempParentId) {
-        console.log(`Refreshing data for parentId: ${tempParentId} after submission.`);
-        await handleStudentClick(tempParentId); // Re-fetch data for the current parent/siblings
+      console.log(
+        `Refreshing data for parentId: ${tempParentId} after submission.`
+      );
+      await handleStudentClick(tempParentId);
     } else {
-         setTriggerRefresh((prev) => !prev); // Fallback to general refresh if parentId wasn't captured
+      setTriggerRefresh((prev) => !prev);
     }
 
-
-    // Fetch and show receipt AFTER resetting state and potentially refreshing data
     if (tempReceiptNumber) {
-        const fetchedReceiptData = await fetchReceiptData(tempReceiptNumber);
-        if (fetchedReceiptData) {
-             // receiptData state is set by fetchReceiptData
-            if (tempIsUnified) { setUnifiedReceiptModalOpen(true); } // Show unified receipt modal
-            else { setPdfModalOpen(true); } // Show single receipt modal
+      const fetchedReceiptData = await fetchReceiptData(
+        tempReceiptNumber,
+        tempIsUnified
+      );
+      if (fetchedReceiptData) {
+        if (tempIsUnified) {
+          setUnifiedReceiptModalOpen(true);
+        } else {
+          setPdfModalOpen(true);
         }
+      }
     }
   };
 
   const handleClosePdfModal = (action = null) => {
-    console.log(`Closing PDF modal, action=${action}`); // Log close
-    if (action === "download" && receiptData) { handleDownloadPdf(receiptData); }
-    else if (action === "print" && receiptData) { handlePrintReceipt(receiptData); }
-    setPdfModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+    console.log(`Closing PDF modal, action=${action}`);
+    if (action === "download" && receiptData) {
+      handleDownloadPdf(receiptData);
+    } else if (action === "print" && receiptData) {
+      handlePrintReceipt(receiptData);
+    }
+    setPdfModalOpen(false);
+    setReceiptData(null);
+    setIsPreviewReady(false);
   };
 
   const handleCloseUnifiedReceiptModal = (action = null) => {
-    console.log(`Closing Unified PDF modal, action=${action}`); // Log close
-    if (action === "download" && receiptData) { handleDownloadUnifiedPdf(receiptData); }
-    else if (action === "print" && receiptData) { handlePrintUnifiedReceipt(receiptData); }
-    setUnifiedReceiptModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+    console.log(`Closing Unified PDF modal, action=${action}`);
+    if (action === "download" && receiptData) {
+      handleDownloadUnifiedPdf(receiptData);
+    } else if (action === "print" && receiptData) {
+      handlePrintUnifiedReceipt(receiptData);
+    }
+    setUnifiedReceiptModalOpen(false);
+    setReceiptData(null);
+    setIsPreviewReady(false);
   };
 
-  // --- PDF and Message Helpers ---
   const handleDownloadPdf = (dataToUse) => {
-    if (!dataToUse?.data) { toast.error("No receipt data available to generate PDF."); return; }
-    // Pass necessary data to the generator function
-    generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `fee-receipt-${dataToUse.data?.feeReceiptNumber}.pdf`);
+    if (!dataToUse?.data) {
+      toast.error("No receipt data available to generate PDF.");
+      return;
+    }
+    generatePdf(
+      dataToUse.data,
+      [],
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      `fee-receipt-${dataToUse.data?.feeReceiptNumber}.pdf`
+    );
   };
 
   const handlePrintReceipt = (dataToUse) => {
-    if (!dataToUse?.data) { toast.error("No receipt data available to print."); return; }
-    console.log("Print action triggered for single receipt:", dataToUse.data?.feeReceiptNumber);
-    // TODO: Implement actual print functionality using browser print or a library
-    toast.info("Print functionality placeholder: would print receipt " + dataToUse.data?.feeReceiptNumber);
-    // window.print(); // This would print the whole page, need specific element printing
+    if (!dataToUse?.data) {
+      toast.error("No receipt data available to print.");
+      return;
+    }
+    console.log(
+      "Print action triggered for single receipt:",
+      dataToUse.data?.feeReceiptNumber
+    );
+    toast.info(
+      "Print functionality placeholder: would print receipt " +
+        dataToUse.data?.feeReceiptNumber
+    );
   };
 
   const sendMessage = (dataToUse) => {
-    if (!dataToUse) { toast.error("No receipt data available to send message."); return; }
+    if (!dataToUse) {
+      toast.error("No receipt data available to send message.");
+      return;
+    }
     console.log("Sending SINGLE fee response message:", dataToUse);
     try {
-      FeeResponse(dataToUse); // Call the imported function
+      FeeResponse(dataToUse);
       toast.info(`SMS function called for ${dataToUse?.student?.studentName}`);
     } catch (error) {
-       console.error("Error calling FeeResponse for single payment:", error);
-       toast.error("Failed to initiate SMS sending.");
+      console.error("Error calling FeeResponse for single payment:", error);
+      toast.error("Failed to initiate SMS sending.");
     }
   };
 
   const handleDownloadUnifiedPdf = (dataToUse) => {
-    if (!dataToUse?.data) { toast.error("No unified receipt data available to generate PDF."); return; }
-     // Pass necessary data to the generator function for unified receipt
-    generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `unified-receipt-${dataToUse.data?.unifiedReceiptNumber}.pdf`);
+    if (!dataToUse?.data) {
+      toast.error("No unified receipt data available to generate PDF.");
+      return;
+    }
+    generatePdf(
+      dataToUse.data,
+      [],
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      `unified-receipt-${dataToUse.data?.unifiedReceiptNumber}.pdf`
+    );
   };
 
   const handlePrintUnifiedReceipt = (dataToUse) => {
-    if (!dataToUse?.data) { toast.error("No unified receipt data available to print."); return; }
-    console.log("Print action triggered for unified receipt:", dataToUse.data?.unifiedReceiptNumber);
-    // TODO: Implement actual print functionality
-    toast.info("Print functionality placeholder: would print unified receipt " + dataToUse.data?.unifiedReceiptNumber);
-     // window.print();
+    if (!dataToUse?.data) {
+      toast.error("No unified receipt data available to print.");
+      return;
+    }
+    console.log(
+      "Print action triggered for unified receipt:",
+      dataToUse.data?.unifiedReceiptNumber
+    );
+    toast.info(
+      "Print functionality placeholder: would print unified receipt " +
+        dataToUse.data?.unifiedReceiptNumber
+    );
   };
 
   const sendUnifiedMessage = (dataToUse) => {
-    if (!dataToUse) { toast.error("No unified receipt data available to send message."); return; }
+    if (!dataToUse) {
+      toast.error("No unified receipt data available to send message.");
+      return;
+    }
     console.log("Sending UNIFIED fee response message:", dataToUse);
     try {
-      FeeResponse(dataToUse); // Call the imported function (assuming it handles unified structure)
-      const studentNames = dataToUse?.students?.map(s => s.studentName).join(', ') || 'selected students';
+      FeeResponse(dataToUse);
+      const studentNames =
+        dataToUse?.students?.map((s) => s.studentName).join(", ") ||
+        "selected students";
       toast.info(`SMS function called for ${studentNames}`);
     } catch (error) {
       console.error("Error calling FeeResponse for unified payment:", error);
@@ -1011,432 +1346,6901 @@ const CreateFees = () => {
     }
   };
 
-
-  // --- JSX ---
   return (
-    <div className="px-4 pb-2 min-h-screen"> {/* Added min-h-screen */}
-      {/* Search Inputs */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-4"> {/* Added margin-bottom */}
-        <ReactInput type="text" label="Search by Name" onChange={handleSearch} value={searchTerm} containerClassName="flex-1 min-w-[200px]" />
-        <ReactInput type="text" label="Search by Adm. No" onChange={handleSearchbyAdmissionNo} value={searchTermbyadmissionNo} containerClassName="flex-1 min-w-[200px]" />
-      </div>
-
-      {/* Search Results Dropdown */}
-      {filteredStudents.length > 0 && (
-        <div className="relative">
-          {/* Increased z-index and width */}
-          <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full lg:w-3/4">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-100 sticky top-0 z-20">
-                <tr>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Student Name</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Admission No.</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Class</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Parent Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredStudents.map((student) => (
-                  <tr
-                    key={student._id}
-                    className="cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out border-b border-gray-300"
-                    onClick={() => {
-                        console.log(`Search result clicked: ${student.studentName} (ParentID: ${student.parentId})`); // Log click
-                        handleStudentClick(student.parentId);
-                        setFilteredStudents([]); // Hide dropdown after selection
-                    }}
-                  >
-                    <td className="p-3 font-semibold text-gray-800">{student.studentName}</td>
-                    <td className="p-3 text-sm text-gray-600">{student.admissionNumber}</td>
-                    <td className="p-3 text-sm text-gray-600">{student.class}</td>
-                    <td className="p-3 text-sm text-gray-600">{student.fatherName}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+    <div className="px-4 pb-2 min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <ReactInput
+            type="text"
+            label="Search by Name"
+            onChange={handleSearch}
+            value={searchTerm}
+            containerClassName="flex-1 min-w-[200px]"
+            className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <ReactInput
+            type="text"
+            label="Search by Adm. No"
+            onChange={handleSearchbyAdmissionNo}
+            value={searchTermbyadmissionNo}
+            containerClassName="flex-1 min-w-[200px]"
+            className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-      )}
 
-      {/* Child Forms Area */}
-      {showChildForms && parentData.length > 0 && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Selected Student(s) Fee Payment
-            </h2>
-            {selectedChildrenIndices.length > 1 && (
-              <Button
-                name="Pay for Siblings Together"
-                onClick={handleUnifiedFeePayment}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              />
-            )}
+        {filteredStudents.length > 0 && (
+          <div className="relative">
+            <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
+              <table className="w-full border-collapse">
+                <thead className="bg-gray-100 sticky top-0 z-20">
+                  <tr>
+                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Student Name
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Admission No.
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Class
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Parent Name
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredStudents.map((student) => (
+                    <tr
+                      key={student._id}
+                      className="cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out border-b border-gray-300"
+                      onClick={() => {
+                        console.log(
+                          `Search result clicked: ${student.studentName} (ParentID: ${student.parentId})`
+                        );
+                        handleStudentClick(student.parentId);
+                        setFilteredStudents([]);
+                      }}
+                    >
+                      <td className="p-3 font-semibold text-gray-800">
+                        {student.studentName}
+                      </td>
+                      <td className="p-3 text-sm text-gray-600">
+                        {student.admissionNumber}
+                      </td>
+                      <td className="p-3 text-sm text-gray-600">
+                        {student.class}
+                      </td>
+                      <td className="p-3 text-sm text-gray-600">
+                        {student.fatherName}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+        )}
 
-          {/* Grid for Student Cards/Forms */}
-          <div className="grid grid-cols-1 gap-6">
-            {parentData.map((child, index) => {
-              const currentFormData = formData[index]; // Get data specific to this child
+        {showChildForms && parentData.length > 0 && (
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-800">
+                Selected Student(s) Fee Payment
+              </h2>
+              {selectedChildrenIndices.length > 1 && (
+                <Button
+                  name="Pay for Siblings Together"
+                  onClick={handleUnifiedFeePayment}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                />
+              )}
+            </div>
 
-              // --- Error Loading State ---
-              if (!currentFormData || currentFormData.error) {
+            <div className="grid grid-cols-1 gap-6">
+              {parentData.map((child, index) => {
+                const currentFormData = formData[index];
+
+                if (!currentFormData || currentFormData.error) {
+                  return (
+                    <div
+                      key={child._id || index}
+                      className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md"
+                      role="alert"
+                    >
+                      <strong className="font-bold">Error:</strong>
+                      <span className="block sm:inline ml-2">
+                        Could not load fee data for{" "}
+                        {child.studentName || "this student"} (Adm:{" "}
+                        {child.admissionNumber || "N/A"}). Please try searching
+                        again or contact support.
+                      </span>
+                    </div>
+                  );
+                }
+
+                const isSelected = selectedChildrenIndices.includes(index);
+                const showForm = showFormFlags[index];
+
+                const monthOptions = currentFormData.regularFees
+                  .filter((fee) => fee.dueAmount > 0)
+                  .map((fee) => ({ name: fee.label, code: fee.month }));
+                const selectedMonthValues = currentFormData.selectedMonths.map(
+                  (monthState) => ({
+                    name: monthState.label,
+                    code: monthState.value,
+                  })
+                );
+
+                const additionalFeeOptions =
+                  currentFormData.availableAdditionalFees
+                    .filter((fee) => fee.type !== "One-Time")
+                    .map((item) => ({ name: item.label, code: item.id }));
+                const selectedAdditionalFeeValues =
+                  currentFormData.selectedAdditionalFees
+                    .filter((fee) => fee.type !== "One-Time")
+                    .map((selectedFee) => {
+                      const availableOption = additionalFeeOptions.find(
+                        (opt) => opt.code === selectedFee.id
+                      );
+                      return {
+                        name: availableOption
+                          ? availableOption.name
+                          : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
+                        code: selectedFee.id,
+                      };
+                    });
+
+                const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+                  (item) => ({ name: item.label, code: item.code })
+                );
+                const selectedOneTimeFeeValues =
+                  currentFormData.selectedOneTimeFees.map((fee) => {
+                    const availableOption = oneTimeFeeOptions.find(
+                      (opt) => opt.code === fee.name
+                    );
+                    return {
+                      name: availableOption
+                        ? availableOption.name
+                        : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+                      code: fee.name,
+                    };
+                  });
+
                 return (
                   <div
                     key={child._id || index}
-                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md"
-                    role="alert"
+                    className={`bg-white rounded-lg shadow-md border transition-all duration-300 ${
+                      isSelected
+                        ? "border-blue-500 ring-2 ring-blue-300"
+                        : "border-gray-200 hover:border-gray-300"
+                    } overflow-hidden`}
                   >
-                    <strong className="font-bold">Error:</strong>
-                    <span className="block sm:inline ml-2">
-                      Could not load fee data for {child.studentName || "this student"} (Adm: {child.admissionNumber || 'N/A'}). Please try searching again or contact support.
-                    </span>
+                    <div
+                      className={`flex items-center px-4 py-3 border-b ${
+                        isSelected ? "bg-blue-50" : "bg-gray-50"
+                      } cursor-pointer`}
+                      onClick={() => {
+                        console.log(`DIV clicked for index: ${index}`);
+                        handleChildSelection(index);
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        id={`child-checkbox-${index}`}
+                        checked={isSelected}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          console.log(`CHECKBOX changed for index: ${index}`);
+                          handleChildSelection(index);
+                        }}
+                        className="mr-3 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                        aria-labelledby={`child-label-${index}`}
+                      />
+                      <label
+                        id={`child-label-${index}`}
+                        className="flex-grow cursor-pointer"
+                        htmlFor={`child-checkbox-${index}`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="text-base font-semibold text-blue-800">
+                              {child.studentName}
+                            </span>
+                            <span className="text-sm text-gray-600 ml-2">
+                              (Class: {child.class} / Adm#:{" "}
+                              {child.admissionNumber})
+                            </span>
+                          </div>
+                          <span
+                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              isSelected
+                                ? "bg-blue-200 text-blue-800"
+                                : "bg-gray-200 text-gray-700"
+                            }`}
+                          >
+                            {isSelected ? "SELECTED" : "SELECT"}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap justify-start items-center gap-x-4 text-xs mt-1">
+                          <span className="text-red-600 font-medium">
+                            Total Dues: ₹
+                            {currentFormData?.totalDues?.toFixed(2) || "0.00"}
+                          </span>
+                          {currentFormData?.pastDues > 0 && (
+                            <span className="text-purple-600 font-medium">
+                              Past Dues: ₹
+                              {currentFormData?.pastDues?.toFixed(2)}
+                            </span>
+                          )}
+                          {currentFormData?.lateFine > 0 && (
+                            <span className="text-orange-600 font-medium">
+                              Late Fine: ₹
+                              {currentFormData?.lateFine?.toFixed(2)}
+                            </span>
+                          )}
+                          <span className="text-gray-600 font-medium">
+                            Base Monthly Fee: ₹
+                            {currentFormData?.classFee?.toFixed(2) || "0.00"}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div
+                      className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                        showForm
+                          ? "max-h-[2000px] opacity-100"
+                          : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      {showForm && (
+                        <div className="px-4 py-4 border-t flex flex-col lg:flex-row gap-6 bg-white">
+                          <form
+                            onSubmit={(e) => handleSubmit(e, index)}
+                            className="flex-grow lg:w-2/3 space-y-5 mb-6 lg:mb-0"
+                            noValidate
+                          >
+                            <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="md:col-span-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Regular Monthly Fees
+                                </label>
+                                <DynamicMultiSelect
+                                  name={`regularFees-${index}`}
+                                  searchable={false}
+                                  placeholderName="Select month(s)..."
+                                  dynamicOptions={monthOptions}
+                                  handleChange={(name, opts) =>
+                                    handleMonthMultiSelectChange(
+                                      index,
+                                      name,
+                                      opts
+                                    )
+                                  }
+                                  value={selectedMonthValues}
+                                  requiredClassName={"required-fields"}
+                                  containerClassName="w-full"
+                                  menuClassName="w-full min-w-[200px] whitespace-normal"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Select consecutive months with dues.
+                                </p>
+                              </div>
+                              <div className="md:col-span-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Additional Fees (Monthly/Other)
+                                </label>
+                                <DynamicMultiSelect
+                                  name={`additionalFees-${index}`}
+                                  searchable={true}
+                                  placeholderName="Select additional fee(s)..."
+                                  dynamicOptions={additionalFeeOptions}
+                                  handleChange={(name, opts) =>
+                                    handleDynamicMultiSelectChange(
+                                      index,
+                                      "selectedAdditionalFees",
+                                      opts
+                                    )
+                                  }
+                                  value={selectedAdditionalFeeValues}
+                                  requiredClassName={"required-fields"}
+                                  containerClassName="w-full"
+                                  menuClassName="w-full min-w-[200px] whitespace-normal"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Monthly fees auto-selected with months.
+                                </p>
+                              </div>
+                              <div className="md:col-span-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  One-Time / Due Fees
+                                </label>
+                                <DynamicMultiSelect
+                                  name={`oneTimeFees-${index}`}
+                                  searchable={true}
+                                  placeholderName="Select one-time fee(s)..."
+                                  dynamicOptions={oneTimeFeeOptions}
+                                  handleChange={(name, opts) =>
+                                    handleDynamicMultiSelectChange(
+                                      index,
+                                      "selectedOneTimeFees",
+                                      opts
+                                    )
+                                  }
+                                  value={selectedOneTimeFeeValues}
+                                  requiredClassName={"required-fields"}
+                                  containerClassName="w-full"
+                                  menuClassName="w-full min-w-[200px] whitespace-normal"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Select fees currently due.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <ReactInput
+                                type="number"
+                                label="Concession (-)"
+                                value={currentFormData.concession}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    index,
+                                    "concession",
+                                    e.target.value
+                                  )
+                                }
+                                min="0"
+                                step="0.01"
+                                containerClassName="sm:col-span-1"
+                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                              />
+                              <ReactInput
+                                type="number"
+                                label={`Total Amount to Pay (*) ${
+                                  selectedChildrenIndices.length > 1
+                                    ? `(for ${child.studentName})`
+                                    : ""
+                                }`}
+                                value={currentFormData.totalAmount}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    index,
+                                    "totalAmount",
+                                    e.target.value
+                                  )
+                                }
+                                min="0.01"
+                                step="0.01"
+                                isRequired={true}
+                                containerClassName="sm:col-span-1"
+                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                              />
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Payment Mode (*)
+                                </label>
+                                <select
+                                  value={currentFormData.paymentMode}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "paymentMode",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  required
+                                >
+                                  <option value="Cash">Cash</option>
+                                  <option value="Online">Online</option>
+                                  <option value="Cheque">Cheque</option>
+                                  <option value="Card">Card</option>
+                                </select>
+                              </div>
+                              <ReactInput
+                                type="date"
+                                label="Payment Date (*)"
+                                value={currentFormData.date}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    index,
+                                    "date",
+                                    e.target.value
+                                  )
+                                }
+                                isRequired={true}
+                                max={moment().format("YYYY-MM-DD")}
+                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                              />
+                              {(currentFormData.paymentMode === "Online" ||
+                                currentFormData.paymentMode === "Card") && (
+                                <ReactInput
+                                  type="text"
+                                  label="Transaction ID (*)"
+                                  value={currentFormData.transactionId}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "transactionId",
+                                      e.target.value
+                                    )
+                                  }
+                                  isRequired={true}
+                                  className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                              )}
+                              {currentFormData.paymentMode === "Cheque" && (
+                                <ReactInput
+                                  type="text"
+                                  label="Cheque Number (*)"
+                                  value={currentFormData.chequeBookNo}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "chequeBookNo",
+                                      e.target.value
+                                    )
+                                  }
+                                  isRequired={true}
+                                  className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                              )}
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <label className="block text-sm font-medium text-gray-700">
+                                Remarks
+                              </label>
+                              <textarea
+                                value={currentFormData.remarks}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    index,
+                                    "remarks",
+                                    e.target.value
+                                  )
+                                }
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                rows="2"
+                                placeholder="Optional remarks about payment..."
+                              />
+                            </div>
+
+                            {selectedChildrenIndices.length <= 1 && (
+                              <div className="flex justify-end pt-4 mt-4 border-t">
+                                <Button
+                                  type="submit"
+                                  name={`Submit Payment for ${child.studentName}`}
+                                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                                />
+                              </div>
+                            )}
+                          </form>
+
+                          <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-3 bg-blue-50 lg:ml-4 mt-4 lg:mt-0">
+                            <h3 className="text-base font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-3">
+                              Payment Summary
+                            </h3>
+                            <table className="w-full text-sm">
+                              <tbody>
+                                {currentFormData.pastDues > 0 && (
+                                  <tr className="border-b border-blue-100">
+                                    <td className="text-gray-700 py-1.5">
+                                      Past Dues:
+                                    </td>
+                                    <td className="font-medium text-purple-700 py-1.5 text-right">
+                                      ₹{currentFormData.pastDues.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                )}
+                                {currentFormData.lateFine > 0 && (
+                                  <tr className="border-b border-blue-100">
+                                    <td className="text-gray-700 py-1.5">
+                                      Late Fines:
+                                    </td>
+                                    <td className="font-medium text-orange-700 py-1.5 text-right">
+                                      ₹{currentFormData.lateFine.toFixed(2)}
+                                    </td>
+                                  </tr>
+                                )}
+                                {currentFormData.selectedMonths.length > 0 && (
+                                  <>
+                                    <tr className="border-b border-blue-100 font-medium text-gray-800">
+                                      <td colSpan="2" className="py-1.5">
+                                        Regular Fees:
+                                      </td>
+                                    </tr>
+                                    {currentFormData.selectedMonths.map(
+                                      (monthState, i) => (
+                                        <tr
+                                          key={`reg-sum-${index}-${i}`}
+                                          className="border-b border-blue-100"
+                                        >
+                                          <td className="text-gray-600 py-1 pl-3">
+                                            {monthState.value}:
+                                          </td>
+                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                            ₹{(monthState?.due || 0).toFixed(2)}
+                                          </td>
+                                        </tr>
+                                      )
+                                    )}
+                                  </>
+                                )}
+                                {currentFormData.selectedAdditionalFees.length >
+                                  0 && (
+                                  <>
+                                    <tr className="border-b border-blue-100 font-medium text-gray-800">
+                                      <td colSpan="2" className="pt-2 pb-1">
+                                        Additional Fees:
+                                      </td>
+                                    </tr>
+                                    {currentFormData.selectedAdditionalFees.map(
+                                      (fee, i) => (
+                                        <tr
+                                          key={`add-sum-${index}-${i}`}
+                                          className="border-b border-blue-100"
+                                        >
+                                          <td className="text-gray-600 py-1 pl-3">
+                                            {fee.name}{" "}
+                                            {fee.type === "Monthly"
+                                              ? `(${fee.type}, ${
+                                                  fee.dueMonths?.join(", ") ||
+                                                  "Selected Months"
+                                                })`
+                                              : ""}
+                                          </td>
+                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                            ₹{(fee.amount).toFixed(2)}
+                                          </td>
+                                        </tr>
+                                      )
+                                    )}
+                                  </>
+                                )}
+                                {currentFormData.selectedOneTimeFees.length >
+                                  0 && (
+                                  <>
+                                    <tr className="border-b border-blue-100 font-medium text-gray-800">
+                                      <td colSpan="2" className="pt-2 pb-1">
+                                        One-Time Fees:
+                                      </td>
+                                    </tr>
+                                    {currentFormData.selectedOneTimeFees.map(
+                                      (fee, i) => (
+                                        <tr
+                                          key={`one-time-sum-${index}-${i}`}
+                                          className="border-b border-blue-100"
+                                        >
+                                          <td className="text-gray-600 py-1 pl-3">
+                                            {fee.name}:
+                                          </td>
+                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                            ₹{(fee?.dueAmount || 0).toFixed(2)}
+                                          </td>
+                                        </tr>
+                                      )
+                                    )}
+                                  </>
+                                )}
+                                {currentFormData.concession > 0 && (
+                                  <tr className="border-b border-blue-100">
+                                    <td className="text-green-700 py-1.5">
+                                      Concession:
+                                    </td>
+                                    <td className="font-medium text-green-700 py-1.5 text-right">
+                                      - ₹
+                                      {parseFloat(
+                                        currentFormData.concession
+                                      ).toFixed(2)}
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                              <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
+                                <tr>
+                                  <td className="pt-2 font-semibold text-blue-900 py-1.5">
+                                    Total Payable Now
+                                  </td>
+                                  <td className="pt-2 font-bold text-blue-900 py-1.5 text-right">
+                                    ₹
+                                    {calculateNetPayableAmount(index).toFixed(
+                                      2
+                                    )}
+                                  </td>
+                                </tr>
+                                {parseFloat(currentFormData.totalAmount) > 0 &&
+                                  (() => {
+                                    const distribution =
+                                      calculateAutoDistribution(index);
+                                    return (
+                                      <>
+                                        <tr>
+                                          <td className="text-gray-700 py-1.5">
+                                            Amount Paying:
+                                          </td>
+                                          <td className="font-medium text-black py-1.5 text-right">
+                                            ₹
+                                            {parseFloat(
+                                              currentFormData.totalAmount
+                                            ).toFixed(2)}
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td className="font-semibold text-red-700 py-1.5">
+                                            Remaining Dues:
+                                          </td>
+                                          <td className="font-bold text-red-700 py-1.5 text-right">
+                                            ₹
+                                            {distribution.remainingDues.toFixed(
+                                              2
+                                            )}
+                                          </td>
+                                        </tr>
+                                        {distribution.remainingAfterDistribution >
+                                          0 && (
+                                          <tr>
+                                            <td className="font-semibold text-green-700 py-1 text-xs">
+                                              (Advance/Excess):
+                                            </td>
+                                            <td className="font-semibold text-green-700 py-1 text-right text-xs">
+                                              ₹
+                                              {distribution.remainingAfterDistribution.toFixed(
+                                                2
+                                              )}
+                                            </td>
+                                          </tr>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                              </tfoot>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
-              }
-
-              // --- Normal State (Data Loaded) ---
-              const isSelected = selectedChildrenIndices.includes(index);
-              const showForm = showFormFlags[index]; // Should be true if isSelected
-
-              // Prepare options/value for Month DynamicMultiSelect
-              const monthOptions = currentFormData.regularFees
-                .filter((fee) => fee.status !== "Paid") // Only show unpaid months
-                .map((fee) => ({ name: fee.label, code: fee.month })); // Use label (with due amount) for display, month name as code
-              const selectedMonthValues = currentFormData.selectedMonths.map((monthState) => ({ name: monthState.label, code: monthState.value }));
-
-              // ***MODIFICATION: Filter options for "Additional Fees (Monthly/Other)" dropdown***
-              // Show fees from availableAdditionalFees that are NOT 'One-Time'
-              const additionalFeeOptions = currentFormData.availableAdditionalFees
-                .filter(fee => fee.type !== 'One-Time') // Filter out 'One-Time' type
-                .map((item) => ({ name: item.label, code: item.id })); // Use full label for display, ID as code
-              // Map selected values back for the dropdown component
-              const selectedAdditionalFeeValues = currentFormData.selectedAdditionalFees
-                 .filter(fee => fee.type !== 'One-Time') // Ensure we only map non-one-time fees here
-                 .map((selectedFee) => {
-                    // Find the corresponding option generated above to get the correct label
-                    const availableOption = additionalFeeOptions.find(opt => opt.code === selectedFee.id);
-                    // Fallback label if somehow not found (shouldn't happen often)
-                    return { name: availableOption ? availableOption.name : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`, code: selectedFee.id };
-                });
-
-              // ***MODIFICATION: Prepare options for "One-Time / Due Fees" dropdown***
-              // Use the pre-filtered oneTimeFeeOptions (which only includes items with dueAmount > 0)
-              const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions
-                // No additional filtering needed here as it was done in handleStudentClick
-                .map((item) => ({ name: item.label, code: item.code })); // Use label (with due amount) for display, name as code
-              // Map selected values back for the dropdown component
-              const selectedOneTimeFeeValues = currentFormData.selectedOneTimeFees.map((fee) => {
-                    // Find the corresponding option generated above to get the correct label
-                    const availableOption = oneTimeFeeOptions.find(opt => opt.code === fee.name);
-                     // Fallback label
-                    return { name: availableOption ? availableOption.name : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`, code: fee.name };
-                });
-
-
-              return (
-                <div
-                  key={child._id || index}
-                  className={`bg-white rounded-lg shadow-md border transition-all duration-300 ${
-                    isSelected ? "border-blue-500 ring-2 ring-blue-300" : "border-gray-200 hover:border-gray-300"
-                  } overflow-hidden`}
-                >
-                  {/* --- Student Header / Checkbox --- */}
-                  <div
-                    className={`flex items-center px-4 py-3 border-b ${isSelected ? 'bg-blue-50' : 'bg-gray-50'} cursor-pointer`}
-                    // *** CLICK HANDLER FOR SELECTION ***
-                    onClick={() => {
-                        // console.log(`DIV clicked for index: ${index}`); // Log div click
-                        handleChildSelection(index);
-                    }}
-                  >
-                    {/* Checkbox is visually present but controlled by the parent div click */}
-                    <input
-                      type="checkbox"
-                      id={`child-checkbox-${index}`}
-                      checked={isSelected} // Display reflects state
-                      readOnly // Prevent direct interaction; controlled by div click
-                      onClick={(e) => {
-                          // console.log(`CHECKBOX clicked for index: ${index} - stopping propagation`); // Log checkbox click
-                          e.stopPropagation(); // IMPORTANT: Prevent div's onClick from firing too
-                      }}
-                      className="mr-3 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer" // Added cursor-pointer here too
-                      aria-labelledby={`child-label-${index}`}
-                      tabIndex={-1} // Optional: remove from tab order
-                    />
-                    <label
-                      id={`child-label-${index}`}
-                      className="flex-grow cursor-pointer" // Label area contributes to clickable div
-                      // Link label to checkbox for accessibility, though click is handled by div
-                      htmlFor={`child-checkbox-${index}`}
-                      // Prevent label click from toggling checkbox directly, rely on div click
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <span className="text-base font-semibold text-blue-800">{child.studentName}</span>
-                          <span className="text-sm text-gray-600 ml-2">(Class: {child.class} / Adm#: {child.admissionNumber})</span>
-                        </div>
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isSelected ? "bg-blue-200 text-blue-800" : "bg-gray-200 text-gray-700"}`}>
-                          {isSelected ? "SELECTED" : "SELECT"}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap justify-start items-center gap-x-4 text-xs mt-1">
-                        <span className="text-red-600 font-medium">Total Dues: ₹{currentFormData?.totalDues?.toFixed(2) || "0.00"}</span>
-                        {currentFormData?.pastDues > 0 && (<span className="text-purple-600 font-medium">Past Dues: ₹{currentFormData?.pastDues?.toFixed(2)}</span>)}
-                        {currentFormData?.lateFine > 0 && (<span className="text-orange-600 font-medium">Late Fine: ₹{currentFormData?.lateFine?.toFixed(2)}</span>)}
-                         <span className="text-gray-600 font-medium">Base Monthly Fee: ₹{currentFormData?.classFee?.toFixed(2) || "0.00"}</span>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* --- Collapsible Form Area --- */}
-                  {/* Use CSS for smooth transition (requires adding transition classes potentially) */}
-                  <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showForm ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                   {showForm && ( // Still useful to prevent rendering content when hidden
-                    <div className="px-4 py-4 border-t md:flex md:gap-6 bg-white">
-                      {/* --- Main Form Section --- */}
-                      <form
-                        onSubmit={(e) => handleSubmit(e, index)}
-                        className="flex-grow md:w-2/3 space-y-5 mb-6 md:mb-0"
-                        noValidate // Prevent default browser validation, rely on custom logic
-                      >
-                        {/* Fee Selection Area */}
-                        <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          {/* Regular Monthly Fees */}
-                          <div className="lg:col-span-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Regular Monthly Fees</label>
-                            <DynamicMultiSelect
-                              name={`regularFees-${index}`} searchable={false} placeholderName="Select month(s)..."
-                              dynamicOptions={monthOptions} // Filtered unpaid months
-                              handleChange={(name, opts) => handleMonthMultiSelectChange(index, name, opts)}
-                              value={selectedMonthValues} // Reflects current selection
-                              requiredClassName={"required-fields"}
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Select consecutive months.</p>
-                          </div>
-                          {/* Additional Fees (Monthly/Other) */}
-                          <div className="lg:col-span-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Additional Fees (Monthly/Other)</label>
-                            <DynamicMultiSelect
-                                name={`additionalFees-${index}`} searchable={true} placeholderName="Select additional fee(s)..."
-                                dynamicOptions={additionalFeeOptions} // Filtered: non-'One-Time'
-                                handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedAdditionalFees", opts)}
-                                value={selectedAdditionalFeeValues} // Reflects current selection
-                                requiredClassName={"required-fields"}
-                            />
-                             <p className="text-xs text-gray-500 mt-1">Monthly types auto-selected with month.</p>
-                          </div>
-                          {/* One-Time / Due Fees */}
-                           <div className="lg:col-span-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">One-Time / Due Fees</label>
-                            <DynamicMultiSelect
-                                name={`oneTimeFees-${index}`} searchable={true} placeholderName="Select one-time fee(s)..."
-                                dynamicOptions={oneTimeFeeOptions} // Filtered: dueAmount > 0
-                                handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedOneTimeFees", opts)}
-                                value={selectedOneTimeFeeValues} // Reflects current selection
-                                requiredClassName={"required-fields"}
-                            />
-                             <p className="text-xs text-gray-500 mt-1">Select fees currently due.</p>
-                          </div>
-                        </div>
-
-                        {/* Payment Details Area */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <ReactInput
-                            type="number" label="Concession (-)" value={currentFormData.concession}
-                            onChange={(e) => handleInputChange(index, "concession", e.target.value)}
-                            min="0" step="0.01" containerClassName="sm:col-span-1"
-                           />
-                          <ReactInput
-                            type="number" label={`Total Amount to Pay (*) ${selectedChildrenIndices.length > 1 ? `(for ${child.studentName})` : ''}`}
-                            value={currentFormData.totalAmount} onChange={(e) => handleInputChange(index, "totalAmount", e.target.value)}
-                            min="0.01" step="0.01" isRequired={true} containerClassName="sm:col-span-1"
-                          />
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Payment Mode (*)</label>
-                            <select
-                              value={currentFormData.paymentMode} onChange={(e) => handleInputChange(index, "paymentMode", e.target.value)}
-                              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                              required
-                            >
-                              <option value="Cash">Cash</option> <option value="Online">Online</option>
-                              <option value="Cheque">Cheque</option> <option value="Card">Card</option>
-                            </select>
-                          </div>
-                          <ReactInput
-                            type="date" label="Payment Date (*)" value={currentFormData.date}
-                            onChange={(e) => handleInputChange(index, "date", e.target.value)}
-                            isRequired={true} max={moment().format("YYYY-MM-DD")}
-                          />
-                          {(currentFormData.paymentMode === "Online" || currentFormData.paymentMode === "Card") && (
-                            <ReactInput
-                              type="text" label="Transaction ID (*)" value={currentFormData.transactionId}
-                              onChange={(e) => handleInputChange(index, "transactionId", e.target.value)} isRequired={true}
-                            />
-                          )}
-                          {currentFormData.paymentMode === "Cheque" && (
-                            <ReactInput
-                              type="text" label="Cheque Number (*)" value={currentFormData.chequeBookNo}
-                              onChange={(e) => handleInputChange(index, "chequeBookNo", e.target.value)} isRequired={true}
-                            />
-                          )}
-                        </div>
-
-                        {/* Remarks Area */}
-                        <div className="sm:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700">Remarks</label>
-                          <textarea
-                            value={currentFormData.remarks} onChange={(e) => handleInputChange(index, "remarks", e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            rows="2" placeholder="Optional remarks about payment..."
-                          />
-                        </div>
-
-                        {/* Submit Button (Only for single student selection) */}
-                        {selectedChildrenIndices.length <= 1 && (
-                          <div className="flex justify-end pt-4 mt-4 border-t">
-                            <Button
-                              type="submit" name={`Submit Payment for ${child.studentName}`}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                            />
-                          </div>
-                        )}
-                      </form>
-
-                      {/* --- Fee Breakdown Sidebar --- */}
-                      <div className="flex-shrink-0 md:w-1/3 border rounded-md p-3 bg-blue-50 md:ml-4 mt-4 md:mt-0"> {/* Added mt-4 for spacing on small screens */}
-                        <h3 className="text-base font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-3">Payment Summary</h3>
-                        <table className="w-full text-sm">
-                          <tbody>
-                            {/* Display items being paid based on current state */}
-                            {currentFormData.pastDues > 0 && (<tr className="border-b border-blue-100"><td className="text-gray-700 py-1.5">Past Dues:</td><td className="font-medium text-purple-700 py-1.5 text-right">₹{currentFormData.pastDues.toFixed(2)}</td></tr>)}
-                            {currentFormData.lateFine > 0 && (<tr className="border-b border-blue-100"><td className="text-gray-700 py-1.5">Late Fines:</td><td className="font-medium text-orange-700 py-1.5 text-right">₹{currentFormData.lateFine.toFixed(2)}</td></tr>)}
-
-                            {/* Regular Fees Selected */}
-                            {currentFormData.selectedMonths.length > 0 && (
-                              <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="py-1.5">Regular Fees:</td></tr>
-                                {currentFormData.selectedMonths.map((monthState, i) => (
-                                    <tr key={`reg-sum-${index}-${i}`} className="border-b border-blue-100">
-                                        <td className="text-gray-600 py-1 pl-3">{monthState.value}:</td>
-                                        {/* Show the 'due' amount for that month */}
-                                        <td className="font-medium text-blue-700 py-1 text-right">₹{(monthState?.due || 0).toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                              </>
-                            )}
-
-                            {/* Additional Fees Selected */}
-                            {currentFormData.selectedAdditionalFees.length > 0 && (
-                               <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1">Additional Fees:</td></tr>
-                                {currentFormData.selectedAdditionalFees.map((fee, i) => (
-                                    <tr key={`add-sum-${index}-${i}`} className="border-b border-blue-100">
-                                        <td className="text-gray-600 py-1 pl-3">{fee.name} {fee.type === 'Monthly' ? `(${fee.type})` : ''}:</td>
-                                        {/* Show the amount associated with this fee */}
-                                        <td className="font-medium text-blue-700 py-1 text-right">₹{(fee?.amount || 0).toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                               </>
-                            )}
-
-                            {/* One-Time Fees Selected */}
-                            {currentFormData.selectedOneTimeFees.length > 0 && (
-                               <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1">One-Time Fees:</td></tr>
-                                {currentFormData.selectedOneTimeFees.map((fee, i) => (
-                                    <tr key={`one-time-sum-${index}-${i}`} className="border-b border-blue-100">
-                                        <td className="text-gray-600 py-1 pl-3">{fee.name}:</td>
-                                        {/* Show the due amount associated with this fee */}
-                                        <td className="font-medium text-blue-700 py-1 text-right">₹{(fee?.dueAmount || 0).toFixed(2)}</td>
-                                    </tr>
-                                ))}
-                               </>
-                            )}
-
-                            {/* Concession */}
-                            {currentFormData.concession > 0 && (<tr className="border-b border-blue-100"><td className="text-green-700 py-1.5">Concession:</td><td className="font-medium text-green-700 py-1.5 text-right">- ₹{parseFloat(currentFormData.concession).toFixed(2)}</td></tr>)}
-                          </tbody>
-
-                          {/* Totals Footer */}
-                          <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
-                            {/* Calculate total payable based on selections */}
-                            <tr><td className="pt-2 font-semibold text-blue-900 py-1.5">Total Payable Now</td><td className="pt-2 font-bold text-blue-900 py-1.5 text-right">₹{calculateNetPayableAmount(index).toFixed(2)}</td></tr>
-                            {/* Show breakdown if amount is entered */}
-                            {parseFloat(currentFormData.totalAmount) > 0 && (() => {
-                              const distribution = calculateAutoDistribution(index);
-                              return (
-                                <>
-                                  <tr><td className="text-gray-700 py-1.5">Amount Paying:</td><td className="font-medium text-black py-1.5 text-right">₹{parseFloat(currentFormData.totalAmount).toFixed(2)}</td></tr>
-                                  <tr><td className="font-semibold text-red-700 py-1.5">Remaining Dues:</td><td className="font-bold text-red-700 py-1.5 text-right">₹{distribution.remainingDues.toFixed(2)}</td></tr>
-                                  {distribution.remainingAfterDistribution > 0 && (<tr><td className="font-semibold text-green-700 py-1 text-xs">(Advance/Excess):</td><td className="font-semibold text-green-700 py-1 text-right text-xs">₹{distribution.remainingAfterDistribution.toFixed(2)}</td></tr>)}
-                                </>
-                              );
-                            })()}
-                          </tfoot>
-                        </table>
-                      </div> {/* End Sidebar */}
-                    </div> // End Form Content Area
-                   )}
-                  </div> {/* End Collapsible Container */}
-                </div> // End of student card
-              );
-            })} {/* End of parentData.map */}
-          </div> {/* End of grid */}
-        </div> // End of Child Forms Area
-      )}
-
-      {/* Fee History Display Area */}
-      {showChildForms && childFeeHistory?.monthlyStatus?.length > 0 && selectedChildrenIndices.length > 0 && (
-        <div className="mt-8 border-t border-gray-300 pt-6">
-          <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">
-            Fee History for {childFeeHistory?.studentName || "Selected Student"} ({childFeeHistory?.session || session})
-          </h2>
-          <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow"> {/* Added styling */}
-            <MonthFeeCard childFeeHistory={childFeeHistory} />
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modals */}
-      {/* Message Confirmation Modal */}
-      <Modal setIsOpen={setIsMessageModalOpen} isOpen={isMessageModalOpen} title="Send Confirmation?" maxWidth="md">
-        <div className="p-5">
-          <p className="text-gray-700 mb-4 text-center">
-            Fee submitted successfully for <span className="font-semibold">{responseData?.student?.studentName || unifiedReceiptData?.students?.map((s) => s.studentName).join(", ") || "student(s)"}</span>.
-            <br/>Receipt Number: <span className="font-semibold">{responseData?.feeReceiptNumber || unifiedReceiptData?.unifiedReceiptNumber || "N/A"}</span>
-            <br/>Do you want to send an SMS confirmation to the parent?
-            <br/>(<span className="font-mono text-sm">{responseData?.parent?.fatherPhone || unifiedReceiptData?.parent?.fatherPhone || "Phone number not available"}</span>)
-          </p>
-          <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-            <Button type="button" name="Yes, Send SMS & View Receipt" onClick={() => handleCloseMessageModal(true)} className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2" />
-            <Button type="button" name="No, Just View Receipt" onClick={() => handleCloseMessageModal(false)} className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1" />
+        {showChildForms &&
+          childFeeHistory?.monthlyStatus?.length > 0 &&
+          selectedChildrenIndices.length > 0 && (
+            <div className="mt-8 border-t border-gray-300 pt-6">
+              <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">
+                Fee History for{" "}
+                {childFeeHistory?.studentName || "Selected Student"} (
+                {childFeeHistory?.session || session})
+              </h2>
+              <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow">
+                <MonthFeeCard childFeeHistory={childFeeHistory} />
+              </div>
+            </div>
+          )}
+
+        <Modal
+          setIsOpen={setIsMessageModalOpen}
+          isOpen={isMessageModalOpen}
+          title="Send Confirmation?"
+          maxWidth="md"
+        >
+          <div className="p-5">
+            <p className="text-gray-700 mb-4 text-center">
+              Fee submitted successfully for{" "}
+              <span className="font-semibold">
+                {responseData?.student?.studentName ||
+                  unifiedReceiptData?.students
+                    ?.map((s) => s.studentName)
+                    .join(", ") ||
+                  "student(s)"}
+              </span>
+              .
+              <br />
+              Receipt Number:{" "}
+              <span className="font-semibold">
+                {responseData?.feeReceiptNumber ||
+                  unifiedReceiptData?.unifiedReceiptNumber ||
+                  "N/A"}
+              </span>
+              <br />
+              Do you want to send an SMS confirmation to the parent?
+              <br />(
+              <span className="font-mono text-sm">
+                {responseData?.parent?.fatherPhone ||
+                  unifiedReceiptData?.parent?.fatherPhone ||
+                  "Phone number not available"}
+              </span>
+              )
+            </p>
+            <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+              <Button
+                type="button"
+                name="Yes, Send SMS & View Receipt"
+                onClick={() => handleCloseMessageModal(true)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2"
+              />
+              <Button
+                type="button"
+                name="No, Just View Receipt"
+                onClick={() => handleCloseMessageModal(false)}
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1"
+              />
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* Single Fee Receipt Preview Modal */}
-      <Modal setIsOpen={setPdfModalOpen} isOpen={pdfModalOpen} title="Fee Receipt Preview" maxWidth="lg">
-        <div className="p-1">
-          {!isPreviewReady || !receiptData ? (<p className="text-center p-10 text-gray-600">Loading receipt preview...</p>) : (
-            <FeeRecipt modalData={receiptData} handleCloseModal={() => handleClosePdfModal()} handlePrint={() => handleClosePdfModal("print")} handleDownload={() => handleClosePdfModal("download")} isPreviewReady={isPreviewReady} isUnified={false} />
-          )}
-        </div>
-      </Modal>
+        <Modal
+          setIsOpen={setPdfModalOpen}
+          isOpen={pdfModalOpen}
+          title="Fee Receipt Preview"
+          maxWidth="lg"
+        >
+          <div className="p-1">
+            {!isPreviewReady || !receiptData ? (
+              <p className="text-center p-10 text-gray-600">
+                Loading receipt preview...
+              </p>
+            ) : (
+              <FeeRecipt
+                modalData={receiptData}
+                handleCloseModal={() => handleClosePdfModal()}
+                handlePrint={() => handleClosePdfModal("print")}
+                handleDownload={() => handleClosePdfModal("download")}
+                isPreviewReady={isPreviewReady}
+                isUnified={false}
+              />
+            )}
+          </div>
+        </Modal>
 
-      {/* Unified Fee Receipt Preview Modal */}
-      <Modal setIsOpen={setUnifiedReceiptModalOpen} isOpen={unifiedReceiptModalOpen} title="Unified Fee Receipt Preview" maxWidth="lg">
-         <div className="p-1">
-          {!isPreviewReady || !receiptData ? (<p className="text-center p-10 text-gray-600">Loading unified receipt preview...</p>) : (
-            // Re-use FeeRecipt component, passing isUnified=true
-            <FeeRecipt modalData={receiptData} handleCloseModal={() => handleCloseUnifiedReceiptModal()} handlePrint={() => handleCloseUnifiedReceiptModal("print")} handleDownload={() => handleCloseUnifiedReceiptModal("download")} isPreviewReady={isPreviewReady} isUnified={true} />
-          )}
-        </div>
-      </Modal>
-
-    </div> // End of main container
+        <Modal
+          setIsOpen={setUnifiedReceiptModalOpen}
+          isOpen={unifiedReceiptModalOpen}
+          title="Unified Fee Receipt Preview"
+          maxWidth="lg"
+        >
+          <div className="p-1">
+            {!isPreviewReady || !receiptData ? (
+              <p className="text-center p-10 text-gray-600">
+                Loading unified receipt preview...
+              </p>
+            ) : (
+              <FeeRecipt
+                modalData={receiptData}
+                handleCloseModal={() => handleCloseUnifiedReceiptModal()}
+                handlePrint={() => handleCloseUnifiedReceiptModal("print")}
+                handleDownload={() =>
+                  handleCloseUnifiedReceiptModal("download")
+                }
+                isPreviewReady={isPreviewReady}
+                isUnified={true}
+              />
+            )}
+          </div>
+        </Modal>
+      </div>
+    </div>
   );
 };
 
 export default CreateFees;
+
+
+
+
+
+
+
+
+
+
+
+
+// import axios from "axios";
+// import React, { useEffect, useState, useCallback } from "react";
+// import { toast } from "react-toastify";
+// import {
+//   ActiveStudents,
+//   feescreateFeeStatus,
+//   parentandchildwithID,
+//   feescreateUnifiedFeeStatus,
+// } from "../../Network/AdminApi";
+// import Button from "../../Dynamic/utils/Button";
+// import Modal from "../../Dynamic/Modal";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import MonthFeeCard from "./MonthFeeCard";
+// import moment from "moment";
+// import { FeeResponse } from "../../Dynamic/utils/Message";
+// import generatePdf from "../../Dynamic/utils/pdfGenerator";
+// import FeeRecipt from "./FeeRecipt";
+// import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+
+// // Helper to fetch additional fees for a specific class
+// const fetchAdditionalFeesForClass = async (className, authToken) => {
+//   try {
+//     const response = await axios.get(
+//       `${
+//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//       }/api/v1/adminRoute/fees/?additional=true&className=${encodeURIComponent(className)}`, // Ensure className is encoded
+//       {
+//         withCredentials: true,
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       }
+//     );
+//     if (response?.data?.success) {
+//       const feeStructure = response.data.data;
+//       if (!feeStructure || !Array.isArray(feeStructure)) {
+//            console.warn(`No valid additional fee structure data received for class ${className}`);
+//            return [];
+//       }
+//       // Filter specifically for the className again as API might return broader results
+//       const filteredFees = feeStructure.filter(
+//         (fee) => fee.className === className
+//       );
+
+//        if (filteredFees.length === 0) {
+//            console.log(`No additional fees configured for class ${className}`);
+//            return [];
+//        }
+
+//       return filteredFees.map((fee) => ({
+//         label: `${fee.name} (${fee.feeType}) - ₹${fee.amount}`,
+//         value: fee.amount, // Base amount
+//         name: fee.name,
+//         type: fee.feeType,
+//         id: fee._id,
+//       }));
+//     } else {
+//       console.error(`Failed to fetch additional fees for class ${className}:`, response?.data?.message);
+//       toast.error(`Failed to fetch additional fees for class ${className}.`);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error(`Error fetching additional fees for class ${className}:`, error.response || error);
+//     toast.error(`Error fetching additional fees for class ${className}: ${error.message}`);
+//     return [];
+//   }
+// };
+
+
+// const CreateFees = () => {
+//   const session = JSON.parse(localStorage.getItem("session"));
+//   const { setIsLoader } = useStateContext();
+//   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+//   const [responseData, setResponseData] = useState(null); // For single payment response
+//   const [showChildForms, setShowChildForms] = useState(false);
+//   const [selectedChildrenIndices, setSelectedChildrenIndices] = useState([]);
+//   const [childFeeHistory, setChildFeeHistory] = useState(null); // Stores feeInfo of the first selected child
+//   const [filteredStudents, setFilteredStudents] = useState([]);
+//   const [showFormFlags, setShowFormFlags] = useState([]); // Controls visibility of each child's form
+//   const [triggerRefresh, setTriggerRefresh] = useState(false); // To refresh student list
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchTermbyadmissionNo, setSearchTermbyadmissionNo] = useState("");
+//   const [parentData, setParentData] = useState([]); // Stores children data of the selected parent
+//   const [allStudent, setAllStudent] = useState([]); // Full list of active students
+//   const [formData, setFormData] = useState([]); // Holds form state for each child
+//   const authToken = localStorage.getItem("token");
+//   const [pdfModalOpen, setPdfModalOpen] = useState(false); // For single receipt modal
+//   const [unifiedReceiptModalOpen, setUnifiedReceiptModalOpen] = useState(false); // For unified receipt modal
+//   const [unifiedReceiptData, setUnifiedReceiptData] = useState(null); // For unified payment response
+//   const [receiptData, setReceiptData] = useState(null); // Data fetched for receipt preview (either single or unified)
+//   const [isPreviewReady, setIsPreviewReady] = useState(false); // Tracks if receipt data is ready for preview
+
+//   const allMonths = [
+//     "April", "May", "June", "July", "August", "September",
+//     "October", "November", "December", "January", "February", "March",
+//   ];
+
+//   // Fetch all active students
+//   const getAllStudent = useCallback(async () => {
+//     setIsLoader(true);
+//     try {
+//       const response = await ActiveStudents();
+//       setAllStudent(response?.students?.data || []);
+//     } catch (error) {
+//       console.error("Failed to fetch student list:", error);
+//       toast.error("Failed to fetch student list.");
+//       setAllStudent([]);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   }, [setIsLoader]); // Dependency: setIsLoader
+
+//   // Load students on mount and when triggerRefresh changes
+//   useEffect(() => {
+//     getAllStudent();
+//   }, [getAllStudent, triggerRefresh]); // Dependencies: getAllStudent, triggerRefresh
+
+//   // Handle search input changes
+//   const handleSearch = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTerm(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.studentName &&
+//           student.studentName.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTermbyadmissionNo(""); // Clear other search field
+//   };
+
+//   const handleSearchbyAdmissionNo = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTermbyadmissionNo(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.admissionNumber &&
+//           student.admissionNumber.toString().toLowerCase().includes(searchValue) // Ensure admissionNumber is string for includes
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTerm(""); // Clear other search field
+//   };
+
+//   // Fetch detailed fee info for a single student
+//   const fetchStudentFeeInfo = async (studentId) => {
+//     if (!studentId || !session) {
+//         console.error("Missing studentId or session for fetchStudentFeeInfo");
+//         return null;
+//     }
+//     try {
+//       const url = `${
+//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//       }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`;
+
+//       const response = await axios.get(url, {
+//         withCredentials: true,
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       });
+
+//       if (response.data.success && response.data.data) {
+//          // Basic validation of the received data structure
+//          if (!response.data.data.feeStatus || !response.data.data.feeStatus.monthlyDues || !response.data.data.feeStructure || !response.data.data.feeStructure.regularFees) {
+//               console.error(`Incomplete fee info structure received for student ID ${studentId}. Missing critical fields.`);
+//               toast.error(`Incomplete fee data received for student ID ${studentId}. Cannot process payment.`);
+//               return null; // Indicate failure
+//          }
+//         return response.data.data; // Return the full fee info object
+//       } else {
+//         console.error(`Fee info fetch failed for student ID ${studentId}:`, response.data.message || "Unknown error");
+//         toast.error(`Fee info fetch failed for student ID ${studentId}: ${response.data.message || "Unknown error"}`);
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching fee info for student ID ${studentId}:`, error.response || error);
+//       toast.error(`Error fetching fee info for student ID ${studentId}: ${error.message}`);
+//       return null;
+//     }
+//   };
+
+//   // Reset component state, typically called before loading new parent/children
+//   const resetState = () => {
+//     setSelectedChildrenIndices([]);
+//     setChildFeeHistory(null);
+//     setShowFormFlags([]);
+//     setParentData([]);
+//     setFormData([]);
+//     setSearchTerm("");
+//     setSearchTermbyadmissionNo("");
+//     setFilteredStudents([]); // Clear search results too
+//     setShowChildForms(false);
+//     setResponseData(null);
+//     setUnifiedReceiptData(null);
+//     setIsMessageModalOpen(false);
+//     setPdfModalOpen(false);
+//     setUnifiedReceiptModalOpen(false);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   // *** CORRECTED handleStudentClick ***
+//   // Triggered when a student is selected from search results
+//   const handleStudentClick = async (parentId) => {
+//     console.log(`handleStudentClick called for parentId: ${parentId}`);
+//     setIsLoader(true);
+//     resetState(); // Reset state at the beginning
+
+//     try {
+//       const parentResponse = await parentandchildwithID(parentId);
+//       if (!parentResponse?.success) {
+//         console.error("Failed to fetch parent/child data:", parentResponse?.message);
+//         toast.error(parentResponse?.message || "Failed to fetch parent/child data.");
+//         setIsLoader(false);
+//         return;
+//       }
+
+//       const children = parentResponse?.children || [];
+//       if (children.length === 0) {
+//         toast.info("No children found for this parent.");
+//         setIsLoader(false);
+//         return;
+//       }
+//       setParentData(children); // Set parent data early for UI updates
+
+//       console.log("Fetching fee info and additional fees for all children...");
+//       // Use Promise.allSettled for the outer array (handles errors per child)
+//       const outerPromises = children.map((child) =>
+//         // Use Promise.allSettled also for the inner pair to isolate failures
+//         Promise.allSettled([
+//           fetchStudentFeeInfo(child.studentId),
+//           fetchAdditionalFeesForClass(child.class, authToken),
+//         ])
+//       );
+//       const outerResults = await Promise.all(outerPromises);
+//       console.log("Results from outer fee info and additional fees fetches (settled):", outerResults);
+
+//       const initialFormData = [];
+//       const initialShowFormFlags = [];
+//       let hasSuccessfulFetch = false; // Flag to check if at least one child loaded successfully
+
+//       outerResults.forEach((outerResult, index) => {
+//         const child = children[index];
+//         console.log(`Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`);
+
+//         // Check status of the outer promise for this child's pair of fetches
+//         if (outerResult.status !== 'fulfilled') {
+//             console.error(`Outer promise for child ${child.studentName} rejected:`, outerResult.reason);
+//             initialShowFormFlags.push(false);
+//             initialFormData.push({ admissionNumber: child.admissionNumber, studentId: child.studentId, studentName: child.studentName, className: child.class, error: true, errorMessage: "Failed to initiate fee data fetch." });
+//             return; // Skip this child
+//         }
+
+//         // --- Safely Unpack Inner Results ---
+//         const innerSettledResults = outerResult.value;
+//         const feeInfoSettledResult = innerSettledResults[0];
+//         const additionalFeesSettledResult = innerSettledResults[1];
+
+//         let feeInfo = null;
+//         let availableAdditionalFees = [];
+//         let processingError = false;
+//         let errorMessages = []; // Collect specific errors
+
+//         // 1. Check and process feeInfo result
+//         if (feeInfoSettledResult.status === 'fulfilled' && feeInfoSettledResult.value) {
+//            feeInfo = feeInfoSettledResult.value;
+//            // **Crucial Validation:** Ensure fetched feeInfo has expected structure
+//            if (!feeInfo || !feeInfo.feeStatus || !feeInfo.feeStatus.monthlyDues || !feeInfo.feeStructure) {
+//                console.error(`Incomplete fee info structure for ${child.studentName}: Missing feeStatus, monthlyDues, or feeStructure.`);
+//                errorMessages.push("Incomplete base fee data.");
+//                processingError = true; feeInfo = null;
+//            } else if (!feeInfo.feeStructure.regularFees || !Array.isArray(feeInfo.feeStructure.regularFees)) {
+//                console.error(`Missing or invalid regularFees array for ${child.studentName}.`);
+//                errorMessages.push("Regular fee config missing.");
+//                processingError = true; feeInfo = null;
+//            }
+//         } else {
+//            console.warn(`Failed to load fee details for ${child.studentName}. Reason:`, feeInfoSettledResult.reason);
+//            errorMessages.push(`Fee details load error: ${feeInfoSettledResult.reason?.message || 'Unknown'}`);
+//            processingError = true;
+//         }
+
+//         // 2. Check and process additionalFees result
+//         if (additionalFeesSettledResult.status === 'fulfilled') {
+//            availableAdditionalFees = additionalFeesSettledResult.value || [];
+//         } else {
+//            console.warn(`Failed to load additional fees for ${child.studentName} (Class: ${child.class}). Reason:`, additionalFeesSettledResult.reason);
+//            errorMessages.push(`Additional fees load error: ${additionalFeesSettledResult.reason?.message || 'Check config'}`);
+//            // Decide if this is critical. Maybe not if only regular fees exist.
+//            // processingError = true; // Uncomment if additional fees are mandatory
+//         }
+
+//         // 3. Handle combined errors
+//         if (processingError) {
+//            initialShowFormFlags.push(false);
+//            initialFormData.push({
+//                admissionNumber: child.admissionNumber, studentId: child.studentId, studentName: child.studentName, className: child.class,
+//                error: true, errorMessage: errorMessages.join('; ') || "Failed to load necessary fee data."
+//            });
+//            toast.error(`Error loading data for ${child.studentName}: ${errorMessages[0] || 'Check failed.'}`);
+//            return; // Skip this child
+//         }
+//         // --- End Safe Unpacking ---
+
+
+//         // --- Proceed with calculations only if feeInfo is valid ---
+//         hasSuccessfulFetch = true;
+//         const feeStatus = feeInfo.feeStatus;
+//         const feeStructure = feeInfo.feeStructure;
+//         const regularFeeAmount = feeStructure.regularFees?.[0]?.amount || 0;
+//         const epsilon = 0.01;
+
+//         // --- Calculate Current Due Items using feeStatus.monthlyDues ---
+//         const currentDueItems = [];
+//          // 1. Process Regular Dues
+//         if (feeStatus?.monthlyDues?.regularDues) {
+//             feeStatus.monthlyDues.regularDues.forEach(regularDue => {
+//                 if (regularDue.dueAmount > epsilon) {
+//                     currentDueItems.push({
+//                         _id: regularDue._id, name: 'Regular Fee', month: regularDue.month, type: 'Regular',
+//                         dueAmount: regularDue.dueAmount, totalAmount: (regularDue.paidAmount || 0) + regularDue.dueAmount, status: regularDue.status
+//                     });
+//                 }
+//             });
+//         } else { console.warn(`feeStatus.monthlyDues.regularDues missing for ${child.studentName}`); }
+
+//         // 2. Process Additional Dues
+//         if (feeStatus?.monthlyDues?.additionalDues) {
+//             feeStatus.monthlyDues.additionalDues.forEach(additionalDue => {
+//                 if (additionalDue.dueAmount > epsilon) {
+//                     // Try to determine the fee type more accurately from structure if available
+//                     const structureFee = feeStructure?.additionalFees?.find(f => f.name === additionalDue.name);
+//                     const feeType = additionalDue.month ? 'Monthly' : (structureFee?.feeType || 'One-Time');
+//                     currentDueItems.push({
+//                          _id: additionalDue._id, name: additionalDue.name, month: additionalDue.month, type: feeType,
+//                          dueAmount: additionalDue.dueAmount, totalAmount: (additionalDue.paidAmount || 0) + additionalDue.dueAmount, status: additionalDue.status
+//                     });
+//                 }
+//              });
+//         } else { console.warn(`feeStatus.monthlyDues.additionalDues missing for ${child.studentName}`); }
+
+//          // 3. Process Late Fines
+//          if (feeStatus?.monthlyDues?.lateFines) {
+//              feeStatus.monthlyDues.lateFines.forEach(fine => {
+//                  if (fine.dueAmount > epsilon) {
+//                      currentDueItems.push({
+//                          _id: fine._id, name: fine.name || 'Late Fine', type: 'Fine', // Assuming type 'Fine'
+//                          dueAmount: fine.dueAmount, totalAmount: (fine.paidAmount || 0) + fine.dueAmount, status: fine.status
+//                      });
+//                  }
+//              });
+//          } // No warning if missing, as fines might not exist
+//         // --- End Calculate Current Due Items ---
+
+
+//         // Verification
+//         const calculatedTotalDues = currentDueItems.reduce((sum, item) => sum + item.dueAmount, 0);
+//         console.log(`Calculated Total Dues from items for ${child.studentName}: ${calculatedTotalDues}`);
+//         console.log(`Overall Dues from feeStatus.dues for ${child.studentName}: ${feeStatus.dues}`);
+//         if (Math.abs(calculatedTotalDues - feeStatus.dues) > epsilon) {
+//             console.warn(`WARNING: Dues mismatch for ${child.studentName}. Calculated: ${calculatedTotalDues.toFixed(2)}, Header: ${feeStatus.dues?.toFixed(2)}`);
+//         }
+//         console.log(`Current Due Items calculated for ${child.studentName}:`, JSON.stringify(currentDueItems, null, 2));
+
+
+//         // --- Prepare Dropdown Options (Excluding items with ANY dues in latest status) ---
+//         const latestRegularStatus = feeStatus?.monthlyDues?.regularDues || [];
+//         const latestAdditionalStatus = feeStatus?.monthlyDues?.additionalDues || [];
+
+//         const monthOptions = allMonths
+//             .filter(month => {
+//                 const monthStat = latestRegularStatus.find(m => m.month === month);
+//                 const isUnpaid = !monthStat || ['Unpaid', 'Not Paid'].includes(monthStat.status);
+//                 const expectedAmount = regularFeeAmount;
+//                 const isFullyDue = !monthStat || Math.abs(monthStat.dueAmount - expectedAmount) < epsilon;
+//                 return isUnpaid && isFullyDue;
+//             })
+//             .map(month => ({ name: `${month} (₹${regularFeeAmount.toFixed(2)})`, code: month }));
+
+//         const additionalFeeOptions = availableAdditionalFees
+//             .filter(availFee => availFee.type !== 'One Time')
+//             .filter(availFee => {
+//                 const hasCurrentDue = latestAdditionalStatus.some(dueItem => dueItem.name === availFee.name && dueItem.dueAmount > epsilon);
+//                 return !hasCurrentDue;
+//             })
+//             .map(item => ({ name: item.label, code: item.id })); // Use ID as code
+
+//         const oneTimeFeeOptions = availableAdditionalFees
+//             .filter(availFee => availFee.type === 'One Time')
+//             .filter(availFee => {
+//                 const hasCurrentDue = latestAdditionalStatus.some(dueItem => dueItem.name === availFee.name && dueItem.dueAmount > epsilon);
+//                 return !hasCurrentDue;
+//             })
+//             .map(item => ({ name: item.label, code: item.id })); // Use ID as code
+//         // --- End Prepare Dropdown Options ---
+
+
+//         // Construct initial form data for this child
+//         const childFormData = {
+//           admissionNumber: child.admissionNumber,
+//           studentId: child.studentId,
+//           studentName: child.studentName,
+//           className: child.class,
+//           classFee: regularFeeAmount, // Store base regular fee amount
+//           totalAmount: "", // Amount user will enter
+//           selectedMonths: [], // Newly selected months by user
+//           selectedAdditionalFees: [], // Newly selected additional fees by user
+//           selectedOneTimeFees: [], // Newly selected one-time fees by user
+//           currentDueItems: currentDueItems, // Automatically included dues
+//           paymentMode: "Cash",
+//           transactionId: "",
+//           chequeBookNo: "",
+//           lateFine: feeInfo.feeStatus?.totalLateFines || 0, // Total accumulated fine
+//           concession: "", // User input for concession
+//           date: moment().format("YYYY-MM-DD"), // Default to today
+//           remarks: "",
+//           pastDues: feeInfo.feeStatus?.pastDues || 0, // Past session dues
+//           totalDuesHeader: feeInfo.feeStatus?.dues || 0, // Display value for header
+//           availableAdditionalFees: availableAdditionalFees || [], // Full list for lookups
+//           feeInfo: feeInfo, // Store the complete, validated feeInfo object
+//           error: false, // No error for this child
+//           errorMessage: "" // Clear error message
+//         };
+
+//         console.log(`Generated initial form data for ${child.studentName}:`, JSON.stringify(childFormData, null, 2)); // Pretty print for easier debugging
+//         initialFormData.push(childFormData);
+//         initialShowFormFlags.push(false); // Start with form collapsed
+//       }); // End outerResults.forEach
+
+//       console.log("Setting final formData state:", initialFormData);
+//       console.log("Setting final showFormFlags state:", initialShowFormFlags);
+//       setFormData(initialFormData);
+//       setShowFormFlags(initialShowFormFlags);
+//       setShowChildForms(hasSuccessfulFetch); // Only show the forms section if at least one child loaded data
+
+//       if (!hasSuccessfulFetch && children.length > 0) {
+//          toast.error("Failed to load valid fee data for any selected students. Please check configuration or student status.");
+//       }
+
+//     } catch (error) {
+//       console.error("A critical error occurred during handleStudentClick:", error);
+//       toast.error("An unexpected error occurred while fetching student data.");
+//       resetState(); // Ensure clean state on major failure
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+
+//   // Handle selection/deselection of a child via checkbox
+//   const handleChildSelection = (index) => {
+//       console.log(`handleChildSelection called for index: ${index}`);
+//       if (!formData || index < 0 || index >= formData.length) {
+//         console.error(`Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`);
+//         toast.error("An internal error occurred. Please try again.");
+//         return;
+//       }
+//       const currentChildData = formData[index];
+//       // Prevent selection if there was an error loading data for this child
+//       if (!currentChildData || currentChildData.error) {
+//         toast.warn(`Cannot select ${parentData[index]?.studentName || "this student"}: ${currentChildData?.errorMessage || 'Fee data could not be loaded.'}`);
+//         // Ensure it's not in the selected indices list
+//          setSelectedChildrenIndices(prevIndices => prevIndices.filter(i => i !== index));
+//          setShowFormFlags(prevFlags => {
+//              const newFlags = [...prevFlags];
+//              newFlags[index] = false; // Ensure form is closed
+//              return newFlags;
+//          });
+//         return;
+//       }
+
+//       const isCurrentlySelected = selectedChildrenIndices.includes(index);
+//       let updatedSelectedChildren;
+//       let updatedShowFormFlags = [...showFormFlags];
+
+//       if (isCurrentlySelected) {
+//         updatedSelectedChildren = selectedChildrenIndices.filter((i) => i !== index);
+//         updatedShowFormFlags[index] = false; // Close form on deselect
+//       } else {
+//         updatedSelectedChildren = [...selectedChildrenIndices, index];
+//         updatedShowFormFlags[index] = true; // Open form on select
+//       }
+//       updatedSelectedChildren.sort((a, b) => a - b); // Keep sorted
+
+//       setSelectedChildrenIndices(updatedSelectedChildren);
+//       setShowFormFlags(updatedShowFormFlags);
+
+//       // Update fee history display based on the *first* selected child
+//       if (updatedSelectedChildren.length > 0) {
+//         const firstSelectedIndex = updatedSelectedChildren[0];
+//         // Make sure feeInfo exists before setting history
+//         setChildFeeHistory(formData[firstSelectedIndex]?.feeInfo || null);
+//       } else {
+//         setChildFeeHistory(null); // Clear history if no child is selected
+//       }
+//     };
+
+
+//   // Handle changes in standard input fields (text, number, select, date)
+//   const handleInputChange = (index, field, value) => {
+//       const updatedFormData = [...formData];
+//       if (updatedFormData[index] && !updatedFormData[index].error) { // Prevent updates if error
+//         updatedFormData[index] = { ...updatedFormData[index], [field]: value };
+//         // Reset related fields when payment mode changes
+//         if (field === "paymentMode") {
+//           if (value !== "Online" && value !== "Card") updatedFormData[index].transactionId = "";
+//           if (value !== "Cheque") updatedFormData[index].chequeBookNo = "";
+//         }
+//         setFormData(updatedFormData);
+//       } else if(updatedFormData[index]?.error) {
+//          console.warn(`Attempted input change for child ${index} with load error.`);
+//       } else {
+//         console.error(`Attempted to handle input change for invalid index: ${index}`);
+//       }
+//     };
+
+
+//   // Handle changes in the Regular Months multi-select dropdown
+//   const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
+//     console.log(`Month selection changed for index ${index}:`, selectedOptions);
+//     const selectedOptionsData = selectedOptions || [];
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index] || updatedFormData[index].error) return; // Check error flag
+
+//     const currentChildData = updatedFormData[index];
+
+//     // --- Optional: Sequential Month Validation ---
+//     const selectedMonthNames = selectedOptionsData.map((opt) => opt.code);
+//     if (selectedMonthNames.length > 1) {
+//         const indicesInAllMonths = selectedMonthNames.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
+//         let isSequential = true;
+//         for (let i = 1; i < indicesInAllMonths.length; i++) {
+//             if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
+//                 isSequential = false; break;
+//             }
+//         }
+//         if (!isSequential) {
+//             toast.warn(`Months selected for ${currentChildData.studentName} are not sequential. Please select in order.`);
+//             // Optionally prevent update or auto-correct here
+//         }
+//     }
+//     // --- End Validation ---
+
+//     // Map selected options to the state format { value, label, amount }
+//     const newSelectedMonths = selectedOptionsData.map((opt) => {
+//       // Get the full amount for this month from the stored classFee
+//       const amount = currentChildData.classFee || 0;
+//       return { value: opt.code, label: opt.name, amount: amount };
+//     });
+
+//     updatedFormData[index].selectedMonths = newSelectedMonths;
+//     setFormData(updatedFormData);
+//   };
+
+
+//   // Handle changes in the Additional/One-Time Fee multi-select dropdowns
+//   const handleDynamicMultiSelectChange = (index, field, selectedOptions) => {
+//     console.log(`Dynamic multiselect changed for index ${index}, field ${field}:`, selectedOptions);
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index] || updatedFormData[index].error) return; // Check error flag
+
+//     const currentChildData = updatedFormData[index];
+//     const selectedOptionsData = selectedOptions || [];
+
+//     // Helper to find fee details from availableAdditionalFees list
+//     const findFeeDetail = (optionCode) => {
+//         return currentChildData.availableAdditionalFees.find(f => f.id === optionCode);
+//     };
+
+//     // Determine the target array based on the 'field' argument
+//     let targetFieldName = field; // e.g., "selectedAdditionalFees" or "selectedOneTimeFees"
+//     let defaultFeeType = 'Additional';
+//     if (field === 'selectedOneTimeFees') defaultFeeType = 'One Time';
+
+//     const newSelectedFees = selectedOptionsData.map(opt => {
+//       const feeDetail = findFeeDetail(opt.code);
+//       // Robustly extract name from label if detail lookup fails
+//       const nameFromName = opt.name ? opt.name.split(' (')[0] : 'Unknown Fee';
+//       return {
+//         id: opt.code, // The fee definition ID
+//         name: feeDetail?.name || nameFromName,
+//         type: feeDetail?.type || defaultFeeType,
+//         amount: feeDetail?.value || 0, // Full base amount
+//       };
+//     });
+
+//     updatedFormData[index][targetFieldName] = newSelectedFees; // Update the correct field
+//     setFormData(updatedFormData);
+//   };
+
+
+//   // Calculate the total amount payable for a child based on dues and selections
+//   const calculateNetPayableAmount = useCallback((index) => {
+//     const data = formData[index];
+//     if (!data || data.error) return 0;
+
+//     let total = 0;
+//     const epsilon = 0.01;
+
+//     // 1. Start with Past Session Dues
+//     total += parseFloat(data.pastDues) || 0;
+
+//     // 2. Add all CURRENT DUE items (from currentDueItems array)
+//     total += data.currentDueItems.reduce((sum, item) => sum + (parseFloat(item.dueAmount) || 0), 0);
+
+//     // 3. Add FULL amount of NEWLY SELECTED Regular Months
+//     total += data.selectedMonths.reduce((sum, monthState) => sum + (parseFloat(monthState.amount) || 0), 0);
+
+//     // 4. Add FULL amount of NEWLY SELECTED Additional Fees
+//     total += data.selectedAdditionalFees.reduce((sum, fee) => sum + (parseFloat(fee.amount) || 0), 0);
+
+//     // 5. Add FULL amount of NEWLY SELECTED One-Time Fees
+//     total += data.selectedOneTimeFees.reduce((sum, fee) => sum + (parseFloat(fee.amount) || 0), 0);
+
+//     // 6. Subtract Concession
+//     const concessionAmount = parseFloat(data.concession) || 0;
+//     total -= concessionAmount;
+
+//     // Ensure non-negative and round
+//     return parseFloat(Math.max(0, total).toFixed(2));
+
+//   }, [formData]); // Dependency: formData
+
+
+//   // Calculate remaining dues or advance based on amount paid vs. payable
+//   const calculateAutoDistribution = useCallback((index) => {
+//       const data = formData[index];
+//       if (!data || data.error) return { remainingAfterDistribution: 0, remainingDues: 0 };
+
+//       const netPayable = calculateNetPayableAmount(index);
+//       const totalAmountPaid = parseFloat(data.totalAmount) || 0;
+//       const epsilon = 0.01;
+//       const difference = totalAmountPaid - netPayable;
+
+//       let remainingDues = 0;
+//       let remainingAfterDistribution = 0; // Advance/Excess
+
+//       if (difference < -epsilon) { // Paid less than required
+//           remainingDues = Math.abs(difference);
+//       } else if (difference > epsilon) { // Paid more than required
+//           remainingAfterDistribution = difference;
+//       }
+
+//       return {
+//           remainingAfterDistribution: parseFloat(remainingAfterDistribution.toFixed(2)),
+//           remainingDues: parseFloat(remainingDues.toFixed(2))
+//       };
+//     }, [formData, calculateNetPayableAmount]); // Dependencies
+
+
+//   // Fetch receipt data (single or unified) for preview
+//   const fetchReceiptData = async (receiptNumber, isUnified = false) => {
+//       if (!receiptNumber) {
+//           console.warn("fetchReceiptData called with no receipt number.");
+//           return null;
+//       }
+//       setIsPreviewReady(false); // Reset preview state
+//       setIsLoader(true);
+//       try {
+//         const endpoint = isUnified ? "generateUnifiedFeeReceipt" : "generateFeeReceipt";
+//         const param = isUnified ? "unifiedReceiptNumber" : "receiptNumber";
+//         const url = `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/${endpoint}?${param}=${receiptNumber}`;
+
+//         console.log(`Fetching receipt data from: ${url}`);
+//         const response = await axios.get(url, {
+//            headers: { Authorization: `Bearer ${authToken}` },
+//            withCredentials: true
+//            });
+
+//         if (response.data.success && response.data.data) {
+//           console.log("Receipt data fetched successfully:", response.data);
+//           setReceiptData(response.data); // Store the whole response structure
+//           setIsPreviewReady(true); // Mark preview as ready
+//           return response.data;
+//         } else {
+//           console.error(`Failed to fetch receipt ${receiptNumber} (${isUnified ? 'Unified' : 'Single'}):`, response.data.message || "Data missing");
+//           toast.error(`Failed to fetch receipt data: ${response.data.message || "Data missing"}`);
+//           setReceiptData(null); // Clear invalid data
+//           return null;
+//         }
+//       } catch (error) {
+//         console.error(`Error fetching receipt ${receiptNumber} (${isUnified ? 'Unified' : 'Single'}):`, error.response || error);
+//         toast.error("Error fetching receipt data: " + (error.response?.data?.message || error.message));
+//         setReceiptData(null); // Clear on error
+//         return null;
+//       } finally {
+//         setIsLoader(false);
+//       }
+//     };
+
+//   // Validate form data for a specific child before submission
+//   const validateFormData = (childFormData, child, isUnified = false) => {
+//       if (!childFormData || childFormData.error) {
+//         toast.error(`Cannot submit for ${child?.studentName || "this student"} due to loading errors.`);
+//         return false;
+//       }
+
+//       const totalAmount = parseFloat(childFormData.totalAmount) || 0;
+//       const netPayable = calculateNetPayableAmount(formData.findIndex(fd => fd.studentId === child.studentId));
+//       const epsilon = 0.01;
+
+//       // Basic checks
+//       if (totalAmount <= 0) { toast.warn(`Amount must be > 0 for ${child.studentName}.`); return false; }
+//       if (!childFormData.paymentMode) { toast.error(`Payment mode required for ${child.studentName}.`); return false; }
+//       if ((childFormData.paymentMode === "Online" || childFormData.paymentMode === "Card") && !childFormData.transactionId) { toast.error(`Transaction ID required for ${child.studentName}.`); return false; }
+//       if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) { toast.error(`Cheque Number required for ${child.studentName}.`); return false; }
+//       if (!childFormData.date || !moment(childFormData.date, "YYYY-MM-DD", true).isValid()) { toast.error(`Valid payment date required for ${child.studentName}.`); return false; }
+
+//       // Check if anything is actually being paid for
+//        const hasDueItems = childFormData.currentDueItems.some(item => item.dueAmount > epsilon);
+//        const hasSelectedItems = childFormData.selectedMonths.length > 0 || childFormData.selectedAdditionalFees.length > 0 || childFormData.selectedOneTimeFees.length > 0;
+//        const isPayingOnlyPastOrFine = (parseFloat(childFormData.pastDues) || 0) > 0 || (parseFloat(childFormData.lateFine) || 0) > 0;
+
+//        if (!hasDueItems && !hasSelectedItems && !isPayingOnlyPastOrFine && totalAmount > 0) {
+//            toast.warn(`No specific fee items selected or due for ${child.studentName}. Payment might be treated as advance.`, { autoClose: 6000 });
+//            // Allow submission but warn user
+//        } else if (!hasDueItems && !hasSelectedItems && !isPayingOnlyPastOrFine && totalAmount <= 0){
+//             toast.warn(`No fee items selected or due, and no amount entered for ${child.studentName}.`, { autoClose: 6000 });
+//             return false; // Don't allow submitting zero with nothing selected/due
+//        }
+
+
+//        // Warning about payment mismatch (use toast.info as it might be intentional)
+//        const distribution = calculateAutoDistribution(formData.findIndex(fd => fd.studentId === child.studentId));
+//        if (distribution.remainingDues > epsilon || distribution.remainingAfterDistribution > epsilon) {
+//            let warnMsg = `Payment (₹${totalAmount.toFixed(2)}) for ${child.studentName} vs Calculated (₹${netPayable.toFixed(2)}). `;
+//            if (distribution.remainingDues > epsilon) warnMsg += `₹${distribution.remainingDues.toFixed(2)} will remain due. `;
+//            if (distribution.remainingAfterDistribution > epsilon) warnMsg += `₹${distribution.remainingAfterDistribution.toFixed(2)} excess paid. `;
+//            toast.info(warnMsg, { autoClose: 8000 });
+//        }
+
+//       return true; // Passed validation
+//     };
+
+
+//   // Handle submission for multiple siblings together (Unified Payment)
+//   const handleUnifiedFeePayment = async () => {
+//       console.log("Attempting unified fee payment...");
+//       if (selectedChildrenIndices.length < 2) {
+//         toast.warn("Please select at least two students for unified payment."); return;
+//       }
+
+//       let isValid = true;
+//       const studentsPayload = [];
+//       let commonPaymentDetails = {}; // Use details from the first selected student
+
+//       // Validate all selected children first
+//       for (const index of selectedChildrenIndices) {
+//         const childFormData = formData[index];
+//         const child = parentData[index];
+//         if (!validateFormData(childFormData, child, true)) { isValid = false; break; } // Stop on first failure
+
+//          // Capture common details from the first valid child
+//          if (studentsPayload.length === 0) {
+//             commonPaymentDetails = {
+//                 paymentMode: childFormData.paymentMode,
+//                 transactionId: childFormData.transactionId || undefined,
+//                 chequeNumber: childFormData.chequeBookNo || undefined,
+//                 date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format for backend
+//                 remark: childFormData.remarks || "",
+//             };
+//          }
+//       }
+
+//       if (!isValid) { console.error("Unified payment validation failed."); return; }
+
+//       // If validation passed for all, construct payload
+//       selectedChildrenIndices.forEach(index => {
+//           const childFormData = formData[index];
+//           const child = parentData[index];
+//           const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
+
+//           // --- Construct Payload Items for this student ---
+//           const payloadRegularFees = [];
+//           const payloadAdditionalFees = [];
+//           const epsilon = 0.01;
+
+//           // 1. Add identifiers for auto-included DUE items (_id from monthlyDues)
+//           childFormData.currentDueItems.forEach(item => {
+//               if (item.dueAmount > epsilon) { // Only include items actually due
+//                   if (item.type === 'Regular' && item._id) {
+//                        payloadRegularFees.push({ _id: item._id });
+//                   } else if (item._id) { // Additional, One-Time, or Fine due item
+//                        payloadAdditionalFees.push({ _id: item._id });
+//                   } else {
+//                        console.warn(`Due item missing _id for ${child.studentName}:`, item);
+//                   }
+//               }
+//           });
+
+//           // 2. Add identifiers for NEWLY SELECTED items (month name or fee definition ID)
+//           childFormData.selectedMonths.forEach(item => {
+//               if (!payloadRegularFees.some(fee => fee.month === item.value)) { // Avoid duplicates
+//                   payloadRegularFees.push({ month: item.value });
+//               }
+//           });
+//           const combinedNewAdditional = [...childFormData.selectedAdditionalFees, ...childFormData.selectedOneTimeFees];
+//           combinedNewAdditional.forEach(item => {
+//                if (item.id && !payloadAdditionalFees.some(fee => fee.feeId === item.id || fee._id === item.id)) { // Avoid duplicates
+//                    payloadAdditionalFees.push({ feeId: item.id }); // Use feeId (definition ID) for new items
+//                } else if (item.name && !payloadAdditionalFees.some(fee => fee.name === item.name)) { // Fallback
+//                    console.warn(`Newly selected fee missing id for ${child.studentName}, sending name:`, item);
+//                    payloadAdditionalFees.push({ name: item.name });
+//                }
+//           });
+//           // --- End Construct Payload Items ---
+
+//           studentsPayload.push({
+//             studentId: child.studentId,
+//             paymentDetails: {
+//               regularFees: payloadRegularFees,
+//               additionalFees: payloadAdditionalFees,
+//               pastDuesPaid: 0, // Backend allocates
+//               lateFinesPaid: 0, // Backend allocates
+//               concession: parseFloat(childFormData.concession) || 0,
+//               totalAmount: amountForThisChild, // Amount specific to this child
+//             },
+//           });
+//       });
+
+
+//       // Final check on common details (should be set if validation passed)
+//        if (!commonPaymentDetails.paymentMode || !commonPaymentDetails.date) {
+//             toast.error(`Common payment details missing. Check details for ${parentData[selectedChildrenIndices[0]].studentName}.`); return;
+//         }
+
+//       const payload = {
+//           students: studentsPayload,
+//           session,
+//           unifiedPaymentDetails: commonPaymentDetails
+//       };
+
+//       console.log("Unified Payload:", JSON.stringify(payload, null, 2));
+//       setIsLoader(true);
+//       try {
+//         const response = await feescreateUnifiedFeeStatus(payload);
+//         if (response.success && response.data) {
+//           toast.success(response.message || "Unified fees submitted successfully!");
+//           setUnifiedReceiptData(response.data); // Store unified response
+//           setResponseData(null); // Clear single response
+//           setIsMessageModalOpen(true); // Show confirmation
+//         } else {
+//           toast.error(response.message || "Unified fee submission failed.");
+//           console.error("Unified submission failure response:", response);
+//         }
+//       } catch (error) {
+//         const errorMsg = error.response?.data?.message || error.message;
+//         toast.error(`Error during unified submission: ${errorMsg}`);
+//         console.error("Unified Submission Error:", error.response || error);
+//       } finally {
+//         setIsLoader(false);
+//       }
+//     };
+
+
+//   // Handle submission for a single student
+//   const handleSubmit = async (e, childIndex) => {
+//       e.preventDefault();
+//       e.stopPropagation();
+//       console.log(`Attempting single submission for index: ${childIndex}`);
+
+//       const childFormData = formData[childIndex];
+//       const child = parentData[childIndex];
+
+//       if (!validateFormData(childFormData, child)) { return; } // Validate first
+
+//       setIsLoader(true);
+
+//       // --- Construct Payload Items ---
+//       const payloadRegularFees = [];
+//       const payloadAdditionalFees = [];
+//       const epsilon = 0.01;
+
+//        // 1. Add identifiers for auto-included DUE items
+//        childFormData.currentDueItems.forEach(item => {
+//            if (item.dueAmount > epsilon) { // Only include items actually due
+//                if (item.type === 'Regular' && item._id) {
+//                     payloadRegularFees.push({ _id: item._id });
+//                } else if (item._id) {
+//                     payloadAdditionalFees.push({ _id: item._id });
+//                } else { console.warn(`Due item missing _id for ${child.studentName}:`, item); }
+//            }
+//        });
+
+//        // 2. Add identifiers for NEWLY SELECTED items
+//        childFormData.selectedMonths.forEach(item => {
+//             if (!payloadRegularFees.some(fee => fee.month === item.value)) { payloadRegularFees.push({ month: item.value }); }
+//        });
+//        const combinedNewAdditional = [...childFormData.selectedAdditionalFees, ...childFormData.selectedOneTimeFees];
+//        combinedNewAdditional.forEach(item => {
+//             if (item.id && !payloadAdditionalFees.some(fee => fee.feeId === item.id || fee._id === item.id)) {
+//                 payloadAdditionalFees.push({ feeId: item.id }); // Use definition ID
+//             } else if (item.name && !payloadAdditionalFees.some(fee => fee.name === item.name)) {
+//                  console.warn(`Newly selected fee missing id for ${child.studentName}, sending name:`, item);
+//                  payloadAdditionalFees.push({ name: item.name });
+//             }
+//        });
+//       // --- End Construct Payload Items ---
+
+
+//       const payload = {
+//         studentId: child.studentId,
+//         session,
+//         paymentDetails: {
+//           regularFees: payloadRegularFees,
+//           additionalFees: payloadAdditionalFees,
+//           pastDuesPaid: 0, // Backend allocates
+//           lateFinesPaid: 0, // Backend allocates
+//           concession: parseFloat(childFormData.concession) || 0,
+//           totalAmount: parseFloat(childFormData.totalAmount) || 0,
+//           date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format date
+//           paymentMode: childFormData.paymentMode,
+//           transactionId: childFormData.transactionId || undefined,
+//           chequeNumber: childFormData.chequeBookNo || undefined,
+//           remark: childFormData.remarks || "",
+//         },
+//       };
+
+//       console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
+
+//       try {
+//         const response = await feescreateFeeStatus(payload);
+//         if (response?.success && response?.data) {
+//           toast.success(response?.message || `Fees submitted for ${child.studentName}!`);
+//           setResponseData(response.data); // Store single response
+//           setUnifiedReceiptData(null); // Clear unified response
+//           setIsMessageModalOpen(true); // Show confirmation
+//         } else {
+//           toast.error(response?.message || `Fee submission failed for ${child.studentName}.`);
+//            console.error("Single submission failure response:", response);
+//         }
+//       } catch (error) {
+//         const errorMsg = error.response?.data?.message || error.message;
+//         toast.error(`Submission error for ${child.studentName}: ${errorMsg}`);
+//         console.error("Single Submission Error:", error.response || error);
+//       } finally {
+//         setIsLoader(false);
+//       }
+//     };
+
+//   // Handle closing the post-submission confirmation modal
+//   const handleCloseMessageModal = async (sendMsg = false) => {
+//       console.log(`Closing message modal, sendMsg=${sendMsg}`);
+//       setIsMessageModalOpen(false);
+
+//       let receiptNumberToFetch = null;
+//       let isUnifiedReceipt = false;
+//       let dataForSms = null;
+//       let parentIdToRefresh = null;
+
+//       // Determine which response data is relevant
+//       if (responseData && responseData.feeReceiptNumber) {
+//           receiptNumberToFetch = responseData.feeReceiptNumber;
+//           isUnifiedReceipt = false;
+//           dataForSms = responseData;
+//           parentIdToRefresh = responseData.student?.parentId;
+//           console.log("Using single response data for post-modal actions");
+//       } else if (unifiedReceiptData && unifiedReceiptData.unifiedReceiptNumber) {
+//           receiptNumberToFetch = unifiedReceiptData.unifiedReceiptNumber;
+//           isUnifiedReceipt = true;
+//           dataForSms = unifiedReceiptData;
+//           parentIdToRefresh = unifiedReceiptData.parentId;
+//           console.log("Using unified response data for post-modal actions");
+//       } else {
+//           console.warn("No valid response data found after closing modal.");
+//           resetState(); // Reset state anyway
+//           setTriggerRefresh((prev) => !prev); // Trigger general refresh as fallback
+//           return;
+//       }
+
+//       // Send SMS if requested
+//       if (sendMsg && dataForSms) {
+//           try {
+//               // Ensure FeeResponse can handle both structures (or adapt it)
+//               FeeResponse(dataForSms, isUnifiedReceipt); // Pass flag if needed by FeeResponse
+//               const targetName = isUnifiedReceipt
+//                   ? dataForSms.students?.map(s => s.studentName).join(', ') || 'students'
+//                   : dataForSms.student?.studentName || 'student';
+//               toast.info(`SMS initiated for ${targetName}.`);
+//           } catch (error) {
+//               console.error("Error calling FeeResponse:", error);
+//               toast.error("Failed to initiate SMS sending.");
+//           }
+//       }
+
+//       // --- Refresh Logic ---
+//       const tempReceiptNumber = receiptNumberToFetch;
+//       const tempIsUnified = isUnifiedReceipt;
+//       const tempParentId = parentIdToRefresh;
+
+//       resetState(); // Reset form state *before* refreshing/fetching receipt
+//       setResponseData(null);
+//       setUnifiedReceiptData(null);
+
+//       if (tempParentId) {
+//           console.log(`Refreshing data for parentId: ${tempParentId} after submission.`);
+//           handleStudentClick(tempParentId); // Re-fetch data for the same parent
+//           // Let this run in the background
+//       } else {
+//           console.warn("Parent ID missing, triggering general refresh.");
+//           setTriggerRefresh((prev) => !prev);
+//       }
+//       // --- End Refresh Logic ---
+
+
+//       // Fetch and show receipt preview *after* starting refresh
+//       if (tempReceiptNumber) {
+//           console.log(`Fetching receipt ${tempReceiptNumber}, Unified: ${tempIsUnified}`);
+//           const fetchedReceiptData = await fetchReceiptData(tempReceiptNumber, tempIsUnified);
+//           if (fetchedReceiptData) {
+//               // setReceiptData is handled within fetchReceiptData
+//               if (tempIsUnified) {
+//                    console.log("Opening Unified Receipt Modal");
+//                    setUnifiedReceiptModalOpen(true);
+//               } else {
+//                    console.log("Opening Single Receipt Modal");
+//                    setPdfModalOpen(true);
+//               }
+//           } else {
+//               toast.error("Could not fetch receipt data for preview.");
+//               // Modals remain closed if fetch fails
+//           }
+//       } else {
+//            console.log("No receipt number available for preview.");
+//       }
+//   };
+
+
+//   // PDF/Print Modal Handlers
+//   const handleClosePdfModal = (action = null) => {
+//     // Expect receiptData.data to hold the core receipt details
+//     if (action === "download" && receiptData?.data) handleDownloadPdf(receiptData.data);
+//     else if (action === "print" && receiptData?.data) handlePrintReceipt(receiptData.data);
+//     setPdfModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+//   const handleCloseUnifiedReceiptModal = (action = null) => {
+//     if (action === "download" && receiptData?.data) handleDownloadUnifiedPdf(receiptData.data);
+//     else if (action === "print" && receiptData?.data) handlePrintUnifiedReceipt(receiptData.data);
+//     setUnifiedReceiptModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+
+//   // PDF Generation/Print Functions (expect the core data object)
+//    const handleDownloadPdf = (receiptCoreData) => {
+//        if (!receiptCoreData?.feeReceiptNumber) { toast.error("Receipt details unavailable for PDF."); return; }
+//        generatePdf(receiptCoreData, [], 0, 0, 0, 0, 0, 0, `fee-receipt-${receiptCoreData.feeReceiptNumber}.pdf`, false); // Pass false for single
+//    };
+//    const handlePrintReceipt = (receiptCoreData) => {
+//        if (!receiptCoreData?.feeReceiptNumber) { toast.error("Receipt details unavailable for print."); return; }
+//        console.log("Initiating print for single receipt:", receiptCoreData.feeReceiptNumber);
+//        toast.info("Print functionality needs specific implementation (e.g., using a library or window.print).");
+//        // TODO: Add actual print logic here
+//    };
+//     const handleDownloadUnifiedPdf = (receiptCoreData) => {
+//         if (!receiptCoreData?.unifiedReceiptNumber) { toast.error("Unified receipt details unavailable for PDF."); return; }
+//         generatePdf(receiptCoreData, [], 0, 0, 0, 0, 0, 0, `unified-receipt-${receiptCoreData.unifiedReceiptNumber}.pdf`, true); // Pass true for unified
+//     };
+//    const handlePrintUnifiedReceipt = (receiptCoreData) => {
+//         if (!receiptCoreData?.unifiedReceiptNumber) { toast.error("Unified receipt details unavailable for print."); return; }
+//         console.log("Initiating print for unified receipt:", receiptCoreData.unifiedReceiptNumber);
+//         toast.info("Print functionality needs specific implementation.");
+//        // TODO: Add actual print logic here
+//    };
+
+
+//   // --- Render Function ---
+//   return (
+//     <div className="px-4 pb-8 min-h-screen bg-gray-100">
+//       <div className="max-w-7xl mx-auto">
+//         {/* Search Section - Sticky */}
+//         <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-white rounded-lg shadow sticky top-0 z-20">
+//           <ReactInput type="text" label="Search by Name" onChange={handleSearch} value={searchTerm} containerClassName="flex-1 min-w-[200px]" className="w-full" />
+//           <ReactInput type="text" label="Search by Adm. No" onChange={handleSearchbyAdmissionNo} value={searchTermbyadmissionNo} containerClassName="flex-1 min-w-[200px]" className="w-full" />
+//         </div>
+
+//         {/* Search Results Dropdown */}
+//         {filteredStudents.length > 0 && (
+//           <div className="relative mb-6">
+//             <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full left-0 right-0">
+//               <table className="w-full border-collapse">
+//                 <thead className="bg-gray-100 sticky top-0 z-10">
+//                   <tr>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Student Name</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Adm. No.</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Class</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Parent</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>{filteredStudents.map((student) => (<tr key={student._id} className="cursor-pointer hover:bg-indigo-50 transition duration-150 ease-in-out border-b border-gray-200" onClick={() => { handleStudentClick(student.parentId); setFilteredStudents([]); }}>
+//                     <td className="p-3 font-medium text-gray-800 text-sm">{student.studentName}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.admissionNumber}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.class}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.fatherName}</td>
+//                   </tr>))}</tbody>
+//               </table>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Spacer div to push content below search results */}
+//         <div className={`${filteredStudents.length > 0 ? 'mt-[260px]' : 'mt-0'} transition-all duration-300`}>
+
+//           {/* Child Selection and Forms Area */}
+//           {showChildForms && parentData?.length > 0 && (
+//             <div className="mt-6 pt-4 border-t border-gray-200">
+//               {/* Header with Unified Payment Button */}
+//               <div className="flex justify-between items-center mb-4 px-2">
+//                 <h2 className="text-xl font-semibold text-gray-800">Fee Payment</h2>
+//                 {selectedChildrenIndices?.length > 1 && (<Button name="Pay for Siblings Together" onClick={handleUnifiedFeePayment} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-md disabled:opacity-50" disabled={selectedChildrenIndices.some(index => formData[index]?.error)} /> )}
+//               </div>
+
+//               {/* Grid for Child Cards */}
+//               <div className="grid grid-cols-1 gap-6">
+//                 {parentData.map((child, index) => {
+//                   const currentFormData = formData[index];
+
+//                   // --- Error Display Card ---
+//                   if (!currentFormData || currentFormData.error) {
+//                     return (
+//                        <div key={child._id || index} className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex items-center gap-3" role="alert">
+//                            <svg className="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+//                            <div>
+//                                <strong className="font-bold">Error: {child.studentName}</strong>
+//                                <span className="block text-sm ml-1">{currentFormData?.errorMessage || "Could not load fee data. Payment form disabled."}</span>
+//                            </div>
+//                        </div>
+//                     );
+//                   }
+//                   // --- End Error Display Card ---
+
+
+//                   const isSelected = selectedChildrenIndices.includes(index);
+//                   const showForm = showFormFlags[index];
+//                   const epsilon = 0.01;
+
+//                   // --- Prepare Dropdown Options & Values (Retrieve from state) ---
+//                     const availableAdditionalFees = currentFormData.availableAdditionalFees || [];
+//                     const latestRegularStatus = currentFormData.feeInfo?.feeStatus?.monthlyDues?.regularDues || [];
+//                     const latestAdditionalStatus = currentFormData.feeInfo?.feeStatus?.monthlyDues?.additionalDues || [];
+//                     const currentDueItems = currentFormData.currentDueItems || [];
+
+//                     // Filter months based on latest status (fully unpaid)
+//                     const monthOptions = allMonths
+//                         .filter(month => {
+//                             const monthStat = latestRegularStatus.find(m => m.month === month);
+//                             const isUnpaid = !monthStat || ['Unpaid', 'Not Paid'].includes(monthStat.status);
+//                             const expectedAmount = currentFormData.classFee || 0;
+//                             const isFullyDue = !monthStat || Math.abs(monthStat.dueAmount - expectedAmount) < epsilon;
+//                             return isUnpaid && isFullyDue;
+//                         })
+//                         .map(month => ({ name: `${month} (₹${(currentFormData.classFee || 0).toFixed(2)})`, code: month }));
+//                     const selectedMonthValues = currentFormData.selectedMonths.map(m => ({ name: m.label, code: m.value }));
+
+//                     // Filter Additional fees (non-One-Time) excluding those with current dues
+//                     const additionalFeeOptions = availableAdditionalFees
+//                         .filter(availFee => availFee.type !== 'One Time')
+//                         .filter(availFee => !currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.dueAmount > epsilon))
+//                         .map(item => ({ name: item.label, code: item.id }));
+//                     const selectedAdditionalFeeValues = currentFormData.selectedAdditionalFees.map(f => {
+//                         const detail = availableAdditionalFees.find(af => af.id === f.id);
+//                         return { name: detail?.label || f.name, code: f.id };
+//                     });
+
+//                     // Filter One-Time fees excluding those with current dues
+//                     const oneTimeFeeOptions = availableAdditionalFees
+//                         .filter(availFee => availFee.type === 'One Time')
+//                         .filter(availFee => !currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.dueAmount > epsilon))
+//                         .map(item => ({ name: item.label, code: item.id }));
+//                     const selectedOneTimeFeeValues = currentFormData.selectedOneTimeFees.map(f => {
+//                          const detail = availableAdditionalFees.find(af => af.id === f.id);
+//                         return { name: detail?.label || f.name, code: f.id };
+//                     });
+//                   // --- End Prepare Dropdown Options & Values ---
+
+
+//                   return (
+//                     <div key={child._id || index} className={`bg-white rounded-lg shadow-md border ${isSelected ? "border-indigo-500 ring-2 ring-indigo-200" : "border-gray-200 hover:border-gray-300"} overflow-hidden`}>
+//                       {/* Child Header */}
+//                       <div className={`flex items-center px-4 py-3 border-b ${isSelected ? "bg-indigo-50" : "bg-gray-50"} ${currentFormData.error ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-indigo-100'}`} onClick={() => !currentFormData.error && handleChildSelection(index)}>
+//                         <input type="checkbox" id={`child-checkbox-${index}`} checked={isSelected} onChange={(e) => { e.stopPropagation(); !currentFormData.error && handleChildSelection(index); }} className={`mr-3 h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500 ${currentFormData.error ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={currentFormData.error} />
+//                         <label id={`child-label-${index}`} className={`flex-grow ${currentFormData.error ? 'cursor-not-allowed' : 'cursor-pointer'}`} htmlFor={`child-checkbox-${index}`}>
+//                           <div className="flex justify-between items-center">
+//                             <div> <span className="text-base font-semibold text-indigo-800">{child.studentName}</span> <span className="text-sm text-gray-600 ml-2">(Cls: {child.class}/Adm#: {child.admissionNumber})</span> </div>
+//                              {!currentFormData.error && ( <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isSelected ? "bg-indigo-200 text-indigo-800" : "bg-gray-200 text-gray-700"}`}>{isSelected ? "SELECTED" : "SELECT"}</span> )}
+//                           </div>
+//                           <div className="flex flex-wrap items-center gap-x-4 text-xs mt-1">
+//                             <span className="text-red-600 font-medium">Total Dues: ₹{currentFormData?.totalDuesHeader?.toFixed(2) || "0.00"}</span>
+//                             {currentFormData?.pastDues > 0 && <span className="text-purple-600 font-medium">Past Session Dues: ₹{currentFormData.pastDues.toFixed(2)}</span>}
+//                             {currentFormData?.lateFine > 0 && <span className="text-orange-600 font-medium">Total Late Fine: ₹{currentFormData.lateFine.toFixed(2)}</span>}
+//                           </div>
+//                         </label>
+//                       </div>
+
+//                       {/* Collapsible Form - Only render if no error */}
+//                       {!currentFormData.error && (
+//                         <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showForm ? "max-h-[2500px] opacity-100" : "max-h-0 opacity-0"}`}>
+//                           {showForm && (
+//                             <div className="px-4 py-4 border-t flex flex-col lg:flex-row gap-6 bg-white">
+//                               {/* Form Inputs Section */}
+//                               <form onSubmit={(e) => handleSubmit(e, index)} className="flex-grow lg:w-2/3 space-y-5 mb-6 lg:mb-0" noValidate>
+//                                 {/* Fee Selection Dropdowns */}
+//                                 <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
+//                                    <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select Regular Month(s)</label> <DynamicMultiSelect name={`regularFees-${index}`} placeholderName="Select new month(s)..." dynamicOptions={monthOptions} handleChange={(name, opts) => handleMonthMultiSelectChange(index, name, opts)} value={selectedMonthValues} containerClassName="w-full" menuClassName="w-full z-50" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid months.</p> </div>
+//                                    <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select Additional Fee(s)</label> <DynamicMultiSelect name={`additionalFees-${index}`} searchable={true} placeholderName="Select new fee(s)..." dynamicOptions={additionalFeeOptions} handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedAdditionalFees", opts)} value={selectedAdditionalFeeValues} containerClassName="w-full" menuClassName="w-full z-40" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid fees.</p> </div>
+//                                    <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select One-Time Fee(s)</label> <DynamicMultiSelect name={`oneTimeFees-${index}`} searchable={true} placeholderName="Select new one-time..." dynamicOptions={oneTimeFeeOptions} handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedOneTimeFees", opts)} value={selectedOneTimeFeeValues} containerClassName="w-full" menuClassName="w-full z-30" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid fees.</p> </div>
+//                                 </div>
+//                                 {/* Payment Details Inputs */}
+//                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                                   <ReactInput type="number" label="Concession (-)" value={currentFormData.concession} onChange={(e) => handleInputChange(index, "concession", e.target.value)} min="0" step="0.01" containerClassName="sm:col-span-1" className="w-full" />
+//                                   <ReactInput type="number" label={`Amount Paying Now (*) ${selectedChildrenIndices?.length > 1 ? `(for ${child.studentName})` : ''}`} value={currentFormData.totalAmount} onChange={(e) => handleInputChange(index, "totalAmount", e.target.value)} min="0.01" step="0.01" isRequired={true} containerClassName="sm:col-span-1" className="w-full font-semibold" />
+//                                   <div> <label className="block text-sm font-medium text-gray-700">Payment Mode (*)</label> <select value={currentFormData.paymentMode} onChange={(e) => handleInputChange(index, "paymentMode", e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required> <option value="Cash">Cash</option> <option value="Online">Online</option> <option value="Cheque">Cheque</option> <option value="Card">Card</option> </select> </div>
+//                                   <ReactInput type="date" label="Payment Date (*)" value={currentFormData.date} onChange={(e) => handleInputChange(index, "date", e.target.value)} isRequired={true} max={moment().format("YYYY-MM-DD")} className="w-full" />
+//                                   {(currentFormData.paymentMode === "Online" || currentFormData.paymentMode === "Card") && (<ReactInput type="text" label="Transaction ID (*)" value={currentFormData.transactionId} onChange={(e) => handleInputChange(index, "transactionId", e.target.value)} isRequired={true} className="w-full" /> )}
+//                                   {currentFormData.paymentMode === "Cheque" && (<ReactInput type="text" label="Cheque Number (*)" value={currentFormData.chequeBookNo} onChange={(e) => handleInputChange(index, "chequeBookNo", e.target.value)} isRequired={true} className="w-full" /> )}
+//                                 </div>
+//                                 {/* Remarks Input */}
+//                                 <div> <label className="block text-sm font-medium text-gray-700">Remarks</label> <textarea value={currentFormData.remarks} onChange={(e) => handleInputChange(index, "remarks", e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" rows="2" placeholder="Optional remarks..." /> </div>
+//                                 {/* Submit Button (Only for single student view) */}
+//                                 {selectedChildrenIndices?.length <= 1 && ( <div className="flex justify-end pt-4 mt-4 border-t"> <Button type="submit" name={`Submit Payment for ${child.studentName}`} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-md" /> </div> )}
+//                               </form>
+
+//                               {/* Payment Summary Section */}
+//                               <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-4 bg-indigo-50 lg:ml-4 mt-4 lg:mt-0 self-start">
+//                                 <h3 className="text-base font-semibold text-indigo-900 border-b border-indigo-200 pb-2 mb-3"> Payment Summary & Dues </h3>
+//                                 <table className="w-full text-sm">
+//                                   <thead> <tr> <th className="text-left text-gray-600 font-medium pb-1 text-xs">Item</th> <th className="text-right text-gray-600 font-medium pb-1 text-xs">Amount</th> </tr> </thead>
+//                                   <tbody>
+//                                     {/* Past Dues */}
+//                                     {currentFormData.pastDues > 0 && (<tr className="border-b border-indigo-100"><td className="py-1.5">Past Session Dues:</td><td className="font-medium text-purple-700 py-1.5 text-right">₹{currentFormData.pastDues.toFixed(2)}</td></tr>)}
+
+//                                     {/* Auto-Included Due Items */}
+//                                     {currentFormData?.currentDueItems?.length > 0 && ( <>
+//                                         <tr className="font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1 text-left font-semibold text-red-700">Outstanding Dues (Auto-Included):</td></tr>
+//                                         {currentFormData.currentDueItems.map((item, i) => (
+//                                             item.dueAmount > epsilon && ( // Only display if due amount > 0
+//                                                  <tr key={`due-sum-${index}-${i}`} className="border-b border-indigo-100">
+//                                                     <td className="text-gray-600 py-1 pl-3">{item.name}{item.month ? ` (${item.month})` : ''}{item.type === 'Fine' ? ` (Fine)` : ''}</td>
+//                                                     <td className="font-medium text-red-600 py-1 text-right">₹{(item.dueAmount || 0).toFixed(2)}</td>
+//                                                 </tr>
+//                                             )
+//                                         ))} </>
+//                                     )}
+
+//                                     {/* Additionally Selected Items */}
+//                                     {(currentFormData?.selectedMonths?.length > 0 || currentFormData.selectedAdditionalFees.length > 0 || currentFormData.selectedOneTimeFees.length > 0) && ( <>
+//                                         <tr className="font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1 text-left font-semibold text-blue-700">Additionally Selected:</td></tr>
+//                                         {currentFormData.selectedMonths.map((item, i) => (<tr key={`sel-reg-${index}-${i}`} className="border-b border-indigo-100"><td className="py-1 pl-3">{item.value} (Regular):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))}
+//                                         {currentFormData.selectedAdditionalFees.map((item, i) => (<tr key={`sel-add-${index}-${i}`} className="border-b border-indigo-100"><td className="py-1 pl-3">{item.name} ({item.type}):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))}
+//                                         {currentFormData.selectedOneTimeFees.map((item, i) => (<tr key={`sel-one-${index}-${i}`} className="border-b border-indigo-100"><td className="py-1 pl-3">{item.name} (One-Time):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))} </>
+//                                     )}
+
+//                                     {/* Concession */}
+//                                     {currentFormData.concession > 0 && (<tr className="border-b border-indigo-100"><td className="text-green-700 py-1.5">Concession Applied:</td><td className="font-medium text-green-700 py-1.5 text-right">- ₹{parseFloat(currentFormData.concession).toFixed(2)}</td></tr>)}
+//                                   </tbody>
+//                                   {/* Footer with Totals */}
+//                                   <tfoot className="border-t-2 border-indigo-200 mt-2 pt-2">
+//                                     <tr><td className="pt-2 font-semibold text-indigo-900 py-1.5">Total Payable Now</td><td className="pt-2 font-bold text-indigo-900 py-1.5 text-right">₹{calculateNetPayableAmount(index).toFixed(2)}</td></tr>
+//                                     {parseFloat(currentFormData.totalAmount) > 0 && (() => { const distribution = calculateAutoDistribution(index); return (<>
+//                                         <tr><td className="py-1.5">Amount Paying:</td><td className="font-medium py-1.5 text-right">₹{parseFloat(currentFormData.totalAmount).toFixed(2)}</td></tr>
+//                                         <tr className={`${distribution.remainingDues > epsilon ? 'bg-red-100' : 'bg-transparent'}`}><td className={`font-semibold py-1.5 ${distribution.remainingDues > epsilon ? 'text-red-700' : 'text-gray-600'}`}>Remaining Dues:</td><td className={`font-bold py-1.5 text-right ${distribution.remainingDues > epsilon ? 'text-red-700' : 'text-gray-600'}`}>₹{distribution.remainingDues.toFixed(2)}</td></tr>
+//                                         {distribution.remainingAfterDistribution > epsilon && (<tr className="bg-green-100"><td className="font-semibold text-green-700 py-1 text-xs">(Advance/Excess):</td><td className="font-semibold text-green-700 py-1 text-right text-xs">₹{distribution.remainingAfterDistribution.toFixed(2)}</td></tr> )}
+//                                     </>); })()}
+//                                   </tfoot>
+//                                 </table>
+//                               </div> {/* End Summary Section */}
+//                             </div>
+//                           )}
+//                         </div>
+//                        )} {/* End Conditional Form Render */}
+//                     </div> // End Child Card
+//                   );
+//                 })}
+//               </div> {/* End Grid */}
+//             </div>
+//           )} {/* End Child Selection and Forms Area */}
+
+//           {/* Fee History Display Area */}
+//           {/* Show history if forms are visible, a child is selected, and history data exists */}
+//           {showChildForms && childFeeHistory && selectedChildrenIndices.length > 0 && (
+//             <div className="mt-8 border-t border-gray-300 pt-6">
+//               <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">Fee History for {childFeeHistory?.studentName || "Selected"} ({childFeeHistory?.session || session})</h2>
+//               {/* Pass the full feeInfo object to MonthFeeCard */}
+//               <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow">
+//                  {childFeeHistory.feeStatus?.monthlyDues ? (
+//                      <MonthFeeCard feeInfo={childFeeHistory} />
+//                  ) : (
+//                     <p className="text-center text-gray-500">Fee history details are unavailable.</p>
+//                  )}
+//               </div>
+//             </div>
+//           )}
+
+//         </div> {/* End content container */}
+
+
+//         {/* Modals Section */}
+//         {/* Confirmation Modal */}
+//         <Modal setIsOpen={setIsMessageModalOpen} isOpen={isMessageModalOpen} title="Confirm Action" maxWidth="md">
+//            <div className="p-5">
+//             <p className="text-gray-700 mb-4 text-center">
+//                 Fee submitted for <span className="font-semibold">{responseData?.student?.studentName || unifiedReceiptData?.students?.map(s => s.studentName).join(', ') || "student(s)"}</span>.<br />
+//                 Receipt: <span className="font-semibold">{responseData?.feeReceiptNumber || unifiedReceiptData?.unifiedReceiptNumber || "N/A"}</span><br />
+//                 Send SMS confirmation?<br />
+//                 (<span className="font-mono text-sm">{responseData?.parent?.fatherPhone || unifiedReceiptData?.parent?.fatherPhone || "Phone N/A"}</span>)
+//             </p>
+//             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+//               <Button type="button" name="Yes, Send & View Receipt" onClick={() => handleCloseMessageModal(true)} className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2" />
+//               <Button type="button" name="No, Just View Receipt" onClick={() => handleCloseMessageModal(false)} className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1" />
+//             </div>
+//           </div>
+//         </Modal>
+
+//         {/* Single Receipt Preview Modal */}
+//         <Modal setIsOpen={setPdfModalOpen} isOpen={pdfModalOpen} title="Fee Receipt Preview" maxWidth="lg">
+//             <div className="p-1">
+//                 {!isPreviewReady || !receiptData?.data ? (
+//                     <div className="flex justify-center items-center h-64"><p>Loading preview...</p></div>
+//                 ) : (
+//                     // Pass the core data object (receiptData.data) to the component
+//                     <FeeRecipt modalData={receiptData.data} handleCloseModal={() => handleClosePdfModal()} handlePrint={() => handleClosePdfModal("print")} handleDownload={() => handleClosePdfModal("download")} isPreviewReady={isPreviewReady} isUnified={false} />
+//                 )}
+//             </div>
+//         </Modal>
+
+//          {/* Unified Receipt Preview Modal */}
+//          <Modal setIsOpen={setUnifiedReceiptModalOpen} isOpen={unifiedReceiptModalOpen} title="Unified Fee Receipt Preview" maxWidth="lg">
+//            <div className="p-1">
+//                {!isPreviewReady || !receiptData?.data ? (
+//                    <div className="flex justify-center items-center h-64"><p>Loading preview...</p></div>
+//                ) : (
+//                     // Pass the core data object (receiptData.data) to the component
+//                    <FeeRecipt modalData={receiptData.data} handleCloseModal={() => handleCloseUnifiedReceiptModal()} handlePrint={() => handleCloseUnifiedReceiptModal("print")} handleDownload={() => handleCloseUnifiedReceiptModal("download")} isPreviewReady={isPreviewReady} isUnified={true} />
+//                )}
+//            </div>
+//          </Modal>
+
+//       </div> {/* End Max Width Container */}
+//     </div> // End Main Div
+//   );
+// };
+
+// export default CreateFees;
+
+
+// import axios from "axios";
+// import React, { useEffect, useState, useCallback } from "react";
+// import { toast } from "react-toastify";
+// import {
+//   ActiveStudents,
+//   feescreateFeeStatus,
+//   parentandchildwithID,
+//   feescreateUnifiedFeeStatus,
+// } from "../../Network/AdminApi";
+// import Button from "../../Dynamic/utils/Button";
+// import Modal from "../../Dynamic/Modal";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import MonthFeeCard from "./MonthFeeCard";
+// import moment from "moment";
+// import { FeeResponse } from "../../Dynamic/utils/Message";
+// import generatePdf from "../../Dynamic/utils/pdfGenerator";
+// import FeeRecipt from "./FeeRecipt";
+// import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+
+// // Helper remains the same
+// const fetchAdditionalFeesForClass = async (className, authToken) => {
+//   try {
+//     const response = await axios.get(
+//       `${
+//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+//       {
+//         withCredentials: true,
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       }
+//     );
+//     if (response?.data?.success) {
+//       const filteredFees = response.data.data.filter(
+//         (fee) => fee.className === className
+//       );
+//       return filteredFees.map((fee) => ({
+//         label: `${fee.name} (${fee.feeType}) - ₹${fee.amount}`,
+//         value: fee.amount, // Base amount
+//         name: fee.name,
+//         type: fee.feeType,
+//         id: fee._id,
+//       }));
+//     } else {
+//       console.error(`Failed to fetch additional fees for class ${className}:`, response?.data?.message);
+//       toast.error(`Failed to fetch additional fees for class ${className}.`);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error(`Error fetching additional fees for class ${className}:`, error);
+//     toast.error(`Error fetching additional fees for class ${className}: ${error.message}`);
+//     return [];
+//   }
+// };
+
+
+// const CreateFees = () => {
+//   const session = JSON.parse(localStorage.getItem("session"));
+//   const { setIsLoader } = useStateContext();
+//   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+//   const [responseData, setResponseData] = useState(null);
+//   const [showChildForms, setShowChildForms] = useState(false);
+//   const [selectedChildrenIndices, setSelectedChildrenIndices] = useState([]);
+//   const [childFeeHistory, setChildFeeHistory] = useState(null);
+//   const [filteredStudents, setFilteredStudents] = useState([]);
+//   const [showFormFlags, setShowFormFlags] = useState([]);
+//   const [triggerRefresh, setTriggerRefresh] = useState(false);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchTermbyadmissionNo, setSearchTermbyadmissionNo] = useState("");
+//   const [parentData, setParentData] = useState([]);
+//   const [allStudent, setAllStudent] = useState([]);
+//   const [formData, setFormData] = useState([]); // Holds state for each child { ..., currentDueItems: [], selectedMonths: [], ... }
+//   const authToken = localStorage.getItem("token");
+//   const [pdfModalOpen, setPdfModalOpen] = useState(false);
+//   const [unifiedReceiptModalOpen, setUnifiedReceiptModalOpen] = useState(false);
+//   const [unifiedReceiptData, setUnifiedReceiptData] = useState(null);
+//   const [receiptData, setReceiptData] = useState(null);
+//   const [isPreviewReady, setIsPreviewReady] = useState(false);
+
+//   const allMonths = [
+//     "April", "May", "June", "July", "August", "September",
+//     "October", "November", "December", "January", "February", "March",
+//   ];
+
+//   const getAllStudent = useCallback(async () => {
+//     setIsLoader(true);
+//     try {
+//       const response = await ActiveStudents();
+//       setAllStudent(response?.students?.data || []);
+//     } catch (error) {
+//       console.error("Failed to fetch student list:", error);
+//       toast.error("Failed to fetch student list.");
+//       setAllStudent([]);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   }, [setIsLoader]);
+
+//   useEffect(() => {
+//     getAllStudent();
+//   }, [getAllStudent, triggerRefresh]);
+
+//   const handleSearch = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTerm(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.studentName &&
+//           student.studentName.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTermbyadmissionNo("");
+//   };
+
+//   const handleSearchbyAdmissionNo = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTermbyadmissionNo(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.admissionNumber &&
+//           student.admissionNumber.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTerm("");
+//   };
+
+//   // Fetch detailed fee info - remains the same
+//   const fetchStudentFeeInfo = async (studentId) => {
+//     try {
+//       const response = await axios.get(
+//         `${
+//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         {
+//           withCredentials: true,
+//           headers: { Authorization: `Bearer ${authToken}` },
+//         }
+//       );
+//       if (response.data.success) {
+//         return response.data.data;
+//       } else {
+//         console.error(`Fee info fetch failed for student ID ${studentId}:`, response.data.message || "Unknown error");
+//         toast.error(`Fee info fetch failed for student ID ${studentId}: ${response.data.message || "Unknown error"}`);
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching fee info for student ID ${studentId}:`, error);
+//       toast.error(`Error fetching fee info for student ID ${studentId}: ${error.message}`);
+//       return null;
+//     }
+//   };
+
+//   // Reset state - remains mostly the same
+//   const resetState = () => {
+//     setSelectedChildrenIndices([]);
+//     setChildFeeHistory(null);
+//     setShowFormFlags([]);
+//     setParentData([]);
+//     setFormData([]);
+//     setSearchTerm("");
+//     setSearchTermbyadmissionNo("");
+//     setFilteredStudents([]);
+//     setShowChildForms(false);
+//     setResponseData(null);
+//     setUnifiedReceiptData(null);
+//     setIsMessageModalOpen(false);
+//     setPdfModalOpen(false);
+//     setUnifiedReceiptModalOpen(false);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   // *** MODIFIED handleStudentClick ***
+//   const handleStudentClick = async (parentId) => {
+//     console.log(`handleStudentClick called for parentId: ${parentId}`);
+//     setIsLoader(true);
+//     resetState();
+
+//     try {
+//       const parentResponse = await parentandchildwithID(parentId);
+//       if (!parentResponse?.success) {
+//         console.error("Failed to fetch parent/child data:", parentResponse?.message);
+//         toast.error(parentResponse?.message || "Failed to fetch parent/child data.");
+//         setIsLoader(false);
+//         return;
+//       }
+
+//       const children = parentResponse?.children || [];
+//       if (children.length === 0) {
+//         toast.info("No children found for this parent.");
+//         setIsLoader(false);
+//         return;
+//       }
+//       setParentData(children);
+
+//       console.log("Fetching fee info and additional fees for all children...");
+//       const promises = children.map((child) =>
+//         Promise.all([
+//           fetchStudentFeeInfo(child.studentId),
+//           fetchAdditionalFeesForClass(child.class, authToken),
+//         ])
+//       );
+//       const results = await Promise.all(promises);
+//       console.log("Results from fee info and additional fees fetches:", results);
+
+//       const initialFormData = [];
+//       const initialShowFormFlags = [];
+
+//       results.forEach(([feeInfo, availableAdditionalFees], index) => {
+//         const child = children[index];
+//         console.log(`Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`);
+
+//         if (!feeInfo) {
+//           console.warn(`Could not load fee details for ${child.studentName}. Setting error flag.`);
+//           toast.error(`Could not load fee details for ${child.studentName}. Skipping.`);
+//           initialShowFormFlags.push(false);
+//           initialFormData.push({ admissionNumber: child.admissionNumber, studentId: child.studentId, studentName: child.studentName, className: child.class, error: true });
+//           return;
+//         }
+
+//         // Extract data (same as before)
+//         // const regularFeeAmount = feeInfo.feeStructure?.regularFees?.[0]?.amount || 0;
+//         // const additionalFeesStructure = feeInfo.feeStatus?.feeHistory?.flatMap(month => month.additionalFees) || [];
+//         // // const additionalFeesStructure = feeInfo.feeStructure?.additionalFees || [];
+//         // // const monthlyStatus = feeInfo.feeStatus?.feeHistory?.flatMap(month => month.additionalFees) || [];
+//         // const monthlyStatus = feeInfo.feeStatus?.feeHistory ;
+//         // // const monthlyStatus = feeInfo.monthlyStatus || []; // Crucial for current dues
+//         // const feeHistory = feeInfo.feeStatus?.feeHistory?.[0] || {}; // Used less directly now
+
+//         // // --- Calculate Current Due Items (Auto-Included) ---
+//         // const currentDueItems = [];
+//         // const epsilon = 0.01; // Tolerance for float comparison
+
+//         // monthlyStatus.forEach(monthData => {
+//         //     // Check Regular Fee for this month
+//         //     if (monthData.regularFee && monthData.regularFee.due > epsilon) {
+//         //         currentDueItems.push({
+//         //             name: 'Regular Fee',
+//         //             month: monthData.month,
+//         //             type: 'Regular',
+//         //             dueAmount: monthData.regularFee.due,
+//         //             totalAmount: monthData.regularFee.amount, // Store total amount for reference
+//         //         });
+//         //     }
+//         //     // Check Additional Fees for this month
+//         //     monthData.additionalFees?.forEach(addFee => {
+//         //         if (addFee.due > epsilon) {
+//         //             // Check if this due item has already been added (e.g., from another month if it's One-Time)
+//         //             // For simplicity now, we might add duplicates for One-Time fees if they appear due in multiple months' status.
+//         //             // Refinement: Check if an item with the same name and type 'One-Time' is already in currentDueItems.
+//         //             const isOneTime = addFee.feeType?.toLowerCase() === 'one time';
+//         //             const alreadyAdded = isOneTime && currentDueItems.some(item => item.name === addFee.name && item.type === 'One-Time');
+
+//         //             if(!alreadyAdded) {
+//         //                 currentDueItems.push({
+//         //                     name: addFee.name,
+//         //                     month: addFee.feeType === 'Monthly' ? monthData.month : undefined, // Month only for monthly type
+//         //                     type: addFee.feeType || 'Additional', // Capture type
+//         //                     dueAmount: addFee.due,
+//         //                     totalAmount: addFee.amount, // Store total amount for reference
+//         //                     // Store original ID if possible for payload mapping later
+//         //                     id: additionalFeesStructure.find(afs => afs.name === addFee.name)?._id
+//         //                 });
+//         //             }
+//         //         }
+//         //     });
+//         // });
+//         // console.log(`Current Due Items for ${child.studentName}:`, currentDueItems);
+//         // Assuming 'feeInfo' contains the full JSON object provided in the example.
+// const feeStatus = feeInfo.feeStatus; // For easier access
+
+// const currentDueItems = [];
+// const epsilon = 0.01; // Tolerance for comparing floating-point numbers (due amounts)
+
+// // --- Calculate Current Due Items using feeStatus.monthlyDues ---
+
+// // 1. Process Regular Dues
+// if (feeStatus?.monthlyDues?.regularDues) {
+//     feeStatus.monthlyDues.regularDues.forEach(regularDue => {
+//         // Check if there's an outstanding amount for this regular fee month
+//         if (regularDue.dueAmount > epsilon) {
+//             currentDueItems.push({
+//                 _id: regularDue._id, // The ID of this specific due item
+//                 name: 'Regular Fee',   // Standard name
+//                 month: regularDue.month,
+//                 type: 'Regular',
+//                 dueAmount: regularDue.dueAmount,
+//                 // Calculate the original total amount for this item for reference
+//                 totalAmount: (regularDue.paidAmount || 0) + regularDue.dueAmount,
+//                 status: regularDue.status // 'Partial' or 'Unpaid'
+//             });
+//         }
+//     });
+// }
+
+// // 2. Process Additional Dues
+// if (feeStatus?.monthlyDues?.additionalDues) {
+//     feeStatus.monthlyDues.additionalDues.forEach(additionalDue => {
+//         // Check if there's an outstanding amount for this additional fee item
+//         if (additionalDue.dueAmount > epsilon) {
+//             // Determine the fee type (Monthly vs One-Time/Other)
+//             // We infer based on the presence of 'month'. A more robust way might
+//             // involve looking up the fee definition in feeInfo.feeStructure if available.
+//             const feeType = additionalDue.month ? 'Monthly' : 'One-Time'; // Basic inference
+
+//             currentDueItems.push({
+//                 _id: additionalDue._id, // The ID of this specific due item
+//                 name: additionalDue.name,
+//                 month: additionalDue.month, // Will be undefined if not monthly
+//                 type: feeType, // Or just 'Additional' if inference isn't needed/possible
+//                 dueAmount: additionalDue.dueAmount,
+//                  // Calculate the original total amount for this item for reference
+//                 totalAmount: (additionalDue.paidAmount || 0) + additionalDue.dueAmount,
+//                 status: additionalDue.status // 'Partial' or 'Unpaid'
+//             });
+//         }
+//     });
+// }
+
+// // 3. (Optional) Process Late Fines if they exist and have a similar structure
+// if (feeStatus?.monthlyDues?.lateFines) {
+//     feeStatus.monthlyDues.lateFines.forEach(fine => {
+//         if (fine.dueAmount > epsilon) {
+//              currentDueItems.push({
+//                 _id: fine._id,
+//                 name: 'Late Fine', // Or a more specific name if available
+//                 // month: fine.month, // If fines are associated with a month
+//                 type: 'Fine',
+//                 dueAmount: fine.dueAmount,
+//                 totalAmount: (fine.paidAmount || 0) + fine.dueAmount,
+//                 status: fine.status
+//              });
+//         }
+//     });
+// }
+
+
+// // --- Verification (Optional but Recommended) ---
+// // Sum the due amounts we found and compare with the overall 'dues' field
+// const calculatedTotalDues = currentDueItems.reduce((sum, item) => sum + item.dueAmount, 0);
+// console.log(`Calculated Total Dues from items: ${calculatedTotalDues}`);
+// console.log(`Overall Dues from feeStatus.dues: ${feeStatus.dues}`);
+
+// if (Math.abs(calculatedTotalDues - feeStatus.dues) > epsilon) {
+//     console.warn("WARNING: Discrepancy found between calculated item dues and feeStatus.dues field!");
+// }
+
+// // --- Output ---
+// // Assuming 'child' object exists as in the original snippet context
+// // console.log(`Current Due Items for ${child.studentName}:`, currentDueItems);
+// console.log(`Current Due Items:`, JSON.stringify(currentDueItems, null, 2)); // Pretty print output
+//         // --- End Calculate Current Due Items ---
+
+
+//         // --- Prepare Dropdown Options (Excluding items with dues) ---
+//         const allFeeDetails = allMonths.map((month) => { // Create a structure for easy lookup
+//             const monthStat = monthlyStatus.find((m) => m.month === month);
+//             const regFee = monthStat?.regularFee || { amount: regularFeeAmount, paid: 0, due: regularFeeAmount, status: 'Unpaid' };
+//             const addFees = additionalFeesStructure.map(afs => {
+//                  const addFeeStat = monthStat?.additionalFees?.find(af => af.name === afs.name);
+//                  return {
+//                      ...afs, // Base structure info (_id, name, feeType, amount)
+//                      paid: addFeeStat?.paid || 0,
+//                      due: addFeeStat?.due ?? (afs.feeType === 'Monthly' ? afs.amount : 0), // Default due if not found
+//                      status: addFeeStat?.status || 'Unpaid'
+//                  };
+//             });
+//             return { month, regularFee: regFee, additionalFees: addFees };
+//         });
+
+//         // Filter Regular Months for Dropdown (Only FULLY Unpaid)
+//         const monthOptions = allFeeDetails
+//             .filter(detail => detail.regularFee.status === 'Unpaid' && Math.abs(detail.regularFee.due - detail.regularFee.amount) < epsilon)
+//             .map(detail => ({
+//                 name: `${detail.month} (₹${detail.regularFee.amount.toFixed(2)})`, // Show amount
+//                 code: detail.month
+//             }));
+
+//         // Filter Additional Fees for Dropdown (Only FULLY Unpaid)
+//         const additionalFeeOptions = availableAdditionalFees
+//             .filter(availFee => {
+//                  // Check status across all months (more complex for One-Time/Yearly)
+//                  // Simple check: Assume if it appears in *any* month's status as NOT Unpaid or due < amount, exclude it.
+//                  // More accurate: Need to check if *total* paid across history matches total amount.
+//                  // Let's use a simplified check based on `currentDueItems` for now:
+//                  // If it's in currentDueItems, don't put it in the dropdown.
+//                  const hasCurrentDue = currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.type === availFee.type);
+//                  return !hasCurrentDue; // Only include if NO current due exists
+//             })
+//             .map(item => ({ name: item.label, code: item.id })); // Use ID as code
+
+//         // Filter One-Time Fees for Dropdown (Only FULLY Unpaid)
+//         // Similar logic: Exclude if present in `currentDueItems`
+//         const oneTimeFeeOptions = availableAdditionalFees
+//             .filter(availFee => availFee.type === 'One Time')
+//             .filter(availFee => {
+//                 const hasCurrentDue = currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.type === 'One Time');
+//                 return !hasCurrentDue;
+//             })
+//             .map(item => ({ name: item.label, code: item.id })); // Use ID as code
+
+
+//         // --- End Prepare Dropdown Options ---
+
+
+//         // Construct initial form data
+//         const childFormData = {
+//           admissionNumber: child.admissionNumber,
+//           studentId: child.studentId,
+//           studentName: child.studentName,
+//           className: child.class,
+//           classFee: regularFeeAmount,
+//           totalAmount: "", // User input
+//           // **** Initialize selections as EMPTY ****
+//           selectedMonths: [],
+//           selectedAdditionalFees: [],
+//           selectedOneTimeFees: [],
+//           // **** Store calculated due items ****
+//           currentDueItems: currentDueItems, // Items to be auto-included
+//           paymentMode: "Cash",
+//           transactionId: "",
+//           chequeBookNo: "",
+//           lateFine: feeInfo.feeStatus?.totalLateFines || 0, // Still relevant
+//           concession: "", // User input
+//           date: moment().format("YYYY-MM-DD"),
+//           remarks: "",
+//           // Store other details for reference / summary / dropdown options
+//           pastDues: feeInfo.feeStatus?.pastDues || 0, // Still relevant
+//           totalDuesHeader: feeInfo.feeStatus?.dues || 0, // For header display only
+//           allFeeDetails: allFeeDetails, // Store for lookup when selecting new items
+//           availableAdditionalFees: availableAdditionalFees || [], // Full list for lookups
+//           // Store feeInfo for history display
+//           feeInfo: feeInfo,
+//           error: false,
+//         };
+
+//         console.log(`Generated initial form data for ${child.studentName}:`, childFormData);
+//         initialFormData.push(childFormData);
+//         initialShowFormFlags.push(false);
+//       });
+
+//       console.log("Setting final formData state:", initialFormData);
+//       console.log("Setting final showFormFlags state:", initialShowFormFlags);
+//       setFormData(initialFormData);
+//       setShowFormFlags(initialShowFormFlags);
+//       setShowChildForms(true);
+
+//     } catch (error) {
+//       console.error("An error occurred during handleStudentClick:", error);
+//       toast.error("An error occurred while fetching student data.");
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   // Handle child selection checkbox - remains the same
+//   const handleChildSelection = (index) => {
+//       console.log(`handleChildSelection called for index: ${index}`);
+//       if (!formData || index < 0 || index >= formData.length) {
+//         console.error(`Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`);
+//         toast.error("An internal error occurred. Please try again.");
+//         return;
+//       }
+//       const currentChildData = formData[index];
+//       if (!currentChildData || currentChildData.error) {
+//         toast.warn(`Cannot select ${parentData[index]?.studentName || "this student"}. Fee data may be missing or failed to load.`);
+//         return;
+//       }
+
+//       const isCurrentlySelected = selectedChildrenIndices.includes(index);
+//       let updatedSelectedChildren;
+//       let updatedShowFormFlags = [...showFormFlags];
+
+//       if (isCurrentlySelected) {
+//         updatedSelectedChildren = selectedChildrenIndices.filter((i) => i !== index);
+//         updatedShowFormFlags[index] = false;
+//       } else {
+//         updatedSelectedChildren = [...selectedChildrenIndices, index];
+//         updatedShowFormFlags[index] = true;
+//       }
+//       updatedSelectedChildren.sort((a, b) => a - b);
+
+//       setSelectedChildrenIndices(updatedSelectedChildren);
+//       setShowFormFlags(updatedShowFormFlags);
+
+//       if (updatedSelectedChildren.length > 0) {
+//         const firstSelectedIndex = updatedSelectedChildren[0];
+//         setChildFeeHistory(formData[firstSelectedIndex]?.feeInfo || null);
+//       } else {
+//         setChildFeeHistory(null);
+//       }
+//     };
+
+
+//   // Handle standard input changes - remains the same
+//   const handleInputChange = (index, field, value) => {
+//       const updatedFormData = [...formData];
+//       if (updatedFormData[index]) {
+//         updatedFormData[index] = { ...updatedFormData[index], [field]: value };
+//         if (field === "paymentMode") {
+//           if (value !== "Online" && value !== "Card") updatedFormData[index].transactionId = "";
+//           if (value !== "Cheque") updatedFormData[index].chequeBookNo = "";
+//         }
+//         setFormData(updatedFormData);
+//       } else {
+//         console.error(`Attempted to handle input change for invalid index: ${index}`);
+//       }
+//     };
+
+
+//   // *** SIMPLIFIED handleMonthMultiSelectChange ***
+//   // Only updates the list of *newly* selected months. No auto-selection needed.
+//   const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
+//     console.log(`Month selection changed for index ${index}:`, selectedOptions);
+//     const selectedOptionsData = selectedOptions || [];
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index]) return;
+
+//     const currentChildData = updatedFormData[index];
+
+//     // --- Optional: Keep Sequential Month Validation ---
+//     const selectedMonthNames = selectedOptionsData.map((opt) => opt.code);
+//     if (selectedMonthNames.length > 1) {
+//         const indicesInAllMonths = selectedMonthNames.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
+//         let isSequential = true;
+//         for (let i = 1; i < indicesInAllMonths.length; i++) {
+//             if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
+//                 isSequential = false; break;
+//             }
+//         }
+//         if (!isSequential) {
+//             toast.warn(`Please select months in a continuous sequence. Deselect and reselect if needed.`);
+//             // return; // Optional: Prevent non-sequential selection
+//         }
+//     }
+//     // --- End Validation ---
+
+//     // Map selected options to the state format { value, label, amount }
+//     const newSelectedMonths = selectedOptionsData.map((opt) => {
+//       const monthDetail = currentChildData.allFeeDetails.find(d => d.month === opt.code)?.regularFee;
+//       return {
+//         value: opt.code, // Month name
+//         label: opt.name, // Label from option
+//         amount: monthDetail?.amount || 0, // Get the full amount for this month
+//       };
+//     });
+
+//     updatedFormData[index].selectedMonths = newSelectedMonths;
+//     setFormData(updatedFormData);
+//   };
+
+
+//   // *** SIMPLIFIED handleDynamicMultiSelectChange ***
+//   // Only updates the list of *newly* selected additional/one-time fees.
+//   const handleDynamicMultiSelectChange = (index, field, selectedOptions) => {
+//     console.log(`Dynamic multiselect changed for index ${index}, field ${field}:`, selectedOptions);
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index]) return;
+
+//     const currentChildData = updatedFormData[index];
+//     const selectedOptionsData = selectedOptions || [];
+
+//     if (field === "selectedAdditionalFees") {
+//       const newSelectedAdditionalFees = selectedOptionsData.map(opt => {
+//         const feeDetail = currentChildData.availableAdditionalFees.find(f => f.id === opt.code);
+//         return {
+//           id: opt.code, // The ID from the option
+//           name: feeDetail?.name || opt.name, // Get name, fallback to option label part
+//           type: feeDetail?.type || 'Additional', // Get type
+//           amount: feeDetail?.value || 0, // Get the full base amount
+//         };
+//       });
+//       updatedFormData[index].selectedAdditionalFees = newSelectedAdditionalFees;
+
+//     } else if (field === "selectedOneTimeFees") {
+//        const newSelectedOneTimeFees = selectedOptionsData.map(opt => {
+//         const feeDetail = currentChildData.availableAdditionalFees.find(f => f.id === opt.code); // Assuming One-Time options also use ID now
+//          return {
+//            id: opt.code, // The ID from the option
+//            name: feeDetail?.name || opt.name,
+//            type: 'One Time',
+//            amount: feeDetail?.value || 0, // Get the full base amount
+//          };
+//       });
+//       updatedFormData[index].selectedOneTimeFees = newSelectedOneTimeFees;
+//     }
+
+//     setFormData(updatedFormData);
+//   };
+
+
+//   // *** MODIFIED calculateNetPayableAmount ***
+//   const calculateNetPayableAmount = useCallback((index) => {
+//     const data = formData[index];
+//     if (!data || data.error) return 0;
+
+//     let total = 0;
+
+//     // 1. Start with Past Dues and Late Fine
+//     total += parseFloat(data.pastDues) || 0;
+//     total += parseFloat(data.lateFine) || 0;
+
+//     // 2. Add all CURRENT DUE items (auto-included)
+//     total += data.currentDueItems.reduce((sum, item) => sum + (parseFloat(item.dueAmount) || 0), 0);
+
+//     // 3. Add FULL amount of NEWLY SELECTED Regular Months
+//     total += data.selectedMonths.reduce((sum, monthState) => sum + (parseFloat(monthState.amount) || 0), 0);
+
+//     // 4. Add FULL amount of NEWLY SELECTED Additional Fees
+//     total += data.selectedAdditionalFees.reduce((sum, fee) => sum + (parseFloat(fee.amount) || 0), 0);
+
+//     // 5. Add FULL amount of NEWLY SELECTED One-Time Fees
+//     total += data.selectedOneTimeFees.reduce((sum, fee) => sum + (parseFloat(fee.amount) || 0), 0);
+
+//     // 6. Subtract Concession
+//     total -= parseFloat(data.concession) || 0;
+
+//     return Math.max(0, total); // Ensure non-negative
+//   }, [formData]);
+
+
+//   // calculateAutoDistribution - remains the same, uses the updated calculateNetPayableAmount
+//   const calculateAutoDistribution = useCallback((index) => {
+//       const data = formData[index];
+//       if (!data || data.error) return { remainingAfterDistribution: 0, remainingDues: 0 };
+//       const netPayable = calculateNetPayableAmount(index);
+//       const totalAmountPaid = parseFloat(data.totalAmount) || 0;
+//       const remainingDues = Math.max(0, netPayable - totalAmountPaid);
+//       const remainingAfterDistribution = Math.max(0, totalAmountPaid - netPayable);
+//       return { remainingAfterDistribution, remainingDues };
+//     }, [formData, calculateNetPayableAmount]);
+
+
+//   // fetchReceiptData - remains the same
+//   const fetchReceiptData = async (receiptNumber, isUnified = false) => {
+//       setIsPreviewReady(false);
+//       setIsLoader(true);
+//       try {
+//         const endpoint = isUnified ? "generateUnifiedFeeReceipt" : "generateFeeReceipt";
+//         const param = isUnified ? "unifiedReceiptNumber" : "receiptNumber";
+//         const url = `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/${endpoint}?${param}=${receiptNumber}`;
+//         const response = await axios.get(url, { headers: { Authorization: `Bearer ${authToken}` } });
+//         if (response.data.success) {
+//           setReceiptData(response.data);
+//           setIsPreviewReady(true);
+//           return response.data;
+//         } else {
+//           console.error(`Failed to fetch receipt data ${receiptNumber} (${isUnified ? 'Unified' : 'Single'}):`, response.data.message);
+//           toast.error(`Failed to fetch receipt data: ${response.data.message || "Unknown error"}`);
+//           return null;
+//         }
+//       } catch (error) {
+//         console.error(`Error fetching receipt data ${receiptNumber} (${isUnified ? 'Unified' : 'Single'}):`, error);
+//         toast.error("Error fetching receipt data: " + (error.response?.data?.message || error.message));
+//         return null;
+//       } finally {
+//         setIsLoader(false);
+//       }
+//     };
+
+//   // validateFormData - remains mostly the same, warning logic might be less critical now
+//   const validateFormData = (childFormData, child, isUnified = false) => {
+//       if (!childFormData || childFormData.error) {
+//         toast.error(`Cannot submit for ${child?.studentName || "this student"} due to missing or failed data loading.`);
+//         return false;
+//       }
+//       const totalAmount = parseFloat(childFormData.totalAmount) || 0;
+//       if (totalAmount <= 0) {
+//         toast.warn(`Please enter a valid amount (> 0) to pay for ${child.studentName}.`);
+//         return false;
+//       }
+//       if (!childFormData.paymentMode) {
+//         toast.error(`Payment mode is required for ${child.studentName}.`); return false;
+//       }
+//       if ((childFormData.paymentMode === "Online" || childFormData.paymentMode === "Card") && !childFormData.transactionId) {
+//         toast.error(`Transaction ID is required for Online/Card payment for ${child.studentName}.`); return false;
+//       }
+//       if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) {
+//         toast.error(`Cheque Number is required for Cheque payment for ${child.studentName}.`); return false;
+//       }
+//       if (!childFormData.date || !moment(childFormData.date, "YYYY-MM-DD", true).isValid()) {
+//         toast.error(`Please select a valid payment date for ${child.studentName}.`); return false;
+//       }
+//       // Warning about paying only past dues/fines without selecting new items is less relevant now
+//       // as dues are auto-included. Warning about mismatch still applies.
+//        const netPayable = calculateNetPayableAmount(formData.findIndex(fd => fd.studentId === child.studentId));
+//        const distribution = calculateAutoDistribution(formData.findIndex(fd => fd.studentId === child.studentId));
+//        if (distribution.remainingDues > 0 || distribution.remainingAfterDistribution > 0) {
+//            let warnMsg = `Payment (₹${totalAmount.toFixed(2)}) for ${child.studentName} doesn't match total calculated dues + selected (₹${netPayable.toFixed(2)}). `;
+//            if (distribution.remainingDues > 0) warnMsg += `₹${distribution.remainingDues.toFixed(2)} will remain due. `;
+//            if (distribution.remainingAfterDistribution > 0) warnMsg += `₹${distribution.remainingAfterDistribution.toFixed(2)} will be treated as advance. `;
+//            toast.warn(warnMsg, { autoClose: 8000 });
+//        }
+
+//       return true;
+//     };
+
+//   // *** MODIFIED handleUnifiedFeePayment (Payload Construction) ***
+//   const handleUnifiedFeePayment = async () => {
+//       console.log("Attempting unified fee payment...");
+//       if (selectedChildrenIndices.length < 2) {
+//         toast.warn("Please select at least two students for unified payment."); return;
+//       }
+
+//       let isValid = true;
+//       const studentsPayload = [];
+
+//       for (const index of selectedChildrenIndices) {
+//         const childFormData = formData[index];
+//         const child = parentData[index];
+//         if (!validateFormData(childFormData, child, true)) { isValid = false; break; }
+
+//         const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
+//         if (amountForThisChild <= 0) {
+//             toast.warn(`Please enter an amount (> 0) for ${child.studentName} in the unified payment.`); isValid = false; break;
+//         }
+
+//         // --- Construct Payload Items ---
+//         const combinedRegularFees = [];
+//         const combinedAdditionalFees = [];
+
+//         // 1. Add auto-included due items
+//         childFormData.currentDueItems.forEach(item => {
+//             if (item.type === 'Regular' && item.month) {
+//                 combinedRegularFees.push({ month: item.month });
+//             } else if (item.name) { // Additional or One-Time due item
+//                 combinedAdditionalFees.push({ name: item.name, month: item.month }); // month might be undefined for one-time
+//             }
+//         });
+
+//         // 2. Add newly selected items
+//         childFormData.selectedMonths.forEach(item => {
+//              // Avoid duplicates if a due month was somehow also selectable (shouldn't happen with new logic)
+//             if (!combinedRegularFees.some(fee => fee.month === item.value)) {
+//                 combinedRegularFees.push({ month: item.value });
+//             }
+//         });
+//          childFormData.selectedAdditionalFees.forEach(item => {
+//             // Avoid duplicates
+//             if (!combinedAdditionalFees.some(fee => fee.name === item.name)) { // Simple check by name
+//                  combinedAdditionalFees.push({ name: item.name }); // Send only name for newly selected additional
+//             }
+//          });
+//          childFormData.selectedOneTimeFees.forEach(item => {
+//              // Avoid duplicates
+//             if (!combinedAdditionalFees.some(fee => fee.name === item.name)) { // Simple check by name
+//                 combinedAdditionalFees.push({ name: item.name }); // Send only name for newly selected one-time
+//             }
+//          });
+//         // --- End Construct Payload Items ---
+
+
+//         studentsPayload.push({
+//           studentId: child.studentId,
+//           paymentDetails: {
+//             regularFees: combinedRegularFees, // Send combined list
+//             additionalFees: combinedAdditionalFees, // Send combined list
+//             pastDuesPaid: 0, // Let backend allocate
+//             lateFinesPaid: 0, // Let backend allocate
+//             concession: parseFloat(childFormData.concession) || 0,
+//             totalAmount: amountForThisChild,
+//           },
+//         });
+//       }
+
+//       if (!isValid) { console.error("Unified payment validation failed."); return; }
+
+//       const firstChildIndex = selectedChildrenIndices[0];
+//       const firstChildFormData = formData[firstChildIndex];
+//       // Common payment details validation (already done in validateFormData but good check)
+//        if (!firstChildFormData.paymentMode || ((firstChildFormData.paymentMode === "Online" || firstChildFormData.paymentMode === "Card") && !firstChildFormData.transactionId) || (firstChildFormData.paymentMode === "Cheque" && !firstChildFormData.chequeBookNo) || !firstChildFormData.date || !moment(firstChildFormData.date, "YYYY-MM-DD", true).isValid()) {
+//             toast.error(`Ensure payment details are correct for ${parentData[firstChildIndex].studentName} (used for unified payment).`); return;
+//         }
+
+//       const unifiedPaymentDetails = {
+//         paymentMode: firstChildFormData.paymentMode,
+//         transactionId: firstChildFormData.transactionId || undefined,
+//         chequeNumber: firstChildFormData.chequeBookNo || undefined,
+//         date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+//         remark: firstChildFormData.remarks || "",
+//       };
+
+//       const payload = { students: studentsPayload, session, unifiedPaymentDetails };
+//       console.log("Unified Payload:", JSON.stringify(payload, null, 2));
+
+//       setIsLoader(true);
+//       try {
+//         const response = await feescreateUnifiedFeeStatus(payload);
+//         if (response.success) {
+//           toast.success(response.message || "Unified fees submitted successfully!");
+//           setUnifiedReceiptData(response.data); setResponseData(null); setIsMessageModalOpen(true);
+//         } else { toast.error(response.message || "Unified fee submission failed."); }
+//       } catch (error) {
+//         const errorMsg = error.response?.data?.message || error.message;
+//         toast.error(`Error during unified submission: ${errorMsg}`); console.error("Unified Submission Error:", error.response || error);
+//       } finally { setIsLoader(false); }
+//     };
+
+//   // *** MODIFIED handleSubmit (Payload Construction) ***
+//   const handleSubmit = async (e, childIndex) => {
+//       e.preventDefault(); e.stopPropagation();
+//       console.log(`Attempting single submission for index: ${childIndex}`);
+//       const childFormData = formData[childIndex];
+//       const child = parentData[childIndex];
+//       if (!validateFormData(childFormData, child)) { return; }
+
+//       setIsLoader(true);
+
+//        // --- Construct Payload Items ---
+//         const combinedRegularFees = [];
+//         const combinedAdditionalFees = [];
+
+//         // 1. Add auto-included due items
+//         childFormData.currentDueItems.forEach(item => {
+//             if (item.type === 'Regular' && item.month) {
+//                 combinedRegularFees.push({ month: item.month });
+//             } else if (item.name) { // Additional or One-Time due item
+//                 combinedAdditionalFees.push({ name: item.name, month: item.month }); // month might be undefined for one-time
+//             }
+//         });
+
+//         // 2. Add newly selected items
+//         childFormData.selectedMonths.forEach(item => {
+//              if (!combinedRegularFees.some(fee => fee.month === item.value)) { combinedRegularFees.push({ month: item.value }); }
+//         });
+//          childFormData.selectedAdditionalFees.forEach(item => {
+//              if (!combinedAdditionalFees.some(fee => fee.name === item.name)) { combinedAdditionalFees.push({ name: item.name }); }
+//          });
+//          childFormData.selectedOneTimeFees.forEach(item => {
+//              if (!combinedAdditionalFees.some(fee => fee.name === item.name)) { combinedAdditionalFees.push({ name: item.name }); }
+//          });
+//         // --- End Construct Payload Items ---
+
+
+//       const payload = {
+//         studentId: child.studentId,
+//         session,
+//         paymentDetails: {
+//           regularFees: combinedRegularFees, // Send combined list
+//           additionalFees: combinedAdditionalFees, // Send combined list
+//           pastDuesPaid: 0, // Let backend allocate
+//           lateFinesPaid: 0, // Let backend allocate
+//           concession: parseFloat(childFormData.concession) || 0,
+//           totalAmount: parseFloat(childFormData.totalAmount) || 0,
+//           date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+//           paymentMode: childFormData.paymentMode,
+//           transactionId: childFormData.transactionId || undefined,
+//           chequeNumber: childFormData.chequeBookNo || undefined,
+//           remark: childFormData.remarks || "",
+//         },
+//       };
+
+//       console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
+
+//       try {
+//         const response = await feescreateFeeStatus(payload);
+//         if (response?.success) {
+//           toast.success(response?.message || `Fees submitted successfully for ${child.studentName}!`);
+//           setResponseData(response?.data); setUnifiedReceiptData(null); setIsMessageModalOpen(true);
+//         } else { toast.error(response?.message || `Fee submission failed for ${child.studentName}.`); }
+//       } catch (error) {
+//         const errorMsg = error.response?.data?.message || error.message;
+//         toast.error(`An error occurred during submission for ${child.studentName}: ${errorMsg}`); console.error("Single Submission Error:", error.response || error);
+//       } finally { setIsLoader(false); }
+//     };
+
+//   // handleCloseMessageModal - Modified to handle refresh correctly
+//   const handleCloseMessageModal = async (sendMsg = false) => {
+//     console.log(`Closing message modal, sendMsg=${sendMsg}`);
+//     setIsMessageModalOpen(false);
+
+//     let receiptNumber = null;
+//     let isUnified = false;
+//     let dataForActions = null;
+//     let parentIdToRefresh = null;
+
+//     if (responseData) {
+//       receiptNumber = responseData.feeReceiptNumber;
+//       isUnified = false;
+//       dataForActions = responseData;
+//       parentIdToRefresh = responseData.student?.parentId; // Get parentId from single response
+//     } else if (unifiedReceiptData) {
+//       receiptNumber = unifiedReceiptData.unifiedReceiptNumber;
+//       isUnified = true;
+//       dataForActions = unifiedReceiptData;
+//       parentIdToRefresh = unifiedReceiptData.parentId; // Assume parentId is in unified response
+//     }
+
+//     if (sendMsg && dataForActions) {
+//       try {
+//           FeeResponse(dataForActions);
+//           const targetName = isUnified ? dataForActions.students?.map(s => s.studentName).join(', ') || 'selected students' : dataForActions.student?.studentName || 'student';
+//           toast.info(`SMS function called for ${targetName}.`);
+//       } catch (error) {
+//           console.error("Error calling FeeResponse:", error);
+//           toast.error("Failed to initiate SMS sending.");
+//       }
+//     }
+
+//     const tempReceiptNumber = receiptNumber;
+//     const tempIsUnified = isUnified;
+//     const tempParentId = parentIdToRefresh;
+
+//     // Reset state *before* potential refresh
+//     resetState();
+//     setResponseData(null);
+//     setUnifiedReceiptData(null);
+
+//     // Refresh data for the specific parent *after* state reset
+//     if (tempParentId) {
+//       console.log(`Refreshing data for parentId: ${tempParentId} after submission.`);
+//       await handleStudentClick(tempParentId); // Await ensures data is fetched
+//     } else {
+//       setTriggerRefresh((prev) => !prev); // Fallback refresh
+//       console.warn("Parent ID not available, could not refresh specific parent.");
+//     }
+
+//     // Fetch and show receipt *after* potential refresh (if needed)
+//     if (tempReceiptNumber) {
+//       const fetchedReceiptData = await fetchReceiptData(tempReceiptNumber, tempIsUnified);
+//       if (fetchedReceiptData) {
+//         if (tempIsUnified) { setUnifiedReceiptModalOpen(true); } else { setPdfModalOpen(true); }
+//       } else { toast.error("Could not fetch receipt data for preview."); }
+//     }
+//   };
+
+//   // PDF/Print handlers remain the same
+//   const handleClosePdfModal = (action = null) => {
+//     if (action === "download" && receiptData) handleDownloadPdf(receiptData);
+//     else if (action === "print" && receiptData) handlePrintReceipt(receiptData);
+//     setPdfModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+//   const handleCloseUnifiedReceiptModal = (action = null) => {
+//     if (action === "download" && receiptData) handleDownloadUnifiedPdf(receiptData);
+//     else if (action === "print" && receiptData) handlePrintUnifiedReceipt(receiptData);
+//     setUnifiedReceiptModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+//   const handleDownloadPdf = (dataToUse) => {
+//       if (!dataToUse?.data?.feeReceiptNumber) { toast.error("Receipt data unavailable for PDF."); return; }
+//       generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `fee-receipt-${dataToUse.data.feeReceiptNumber}.pdf`);
+//   };
+//   const handlePrintReceipt = (dataToUse) => {
+//       if (!dataToUse?.data?.feeReceiptNumber) { toast.error("Receipt data unavailable for print."); return; }
+//       console.log("Print single receipt:", dataToUse.data.feeReceiptNumber); toast.info("Print needs implementation.");
+//   };
+//    const handleDownloadUnifiedPdf = (dataToUse) => {
+//        if (!dataToUse?.data?.unifiedReceiptNumber) { toast.error("Unified receipt data unavailable for PDF."); return; }
+//        generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `unified-receipt-${dataToUse.data.unifiedReceiptNumber}.pdf`);
+//    };
+//   const handlePrintUnifiedReceipt = (dataToUse) => {
+//        if (!dataToUse?.data?.unifiedReceiptNumber) { toast.error("Unified receipt data unavailable for print."); return; }
+//        console.log("Print unified receipt:", dataToUse.data.unifiedReceiptNumber); toast.info("Print needs implementation.");
+//   };
+
+
+//   // --- Render Function ---
+//   return (
+//     <div className="px-4 pb-2 min-h-screen bg-gray-100">
+//       <div className="max-w-7xl mx-auto">
+//         {/* Search Section */}
+//         <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-white rounded-lg shadow">
+//           <ReactInput type="text" label="Search by Name" onChange={handleSearch} value={searchTerm} containerClassName="flex-1 min-w-[200px]" className="w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
+//           <ReactInput type="text" label="Search by Adm. No" onChange={handleSearchbyAdmissionNo} value={searchTermbyadmissionNo} containerClassName="flex-1 min-w-[200px]" className="w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
+//         </div>
+
+//         {/* Search Results */}
+//         {filteredStudents.length > 0 && (
+//           <div className="relative mb-6">
+//             <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
+//               <table className="w-full border-collapse">
+//                 <thead className="bg-gray-100 sticky top-0 z-20">
+//                   <tr>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Student Name</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Adm. No.</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Class</th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b">Parent</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>{filteredStudents.map((student) => (<tr key={student._id} className="cursor-pointer hover:bg-indigo-50 transition duration-150 ease-in-out border-b border-gray-200" onClick={() => { handleStudentClick(student.parentId); setFilteredStudents([]); }}>
+//                     <td className="p-3 font-medium text-gray-800 text-sm">{student.studentName}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.admissionNumber}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.class}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.fatherName}</td>
+//                   </tr>))}</tbody>
+//               </table>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Child Selection and Forms */}
+//         {showChildForms && parentData?.length > 0 && (
+//           <div className="mt-12 pt-4 border-t border-gray-200">
+//             <div className="flex justify-between items-center mb-4 px-2">
+//               <h2 className="text-xl font-semibold text-gray-800">Fee Payment</h2>
+//               {selectedChildrenIndices?.length > 1 && (<Button name="Pay for Siblings Together" onClick={handleUnifiedFeePayment} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-md" />)}
+//             </div>
+
+//             <div className="grid grid-cols-1 gap-6">
+//               {parentData.map((child, index) => {
+//                 const currentFormData = formData[index];
+//                 if (!currentFormData || currentFormData.error) { /* Error Display */ return ( <div key={child._id || index} className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md" role="alert"> <strong className="font-bold">Error:</strong> <span className="block sm:inline ml-2">Could not load fee data for {child.studentName || "this student"}.</span> </div> ); }
+
+//                 const isSelected = selectedChildrenIndices.includes(index);
+//                 const showForm = showFormFlags[index];
+
+//                 // --- Prepare Dropdown Options & Values (using filtered options) ---
+//                 const allFeeDetails = currentFormData.allFeeDetails || [];
+//                 const availableAdditionalFees = currentFormData.availableAdditionalFees || [];
+//                 const currentDueItems = currentFormData.currentDueItems || [];
+//                 const epsilon = 0.01;
+
+//                 const monthOptions = allFeeDetails
+//                     .filter(detail => detail.regularFee.status === 'Unpaid' && Math.abs(detail.regularFee.due - detail.regularFee.amount) < epsilon)
+//                     .map(detail => ({ name: `${detail.month} (₹${detail.regularFee.amount.toFixed(2)})`, code: detail.month }));
+//                 const selectedMonthValues = currentFormData.selectedMonths.map(m => ({ name: m.label, code: m.value }));
+
+//                 const additionalFeeOptions = availableAdditionalFees
+//                     .filter(availFee => availFee.type !== 'One Time') // Exclude One-Time
+//                     .filter(availFee => !currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.type === availFee.type)) // Exclude if has current due
+//                     .map(item => ({ name: item.label, code: item.id }));
+//                 const selectedAdditionalFeeValues = currentFormData.selectedAdditionalFees.map(f => ({ name: f.name, code: f.id })); // Simple mapping
+
+//                 const oneTimeFeeOptions = availableAdditionalFees
+//                      .filter(availFee => availFee.type === 'One Time')
+//                      .filter(availFee => !currentDueItems.some(dueItem => dueItem.name === availFee.name && dueItem.type === 'One Time')) // Exclude if has current due
+//                      .map(item => ({ name: item.label, code: item.id }));
+//                 const selectedOneTimeFeeValues = currentFormData.selectedOneTimeFees.map(f => ({ name: f.name, code: f.id })); // Simple mapping
+//                 // --- End Prepare Dropdown Options & Values ---
+
+
+//                 return (
+//                   <div key={child._id || index} className={`bg-white rounded-lg shadow-md border ${isSelected ? "border-indigo-500 ring-2 ring-indigo-200" : "border-gray-200 hover:border-gray-300"} overflow-hidden`}>
+//                     {/* Child Header */}
+//                     <div className={`flex items-center px-4 py-3 border-b ${isSelected ? "bg-indigo-50" : "bg-gray-50"} cursor-pointer hover:bg-indigo-100`} onClick={() => handleChildSelection(index)}>
+//                       <input type="checkbox" id={`child-checkbox-${index}`} checked={isSelected} onChange={(e) => { e.stopPropagation(); handleChildSelection(index); }} className="mr-3 h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" disabled={currentFormData.error} />
+//                       <label id={`child-label-${index}`} className="flex-grow cursor-pointer" htmlFor={`child-checkbox-${index}`}>
+//                         <div className="flex justify-between items-center">
+//                           <div> <span className="text-base font-semibold text-indigo-800">{child.studentName}</span> <span className="text-sm text-gray-600 ml-2">(Cls: {child.class}/Adm#: {child.admissionNumber})</span> </div>
+//                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isSelected ? "bg-indigo-200 text-indigo-800" : "bg-gray-200 text-gray-700"}`}>{isSelected ? "SELECTED" : "SELECT"}</span>
+//                         </div>
+//                         <div className="flex flex-wrap items-center gap-x-4 text-xs mt-1">
+//                           <span className="text-red-600 font-medium">Total Dues: ₹{currentFormData?.totalDuesHeader?.toFixed(2) || "0.00"}</span>
+//                           {currentFormData?.pastDues > 0 && <span className="text-purple-600 font-medium">Past Session Dues: ₹{currentFormData.pastDues.toFixed(2)}</span>}
+//                           {currentFormData?.lateFine > 0 && <span className="text-orange-600 font-medium">Late Fine: ₹{currentFormData.lateFine.toFixed(2)}</span>}
+//                         </div>
+//                       </label>
+//                     </div>
+
+//                     {/* Collapsible Form */}
+//                     <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showForm ? "max-h-[2500px] opacity-100" : "max-h-0 opacity-0"}`}>
+//                       {showForm && (
+//                         <div className="px-4 py-4 border-t flex flex-col lg:flex-row gap-6 bg-white">
+//                           {/* Form Inputs */}
+//                           <form onSubmit={(e) => handleSubmit(e, index)} className="flex-grow lg:w-2/3 space-y-5 mb-6 lg:mb-0" noValidate>
+//                             {/* Fee Selection (Now only for NEW items) */}
+//                             <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
+//                                <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select Regular Month(s)</label> <DynamicMultiSelect name={`regularFees-${index}`} placeholderName="Select new month(s)..." dynamicOptions={monthOptions} handleChange={(name, opts) => handleMonthMultiSelectChange(index, name, opts)} value={selectedMonthValues} containerClassName="w-full" menuClassName="w-full z-50" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid months listed.</p> </div>
+//                                <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select Additional Fee(s)</label> <DynamicMultiSelect name={`additionalFees-${index}`} searchable={true} placeholderName="Select new fee(s)..." dynamicOptions={additionalFeeOptions} handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedAdditionalFees", opts)} value={selectedAdditionalFeeValues} containerClassName="w-full" menuClassName="w-full z-40" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid fees listed.</p> </div>
+//                                <div> <label className="block text-sm font-medium text-gray-700 mb-1">Select One-Time Fee(s)</label> <DynamicMultiSelect name={`oneTimeFees-${index}`} searchable={true} placeholderName="Select new one-time..." dynamicOptions={oneTimeFeeOptions} handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedOneTimeFees", opts)} value={selectedOneTimeFeeValues} containerClassName="w-full" menuClassName="w-full z-30" /> <p className="text-xs text-gray-500 mt-1">Only fully unpaid fees listed.</p> </div>
+//                             </div>
+//                             {/* Payment Details */}
+//                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                               <ReactInput type="number" label="Concession (-)" value={currentFormData.concession} onChange={(e) => handleInputChange(index, "concession", e.target.value)} min="0" step="0.01" containerClassName="sm:col-span-1" className="w-full rounded-md border-gray-300 focus:ring-indigo-500" />
+//                               <ReactInput type="number" label={`Amount Paying Now (*) ${selectedChildrenIndices?.length > 1 ? `(for ${child.studentName})` : ''}`} value={currentFormData.totalAmount} onChange={(e) => handleInputChange(index, "totalAmount", e.target.value)} min="0.01" step="0.01" isRequired={true} containerClassName="sm:col-span-1" className="w-full rounded-md border-gray-300 focus:ring-indigo-500 font-semibold" />
+//                               <div> <label className="block text-sm font-medium text-gray-700">Payment Mode (*)</label> <select value={currentFormData.paymentMode} onChange={(e) => handleInputChange(index, "paymentMode", e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 sm:text-sm" required> <option value="Cash">Cash</option> <option value="Online">Online</option> <option value="Cheque">Cheque</option> <option value="Card">Card</option> </select> </div>
+//                               <ReactInput type="date" label="Payment Date (*)" value={currentFormData.date} onChange={(e) => handleInputChange(index, "date", e.target.value)} isRequired={true} max={moment().format("YYYY-MM-DD")} className="w-full rounded-md border-gray-300 focus:ring-indigo-500" />
+//                               {(currentFormData.paymentMode === "Online" || currentFormData.paymentMode === "Card") && (<ReactInput type="text" label="Transaction ID (*)" value={currentFormData.transactionId} onChange={(e) => handleInputChange(index, "transactionId", e.target.value)} isRequired={true} className="w-full rounded-md border-gray-300 focus:ring-indigo-500" /> )}
+//                               {currentFormData.paymentMode === "Cheque" && (<ReactInput type="text" label="Cheque Number (*)" value={currentFormData.chequeBookNo} onChange={(e) => handleInputChange(index, "chequeBookNo", e.target.value)} isRequired={true} className="w-full rounded-md border-gray-300 focus:ring-indigo-500" /> )}
+//                             </div>
+//                             {/* Remarks */}
+//                             <div> <label className="block text-sm font-medium text-gray-700">Remarks</label> <textarea value={currentFormData.remarks} onChange={(e) => handleInputChange(index, "remarks", e.target.value)} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 sm:text-sm" rows="2" placeholder="Optional remarks..." /> </div>
+//                             {/* Submit Button (Single) */}
+//                             {selectedChildrenIndices?.length <= 1 && ( <div className="flex justify-end pt-4 mt-4 border-t"> <Button type="submit" name={`Submit Payment for ${child.studentName}`} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-md" /> </div> )}
+//                           </form>
+
+//                           {/* Payment Summary */}
+//                           <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-4 bg-indigo-50 lg:ml-4 mt-4 lg:mt-0 self-start">
+//                             <h3 className="text-base font-semibold text-indigo-900 border-b border-indigo-200 pb-2 mb-3"> Payment Summary & Dues </h3>
+//                             <table className="w-full text-sm">
+//                               <thead> <tr> <th className="text-left text-gray-600 font-medium pb-1 text-xs">Item</th> <th className="text-right text-gray-600 font-medium pb-1 text-xs">Amount</th> </tr> </thead>
+//                               <tbody>
+//                                 {/* Past Dues / Fine */}
+//                                 {currentFormData.pastDues > 0 && (<tr className="border-b border-indigo-100"><td className="text-gray-700 py-1.5">Past Session Dues:</td><td className="font-medium text-purple-700 py-1.5 text-right">₹{currentFormData.pastDues.toFixed(2)}</td></tr>)}
+//                                 {currentFormData.lateFine > 0 && (<tr className="border-b border-indigo-100"><td className="text-gray-700 py-1.5">Late Fines:</td><td className="font-medium text-orange-700 py-1.5 text-right">₹{currentFormData.lateFine.toFixed(2)}</td></tr>)}
+
+//                                 {/* Auto-Included Due Items */}
+//                                 {currentFormData?.currentDueItems?.length > 0 && ( <>
+//                                     <tr className="font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1 text-left font-semibold text-red-700">Outstanding Dues (Auto-Included):</td></tr>
+//                                     {currentFormData.currentDueItems.map((item, i) => (
+//                                         <tr key={`due-sum-${index}-${i}`} className="border-b border-indigo-100">
+//                                             <td className="text-gray-600 py-1 pl-3">{item.name}{item.month ? ` (${item.month})` : ''}</td>
+//                                             <td className="font-medium text-red-600 py-1 text-right">₹{(item.dueAmount || 0).toFixed(2)}</td>
+//                                         </tr>
+//                                     ))} </>
+//                                 )}
+
+//                                 {/* Additionally Selected Items */}
+//                                 {(currentFormData?.selectedMonths?.length > 0 || currentFormData.selectedAdditionalFees.length > 0 || currentFormData.selectedOneTimeFees.length > 0) && ( <>
+//                                     <tr className="font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1 text-left font-semibold text-blue-700">Additionally Selected:</td></tr>
+//                                     {currentFormData.selectedMonths.map((item, i) => (<tr key={`sel-reg-${index}-${i}`} className="border-b border-indigo-100"><td className="text-gray-600 py-1 pl-3">{item.value} (Regular):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))}
+//                                     {currentFormData.selectedAdditionalFees.map((item, i) => (<tr key={`sel-add-${index}-${i}`} className="border-b border-indigo-100"><td className="text-gray-600 py-1 pl-3">{item.name} ({item.type}):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))}
+//                                     {currentFormData.selectedOneTimeFees.map((item, i) => (<tr key={`sel-one-${index}-${i}`} className="border-b border-indigo-100"><td className="text-gray-600 py-1 pl-3">{item.name} (One-Time):</td><td className="font-medium text-blue-700 py-1 text-right">₹{(item.amount || 0).toFixed(2)}</td></tr>))} </>
+//                                 )}
+
+//                                 {/* Concession */}
+//                                 {currentFormData.concession > 0 && (<tr className="border-b border-indigo-100"><td className="text-green-700 py-1.5">Concession Applied:</td><td className="font-medium text-green-700 py-1.5 text-right">- ₹{parseFloat(currentFormData.concession).toFixed(2)}</td></tr>)}
+//                               </tbody>
+//                               <tfoot className="border-t-2 border-indigo-200 mt-2 pt-2">
+//                                 <tr><td className="pt-2 font-semibold text-indigo-900 py-1.5">Total Payable Now</td><td className="pt-2 font-bold text-indigo-900 py-1.5 text-right">₹{calculateNetPayableAmount(index).toFixed(2)}</td></tr>
+//                                 {parseFloat(currentFormData.totalAmount) > 0 && (() => { const distribution = calculateAutoDistribution(index); return (<>
+//                                     <tr><td className="text-gray-700 py-1.5">Amount Paying:</td><td className="font-medium text-black py-1.5 text-right">₹{parseFloat(currentFormData.totalAmount).toFixed(2)}</td></tr>
+//                                     <tr className={`${distribution.remainingDues > 0 ? 'bg-red-100' : ''}`}><td className="font-semibold text-red-700 py-1.5">Remaining Dues:</td><td className="font-bold text-red-700 py-1.5 text-right">₹{distribution.remainingDues.toFixed(2)}</td></tr>
+//                                     {distribution.remainingAfterDistribution > 0 && (<tr className="bg-green-100"><td className="font-semibold text-green-700 py-1 text-xs">(Advance/Excess):</td><td className="font-semibold text-green-700 py-1 text-right text-xs">₹{distribution.remainingAfterDistribution.toFixed(2)}</td></tr> )}
+//                                 </>); })()}
+//                               </tfoot>
+//                             </table>
+//                           </div> {/* End Summary */}
+//                         </div>
+//                       )}
+//                     </div> {/* End Collapsible */}
+//                   </div> // End Child Card
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Fee History Display */}
+//         {showChildForms && childFeeHistory?.monthlyStatus?.length > 0 && selectedChildrenIndices.length > 0 && (
+//           <div className="mt-8 border-t border-gray-300 pt-6">
+//             <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">Fee History for {childFeeHistory?.studentName || "Selected"} ({childFeeHistory?.session || session})</h2>
+//             <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow"><MonthFeeCard childFeeHistory={childFeeHistory} /></div>
+//           </div>
+//         )}
+
+//         {/* Modals */}
+//         <Modal setIsOpen={setIsMessageModalOpen} isOpen={isMessageModalOpen} title="Confirm Action" maxWidth="md">
+//            <div className="p-5">
+//             <p className="text-gray-700 mb-4 text-center">Fee submitted for <span className="font-semibold">{responseData?.student?.studentName || unifiedReceiptData?.students?.map(s => s.studentName).join(', ') || "student(s)"}</span>.<br />Receipt: <span className="font-semibold">{responseData?.feeReceiptNumber || unifiedReceiptData?.unifiedReceiptNumber || "N/A"}</span><br />Send SMS confirmation?<br />(<span className="font-mono text-sm">{responseData?.parent?.fatherPhone || unifiedReceiptData?.parent?.fatherPhone || "N/A"}</span>)</p>
+//             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+//               <Button type="button" name="Yes, Send & View Receipt" onClick={() => handleCloseMessageModal(true)} className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2" />
+//               <Button type="button" name="No, Just View Receipt" onClick={() => handleCloseMessageModal(false)} className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1" />
+//             </div>
+//           </div>
+//         </Modal>
+//         <Modal setIsOpen={setPdfModalOpen} isOpen={pdfModalOpen} title="Fee Receipt Preview" maxWidth="lg">
+//             <div className="p-1">{!isPreviewReady || !receiptData ? <div className="flex justify-center items-center h-64"><p>Loading preview...</p></div> : <FeeRecipt modalData={receiptData} handleCloseModal={() => handleClosePdfModal()} handlePrint={() => handleClosePdfModal("print")} handleDownload={() => handleClosePdfModal("download")} isPreviewReady={isPreviewReady} isUnified={false} />}</div>
+//         </Modal>
+//          <Modal setIsOpen={setUnifiedReceiptModalOpen} isOpen={unifiedReceiptModalOpen} title="Unified Fee Receipt Preview" maxWidth="lg">
+//            <div className="p-1">{!isPreviewReady || !receiptData ? <div className="flex justify-center items-center h-64"><p>Loading preview...</p></div> : <FeeRecipt modalData={receiptData} handleCloseModal={() => handleCloseUnifiedReceiptModal()} handlePrint={() => handleCloseUnifiedReceiptModal("print")} handleDownload={() => handleCloseUnifiedReceiptModal("download")} isPreviewReady={isPreviewReady} isUnified={true} />}</div>
+//          </Modal>
+
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CreateFees;
+
+
+
+
+
+
+
+
+
+
+
+// import axios from "axios";
+// import React, { useEffect, useState, useCallback } from "react";
+// import { toast } from "react-toastify";
+// import {
+//   ActiveStudents,
+//   feescreateFeeStatus,
+//   parentandchildwithID,
+//   feescreateUnifiedFeeStatus,
+// } from "../../Network/AdminApi";
+// import Button from "../../Dynamic/utils/Button";
+// import Modal from "../../Dynamic/Modal";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import MonthFeeCard from "./MonthFeeCard";
+// import moment from "moment";
+// import { FeeResponse } from "../../Dynamic/utils/Message";
+// import generatePdf from "../../Dynamic/utils/pdfGenerator";
+// import FeeRecipt from "./FeeRecipt";
+// import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+
+// // Helper to fetch additional fees
+// const fetchAdditionalFeesForClass = async (className, authToken) => {
+//   try {
+//     const response = await axios.get(
+//       `${
+//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+//       {
+//         withCredentials: true,
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       }
+//     );
+//     if (response?.data?.success) {
+//       const filteredFees = response.data.data.filter(
+//         (fee) => fee.className === className
+//       );
+//       return filteredFees.map((fee) => ({
+//         label: `${fee.name} (${fee.feeType}) - ₹${fee.amount}`,
+//         value: fee.amount,
+//         name: fee.name,
+//         type: fee.feeType,
+//         id: fee._id,
+//       }));
+//     } else {
+//       console.error(
+//         `Failed to fetch additional fees for class ${className}:`,
+//         response?.data?.message
+//       );
+//       toast.error(`Failed to fetch additional fees for class ${className}.`);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error(
+//       `Error fetching additional fees for class ${className}:`,
+//       error
+//     );
+//     toast.error(
+//       `Error fetching additional fees for class ${className}: ${error.message}`
+//     );
+//     return [];
+//   }
+// };
+
+// const CreateFees = () => {
+//   const session = JSON.parse(localStorage.getItem("session"));
+//   const { setIsLoader } = useStateContext();
+//   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+//   const [responseData, setResponseData] = useState(null);
+//   const [showChildForms, setShowChildForms] = useState(false);
+//   const [selectedChildrenIndices, setSelectedChildrenIndices] = useState([]);
+//   const [childFeeHistory, setChildFeeHistory] = useState(null);
+//   const [filteredStudents, setFilteredStudents] = useState([]);
+//   const [showFormFlags, setShowFormFlags] = useState([]);
+//   const [triggerRefresh, setTriggerRefresh] = useState(false);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchTermbyadmissionNo, setSearchTermbyadmissionNo] = useState("");
+//   const [parentData, setParentData] = useState([]);
+//   const [allStudent, setAllStudent] = useState([]);
+//   const [formData, setFormData] = useState([]);
+//   const authToken = localStorage.getItem("token");
+//   const [pdfModalOpen, setPdfModalOpen] = useState(false);
+//   const [unifiedReceiptModalOpen, setUnifiedReceiptModalOpen] = useState(false);
+//   const [unifiedReceiptData, setUnifiedReceiptData] = useState(null);
+//   const [receiptData, setReceiptData] = useState(null);
+//   const [isPreviewReady, setIsPreviewReady] = useState(false);
+
+//   const allMonths = [
+//     "April",
+//     "May",
+//     "June",
+//     "July",
+//     "August",
+//     "September",
+//     "October",
+//     "November",
+//     "December",
+//     "January",
+//     "February",
+//     "March",
+//   ];
+
+//   const getAllStudent = useCallback(async () => {
+//     setIsLoader(true);
+//     try {
+//       const response = await ActiveStudents();
+//       setAllStudent(response?.students?.data || []);
+//     } catch (error) {
+//       console.error("Failed to fetch student list:", error);
+//       toast.error("Failed to fetch student list.");
+//       setAllStudent([]);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   }, [setIsLoader]);
+
+//   useEffect(() => {
+//     getAllStudent();
+//   }, [getAllStudent, triggerRefresh]);
+
+//   const handleSearch = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTerm(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.studentName &&
+//           student.studentName.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTermbyadmissionNo("");
+//   };
+
+//   const handleSearchbyAdmissionNo = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTermbyadmissionNo(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.admissionNumber &&
+//           student.admissionNumber.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTerm("");
+//   };
+
+//   const fetchStudentFeeInfo = async (studentId) => {
+//     try {
+//       const response = await axios.get(
+//         `${
+//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         {
+//           withCredentials: true,
+//           headers: { Authorization: `Bearer ${authToken}` },
+//         }
+//       );
+//       if (response.data.success) {
+//         return response.data.data;
+//       } else {
+//         console.error(
+//           `Fee info fetch failed for student ID ${studentId}:`,
+//           response.data.message || "Unknown error"
+//         );
+//         toast.error(
+//           `Fee info fetch failed for student ID ${studentId}: ${
+//             response.data.message || "Unknown error"
+//           }`
+//         );
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(
+//         `Error fetching fee info for student ID ${studentId}:`,
+//         error
+//       );
+//       toast.error(
+//         `Error fetching fee info for student ID ${studentId}: ${error.message}`
+//       );
+//       return null;
+//     }
+//   };
+
+//   const resetState = () => {
+//     setSelectedChildrenIndices([]);
+//     setChildFeeHistory(null);
+//     setShowFormFlags([]);
+//     setParentData([]);
+//     setFormData([]);
+//     setSearchTerm("");
+//     setSearchTermbyadmissionNo("");
+//     setFilteredStudents([]);
+//     setShowChildForms(false);
+//     setResponseData(null);
+//     setIsMessageModalOpen(false);
+//     setPdfModalOpen(false);
+//     setUnifiedReceiptModalOpen(false);
+//     setUnifiedReceiptData(null);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   const handleStudentClick = async (parentId) => {
+//     console.log(`handleStudentClick called for parentId: ${parentId}`);
+//     setIsLoader(true);
+//     resetState();
+//     try {
+//       const parentResponse = await parentandchildwithID(parentId);
+//       if (!parentResponse?.success) {
+//         console.error(
+//           "Failed to fetch parent/child data:",
+//           parentResponse?.message
+//         );
+//         toast.error(
+//           parentResponse?.message || "Failed to fetch parent/child data."
+//         );
+//         setIsLoader(false);
+//         return;
+//       }
+
+//       const children = parentResponse?.children || [];
+//       console.log("Fetched children:", children);
+//       if (children.length === 0) {
+//         toast.info("No children found for this parent.");
+//         setIsLoader(false);
+//         return;
+//       }
+
+//       setParentData(children);
+
+//       console.log("Fetching fee info and additional fees for all children...");
+//       const promises = children.map((child) =>
+//         Promise.all([
+//           fetchStudentFeeInfo(child.studentId),
+//           fetchAdditionalFeesForClass(child.class, authToken),
+//         ])
+//       );
+
+//       const results = await Promise.all(promises);
+//       console.log(
+//         "Results from fee info and additional fees fetches:",
+//         results
+//       );
+//       const item1=results[0]?.map((item)=>item?.feeStatus)
+//       // const item=item1[0]?.feeHistory?.map((item)=>item?.additionalFees)
+//       const previousAdditionFee = item1[0]?.feeHistory?.flatMap(month => month.additionalFees) || [];
+//       console.log("item1",item1)
+//       console.log("previousAdditionFee",previousAdditionFee)
+//       const initialFormData = [];
+//       const initialShowFormFlags = [];
+
+//       results.forEach(([feeInfo, availableAdditionalFees], index) => {
+//         const child = children[index];
+//         console.log(
+//           `Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`
+//         );
+
+//         if (!feeInfo) {
+//           console.warn(
+//             `Could not load fee details for ${child.studentName}. Setting error flag.`
+//           );
+//           toast.error(
+//             `Could not load fee details for ${child.studentName}. Skipping.`
+//           );
+//           initialShowFormFlags.push(false);
+//           initialFormData.push({
+//             admissionNumber: child.admissionNumber,
+//             studentId: child.studentId,
+//             studentName: child.studentName,
+//             className: child.class,
+//             error: true,
+//           });
+//           return;
+//         }
+
+//         const regularFeeAmount =
+//           feeInfo.feeStructure?.regularFees?.[0]?.amount || 0;
+//         const additionalFeesStructure =
+//           feeInfo.feeStructure?.additionalFees || [];
+//         const monthlyStatus = feeInfo.monthlyStatus || [];
+//         const oneTimeAdditionalDues = feeInfo.oneTimeAdditionalDues || [];
+//         const feeHistory = feeInfo.feeStatus?.feeHistory?.[0] || {};
+
+//         // Prepare regular fee status
+//         const regularFees = allMonths.map((month) => {
+//           const monthData = monthlyStatus.find((m) => m.month === month);
+//           const due = monthData?.regularFee?.due ?? regularFeeAmount;
+//           const status = monthData?.regularFee?.status || "Unpaid";
+//           return {
+//             month,
+//             paidAmount: "",
+//             dueAmount: status === "Paid" ? 0 : due,
+//             totalAmount: regularFeeAmount,
+//             status,
+//             label: `${month} (Due: ₹${(status === "Paid" ? 0 : due).toFixed(
+//               2
+//             )})`,
+//           };
+//         });
+
+//         // Prepare detailed status for additional fees
+//         const additionalFeeDetails = additionalFeesStructure.map((fee) => ({
+//           name: fee.name,
+//           type: fee.feeType,
+//           amount: fee.amount,
+//           months: allMonths.map((month) => {
+//             const monthData = monthlyStatus.find((m) => m.month === month);
+//             const addFee = monthData?.additionalFees.find(
+//               (af) => af.name === fee.name
+//             );
+//             const due = addFee?.due ?? fee.amount;
+//             const status = addFee?.status || "Unpaid";
+//             return {
+//               month,
+//               paidAmount: "",
+//               dueAmount: status === "Paid" ? 0 : due,
+//               totalAmount: fee.amount,
+//               status,
+//             };
+//           }),
+//         }));
+
+//         const oneTimeFeeOptions = oneTimeAdditionalDues
+//           .filter((d) => d.dueAmount > 0)
+//           .map((d) => ({
+//             label: `${d.name} (Due: ₹${d.dueAmount.toFixed(2)})`,
+//             name: d.name,
+//             code: d.name,
+//             dueAmount: d.dueAmount,
+//             type: "One-Time",
+//           }));
+
+//         // Pre-select only unpaid regular fees from feeHistory
+//         const preSelectedMonths =
+//           feeHistory?.regularFees
+//             ?.filter((fee) => fee.dueAmount > 0 && fee.status === "Unpaid")
+//             .map((fee) => {
+//               const originalFee = regularFees.find(
+//                 (rf) => rf.month === fee.month
+//               );
+//               return {
+//                 value: fee.month,
+//                 label:
+//                   originalFee?.label ||
+//                   `${fee.month} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+//                 due: fee.dueAmount,
+//               };
+//             }) || [];
+
+//         // Pre-select only unpaid additional fees from feeHistory
+//         const preSelectedAdditionalFees = [];
+//         feeHistory?.additionalFees
+//           ?.filter((fee) => fee.dueAmount > 0 && fee.status === "Unpaid")
+//           .forEach((fee) => {
+//             const availableFeeOption = availableAdditionalFees.find(
+//               (opt) => opt.name === fee.name && opt.type === "Monthly"
+//             );
+//             if (availableFeeOption) {
+//               const existingFee = preSelectedAdditionalFees.find(
+//                 (pf) => pf.name === fee.name && pf.type === "Monthly"
+//               );
+//               if (existingFee) {
+//                 existingFee.dueMonths.push(fee.month);
+//                 existingFee.amount += fee.dueAmount;
+//               } else {
+//                 preSelectedAdditionalFees.push({
+//                   id: availableFeeOption.id,
+//                   name: availableFeeOption.name,
+//                   amount: fee.dueAmount,
+//                   type: availableFeeOption.type,
+//                   dueMonths: [fee.month],
+//                 });
+//               }
+//             }
+//           });
+
+//         // Pre-select unpaid one-time fees
+//         const preSelectedOneTimeFees = oneTimeFeeOptions.map((opt) => ({
+//           name: opt.name,
+//           dueAmount: opt.dueAmount,
+//         }));
+
+//         const childFormData = {
+//           admissionNumber: child.admissionNumber,
+//           studentId: child.studentId,
+//           studentName: child.studentName,
+//           className: child.class,
+//           classFee: regularFeeAmount,
+//           totalAmount: "",
+//           selectedMonths: preSelectedMonths,
+//           selectedAdditionalFees: preSelectedAdditionalFees,
+//           selectedOneTimeFees: preSelectedOneTimeFees,
+//           paymentMode: "Cash",
+//           transactionId: "",
+//           chequeBookNo: "",
+//           lateFine: feeInfo.feeStatus?.totalLateFines || 0,
+//           concession: "",
+//           date: moment().format("YYYY-MM-DD"),
+//           remarks: "",
+//           monthlyDues: feeInfo.feeStatus?.monthlyDues || {
+//             regularDues: [],
+//             additionalDues: [],
+//           },
+//           additionalFeeDetails,
+//           pastDues: feeInfo.feeStatus?.pastDues || 0,
+//           totalDues: feeInfo.feeStatus?.dues || 0,
+//           regularFees,
+//           availableAdditionalFees: availableAdditionalFees || [],
+//           oneTimeFeeOptions,
+//           feeInfo,
+//           error: false,
+//         };
+//         console.log(
+//           `Generated initial form data for ${child.studentName}:`,
+//           childFormData
+//         );
+//         initialFormData.push(childFormData);
+//         initialShowFormFlags.push(false);
+//       });
+
+//       console.log("Setting final formData state:", initialFormData);
+//       console.log("Setting final showFormFlags state:", initialShowFormFlags);
+//       setFormData(initialFormData);
+//       setShowFormFlags(initialShowFormFlags);
+//       setShowChildForms(true);
+//       console.log("Child forms should now be visible.");
+//     } catch (error) {
+//       console.error("An error occurred during handleStudentClick:", error);
+//       toast.error("An error occurred while fetching student data.");
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   const handleChildSelection = (index) => {
+//     console.log(`handleChildSelection called for index: ${index}`);
+//     if (!formData || index < 0 || index >= formData.length) {
+//       console.error(
+//         `Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`
+//       );
+//       toast.error("An internal error occurred. Please try again.");
+//       return;
+//     }
+//     const currentChildData = formData[index];
+//     console.log("Current formData[index]:", currentChildData);
+
+//     if (!currentChildData || currentChildData.error) {
+//       toast.warn(
+//         `Cannot select ${
+//           parentData[index]?.studentName || "this student"
+//         }. Fee data may be missing or failed to load.`
+//       );
+//       console.warn("Selection blocked due to missing data or error flag.");
+//       return;
+//     }
+
+//     const isCurrentlySelected = selectedChildrenIndices.includes(index);
+//     console.log("Is currently selected:", isCurrentlySelected);
+
+//     let updatedSelectedChildren;
+//     let updatedShowFormFlags = [...showFormFlags];
+
+//     if (isCurrentlySelected) {
+//       updatedSelectedChildren = selectedChildrenIndices.filter(
+//         (i) => i !== index
+//       );
+//       updatedShowFormFlags[index] = false;
+//       console.log("Deselecting child.");
+//     } else {
+//       updatedSelectedChildren = [...selectedChildrenIndices, index];
+//       updatedShowFormFlags[index] = true;
+//       console.log("Selecting child.");
+//     }
+
+//     updatedSelectedChildren.sort((a, b) => a - b);
+
+//     console.log("Updating selected indices to:", updatedSelectedChildren);
+//     console.log("Updating showForm flags to:", updatedShowFormFlags);
+
+//     setSelectedChildrenIndices(updatedSelectedChildren);
+//     setShowFormFlags(updatedShowFormFlags);
+
+//     if (updatedSelectedChildren.length > 0) {
+//       const firstSelectedIndex = updatedSelectedChildren[0];
+//       console.log("Updating fee history for index:", firstSelectedIndex);
+//       setChildFeeHistory(formData[firstSelectedIndex]?.feeInfo || null);
+//     } else {
+//       console.log("Clearing fee history.");
+//       setChildFeeHistory(null);
+//     }
+//   };
+
+//   const handleInputChange = (index, field, value) => {
+//     const updatedFormData = [...formData];
+//     if (updatedFormData[index]) {
+//       updatedFormData[index] = { ...updatedFormData[index], [field]: value };
+
+//       if (field === "paymentMode") {
+//         if (value !== "Online" && value !== "Card") {
+//           updatedFormData[index].transactionId = "";
+//         }
+//         if (value !== "Cheque") {
+//           updatedFormData[index].chequeBookNo = "";
+//         }
+//       }
+//       setFormData(updatedFormData);
+//     } else {
+//       console.error(
+//         `Attempted to handle input change for invalid index: ${index}`
+//       );
+//     }
+//   };
+
+//   const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
+//     console.log(`Month selection changed for index ${index}:`, selectedOptions);
+//     const selectedOptionsData = selectedOptions || [];
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index]) {
+//       console.error(
+//         `Cannot handle month change, formData missing for index: ${index}`
+//       );
+//       return;
+//     }
+//     const currentChildData = updatedFormData[index];
+
+//     const selectedMonthNames = selectedOptionsData.map((opt) => opt.code);
+//     if (selectedMonthNames.length > 1) {
+//       const indicesInAllMonths = selectedMonthNames
+//         .map((month) => allMonths.indexOf(month))
+//         .sort((a, b) => a - b);
+//       let isSequential = true;
+//       for (let i = 1; i < indicesInAllMonths.length; i++) {
+//         if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
+//           isSequential = false;
+//           break;
+//         }
+//       }
+//       if (!isSequential) {
+//         toast.warn(
+//           `Please select months in a continuous sequence (e.g., April, May, June). Deselect and reselect if needed.`
+//         );
+//         return;
+//       }
+//     }
+
+//     const newSelectedMonths = selectedOptionsData
+//       .map((opt) => {
+//         const originalFee = currentChildData.regularFees.find(
+//           (fee) => fee.month === opt.code
+//         );
+//         if (!originalFee) {
+//           console.error(
+//             `Could not find original fee data for month: ${opt.code}`
+//           );
+//           return null;
+//         }
+//         return {
+//           value: originalFee.month,
+//           label: originalFee.label,
+//           due: originalFee.dueAmount,
+//         };
+//       })
+//       .filter(Boolean);
+
+//     updatedFormData[index].selectedMonths = newSelectedMonths;
+
+//     // Auto-select additional monthly fees for selected months
+//     const newSelectedAdditionalFees = [];
+//     const structuredMonthlyAddFees =
+//       currentChildData.feeInfo?.feeStructure?.additionalFees?.filter(
+//         (fee) => fee.feeType === "Monthly"
+//       ) || [];
+
+//     structuredMonthlyAddFees.forEach((fee) => {
+//       const availableFeeOption = currentChildData.availableAdditionalFees.find(
+//         (opt) => opt.name === fee.name && opt.type === "Monthly"
+//       );
+//       if (availableFeeOption) {
+//         const feeDetail = currentChildData.additionalFeeDetails.find(
+//           (fd) => fd.name === fee.name && fd.type === "Monthly"
+//         );
+//         if (!feeDetail) {
+//           console.warn(`No fee detail found for ${fee.name}`);
+//           return;
+//         }
+//         const dueMonths = newSelectedMonths
+//           .map((m) => {
+//             const monthData = feeDetail.months.find(
+//               (fm) => fm.month === m.value
+//             );
+//             if (monthData && monthData.dueAmount > 0) {
+//               return monthData.month;
+//             }
+//             return null;
+//           })
+//           .filter(Boolean);
+
+//         if (dueMonths.length > 0) {
+//           // Calculate total amount for the selected months
+//           const totalAmount = dueMonths.reduce((sum, month) => {
+//             const monthData = feeDetail.months.find(
+//               (fm) => fm.month === month
+//             );
+//             return sum + (monthData?.dueAmount || 0);
+//           }, 0);
+
+//           newSelectedAdditionalFees.push({
+//             id: availableFeeOption.id,
+//             name: availableFeeOption.name,
+//             amount: totalAmount,
+//             type: availableFeeOption.type,
+//             dueMonths,
+//           });
+//         }
+//       }
+//     });
+
+//     // Preserve non-monthly additional fees that were manually selected
+//     const existingNonMonthlyFees = currentChildData.selectedAdditionalFees.filter(
+//       (fee) => fee.type !== "Monthly"
+//     );
+
+//     updatedFormData[index].selectedAdditionalFees = [
+//       ...newSelectedAdditionalFees,
+//       ...existingNonMonthlyFees,
+//     ];
+
+//     setFormData(updatedFormData);
+//   };
+
+//   const handleDynamicMultiSelectChange = (index, field, selectedOptions) => {
+//     console.log(
+//       `Dynamic multiselect changed for index ${index}, field ${field}:`,
+//       selectedOptions
+//     );
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index]) {
+//       console.error(
+//         `Cannot handle dynamic multiselect change, formData missing for index: ${index}`
+//       );
+//       return;
+//     }
+//     const currentChildData = updatedFormData[index];
+
+//     if (field === "selectedAdditionalFees") {
+//       const newSelectedAdditionalFees = (selectedOptions || [])
+//         .map((opt) => {
+//           const originalFee = currentChildData.availableAdditionalFees.find(
+//             (fee) => fee.id === opt.code
+//           );
+//           if (originalFee) {
+//             return {
+//               id: originalFee.id,
+//               name: originalFee.name,
+//               amount: originalFee.value,
+//               type: originalFee.type,
+//               dueMonths:
+//                 originalFee.type === "Monthly"
+//                   ? currentChildData.selectedMonths.map((m) => m.value)
+//                   : [],
+//             };
+//           }
+//           console.warn(
+//             "Could not find original additional fee details for option code:",
+//             opt.code
+//           );
+//           return null;
+//         })
+//         .filter(Boolean);
+
+//       // Preserve auto-selected monthly fees
+//       const autoSelectedMonthly =
+//         currentChildData.selectedAdditionalFees.filter(
+//           (fee) =>
+//             fee.type === "Monthly" &&
+//             !newSelectedAdditionalFees.some((nf) => nf.id === fee.id)
+//         );
+
+//       updatedFormData[index].selectedAdditionalFees = [
+//         ...newSelectedAdditionalFees,
+//         ...autoSelectedMonthly,
+//       ];
+//     } else if (field === "selectedOneTimeFees") {
+//       const newSelectedOneTimeFees = (selectedOptions || [])
+//         .map((opt) => {
+//           const originalFee = currentChildData.oneTimeFeeOptions.find(
+//             (fee) => fee.code === opt.code
+//           );
+//           if (originalFee) {
+//             return { name: originalFee.name, dueAmount: originalFee.dueAmount };
+//           }
+//           console.warn(
+//             "Could not find original one-time fee details for option code:",
+//             opt.code
+//           );
+//           return null;
+//         })
+//         .filter(Boolean);
+
+//       updatedFormData[index].selectedOneTimeFees = newSelectedOneTimeFees;
+//     }
+
+//     setFormData(updatedFormData);
+//   };
+
+//   const calculateNetPayableAmount = useCallback(
+//     (index) => {
+//       const data = formData[index];
+//       if (!data || data.error) return 0;
+//       let total = 0;
+//       total += parseFloat(data.pastDues) || 0;
+//       total += parseFloat(data.lateFine) || 0;
+
+//       // Add regular fees for selected months
+//       total += data.selectedMonths.reduce(
+//         (sum, monthState) => sum + (monthState?.due || 0),
+//         0
+//       );
+
+//       // Add additional fees, respecting due amounts for selected months
+//       total += data.selectedAdditionalFees.reduce((sum, fee) => {
+//         if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+//           // For monthly fees, sum the due amounts for each selected month
+//           return (
+//             sum +
+//             fee.dueMonths.reduce((monthSum, month) => {
+//               const feeDetail = data.additionalFeeDetails.find(
+//                 (fd) => fd.name === fee.name && fd.type === "Monthly"
+//               );
+//               if (feeDetail) {
+//                 const monthData = feeDetail.months.find(
+//                   (m) => m.month === month
+//                 );
+//                 return monthSum + (monthData?.dueAmount || 0);
+//               }
+//               return monthSum;
+//             }, 0)
+//           );
+//         }
+//         // For non-monthly fees, use the fee amount directly
+//         return sum + (parseFloat(fee?.amount) || 0);
+//       }, 0);
+
+//       // Add one-time fees
+//       total += data.selectedOneTimeFees.reduce(
+//         (sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0),
+//         0
+//       );
+
+//       // Subtract concession
+//       total -= parseFloat(data.concession) || 0;
+//       return Math.max(0, total);
+//     },
+//     [formData]
+//   );
+
+//   const calculateAutoDistribution = useCallback(
+//     (index) => {
+//       const data = formData[index];
+//       if (!data || data.error)
+//         return { remainingAfterDistribution: 0, remainingDues: 0 };
+//       const netPayable = calculateNetPayableAmount(index);
+//       const totalAmountPaid = parseFloat(data.totalAmount) || 0;
+//       const remainingDues = Math.max(0, netPayable - totalAmountPaid);
+//       const remainingAfterDistribution = Math.max(
+//         0,
+//         totalAmountPaid - netPayable
+//       );
+//       return { remainingAfterDistribution, remainingDues };
+//     },
+//     [formData, calculateNetPayableAmount]
+//   );
+
+//   const fetchReceiptData = async (receiptNumber, isUnified = false) => {
+//     setIsPreviewReady(false);
+//     setIsLoader(true);
+//     try {
+//       const url = isUnified
+//         ? `${
+//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           }/api/v1/fees/generateUnifiedFeeReceipt?unifiedReceiptNumber=${receiptNumber}`
+//         : `${
+//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+//       const response = await axios.get(url, {
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       });
+//       if (response.data.success) {
+//         setReceiptData(response.data);
+//         setIsPreviewReady(true);
+//         return response.data;
+//       } else {
+//         console.error(
+//           `Failed to fetch receipt data ${receiptNumber}:`,
+//           response.data.message
+//         );
+//         toast.error(
+//           `Failed to fetch receipt data: ${
+//             response.data.message || "Unknown error"
+//           }`
+//         );
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching receipt data ${receiptNumber}:`, error);
+//       if (isUnified && error.response?.status === 404) {
+//         // Fallback to single receipt if unified receipt fails
+//         try {
+//           const fallbackResponse = await axios.get(
+//             `${
+//               process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//             { headers: { Authorization: `Bearer ${authToken}` } }
+//           );
+//           if (fallbackResponse.data.success) {
+//             setReceiptData(fallbackResponse.data);
+//             setIsPreviewReady(true);
+//             return fallbackResponse.data;
+//           } else {
+//             toast.error(
+//               `Fallback receipt fetch failed: ${
+//                 fallbackResponse.data.message || "Unknown error"
+//               }`
+//             );
+//             return null;
+//           }
+//         } catch (fallbackError) {
+//           console.error(
+//             `Error fetching fallback receipt data ${receiptNumber}:`,
+//             fallbackError
+//           );
+//           toast.error("Error fetching receipt data: " + fallbackError.message);
+//           return null;
+//         }
+//       } else {
+//         toast.error("Error fetching receipt data: " + error.message);
+//         return null;
+//       }
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   const validateFormData = (childFormData, child, isUnified = false) => {
+//     console.log(
+//       `Validating form data for ${child?.studentName}`,
+//       childFormData
+//     );
+//     if (!childFormData || childFormData.error) {
+//       toast.error(
+//         `Cannot submit for ${
+//           child?.studentName || "this student"
+//         } due to missing or failed data loading.`
+//       );
+//       return false;
+//     }
+//     const totalAmount = parseFloat(childFormData.totalAmount) || 0;
+//     if (totalAmount <= 0) {
+//       toast.warn(
+//         `Please enter a valid amount (> 0) to pay for ${child.studentName}.`
+//       );
+//       return false;
+//     }
+//     if (!childFormData.paymentMode) {
+//       toast.error(`Payment mode is required for ${child.studentName}.`);
+//       return false;
+//     }
+//     if (
+//       (childFormData.paymentMode === "Online" ||
+//         childFormData.paymentMode === "Card") &&
+//       !childFormData.transactionId
+//     ) {
+//       toast.error(
+//         `Transaction ID is required for Online/Card payment for ${child.studentName}.`
+//       );
+//       return false;
+//     }
+//     if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) {
+//       toast.error(
+//         `Cheque Number is required for Cheque payment for ${child.studentName}.`
+//       );
+//       return false;
+//     }
+//     if (
+//       !childFormData.date ||
+//       !moment(childFormData.date, "YYYY-MM-DD", true).isValid()
+//     ) {
+//       toast.error(
+//         `Please select a valid payment date for ${child.studentName}.`
+//       );
+//       return false;
+//     }
+
+//     const payableExcludingDuesFines =
+//       calculateNetPayableAmount(
+//         formData.findIndex((fd) => fd.studentId === child.studentId)
+//       ) -
+//       (parseFloat(childFormData.pastDues) || 0) -
+//       (parseFloat(childFormData.lateFine) || 0);
+//     const onlyPayingDuesAndFines =
+//       (parseFloat(childFormData.pastDues) || 0) +
+//       (parseFloat(childFormData.lateFine) || 0);
+
+//     if (
+//       totalAmount > 0 &&
+//       childFormData.selectedMonths.length === 0 &&
+//       childFormData.selectedAdditionalFees.length === 0 &&
+//       childFormData.selectedOneTimeFees.length === 0 &&
+//       totalAmount > onlyPayingDuesAndFines
+//     ) {
+//       toast.warn(
+//         `Amount paid for ${child.studentName} (₹${totalAmount.toFixed(
+//           2
+//         )}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(
+//           2
+//         )}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`,
+//       );
+//     }
+//     return true;
+//   };
+
+//   const handleUnifiedFeePayment = async () => {
+//     console.log("Attempting unified fee payment...");
+//     if (selectedChildrenIndices.length < 2) {
+//       toast.warn("Please select at least two students for unified payment.");
+//       return;
+//     }
+
+//     let isValid = true;
+//     let totalUnifiedAmount = 0;
+//     const studentsPayload = [];
+
+//     for (const index of selectedChildrenIndices) {
+//       const childFormData = formData[index];
+//       const child = parentData[index];
+
+//       if (!validateFormData(childFormData, child, true)) {
+//         isValid = false;
+//         break;
+//       }
+
+//       const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
+//       if (amountForThisChild <= 0) {
+//         toast.warn(
+//           `Please enter an amount (> 0) to pay for ${child.studentName} in the unified payment.`
+//         );
+//         isValid = false;
+//         break;
+//       }
+//       totalUnifiedAmount += amountForThisChild;
+
+//       const additionalFeesPayload = [];
+//       const selectedMonthNames = childFormData.selectedMonths.map(
+//         (m) => m.value
+//       );
+
+//       childFormData.selectedAdditionalFees.forEach((fee) => {
+//         if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+//           fee.dueMonths.forEach((monthName) => {
+//             const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(
+//               (m) => m.month === monthName
+//             );
+//             const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
+//               (mf) => mf.name === fee.name && mf.status !== "Paid"
+//             );
+//             if (isFeeDueForThisMonth) {
+//               additionalFeesPayload.push({ name: fee.name, month: monthName });
+//             }
+//           });
+//         } else if (fee.type !== "One-Time") {
+//           additionalFeesPayload.push({ name: fee.name });
+//         }
+//       });
+
+//       childFormData.selectedOneTimeFees.forEach((fee) => {
+//         additionalFeesPayload.push({ name: fee.name });
+//       });
+
+//       studentsPayload.push({
+//         studentId: child.studentId,
+//         paymentDetails: {
+//           regularFees: childFormData.selectedMonths.map((monthState) => ({
+//             month: monthState.value,
+//           })),
+//           additionalFees: additionalFeesPayload,
+//           pastDuesPaid: 0,
+//           lateFinesPaid: 0,
+//           concession: parseFloat(childFormData.concession) || 0,
+//           totalAmount: amountForThisChild,
+//         },
+//       });
+//     }
+
+//     if (!isValid || studentsPayload.length !== selectedChildrenIndices.length) {
+//       console.error("Unified payment validation failed or payload mismatch.");
+//       return;
+//     }
+
+//     const firstChildIndex = selectedChildrenIndices[0];
+//     const firstChildFormData = formData[firstChildIndex];
+
+//     if (!firstChildFormData.paymentMode) {
+//       toast.error(
+//         `Payment mode is required (using details from ${parentData[firstChildIndex].studentName}).`
+//       );
+//       return;
+//     }
+//     if (
+//       (firstChildFormData.paymentMode === "Online" ||
+//         firstChildFormData.paymentMode === "Card") &&
+//       !firstChildFormData.transactionId
+//     ) {
+//       toast.error(
+//         `Transaction ID is required for Online/Card payment (using details from ${parentData[firstChildIndex].studentName}).`
+//       );
+//       return;
+//     }
+//     if (
+//       firstChildFormData.paymentMode === "Cheque" &&
+//       !firstChildFormData.chequeBookNo
+//     ) {
+//       toast.error(
+//         `Cheque Number is required for Cheque payment (using details from ${parentData[firstChildIndex].studentName}).`
+//       );
+//       return;
+//     }
+//     if (
+//       !firstChildFormData.date ||
+//       !moment(firstChildFormData.date, "YYYY-MM-DD", true).isValid()
+//     ) {
+//       toast.error(
+//         `Please select a valid payment date (using details from ${parentData[firstChildIndex].studentName}).`
+//       );
+//       return false;
+//     }
+
+//     const unifiedPaymentDetails = {
+//       paymentMode: firstChildFormData.paymentMode,
+//       transactionId: firstChildFormData.transactionId || undefined,
+//       chequeNumber: firstChildFormData.chequeBookNo || undefined,
+//       date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+//       remark: firstChildFormData.remarks || "",
+//     };
+
+//     const payload = {
+//       students: studentsPayload,
+//       session,
+//       unifiedPaymentDetails,
+//     };
+
+//     console.log("Unified Payload:", JSON.stringify(payload, null, 2));
+
+//     setIsLoader(true);
+//     try {
+//       const response = await feescreateUnifiedFeeStatus(payload);
+//       if (response.success) {
+//         toast.success(
+//           response.message || "Unified fees submitted successfully!"
+//         );
+//         setUnifiedReceiptData(response.data);
+//         setIsMessageModalOpen(true);
+//       } else {
+//         toast.error(response.message || "Unified fee submission failed.");
+//       }
+//     } catch (error) {
+//       const errorMsg = error.response?.data?.message || error.message;
+//       toast.error(`Error during unified submission: ${errorMsg}`);
+//       console.error("Unified Submission Error:", error.response || error);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   const handleSubmit = async (e, childIndex) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     console.log(`Attempting single submission for index: ${childIndex}`);
+//     const childFormData = formData[childIndex];
+//     const child = parentData[childIndex];
+
+//     if (!validateFormData(childFormData, child)) {
+//       return;
+//     }
+
+//     setIsLoader(true);
+
+//     const additionalFeesPayload = [];
+//     const selectedMonthNames = childFormData.selectedMonths.map((m) => m.value);
+
+//     childFormData.selectedAdditionalFees.forEach((fee) => {
+//       if (fee.type === "Monthly" && fee.dueMonths?.length > 0) {
+//         fee.dueMonths.forEach((monthName) => {
+//           const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(
+//             (m) => m.month === monthName
+//           );
+//           const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
+//             (mf) => mf.name === fee.name && mf.status !== "Paid"
+//           );
+//           if (isFeeDueForThisMonth) {
+//             additionalFeesPayload.push({
+//               name: fee.name,
+//               month: monthName,
+//             });
+//           }
+//         });
+//       } else if (fee.type !== "One-Time") {
+//         additionalFeesPayload.push({
+//           name: fee.name,
+//         });
+//       }
+//     });
+
+//     childFormData.selectedOneTimeFees.forEach((fee) => {
+//       additionalFeesPayload.push({
+//         name: fee.name,
+//       });
+//     });
+
+//     const payload = {
+//       studentId: child.studentId,
+//       session,
+//       paymentDetails: {
+//         regularFees: childFormData.selectedMonths.map((monthState) => ({
+//           month: monthState.value,
+//         })),
+//         additionalFees: additionalFeesPayload,
+//         pastDuesPaid: 0,
+//         lateFinesPaid: 0,
+//         concession: parseFloat(childFormData.concession) || 0,
+//         totalAmount: parseFloat(childFormData.totalAmount) || 0,
+//         date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+//         paymentMode: childFormData.paymentMode,
+//         transactionId: childFormData.transactionId || undefined,
+//         chequeNumber: childFormData.chequeBookNo || undefined,
+//         remark: childFormData.remarks || "",
+//       },
+//     };
+
+//     console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
+
+//     try {
+//       const response = await feescreateFeeStatus(payload);
+//       if (response?.success) {
+//         toast.success(
+//           response?.message ||
+//             `Fees submitted successfully for ${child.studentName}!`
+//         );
+//         setResponseData(response?.data);
+//         setIsMessageModalOpen(true);
+//       } else {
+//         toast.error(
+//           response?.message || `Fee submission failed for ${child.studentName}.`
+//         );
+//       }
+//     } catch (error) {
+//       const errorMsg = error.response?.data?.message || error.message;
+//       toast.error(
+//         `An error occurred during submission for ${child.studentName}: ${errorMsg}`
+//       );
+//       console.error("Single Submission Error:", error.response || error);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   const handleCloseMessageModal = async (sendMsg = false) => {
+//     console.log(`Closing message modal, sendMsg=${sendMsg}`);
+//     setIsMessageModalOpen(false);
+//     let receiptNumber = null;
+//     let isUnified = false;
+//     let dataForActions = null;
+
+//     if (responseData) {
+//       receiptNumber = responseData.feeReceiptNumber;
+//       isUnified = false;
+//       dataForActions = responseData;
+//     } else if (unifiedReceiptData) {
+//       receiptNumber = unifiedReceiptData.unifiedReceiptNumber;
+//       isUnified = true;
+//       dataForActions = unifiedReceiptData;
+//     }
+
+//     if (sendMsg && dataForActions) {
+//       if (isUnified) {
+//         sendUnifiedMessage(dataForActions);
+//       } else {
+//         sendMessage(dataForActions);
+//       }
+//     }
+
+//     const tempReceiptNumber = receiptNumber;
+//     const tempIsUnified = isUnified;
+//     const tempParentId =
+//       responseData?.student?.parentId || unifiedReceiptData?.parentId || null;
+
+//     resetState();
+//     setResponseData(null);
+//     setUnifiedReceiptData(null);
+
+//     if (tempParentId) {
+//       console.log(
+//         `Refreshing data for parentId: ${tempParentId} after submission.`
+//       );
+//       await handleStudentClick(tempParentId);
+//     } else {
+//       setTriggerRefresh((prev) => !prev);
+//     }
+
+//     if (tempReceiptNumber) {
+//       const fetchedReceiptData = await fetchReceiptData(
+//         tempReceiptNumber,
+//         tempIsUnified
+//       );
+//       if (fetchedReceiptData) {
+//         if (tempIsUnified) {
+//           setUnifiedReceiptModalOpen(true);
+//         } else {
+//           setPdfModalOpen(true);
+//         }
+//       }
+//     }
+//   };
+
+//   const handleClosePdfModal = (action = null) => {
+//     console.log(`Closing PDF modal, action=${action}`);
+//     if (action === "download" && receiptData) {
+//       handleDownloadPdf(receiptData);
+//     } else if (action === "print" && receiptData) {
+//       handlePrintReceipt(receiptData);
+//     }
+//     setPdfModalOpen(false);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   const handleCloseUnifiedReceiptModal = (action = null) => {
+//     console.log(`Closing Unified PDF modal, action=${action}`);
+//     if (action === "download" && receiptData) {
+//       handleDownloadUnifiedPdf(receiptData);
+//     } else if (action === "print" && receiptData) {
+//       handlePrintUnifiedReceipt(receiptData);
+//     }
+//     setUnifiedReceiptModalOpen(false);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   const handleDownloadPdf = (dataToUse) => {
+//     if (!dataToUse?.data) {
+//       toast.error("No receipt data available to generate PDF.");
+//       return;
+//     }
+//     generatePdf(
+//       dataToUse.data,
+//       [],
+//       0,
+//       0,
+//       0,
+//       0,
+//       0,
+//       0,
+//       `fee-receipt-${dataToUse.data?.feeReceiptNumber}.pdf`
+//     );
+//   };
+
+//   const handlePrintReceipt = (dataToUse) => {
+//     if (!dataToUse?.data) {
+//       toast.error("No receipt data available to print.");
+//       return;
+//     }
+//     console.log(
+//       "Print action triggered for single receipt:",
+//       dataToUse.data?.feeReceiptNumber
+//     );
+//     toast.info(
+//       "Print functionality placeholder: would print receipt " +
+//         dataToUse.data?.feeReceiptNumber
+//     );
+//   };
+
+//   const sendMessage = (dataToUse) => {
+//     if (!dataToUse) {
+//       toast.error("No receipt data available to send message.");
+//       return;
+//     }
+//     console.log("Sending SINGLE fee response message:", dataToUse);
+//     try {
+//       FeeResponse(dataToUse);
+//       toast.info(`SMS function called for ${dataToUse?.student?.studentName}`);
+//     } catch (error) {
+//       console.error("Error calling FeeResponse for single payment:", error);
+//       toast.error("Failed to initiate SMS sending.");
+//     }
+//   };
+
+//   const handleDownloadUnifiedPdf = (dataToUse) => {
+//     if (!dataToUse?.data) {
+//       toast.error("No unified receipt data available to generate PDF.");
+//       return;
+//     }
+//     generatePdf(
+//       dataToUse.data,
+//       [],
+//       0,
+//       0,
+//       0,
+//       0,
+//       0,
+//       0,
+//       `unified-receipt-${dataToUse.data?.unifiedReceiptNumber}.pdf`
+//     );
+//   };
+
+//   const handlePrintUnifiedReceipt = (dataToUse) => {
+//     if (!dataToUse?.data) {
+//       toast.error("No unified receipt data available to print.");
+//       return;
+//     }
+//     console.log(
+//       "Print action triggered for unified receipt:",
+//       dataToUse.data?.unifiedReceiptNumber
+//     );
+//     toast.info(
+//       "Print functionality placeholder: would print unified receipt " +
+//         dataToUse.data?.unifiedReceiptNumber
+//     );
+//   };
+
+//   const sendUnifiedMessage = (dataToUse) => {
+//     if (!dataToUse) {
+//       toast.error("No unified receipt data available to send message.");
+//       return;
+//     }
+//     console.log("Sending UNIFIED fee response message:", dataToUse);
+//     try {
+//       FeeResponse(dataToUse);
+//       const studentNames =
+//         dataToUse?.students?.map((s) => s.studentName).join(", ") ||
+//         "selected students";
+//       toast.info(`SMS function called for ${studentNames}`);
+//     } catch (error) {
+//       console.error("Error calling FeeResponse for unified payment:", error);
+//       toast.error("Failed to initiate SMS sending.");
+//     }
+//   };
+
+//   return (
+//     <div className="px-4 pb-2 min-h-screen bg-gray-100">
+//       <div className="max-w-7xl mx-auto">
+//         <div className="flex flex-col sm:flex-row gap-4 mb-6">
+//           <ReactInput
+//             type="text"
+//             label="Search by Name"
+//             onChange={handleSearch}
+//             value={searchTerm}
+//             containerClassName="flex-1 min-w-[200px]"
+//             className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//           />
+//           <ReactInput
+//             type="text"
+//             label="Search by Adm. No"
+//             onChange={handleSearchbyAdmissionNo}
+//             value={searchTermbyadmissionNo}
+//             containerClassName="flex-1 min-w-[200px]"
+//             className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//           />
+//         </div>
+
+//         {filteredStudents.length > 0 && (
+//           <div className="relative">
+//             <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
+//               <table className="w-full border-collapse">
+//                 <thead className="bg-gray-100 sticky top-0 z-20">
+//                   <tr>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+//                       Student Name
+//                     </th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+//                       Admission No.
+//                     </th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+//                       Class
+//                     </th>
+//                     <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+//                       Parent Name
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {filteredStudents.map((student) => (
+//                     <tr
+//                       key={student._id}
+//                       className="cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out border-b border-gray-300"
+//                       onClick={() => {
+//                         console.log(
+//                           `Search result clicked: ${student.studentName} (ParentID: ${student.parentId})`
+//                         );
+//                         handleStudentClick(student.parentId);
+//                         setFilteredStudents([]);
+//                       }}
+//                     >
+//                       <td className="p-3 font-semibold text-gray-800">
+//                         {student.studentName}
+//                       </td>
+//                       <td className="p-3 text-sm text-gray-600">
+//                         {student.admissionNumber}
+//                       </td>
+//                       <td className="p-3 text-sm text-gray-600">
+//                         {student.class}
+//                       </td>
+//                       <td className="p-3 text-sm text-gray-600">
+//                         {student.fatherName}
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+//         )}
+
+//         {showChildForms && parentData.length > 0 && (
+//           <div className="mt-6 pt-4 border-t border-gray-200">
+//             <div className="flex justify-between items-center mb-4">
+//               <h2 className="text-lg font-semibold text-gray-800">
+//                 Selected Student(s) Fee Payment
+//               </h2>
+//               {selectedChildrenIndices.length > 1 && (
+//                 <Button
+//                   name="Pay for Siblings Together"
+//                   onClick={handleUnifiedFeePayment}
+//                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+//                 />
+//               )}
+//             </div>
+
+//             <div className="grid grid-cols-1 gap-6">
+//               {parentData.map((child, index) => {
+//                 const currentFormData = formData[index];
+
+//                 if (!currentFormData || currentFormData.error) {
+//                   return (
+//                     <div
+//                       key={child._id || index}
+//                       className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md"
+//                       role="alert"
+//                     >
+//                       <strong className="font-bold">Error:</strong>
+//                       <span className="block sm:inline ml-2">
+//                         Could not load fee data for{" "}
+//                         {child.studentName || "this student"} (Adm:{" "}
+//                         {child.admissionNumber || "N/A"}). Please try searching
+//                         again or contact support.
+//                       </span>
+//                     </div>
+//                   );
+//                 }
+
+//                 const isSelected = selectedChildrenIndices.includes(index);
+//                 const showForm = showFormFlags[index];
+
+//                 const monthOptions = currentFormData.regularFees
+//                   .filter((fee) => fee.dueAmount > 0)
+//                   .map((fee) => ({ name: fee.label, code: fee.month }));
+//                 const selectedMonthValues = currentFormData.selectedMonths.map(
+//                   (monthState) => ({
+//                     name: monthState.label,
+//                     code: monthState.value,
+//                   })
+//                 );
+
+//                 const additionalFeeOptions =
+//                   currentFormData.availableAdditionalFees
+//                     .filter((fee) => fee.type !== "One-Time")
+//                     .map((item) => ({ name: item.label, code: item.id }));
+//                 const selectedAdditionalFeeValues =
+//                   currentFormData.selectedAdditionalFees
+//                     .filter((fee) => fee.type !== "One-Time")
+//                     .map((selectedFee) => {
+//                       const availableOption = additionalFeeOptions.find(
+//                         (opt) => opt.code === selectedFee.id
+//                       );
+//                       return {
+//                         name: availableOption
+//                           ? availableOption.name
+//                           : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
+//                         code: selectedFee.id,
+//                       };
+//                     });
+
+//                 const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+//                   (item) => ({ name: item.label, code: item.code })
+//                 );
+//                 const selectedOneTimeFeeValues =
+//                   currentFormData.selectedOneTimeFees.map((fee) => {
+//                     const availableOption = oneTimeFeeOptions.find(
+//                       (opt) => opt.code === fee.name
+//                     );
+//                     return {
+//                       name: availableOption
+//                         ? availableOption.name
+//                         : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+//                       code: fee.name,
+//                     };
+//                   });
+
+//                 return (
+//                   <div
+//                     key={child._id || index}
+//                     className={`bg-white rounded-lg shadow-md border transition-all duration-300 ${
+//                       isSelected
+//                         ? "border-blue-500 ring-2 ring-blue-300"
+//                         : "border-gray-200 hover:border-gray-300"
+//                     } overflow-hidden`}
+//                   >
+//                     <div
+//                       className={`flex items-center px-4 py-3 border-b ${
+//                         isSelected ? "bg-blue-50" : "bg-gray-50"
+//                       } cursor-pointer`}
+//                       onClick={() => {
+//                         console.log(`DIV clicked for index: ${index}`);
+//                         handleChildSelection(index);
+//                       }}
+//                     >
+//                       <input
+//                         type="checkbox"
+//                         id={`child-checkbox-${index}`}
+//                         checked={isSelected}
+//                         onChange={(e) => {
+//                           e.stopPropagation();
+//                           console.log(`CHECKBOX changed for index: ${index}`);
+//                           handleChildSelection(index);
+//                         }}
+//                         className="mr-3 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+//                         aria-labelledby={`child-label-${index}`}
+//                       />
+//                       <label
+//                         id={`child-label-${index}`}
+//                         className="flex-grow cursor-pointer"
+//                         htmlFor={`child-checkbox-${index}`}
+//                       >
+//                         <div className="flex justify-between items-center">
+//                           <div>
+//                             <span className="text-base font-semibold text-blue-800">
+//                               {child.studentName}
+//                             </span>
+//                             <span className="text-sm text-gray-600 ml-2">
+//                               (Class: {child.class} / Adm#:{" "}
+//                               {child.admissionNumber})
+//                             </span>
+//                           </div>
+//                           <span
+//                             className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+//                               isSelected
+//                                 ? "bg-blue-200 text-blue-800"
+//                                 : "bg-gray-200 text-gray-700"
+//                             }`}
+//                           >
+//                             {isSelected ? "SELECTED" : "SELECT"}
+//                           </span>
+//                         </div>
+//                         <div className="flex flex-wrap justify-start items-center gap-x-4 text-xs mt-1">
+//                           <span className="text-red-600 font-medium">
+//                             Total Dues: ₹
+//                             {currentFormData?.totalDues?.toFixed(2) || "0.00"}
+//                           </span>
+//                           {currentFormData?.pastDues > 0 && (
+//                             <span className="text-purple-600 font-medium">
+//                               Past Dues: ₹
+//                               {currentFormData?.pastDues?.toFixed(2)}
+//                             </span>
+//                           )}
+//                           {currentFormData?.lateFine > 0 && (
+//                             <span className="text-orange-600 font-medium">
+//                               Late Fine: ₹
+//                               {currentFormData?.lateFine?.toFixed(2)}
+//                             </span>
+//                           )}
+//                           <span className="text-gray-600 font-medium">
+//                             Base Monthly Fee: ₹
+//                             {currentFormData?.classFee?.toFixed(2) || "0.00"}
+//                           </span>
+//                         </div>
+//                       </label>
+//                     </div>
+
+//                     <div
+//                       className={`transition-all duration-500 ease-in-out overflow-hidden ${
+//                         showForm
+//                           ? "max-h-[2000px] opacity-100"
+//                           : "max-h-0 opacity-0"
+//                       }`}
+//                     >
+//                       {showForm && (
+//                         <div className="px-4 py-4 border-t flex flex-col lg:flex-row gap-6 bg-white">
+//                           <form
+//                             onSubmit={(e) => handleSubmit(e, index)}
+//                             className="flex-grow lg:w-2/3 space-y-5 mb-6 lg:mb-0"
+//                             noValidate
+//                           >
+//                             <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
+//                               <div className="md:col-span-1">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                                   Regular Monthly Fees
+//                                 </label>
+//                                 <DynamicMultiSelect
+//                                   name={`regularFees-${index}`}
+//                                   searchable={false}
+//                                   placeholderName="Select month(s)..."
+//                                   dynamicOptions={monthOptions}
+//                                   handleChange={(name, opts) =>
+//                                     handleMonthMultiSelectChange(
+//                                       index,
+//                                       name,
+//                                       opts
+//                                     )
+//                                   }
+//                                   value={selectedMonthValues}
+//                                   requiredClassName={"required-fields"}
+//                                   containerClassName="w-full"
+//                                   menuClassName="w-full min-w-[200px] whitespace-normal"
+//                                 />
+//                                 <p className="text-xs text-gray-500 mt-1">
+//                                   Select consecutive months with dues.
+//                                 </p>
+//                               </div>
+//                               <div className="md:col-span-1">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                                   Additional Fees (Monthly/Other)
+//                                 </label>
+//                                 <DynamicMultiSelect
+//                                   name={`additionalFees-${index}`}
+//                                   searchable={true}
+//                                   placeholderName="Select additional fee(s)..."
+//                                   dynamicOptions={additionalFeeOptions}
+//                                   handleChange={(name, opts) =>
+//                                     handleDynamicMultiSelectChange(
+//                                       index,
+//                                       "selectedAdditionalFees",
+//                                       opts
+//                                     )
+//                                   }
+//                                   value={selectedAdditionalFeeValues}
+//                                   requiredClassName={"required-fields"}
+//                                   containerClassName="w-full"
+//                                   menuClassName="w-full min-w-[200px] whitespace-normal"
+//                                 />
+//                                 <p className="text-xs text-gray-500 mt-1">
+//                                   Monthly fees auto-selected with months.
+//                                 </p>
+//                               </div>
+//                               <div className="md:col-span-1">
+//                                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                                   One-Time / Due Fees
+//                                 </label>
+//                                 <DynamicMultiSelect
+//                                   name={`oneTimeFees-${index}`}
+//                                   searchable={true}
+//                                   placeholderName="Select one-time fee(s)..."
+//                                   dynamicOptions={oneTimeFeeOptions}
+//                                   handleChange={(name, opts) =>
+//                                     handleDynamicMultiSelectChange(
+//                                       index,
+//                                       "selectedOneTimeFees",
+//                                       opts
+//                                     )
+//                                   }
+//                                   value={selectedOneTimeFeeValues}
+//                                   requiredClassName={"required-fields"}
+//                                   containerClassName="w-full"
+//                                   menuClassName="w-full min-w-[200px] whitespace-normal"
+//                                 />
+//                                 <p className="text-xs text-gray-500 mt-1">
+//                                   Select fees currently due.
+//                                 </p>
+//                               </div>
+//                             </div>
+
+//                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                               <ReactInput
+//                                 type="number"
+//                                 label="Concession (-)"
+//                                 value={currentFormData.concession}
+//                                 onChange={(e) =>
+//                                   handleInputChange(
+//                                     index,
+//                                     "concession",
+//                                     e.target.value
+//                                   )
+//                                 }
+//                                 min="0"
+//                                 step="0.01"
+//                                 containerClassName="sm:col-span-1"
+//                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//                               />
+//                               <ReactInput
+//                                 type="number"
+//                                 label={`Total Amount to Pay (*) ${
+//                                   selectedChildrenIndices.length > 1
+//                                     ? `(for ${child.studentName})`
+//                                     : ""
+//                                 }`}
+//                                 value={currentFormData.totalAmount}
+//                                 onChange={(e) =>
+//                                   handleInputChange(
+//                                     index,
+//                                     "totalAmount",
+//                                     e.target.value
+//                                   )
+//                                 }
+//                                 min="0.01"
+//                                 step="0.01"
+//                                 isRequired={true}
+//                                 containerClassName="sm:col-span-1"
+//                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//                               />
+//                               <div>
+//                                 <label className="block text-sm font-medium text-gray-700">
+//                                   Payment Mode (*)
+//                                 </label>
+//                                 <select
+//                                   value={currentFormData.paymentMode}
+//                                   onChange={(e) =>
+//                                     handleInputChange(
+//                                       index,
+//                                       "paymentMode",
+//                                       e.target.value
+//                                     )
+//                                   }
+//                                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+//                                   required
+//                                 >
+//                                   <option value="Cash">Cash</option>
+//                                   <option value="Online">Online</option>
+//                                   <option value="Cheque">Cheque</option>
+//                                   <option value="Card">Card</option>
+//                                 </select>
+//                               </div>
+//                               <ReactInput
+//                                 type="date"
+//                                 label="Payment Date (*)"
+//                                 value={currentFormData.date}
+//                                 onChange={(e) =>
+//                                   handleInputChange(
+//                                     index,
+//                                     "date",
+//                                     e.target.value
+//                                   )
+//                                 }
+//                                 isRequired={true}
+//                                 max={moment().format("YYYY-MM-DD")}
+//                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//                               />
+//                               {(currentFormData.paymentMode === "Online" ||
+//                                 currentFormData.paymentMode === "Card") && (
+//                                 <ReactInput
+//                                   type="text"
+//                                   label="Transaction ID (*)"
+//                                   value={currentFormData.transactionId}
+//                                   onChange={(e) =>
+//                                     handleInputChange(
+//                                       index,
+//                                       "transactionId",
+//                                       e.target.value
+//                                     )
+//                                   }
+//                                   isRequired={true}
+//                                   className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//                                 />
+//                               )}
+//                               {currentFormData.paymentMode === "Cheque" && (
+//                                 <ReactInput
+//                                   type="text"
+//                                   label="Cheque Number (*)"
+//                                   value={currentFormData.chequeBookNo}
+//                                   onChange={(e) =>
+//                                     handleInputChange(
+//                                       index,
+//                                       "chequeBookNo",
+//                                       e.target.value
+//                                     )
+//                                   }
+//                                   isRequired={true}
+//                                   className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+//                                 />
+//                               )}
+//                             </div>
+
+//                             <div className="sm:col-span-2">
+//                               <label className="block text-sm font-medium text-gray-700">
+//                                 Remarks
+//                               </label>
+//                               <textarea
+//                                 value={currentFormData.remarks}
+//                                 onChange={(e) =>
+//                                   handleInputChange(
+//                                     index,
+//                                     "remarks",
+//                                     e.target.value
+//                                   )
+//                                 }
+//                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+//                                 rows="2"
+//                                 placeholder="Optional remarks about payment..."
+//                               />
+//                             </div>
+
+//                             {selectedChildrenIndices.length <= 1 && (
+//                               <div className="flex justify-end pt-4 mt-4 border-t">
+//                                 <Button
+//                                   type="submit"
+//                                   name={`Submit Payment for ${child.studentName}`}
+//                                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+//                                 />
+//                               </div>
+//                             )}
+//                           </form>
+
+//                           <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-3 bg-blue-50 lg:ml-4 mt-4 lg:mt-0">
+//                             <h3 className="text-base font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-3">
+//                               Payment Summary
+//                             </h3>
+//                             <table className="w-full text-sm">
+//                               <tbody>
+//                                 {currentFormData.pastDues > 0 && (
+//                                   <tr className="border-b border-blue-100">
+//                                     <td className="text-gray-700 py-1.5">
+//                                       Past Dues:
+//                                     </td>
+//                                     <td className="font-medium text-purple-700 py-1.5 text-right">
+//                                       ₹{currentFormData.pastDues.toFixed(2)}
+//                                     </td>
+//                                   </tr>
+//                                 )}
+//                                 {currentFormData.lateFine > 0 && (
+//                                   <tr className="border-b border-blue-100">
+//                                     <td className="text-gray-700 py-1.5">
+//                                       Late Fines:
+//                                     </td>
+//                                     <td className="font-medium text-orange-700 py-1.5 text-right">
+//                                       ₹{currentFormData.lateFine.toFixed(2)}
+//                                     </td>
+//                                   </tr>
+//                                 )}
+//                                 {currentFormData.selectedMonths.length > 0 && (
+//                                   <>
+//                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
+//                                       <td colSpan="2" className="py-1.5">
+//                                         Regular Fees:
+//                                       </td>
+//                                     </tr>
+//                                     {currentFormData.selectedMonths.map(
+//                                       (monthState, i) => (
+//                                         <tr
+//                                           key={`reg-sum-${index}-${i}`}
+//                                           className="border-b border-blue-100"
+//                                         >
+//                                           <td className="text-gray-600 py-1 pl-3">
+//                                             {monthState.value}:
+//                                           </td>
+//                                           <td className="font-medium text-blue-700 py-1 text-right">
+//                                             ₹{(monthState?.due || 0).toFixed(2)}
+//                                           </td>
+//                                         </tr>
+//                                       )
+//                                     )}
+//                                   </>
+//                                 )}
+//                                 {currentFormData.selectedAdditionalFees.length >
+//                                   0 && (
+//                                   <>
+//                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
+//                                       <td colSpan="2" className="pt-2 pb-1">
+//                                         Additional Fees:
+//                                       </td>
+//                                     </tr>
+//                                     {currentFormData.selectedAdditionalFees.map(
+//                                       (fee, i) => (
+//                                         <tr
+//                                           key={`add-sum-${index}-${i}`}
+//                                           className="border-b border-blue-100"
+//                                         >
+//                                           <td className="text-gray-600 py-1 pl-3">
+//                                             {fee.name}{" "}
+//                                             {fee.type === "Monthly"
+//                                               ? `(${fee.type}, ${
+//                                                   fee.dueMonths?.join(", ") ||
+//                                                   "Selected Months"
+//                                                 })`
+//                                               : ""}
+//                                           </td>
+//                                           <td className="font-medium text-blue-700 py-1 text-right">
+//                                             ₹{(fee.amount).toFixed(2)}
+//                                           </td>
+//                                         </tr>
+//                                       )
+//                                     )}
+//                                   </>
+//                                 )}
+//                                 {currentFormData.selectedOneTimeFees.length >
+//                                   0 && (
+//                                   <>
+//                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
+//                                       <td colSpan="2" className="pt-2 pb-1">
+//                                         One-Time Fees:
+//                                       </td>
+//                                     </tr>
+//                                     {currentFormData.selectedOneTimeFees.map(
+//                                       (fee, i) => (
+//                                         <tr
+//                                           key={`one-time-sum-${index}-${i}`}
+//                                           className="border-b border-blue-100"
+//                                         >
+//                                           <td className="text-gray-600 py-1 pl-3">
+//                                             {fee.name}:
+//                                           </td>
+//                                           <td className="font-medium text-blue-700 py-1 text-right">
+//                                             ₹{(fee?.dueAmount || 0).toFixed(2)}
+//                                           </td>
+//                                         </tr>
+//                                       )
+//                                     )}
+//                                   </>
+//                                 )}
+//                                 {currentFormData.concession > 0 && (
+//                                   <tr className="border-b border-blue-100">
+//                                     <td className="text-green-700 py-1.5">
+//                                       Concession:
+//                                     </td>
+//                                     <td className="font-medium text-green-700 py-1.5 text-right">
+//                                       - ₹
+//                                       {parseFloat(
+//                                         currentFormData.concession
+//                                       ).toFixed(2)}
+//                                     </td>
+//                                   </tr>
+//                                 )}
+//                               </tbody>
+//                               <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
+//                                 <tr>
+//                                   <td className="pt-2 font-semibold text-blue-900 py-1.5">
+//                                     Total Payable Now
+//                                   </td>
+//                                   <td className="pt-2 font-bold text-blue-900 py-1.5 text-right">
+//                                     ₹
+//                                     {calculateNetPayableAmount(index).toFixed(
+//                                       2
+//                                     )}
+//                                   </td>
+//                                 </tr>
+//                                 {parseFloat(currentFormData.totalAmount) > 0 &&
+//                                   (() => {
+//                                     const distribution =
+//                                       calculateAutoDistribution(index);
+//                                     return (
+//                                       <>
+//                                         <tr>
+//                                           <td className="text-gray-700 py-1.5">
+//                                             Amount Paying:
+//                                           </td>
+//                                           <td className="font-medium text-black py-1.5 text-right">
+//                                             ₹
+//                                             {parseFloat(
+//                                               currentFormData.totalAmount
+//                                             ).toFixed(2)}
+//                                           </td>
+//                                         </tr>
+//                                         <tr>
+//                                           <td className="font-semibold text-red-700 py-1.5">
+//                                             Remaining Dues:
+//                                           </td>
+//                                           <td className="font-bold text-red-700 py-1.5 text-right">
+//                                             ₹
+//                                             {distribution.remainingDues.toFixed(
+//                                               2
+//                                             )}
+//                                           </td>
+//                                         </tr>
+//                                         {distribution.remainingAfterDistribution >
+//                                           0 && (
+//                                           <tr>
+//                                             <td className="font-semibold text-green-700 py-1 text-xs">
+//                                               (Advance/Excess):
+//                                             </td>
+//                                             <td className="font-semibold text-green-700 py-1 text-right text-xs">
+//                                               ₹
+//                                               {distribution.remainingAfterDistribution.toFixed(
+//                                                 2
+//                                               )}
+//                                             </td>
+//                                           </tr>
+//                                         )}
+//                                       </>
+//                                     );
+//                                   })()}
+//                               </tfoot>
+//                             </table>
+//                           </div>
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         )}
+
+//         {showChildForms &&
+//           childFeeHistory?.monthlyStatus?.length > 0 &&
+//           selectedChildrenIndices.length > 0 && (
+//             <div className="mt-8 border-t border-gray-300 pt-6">
+//               <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">
+//                 Fee History for{" "}
+//                 {childFeeHistory?.studentName || "Selected Student"} (
+//                 {childFeeHistory?.session || session})
+//               </h2>
+//               <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow">
+//                 <MonthFeeCard childFeeHistory={childFeeHistory} />
+//               </div>
+//             </div>
+//           )}
+
+//         <Modal
+//           setIsOpen={setIsMessageModalOpen}
+//           isOpen={isMessageModalOpen}
+//           title="Send Confirmation?"
+//           maxWidth="md"
+//         >
+//           <div className="p-5">
+//             <p className="text-gray-700 mb-4 text-center">
+//               Fee submitted successfully for{" "}
+//               <span className="font-semibold">
+//                 {responseData?.student?.studentName ||
+//                   unifiedReceiptData?.students
+//                     ?.map((s) => s.studentName)
+//                     .join(", ") ||
+//                   "student(s)"}
+//               </span>
+//               .
+//               <br />
+//               Receipt Number:{" "}
+//               <span className="font-semibold">
+//                 {responseData?.feeReceiptNumber ||
+//                   unifiedReceiptData?.unifiedReceiptNumber ||
+//                   "N/A"}
+//               </span>
+//               <br />
+//               Do you want to send an SMS confirmation to the parent?
+//               <br />(
+//               <span className="font-mono text-sm">
+//                 {responseData?.parent?.fatherPhone ||
+//                   unifiedReceiptData?.parent?.fatherPhone ||
+//                   "Phone number not available"}
+//               </span>
+//               )
+//             </p>
+//             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+//               <Button
+//                 type="button"
+//                 name="Yes, Send SMS & View Receipt"
+//                 onClick={() => handleCloseMessageModal(true)}
+//                 className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2"
+//               />
+//               <Button
+//                 type="button"
+//                 name="No, Just View Receipt"
+//                 onClick={() => handleCloseMessageModal(false)}
+//                 className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1"
+//               />
+//             </div>
+//           </div>
+//         </Modal>
+
+//         <Modal
+//           setIsOpen={setPdfModalOpen}
+//           isOpen={pdfModalOpen}
+//           title="Fee Receipt Preview"
+//           maxWidth="lg"
+//         >
+//           <div className="p-1">
+//             {!isPreviewReady || !receiptData ? (
+//               <p className="text-center p-10 text-gray-600">
+//                 Loading receipt preview...
+//               </p>
+//             ) : (
+//               <FeeRecipt
+//                 modalData={receiptData}
+//                 handleCloseModal={() => handleClosePdfModal()}
+//                 handlePrint={() => handleClosePdfModal("print")}
+//                 handleDownload={() => handleClosePdfModal("download")}
+//                 isPreviewReady={isPreviewReady}
+//                 isUnified={false}
+//               />
+//             )}
+//           </div>
+//         </Modal>
+
+//         <Modal
+//           setIsOpen={setUnifiedReceiptModalOpen}
+//           isOpen={unifiedReceiptModalOpen}
+//           title="Unified Fee Receipt Preview"
+//           maxWidth="lg"
+//         >
+//           <div className="p-1">
+//             {!isPreviewReady || !receiptData ? (
+//               <p className="text-center p-10 text-gray-600">
+//                 Loading unified receipt preview...
+//               </p>
+//             ) : (
+//               <FeeRecipt
+//                 modalData={receiptData}
+//                 handleCloseModal={() => handleCloseUnifiedReceiptModal()}
+//                 handlePrint={() => handleCloseUnifiedReceiptModal("print")}
+//                 handleDownload={() =>
+//                   handleCloseUnifiedReceiptModal("download")
+//                 }
+//                 isPreviewReady={isPreviewReady}
+//                 isUnified={true}
+//               />
+//             )}
+//           </div>
+//         </Modal>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CreateFees;
+
+
+
+// import axios from "axios";
+// import React, { useEffect, useState, useCallback } from "react";
+// import { toast } from "react-toastify";
+// import {
+//   ActiveStudents,
+//   feescreateFeeStatus,
+//   parentandchildwithID,
+//   feescreateUnifiedFeeStatus,
+// } from "../../Network/AdminApi";
+// import Button from "../../Dynamic/utils/Button";
+// import Modal from "../../Dynamic/Modal";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import MonthFeeCard from "./MonthFeeCard";
+// import moment from "moment";
+// import { FeeResponse } from "../../Dynamic/utils/Message";
+// import generatePdf from "../../Dynamic/utils/pdfGenerator";
+// import FeeRecipt from "./FeeRecipt";
+// import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+
+// // Helper to fetch additional fees
+// const fetchAdditionalFeesForClass = async (className, authToken) => {
+//   try {
+//     const response = await axios.get(
+//       // Use environment variable for base URL if possible
+//       // `https://dvsserver.onrender.com/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+//       `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+//       {
+//         withCredentials: true,
+//         headers: { Authorization: `Bearer ${authToken}` },
+//       }
+//     );
+//     if (response?.data?.success) {
+//       const filteredFees = response.data.data.filter(
+//         (fee) => fee.className === className
+//       );
+//       // Map response including feeType (used for filtering dropdowns later)
+//       return filteredFees.map((fee) => ({
+//         label: `${fee.name} (${fee.feeType}) - ₹${fee.amount}`,
+//         value: fee.amount, // Amount associated with the fee type
+//         name: fee.name,
+//         type: fee.feeType, // Crucial for filtering ('Monthly', 'One-Time', 'Optional', etc.)
+//         id: fee._id, // Use the database ID as the unique identifier
+//       }));
+//     } else {
+//       console.error(`Failed to fetch additional fees for class ${className}:`, response?.data?.message); // Log error
+//       toast.error(`Failed to fetch additional fees for class ${className}.`);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error(`Error fetching additional fees for class ${className}:`, error); // Log error
+//     toast.error(
+//       `Error fetching additional fees for class ${className}: ${error.message}`
+//     );
+//     return [];
+//   }
+// };
+
+// const CreateFees = () => {
+//   // --- State variables ---
+//   const session = JSON.parse(localStorage.getItem("session"));
+//   const { setIsLoader } = useStateContext();
+//   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+//   const [responseData, setResponseData] = useState(null);
+//   const [showChildForms, setShowChildForms] = useState(false);
+//   const [selectedChildrenIndices, setSelectedChildrenIndices] = useState([]);
+//   const [childFeeHistory, setChildFeeHistory] = useState(null);
+//   const [filteredStudents, setFilteredStudents] = useState([]);
+//   const [showFormFlags, setShowFormFlags] = useState([]);
+//   const [triggerRefresh, setTriggerRefresh] = useState(false);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchTermbyadmissionNo, setSearchTermbyadmissionNo] = useState("");
+//   const [parentData, setParentData] = useState([]);
+//   const [allStudent, setAllStudent] = useState([]);
+//   const [formData, setFormData] = useState([]); // Array to hold form data for each selected child
+//   const authToken = localStorage.getItem("token");
+//   const [pdfModalOpen, setPdfModalOpen] = useState(false);
+//   const [unifiedReceiptModalOpen, setUnifiedReceiptModalOpen] = useState(false);
+//   const [unifiedReceiptData, setUnifiedReceiptData] = useState(null);
+//   const [receiptData, setReceiptData] = useState(null);
+//   const [isPreviewReady, setIsPreviewReady] = useState(false);
+
+//   const allMonths = [
+//     "April", "May", "June", "July", "August", "September",
+//     "October", "November", "December", "January", "February", "March",
+//   ];
+
+//   // --- Fetch students ---
+//   const getAllStudent = useCallback(async () => {
+//     // console.log("Fetching all active students..."); // Log fetch start
+//     setIsLoader(true);
+//     try {
+//       const response = await ActiveStudents();
+//       setAllStudent(response?.students?.data || []);
+//       // console.log("Active students fetched:", response?.students?.data?.length); // Log fetch success
+//     } catch (error) {
+//        console.error("Failed to fetch student list:", error); // Log fetch error
+//       toast.error("Failed to fetch student list.");
+//       setAllStudent([]);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   }, [setIsLoader]);
+
+//   useEffect(() => {
+//     getAllStudent();
+//   }, [getAllStudent, triggerRefresh]);
+
+//   // --- Search Handlers ---
+//   const handleSearch = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTerm(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.studentName &&
+//           student.studentName.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTermbyadmissionNo("");
+//   };
+
+//   const handleSearchbyAdmissionNo = (event) => {
+//     const searchValue = event.target.value.toLowerCase().trim();
+//     setSearchTermbyadmissionNo(searchValue);
+//     if (searchValue === "") {
+//       setFilteredStudents([]);
+//     } else {
+//       const filtered = allStudent.filter(
+//         (student) =>
+//           student.admissionNumber &&
+//           student.admissionNumber.toLowerCase().includes(searchValue)
+//       );
+//       setFilteredStudents(filtered);
+//     }
+//     setSearchTerm("");
+//   };
+
+//   // --- Fetch Fee Info ---
+//   const fetchStudentFeeInfo = async (studentId) => {
+//     // console.log(`Fetching fee info for student ID: ${studentId}`); // Log fetch start
+//     try {
+//       const response = await axios.get(
+//         // Use environment variable for base URL if possible
+//         // `https://dvsserver.onrender.com/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         {
+//           withCredentials: true,
+//           headers: { Authorization: `Bearer ${authToken}` },
+//         }
+//       );
+//       if (response.data.success) {
+//         // console.log(`Fee info fetched successfully for ${studentId}:`, response.data.data); // Log success
+//         return response.data.data;
+//       } else {
+//         console.error(`Fee info fetch failed for student ID ${studentId}:`, response.data.message || "Unknown error"); // Log failure
+//         toast.error(
+//           `Fee info fetch failed for student ID ${studentId}: ${response.data.message || "Unknown error"}`
+//         );
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching fee info for student ID ${studentId}:`, error); // Log error
+//       toast.error(
+//         `Error fetching fee info for student ID ${studentId}: ${error.message}`
+//       );
+//       return null;
+//     }
+//   };
+
+//   // --- Reset State ---
+//   const resetState = () => {
+//     // console.log("Resetting component state."); // Log state reset
+//     setSelectedChildrenIndices([]);
+//     setChildFeeHistory(null);
+//     setShowFormFlags([]);
+//     setParentData([]);
+//     setFormData([]);
+//     setSearchTerm("");
+//     setSearchTermbyadmissionNo("");
+//     setFilteredStudents([]);
+//     setShowChildForms(false);
+//     setResponseData(null);
+//     setIsMessageModalOpen(false);
+//     setPdfModalOpen(false);
+//     setUnifiedReceiptModalOpen(false);
+//     setUnifiedReceiptData(null);
+//     setReceiptData(null);
+//     setIsPreviewReady(false);
+//   };
+
+//   // --- Handle Student Click (from search results) ---
+//   const handleStudentClick = async (parentId) => {
+//     console.log(`handleStudentClick called for parentId: ${parentId}`); // Log entry
+//     setIsLoader(true);
+//     resetState(); // Reset previous state first
+//     try {
+//       const parentResponse = await parentandchildwithID(parentId);
+//       if (!parentResponse?.success) {
+//         console.error("Failed to fetch parent/child data:", parentResponse?.message); // Log error
+//         toast.error(parentResponse?.message || "Failed to fetch parent/child data.");
+//         setIsLoader(false); // Ensure loader stops on error
+//         return;
+//       }
+
+//       const children = parentResponse?.children || [];
+//       console.log("Fetched children:", children); // Log children data
+//       if (children.length === 0) {
+//         toast.info("No children found for this parent.");
+//         setIsLoader(false); // Ensure loader stops if no children
+//         return;
+//       }
+
+//       setParentData(children); // Set parent data (list of children)
+
+//       // Fetch fee info and available additional fees for ALL children concurrently
+//       console.log("Fetching fee info and additional fees for all children...");
+//       const promises = children.map((child) =>
+//         Promise.all([
+//           fetchStudentFeeInfo(child.studentId),
+//           fetchAdditionalFeesForClass(child.class, authToken),
+//         ])
+//       );
+
+//       const results = await Promise.all(promises);
+//       console.log("Results from fee info and additional fees fetches:", results); // Log results
+
+//       const initialFormData = [];
+//       const initialShowFormFlags = [];
+
+//       // Process results for each child
+//       results.forEach(([feeInfo, availableAdditionalFees], index) => {
+//         const child = children[index];
+//         console.log(`Processing child ${index}: ${child.studentName} (ID: ${child.studentId})`);
+
+//         // Handle case where fee info fetch failed
+//         if (!feeInfo) {
+//           console.warn(`Could not load fee details for ${child.studentName}. Setting error flag.`); // Log warning
+//           toast.error(`Could not load fee details for ${child.studentName}. Skipping.`);
+//           initialShowFormFlags.push(false);
+//           initialFormData.push({
+//             admissionNumber: child.admissionNumber,
+//             studentId: child.studentId,
+//             studentName: child.studentName,
+//             className: child.class,
+//             error: true, // Mark this entry as having an error
+//           });
+//           return; // Skip adding full form data for this child
+//         }
+
+//         // Extract data from feeInfo
+//         const regularFeeAmount = feeInfo.feeStructure?.regularFees?.[0]?.amount || 0;
+//         const additionalFeesStructure = feeInfo.feeStructure?.additionalFees || [];
+//         const monthlyStatus = feeInfo.monthlyStatus || [];
+//         const oneTimeAdditionalDues = feeInfo.oneTimeAdditionalDues || [];
+
+//         // Prepare regular fee status for each month
+//         const regularFees = allMonths.map((month) => {
+//           const monthData = monthlyStatus.find((m) => m.month === month);
+//           const due = monthData?.regularFee?.due ?? regularFeeAmount;
+//           const status = monthData?.regularFee?.status || "Unpaid";
+//           return {
+//             month, paidAmount: "", dueAmount: status === "Paid" ? 0 : due,
+//             totalAmount: regularFeeAmount, status: status,
+//             label: `${month} (Due: ₹${(status === "Paid" ? 0 : due).toFixed(2)})`,
+//           };
+//         });
+
+//         // Prepare detailed status for *structured* additional fees (for display/history, not direct selection)
+//         const additionalFeeDetails = additionalFeesStructure.map((fee) => ({
+//           name: fee.name, type: fee.feeType, amount: fee.amount,
+//           months: allMonths.map((month) => {
+//             const monthData = monthlyStatus.find((m) => m.month === month);
+//             const addFee = monthData?.additionalFees.find((af) => af.name === fee.name);
+//             const due = addFee?.due ?? fee.amount;
+//             const status = addFee?.status || "Unpaid";
+//             return { month, paidAmount: "", dueAmount: status === "Paid" ? 0 : due, totalAmount: fee.amount, status: status };
+//           }),
+//         }));
+
+//         // Prepare one-time fee options from oneTimeAdditionalDues
+//         // ***MODIFICATION: Filter out one-time fees with zero due amount***
+//         const oneTimeFeeOptions = oneTimeAdditionalDues
+//             .filter(d => d.dueAmount > 0) // Only show fees with dues > 0
+//             .map((d) => ({
+//                 label: `${d.name} (Due: ₹${d.dueAmount.toFixed(2)})`,
+//                 name: d.name,
+//                 code: d.name, // Use name as unique code for one-time fees
+//                 dueAmount: d.dueAmount,
+//                 // Assuming these implicitly have frequency 'one-time'
+//                 type: 'One-Time' // Explicitly add type if needed for consistency
+//            }));
+
+
+//         // Initialize form data for this child
+//         const childFormData = {
+//           admissionNumber: child.admissionNumber,
+//           studentId: child.studentId,
+//           studentName: child.studentName,
+//           className: child.class,
+//           classFee: regularFeeAmount,
+//           totalAmount: "",
+//           selectedMonths: [],
+//           selectedAdditionalFees: [], // Will store selected { id, name, amount, type }
+//           selectedOneTimeFees: [],    // Will store selected { name, dueAmount }
+//           paymentMode: "Cash",
+//           transactionId: "",
+//           chequeBookNo: "",
+//           lateFine: feeInfo.feeStatus?.totalLateFines || 0,
+//           concession: "",
+//           date: moment().format("YYYY-MM-DD"),
+//           remarks: "",
+//           monthlyDues: feeInfo.feeStatus?.monthlyDues || { regularDues: [], additionalDues: [] },
+//           additionalFeeDetails: additionalFeeDetails,
+//           pastDues: feeInfo.feeStatus?.pastDues || 0,
+//           totalDues: feeInfo.feeStatus?.dues || 0,
+//           regularFees,
+//           availableAdditionalFees: availableAdditionalFees || [], // Holds fetched additional fees { label, value, name, type, id }
+//           oneTimeFeeOptions, // Holds prepared & filtered one-time options { label, name, code, dueAmount, type }
+//           feeInfo,
+//           error: false, // No error for this entry
+//         };
+//         console.log(`Generated initial form data for ${child.studentName}:`, childFormData); // Log generated data
+//         initialFormData.push(childFormData);
+//         initialShowFormFlags.push(false); // Start with form hidden
+//       });
+
+//       console.log("Setting final formData state:", initialFormData); // Log before setting state
+//       console.log("Setting final showFormFlags state:", initialShowFormFlags); // Log before setting state
+//       setFormData(initialFormData); // Update state with all children's form data
+//       setSelectedChildrenIndices([]); // No children selected initially
+//       setShowFormFlags(initialShowFormFlags); // Set visibility flags
+//       setShowChildForms(true); // Show the child forms section
+//       console.log("Child forms should now be visible.");
+
+//     } catch (error) {
+//       console.error("An error occurred during handleStudentClick:", error); // Log unexpected errors
+//       toast.error("An error occurred while fetching student data.");
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   // --- Handle Child Selection (clicking on the card header) ---
+//   const handleChildSelection = (index) => {
+//     console.log(`handleChildSelection called for index: ${index}`); // Log entry
+//     // Ensure formData[index] exists before accessing properties
+//     if (!formData || index < 0 || index >= formData.length) {
+//         console.error(`Invalid index or formData for selection: index=${index}, formData length=${formData?.length}`);
+//         toast.error("An internal error occurred. Please try again.");
+//         return;
+//     }
+//     const currentChildData = formData[index];
+//     console.log('Current formData[index]:', currentChildData); // Log data for this child
+
+//     // Check if data exists and the error flag is not set
+//     if (!currentChildData || currentChildData.error) {
+//       toast.warn(
+//         `Cannot select ${parentData[index]?.studentName || 'this student'}. Fee data may be missing or failed to load.`
+//       );
+//        console.warn('Selection blocked due to missing data or error flag.'); // Log blocking reason
+//       return;
+//     }
+
+//     const isCurrentlySelected = selectedChildrenIndices.includes(index);
+//     console.log('Is currently selected:', isCurrentlySelected); // Log current selection state
+
+//     let updatedSelectedChildren;
+//     let updatedShowFormFlags = [...showFormFlags];
+
+//     if (isCurrentlySelected) {
+//       // If currently selected, deselect it
+//       updatedSelectedChildren = selectedChildrenIndices.filter((i) => i !== index);
+//       updatedShowFormFlags[index] = false; // Hide form on deselect
+//       console.log('Deselecting child.');
+//     } else {
+//       // If not selected, select it
+//       updatedSelectedChildren = [...selectedChildrenIndices, index];
+//       updatedShowFormFlags[index] = true; // Show form on select
+//        console.log('Selecting child.');
+//     }
+
+//     // Sort selected indices to maintain a consistent order
+//     updatedSelectedChildren.sort((a, b) => a - b);
+
+//     console.log('Updating selected indices to:', updatedSelectedChildren); // Log new selection array
+//     console.log('Updating showForm flags to:', updatedShowFormFlags); // Log visibility flags
+
+//     setSelectedChildrenIndices(updatedSelectedChildren); // Update selected indices state
+//     setShowFormFlags(updatedShowFormFlags); // Update visibility flags state
+
+//     // Update fee history display: Show history of the *first* selected child
+//     if (updatedSelectedChildren.length > 0) {
+//       const firstSelectedIndex = updatedSelectedChildren[0];
+//       console.log('Updating fee history for index:', firstSelectedIndex);
+//       // Ensure formData[firstSelectedIndex] exists before accessing feeInfo
+//       setChildFeeHistory(formData[firstSelectedIndex]?.feeInfo || null);
+//     } else {
+//       console.log('Clearing fee history.');
+//       setChildFeeHistory(null); // No selection, no history
+//     }
+//   };
+
+
+//   // --- Handle Input Change ---
+//   const handleInputChange = (index, field, value) => {
+//     const updatedFormData = [...formData];
+//     // Ensure the index is valid before updating
+//     if(updatedFormData[index]) {
+//         updatedFormData[index] = { ...updatedFormData[index], [field]: value };
+
+//         // Clear irrelevant fields based on payment mode
+//         if (field === "paymentMode") {
+//           if (value !== "Online" && value !== "Card") {
+//             updatedFormData[index].transactionId = "";
+//           }
+//           if (value !== "Cheque") {
+//             updatedFormData[index].chequeBookNo = "";
+//           }
+//         }
+//         setFormData(updatedFormData);
+//     } else {
+//         console.error(`Attempted to handle input change for invalid index: ${index}`);
+//     }
+//   };
+
+//  // --- Handler for DynamicMultiSelect (Months/Regular Fees) ---
+//  const handleMonthMultiSelectChange = (index, name, selectedOptions) => {
+//     // console.log(`Month selection changed for index ${index}:`, selectedOptions); // Log month selection
+//     const selectedOptionsData = selectedOptions || [];
+//     const updatedFormData = [...formData];
+//     // Ensure data exists for the index
+//     if (!updatedFormData[index]) {
+//          console.error(`Cannot handle month change, formData missing for index: ${index}`);
+//          return;
+//     }
+//     const currentChildData = updatedFormData[index];
+
+//     // --- Sequential Month Check ---
+//     const selectedMonthNames = selectedOptionsData.map((opt) => opt.code);
+//     if (selectedMonthNames.length > 1) {
+//         const indicesInAllMonths = selectedMonthNames.map((month) => allMonths.indexOf(month)).sort((a, b) => a - b);
+//         let isSequential = true;
+//         for (let i = 1; i < indicesInAllMonths.length; i++) {
+//           if (indicesInAllMonths[i] !== indicesInAllMonths[i - 1] + 1) {
+//             isSequential = false; break;
+//           }
+//         }
+//         if (!isSequential) {
+//           toast.warn(`Please select months in a continuous sequence (e.g., April, May, June). Deselect and reselect if needed.`);
+//           // Revert selection visually (optional but good UX) - This requires more complex state management in DynamicMultiSelect or here
+//           // For now, just prevent state update and show warning
+//           return;
+//         }
+//     }
+
+//     // Map selected options back to the required format for selectedMonths state
+//     const newSelectedMonths = selectedOptionsData.map((opt) => {
+//       const originalFee = currentChildData.regularFees.find((fee) => fee.month === opt.code);
+//       if (!originalFee) { console.error(`Could not find original fee data for month: ${opt.code}`); return null; }
+//       return { value: originalFee.month, label: originalFee.label, due: originalFee.dueAmount };
+//     }).filter(Boolean);
+
+//     updatedFormData[index].selectedMonths = newSelectedMonths;
+
+//     // --- Auto-select associated monthly additional fees ---
+//     const structuredMonthlyAddFees = currentChildData.feeInfo?.feeStructure?.additionalFees?.filter(fee => fee.feeType === 'Monthly') || [];
+//     const requiredAdditionalFeeIds = new Set();
+//     const selectedMonthValues = newSelectedMonths.map(m => m.value); // ['April', 'May']
+
+//     selectedMonthValues.forEach(monthName => {
+//         const monthStatus = currentChildData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
+//         if (monthStatus?.additionalFees?.length > 0) {
+//             monthStatus.additionalFees.forEach(dueAddFee => {
+//                 // Check if this fee is a structured monthly fee AND it's due
+//                 if (dueAddFee.status !== 'Paid' && dueAddFee.due > 0) {
+//                      const isStructuredMonthly = structuredMonthlyAddFees.some(f => f.name === dueAddFee.name);
+//                      if (isStructuredMonthly) {
+//                          // Find the corresponding option in availableAdditionalFees to get its ID
+//                          const availableFeeOption = currentChildData.availableAdditionalFees.find(opt => opt.name === dueAddFee.name && opt.type === 'Monthly');
+//                          if (availableFeeOption?.id) {
+//                              requiredAdditionalFeeIds.add(availableFeeOption.id);
+//                          } else {
+//                              console.warn(`Could not find matching available option for structured monthly fee: ${dueAddFee.name} required by month ${monthName}`);
+//                          }
+//                      }
+//                  }
+//             });
+//         }
+//     });
+
+//     // Combine automatically required fees with currently selected *non-monthly* additional fees
+//     const currentSelectedAddFeeIds = new Set(currentChildData.selectedAdditionalFees.map(fee => fee.id));
+//     const finalSelectedAddFeeIds = new Set(requiredAdditionalFeeIds); // Start with auto-selected monthly
+
+//     // Add back any previously selected non-monthly ('Optional', 'Yearly' etc.) fees
+//     currentChildData.selectedAdditionalFees.forEach(selectedFee => {
+//         if (selectedFee.type !== 'Monthly') { // Keep selected optional/yearly fees
+//            finalSelectedAddFeeIds.add(selectedFee.id);
+//         }
+//     });
+
+//     // Reconstruct the selectedAdditionalFees array based on the final IDs
+//     const newSelectedAdditionalFees = Array.from(finalSelectedAddFeeIds).map(id => {
+//         // Find details from available options first
+//         const feeDetails = currentChildData.availableAdditionalFees.find(opt => opt.id === id);
+//         if (feeDetails) {
+//             return { id: feeDetails.id, name: feeDetails.name, amount: feeDetails.value, type: feeDetails.type };
+//         }
+//         // Fallback to check if it was in the previously selected list (in case it's not in available options somehow)
+//         const existingFee = currentChildData.selectedAdditionalFees.find(f => f.id === id);
+//         if (existingFee) return existingFee;
+
+//         console.warn(`Could not find details for additional fee ID: ${id} during reconstruction.`);
+//         return null;
+//     }).filter(Boolean); // Remove any nulls
+
+//     updatedFormData[index].selectedAdditionalFees = newSelectedAdditionalFees;
+
+//     setFormData(updatedFormData); // Update the main state
+//   };
+
+
+//   // --- Handler for DynamicMultiSelect (Additional Fees & One-Time Fees) ---
+//   const handleDynamicMultiSelectChange = (index, field, selectedOptions) => {
+//     // console.log(`Dynamic multiselect changed for index ${index}, field ${field}:`, selectedOptions); // Log change
+//     const updatedFormData = [...formData];
+//     if (!updatedFormData[index]) { console.error(`Cannot handle dynamic multiselect change, formData missing for index: ${index}`); return; }
+//     const currentChildData = updatedFormData[index];
+
+//     // Handle changes for the 'Additional Fees (Monthly/Other)' dropdown
+//     if (field === "selectedAdditionalFees") {
+//       const newSelectedAdditionalFees = (selectedOptions || []).map((opt) => {
+//         // Find the original fee details from the available options list
+//         // Note: availableAdditionalFees includes all types initially fetched
+//         const originalFee = currentChildData.availableAdditionalFees.find((fee) => fee.id === opt.code);
+//         if (originalFee) {
+//             // Store the necessary details: id, name, amount, and type
+//             return { id: originalFee.id, name: originalFee.name, amount: originalFee.value, type: originalFee.type };
+//         }
+//         console.warn("Could not find original additional fee details for option code:", opt.code); return null;
+//       }).filter(Boolean); // Filter out any nulls if a fee wasn't found
+
+//       // Preserve any auto-selected monthly fees that might not be in the *current* dropdown options
+//       // but were added by handleMonthMultiSelectChange
+//       const autoSelectedMonthly = currentChildData.selectedAdditionalFees.filter(fee =>
+//         fee.type === 'Monthly' && !newSelectedAdditionalFees.some(nf => nf.id === fee.id)
+//       );
+
+//       updatedFormData[index].selectedAdditionalFees = [...newSelectedAdditionalFees, ...autoSelectedMonthly];
+
+//     // Handle changes for the 'One-Time / Due Fees' dropdown
+//     } else if (field === "selectedOneTimeFees") {
+//       const newSelectedOneTimeFees = (selectedOptions || []).map((opt) => {
+//         // Find the original fee details from the oneTimeFeeOptions list
+//         // This list was already filtered for dueAmount > 0 in handleStudentClick
+//         const originalFee = currentChildData.oneTimeFeeOptions.find((fee) => fee.code === opt.code); // code is the fee name here
+//         if (originalFee) {
+//             // Store the necessary details: name and due amount
+//             return { name: originalFee.name, dueAmount: originalFee.dueAmount };
+//         }
+//         console.warn("Could not find original one-time fee details for option code:", opt.code); return null;
+//       }).filter(Boolean); // Filter out any nulls
+
+//       updatedFormData[index].selectedOneTimeFees = newSelectedOneTimeFees;
+//     }
+
+//     setFormData(updatedFormData);
+//   };
+
+//   // --- Calculations ---
+//   const calculateNetPayableAmount = useCallback(
+//     (index) => {
+//       const data = formData[index];
+//       if (!data || data.error) return 0;
+//       let total = 0;
+//       total += parseFloat(data.pastDues) || 0;
+//       total += parseFloat(data.lateFine) || 0;
+
+//       // Sum of regular monthly fees selected
+//       total += data.selectedMonths.reduce((sum, monthState) => sum + (monthState?.due || 0), 0);
+
+//       // Sum of additional fees selected (Monthly, Optional, Yearly etc.)
+//       // Use the stored amount associated with the selected fee ID/Name
+//       total += data.selectedAdditionalFees.reduce((sum, fee) => sum + (parseFloat(fee?.amount) || 0), 0);
+
+//       // Sum of one-time fees selected
+//       // Use the stored due amount associated with the selected fee name
+//       total += data.selectedOneTimeFees.reduce((sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0), 0);
+
+//       // Subtract concession
+//       total -= parseFloat(data.concession) || 0;
+//       return Math.max(0, total); // Ensure it doesn't go below zero
+//     },
+//     [formData] // Dependency: formData which contains all selections and amounts
+//   );
+
+//   const calculateAutoDistribution = useCallback(
+//     (index) => {
+//       const data = formData[index];
+//       if (!data || data.error) return { remainingAfterDistribution: 0, remainingDues: 0 };
+//       const netPayable = calculateNetPayableAmount(index); // Total amount required based on selections
+//       const totalAmountPaid = parseFloat(data.totalAmount) || 0; // Amount entered by user
+//       const remainingDues = Math.max(0, netPayable - totalAmountPaid); // How much is still owed for selected items
+//       const remainingAfterDistribution = Math.max(0, totalAmountPaid - netPayable); // How much extra was paid (advance/excess)
+//       return { remainingAfterDistribution, remainingDues };
+//     },
+//     [formData, calculateNetPayableAmount] // Dependencies: formData and the calculation function
+//   );
+
+//   // --- Fetch Receipt Data ---
+//   const fetchReceiptData = async (receiptNumber) => {
+//     setIsPreviewReady(false);
+//     setIsLoader(true);
+//     // console.log(`Fetching receipt data for number: ${receiptNumber}`); // Log fetch start
+//     try {
+//       const response = await axios.get(
+//         // Use environment variable for base URL if possible
+//         // `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         `${process.env.REACT_APP_BASE_URL || 'https://dvsserver.onrender.com'}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         { headers: { Authorization: `Bearer ${authToken}` } }
+//       );
+//       if (response.data.success) {
+//         // console.log("Receipt data fetched successfully:", response.data); // Log success
+//         setReceiptData(response.data);
+//         setIsPreviewReady(true);
+//         return response.data;
+//       } else {
+//         console.error(`Failed to fetch receipt data ${receiptNumber}:`, response.data.message); // Log error
+//         toast.error(`Failed to fetch receipt data: ${response.data.message || 'Unknown error'}`);
+//         return null;
+//       }
+//     } catch (error) {
+//       console.error(`Error fetching receipt data ${receiptNumber}:`, error); // Log error
+//       toast.error("Error fetching receipt data: " + error.message);
+//       return null;
+//     } finally {
+//         setIsLoader(false);
+//     }
+//   };
+
+//   // --- Validation ---
+//   const validateFormData = (childFormData, child, isUnified = false) => {
+//     // console.log(`Validating form data for ${child?.studentName}`, childFormData); // Log validation start
+//     if (!childFormData || childFormData.error) {
+//       toast.error(`Cannot submit for ${child?.studentName || "this student"} due to missing or failed data loading.`);
+//       return false;
+//     }
+//     const totalAmount = parseFloat(childFormData.totalAmount) || 0;
+//     if (totalAmount <= 0) { toast.warn(`Please enter a valid amount (> 0) to pay for ${child.studentName}.`); return false; }
+//     if (!childFormData.paymentMode) { toast.error(`Payment mode is required for ${child.studentName}.`); return false; }
+//     if ((childFormData.paymentMode === "Online" || childFormData.paymentMode === "Card") && !childFormData.transactionId) { toast.error(`Transaction ID is required for Online/Card payment for ${child.studentName}.`); return false; }
+//     if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) { toast.error(`Cheque Number is required for Cheque payment for ${child.studentName}.`); return false; }
+//     if (!childFormData.date || !moment(childFormData.date, "YYYY-MM-DD", true).isValid()) { toast.error(`Please select a valid payment date for ${child.studentName}.`); return false; }
+
+//     // Warning if amount paid exceeds dues/fines but nothing else is selected
+//     const payableExcludingDuesFines = calculateNetPayableAmount(formData.findIndex(fd => fd.studentId === child.studentId))
+//                                         - (parseFloat(childFormData.pastDues) || 0)
+//                                         - (parseFloat(childFormData.lateFine) || 0);
+//     const onlyPayingDuesAndFines = (parseFloat(childFormData.pastDues) || 0) + (parseFloat(childFormData.lateFine) || 0);
+
+//     if (totalAmount > 0 &&
+//         childFormData.selectedMonths.length === 0 &&
+//         childFormData.selectedAdditionalFees.length === 0 &&
+//         childFormData.selectedOneTimeFees.length === 0 &&
+//         totalAmount > onlyPayingDuesAndFines)
+//     {
+//       toast.warn(`Amount paid for ${child.studentName} (₹${totalAmount.toFixed(2)}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(2)}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`, { autoClose: 8000 });
+//       // Consider returning false here if selection is strictly required when overpaying dues/fines
+//       // return false;
+//     }
+//     return true; // Validation passed
+//   };
+
+//    // --- Unified Fee Payment ---
+//    const handleUnifiedFeePayment = async () => {
+//      console.log("Attempting unified fee payment..."); // Log start
+//     if (selectedChildrenIndices.length < 2) { toast.warn("Please select at least two students for unified payment."); return; }
+
+//     let isValid = true; let totalUnifiedAmount = 0; const studentsPayload = [];
+
+//     // First pass: Validation and prepare payload structure for each student
+//     for (const index of selectedChildrenIndices) {
+//         const childFormData = formData[index];
+//         const child = parentData[index];
+
+//         if (!validateFormData(childFormData, child, true)) { isValid = false; break; }
+
+//         const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
+//         if (amountForThisChild <= 0) { toast.warn(`Please enter an amount (> 0) to pay for ${child.studentName} in the unified payment.`); isValid = false; break; }
+//         totalUnifiedAmount += amountForThisChild;
+
+//         // --- Prepare additionalFees part of the payload FOR THIS CHILD ---
+//         const additionalFeesPayload = [];
+//         const selectedMonthNames = childFormData.selectedMonths.map(m => m.value);
+
+//         // Process selected additional fees (Monthly, Optional, etc.)
+//         childFormData.selectedAdditionalFees.forEach(fee => {
+//             if (fee.type === 'Monthly') {
+//                 // For monthly fees, associate with each selected month it's applicable to
+//                 selectedMonthNames.forEach(monthName => {
+//                     const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
+//                     const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(mf => mf.name === fee.name && mf.status !== 'Paid');
+//                     if (isFeeDueForThisMonth) {
+//                         additionalFeesPayload.push({ name: fee.name, month: monthName });
+//                     }
+//                 });
+//             } else if (fee.type !== 'One-Time') {
+//                 // For other types (Optional, Yearly), just include the name
+//                 additionalFeesPayload.push({ name: fee.name });
+//             }
+//             // One-Time fees are handled next
+//         });
+
+//         // Process selected one-time fees (just the name)
+//         childFormData.selectedOneTimeFees.forEach(fee => {
+//             additionalFeesPayload.push({ name: fee.name });
+//         });
+//         // --- End of preparing additionalFees payload for this child ---
+
+//         studentsPayload.push({
+//             studentId: child.studentId,
+//             paymentDetails: {
+//               // Regular fees: still just the month names
+//               regularFees: childFormData.selectedMonths.map((monthState) => ({ month: monthState.value })),
+//               // Use the structured additional fees array for this child
+//               additionalFees: additionalFeesPayload,
+//               pastDuesPaid: 0, // Backend calculates allocation
+//               lateFinesPaid: 0, // Backend calculates allocation
+//               concession: parseFloat(childFormData.concession) || 0,
+//               totalAmount: amountForThisChild, // Amount allocated to this specific child
+//             },
+//         });
+//     } // End loop through selected children
+
+
+//     if (!isValid || studentsPayload.length !== selectedChildrenIndices.length) {
+//       console.error("Unified payment validation failed or payload mismatch.");
+//       return; // Exit if validation failed or payload construction error
+//     }
+
+//     // Use payment details from the *first* selected child for the unified transaction
+//     const firstChildIndex = selectedChildrenIndices[0];
+//     const firstChildFormData = formData[firstChildIndex];
+
+//     // Re-validate the first child's payment method details specifically
+//     if (!firstChildFormData.paymentMode) { toast.error(`Payment mode is required (using details from ${parentData[firstChildIndex].studentName}).`); return; }
+//     if ((firstChildFormData.paymentMode === "Online" || firstChildFormData.paymentMode === "Card") && !firstChildFormData.transactionId) { toast.error(`Transaction ID is required for Online/Card payment (using details from ${parentData[firstChildIndex].studentName}).`); return; }
+//     if (firstChildFormData.paymentMode === "Cheque" && !firstChildFormData.chequeBookNo) { toast.error(`Cheque Number is required for Cheque payment (using details from ${parentData[firstChildIndex].studentName}).`); return; }
+//     if (!firstChildFormData.date || !moment(firstChildFormData.date, "YYYY-MM-DD", true).isValid()) { toast.error(`Please select a valid payment date (using details from ${parentData[firstChildIndex].studentName}).`); return false; }
+
+
+//     const unifiedPaymentDetails = {
+//       paymentMode: firstChildFormData.paymentMode,
+//       transactionId: firstChildFormData.transactionId || undefined,
+//       chequeNumber: firstChildFormData.chequeBookNo || undefined,
+//       date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format date correctly
+//       remark: firstChildFormData.remarks || "", // Unified remark from first child
+//     };
+
+//     const payload = {
+//       students: studentsPayload, // Contains detailed fee breakdown per student
+//       session,
+//       unifiedPaymentDetails,
+//     };
+
+//     console.log("Unified Payload:", JSON.stringify(payload, null, 2)); // Log payload for debugging
+
+//     setIsLoader(true);
+//     try {
+//       const response = await feescreateUnifiedFeeStatus(payload);
+//       if (response.success) {
+//         toast.success(response.message || "Unified fees submitted successfully!");
+//         setUnifiedReceiptData(response.data); // Store response data for modal/receipt
+//         setIsMessageModalOpen(true); // Show confirmation modal
+//         // No need to trigger refresh here, resetState in handleCloseMessageModal will do it implicitly via useEffect
+//       } else {
+//         toast.error(response.message || "Unified fee submission failed.");
+//       }
+//     } catch (error) {
+//       const errorMsg = error.response?.data?.message || error.message;
+//       toast.error(`Error during unified submission: ${errorMsg}`);
+//       console.error("Unified Submission Error:", error.response || error);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   // --- Single Submission ---
+//   const handleSubmit = async (e, childIndex) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     console.log(`Attempting single submission for index: ${childIndex}`); // Log start
+//     const childFormData = formData[childIndex];
+//     const child = parentData[childIndex];
+
+//     if (!validateFormData(childFormData, child)) {
+//       return; // Stop if validation fails
+//     }
+
+//     setIsLoader(true);
+
+//     // --- Prepare additionalFees part of the payload ---
+//     const additionalFeesPayload = [];
+//     const selectedMonthNames = childFormData.selectedMonths.map(m => m.value); // Get names: ['April', 'May']
+
+//     // Process selected additional fees (Monthly, Optional, etc.)
+//     childFormData.selectedAdditionalFees.forEach(fee => {
+//         if (fee.type === 'Monthly') {
+//             // For monthly fees, find which *selected* months it applies to
+//             selectedMonthNames.forEach(monthName => {
+//                 // Check feeInfo to confirm this fee is actually due for this specific month
+//                 const monthStatus = childFormData.feeInfo?.monthlyStatus?.find(m => m.month === monthName);
+//                 const isFeeDueForThisMonth = monthStatus?.additionalFees?.some(
+//                     mf => mf.name === fee.name && mf.status !== 'Paid' // Ensure it's the same fee and not already paid for this month
+//                 );
+
+//                 if (isFeeDueForThisMonth) {
+//                     // Add an entry for each month this fee applies to
+//                     additionalFeesPayload.push({
+//                         name: fee.name,
+//                         month: monthName // Include the specific month
+//                     });
+//                 }
+//             });
+//         } else if (fee.type !== 'One-Time') {
+//             // For other types like 'Optional', 'Yearly' (that aren't 'One-Time')
+//             // Include just the name, assuming they don't need a specific month association in the payload
+//              additionalFeesPayload.push({
+//                 name: fee.name
+//              });
+//         }
+//         // 'One-Time' fees are handled next
+//     });
+
+//     // Process selected one-time fees (just the name)
+//     childFormData.selectedOneTimeFees.forEach(fee => {
+//         additionalFeesPayload.push({
+//             name: fee.name
+//         });
+//     });
+//     // --- End of preparing additionalFees payload ---
+
+
+//     // Construct the final payload using additionalFeesPayload
+//     const payload = {
+//       studentId: child.studentId,
+//       session,
+//       paymentDetails: {
+//          // Regular fees: send array of month names
+//          regularFees: childFormData.selectedMonths.map((monthState) => ({ month: monthState.value })),
+
+//          // Use the structured additional fees array (includes name and potentially month)
+//          additionalFees: additionalFeesPayload,
+
+//          pastDuesPaid: 0, // Backend calculates allocation based on total amount paid
+//          lateFinesPaid: 0, // Backend calculates allocation
+//          concession: parseFloat(childFormData.concession) || 0,
+//          totalAmount: parseFloat(childFormData.totalAmount) || 0,
+//          date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"), // Format date correctly
+//          paymentMode: childFormData.paymentMode,
+//          transactionId: childFormData.transactionId || undefined, // Send only if present
+//          chequeNumber: childFormData.chequeBookNo || undefined, // Send only if present
+//          remark: childFormData.remarks || "",
+//       },
+//     };
+
+//     console.log("Single Submission Payload:", JSON.stringify(payload, null, 2)); // Log payload for debugging
+
+//     try {
+//       const response = await feescreateFeeStatus(payload);
+//       if (response?.success) {
+//         toast.success(response?.message || `Fees submitted successfully for ${child.studentName}!`);
+//         setResponseData(response?.data); // Store response data for modal/receipt
+//         setIsMessageModalOpen(true); // Show confirmation modal
+//         // No need to trigger refresh here, resetState in handleCloseMessageModal will do it implicitly via useEffect
+//       } else {
+//         toast.error(response?.message || `Fee submission failed for ${child.studentName}.`);
+//       }
+//     } catch (error) {
+//        const errorMsg = error.response?.data?.message || error.message;
+//        toast.error(`An error occurred during submission for ${child.studentName}: ${errorMsg}`);
+//        console.error("Single Submission Error:", error.response || error);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   // --- Modal Handlers, PDF/Message Functions ---
+//   const handleCloseMessageModal = async (sendMsg = false) => {
+//     console.log(`Closing message modal, sendMsg=${sendMsg}`); // Log close
+//     setIsMessageModalOpen(false);
+//     let receiptNumber = null; let isUnified = false; let dataForActions = null;
+
+//     // Determine which data source to use (single or unified response)
+//     if (responseData) { // Single payment successful
+//       receiptNumber = responseData.feeReceiptNumber;
+//       isUnified = false;
+//       dataForActions = responseData;
+//     } else if (unifiedReceiptData) { // Unified payment successful
+//       receiptNumber = unifiedReceiptData.unifiedReceiptNumber;
+//       isUnified = true;
+//       dataForActions = unifiedReceiptData;
+//     }
+
+//     // Send message if requested and data is available
+//     if (sendMsg && dataForActions) {
+//       if (isUnified) { sendUnifiedMessage(dataForActions); }
+//       else { sendMessage(dataForActions); }
+//     }
+
+//     // Store details needed *after* reset temporarily
+//     const tempReceiptNumber = receiptNumber;
+//     const tempIsUnified = isUnified;
+//     const tempParentId = responseData?.student?.parentId || unifiedReceiptData?.parentId || null; // Get parent ID for refresh
+
+//     // Reset component state AFTER deciding on message sending
+//     resetState(); // This clears formData, selections etc.
+//     setResponseData(null); // Clear single response data
+//     setUnifiedReceiptData(null); // Clear unified response data
+
+//     // Trigger a refresh of the selected student's data if applicable
+//     // This is better than triggerRefresh which reloads all students
+//     if (tempParentId) {
+//         console.log(`Refreshing data for parentId: ${tempParentId} after submission.`);
+//         await handleStudentClick(tempParentId); // Re-fetch data for the current parent/siblings
+//     } else {
+//          setTriggerRefresh((prev) => !prev); // Fallback to general refresh if parentId wasn't captured
+//     }
+
+
+//     // Fetch and show receipt AFTER resetting state and potentially refreshing data
+//     if (tempReceiptNumber) {
+//         const fetchedReceiptData = await fetchReceiptData(tempReceiptNumber);
+//         if (fetchedReceiptData) {
+//              // receiptData state is set by fetchReceiptData
+//             if (tempIsUnified) { setUnifiedReceiptModalOpen(true); } // Show unified receipt modal
+//             else { setPdfModalOpen(true); } // Show single receipt modal
+//         }
+//     }
+//   };
+
+//   const handleClosePdfModal = (action = null) => {
+//     console.log(`Closing PDF modal, action=${action}`); // Log close
+//     if (action === "download" && receiptData) { handleDownloadPdf(receiptData); }
+//     else if (action === "print" && receiptData) { handlePrintReceipt(receiptData); }
+//     setPdfModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+
+//   const handleCloseUnifiedReceiptModal = (action = null) => {
+//     console.log(`Closing Unified PDF modal, action=${action}`); // Log close
+//     if (action === "download" && receiptData) { handleDownloadUnifiedPdf(receiptData); }
+//     else if (action === "print" && receiptData) { handlePrintUnifiedReceipt(receiptData); }
+//     setUnifiedReceiptModalOpen(false); setReceiptData(null); setIsPreviewReady(false);
+//   };
+
+//   // --- PDF and Message Helpers ---
+//   const handleDownloadPdf = (dataToUse) => {
+//     if (!dataToUse?.data) { toast.error("No receipt data available to generate PDF."); return; }
+//     // Pass necessary data to the generator function
+//     generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `fee-receipt-${dataToUse.data?.feeReceiptNumber}.pdf`);
+//   };
+
+//   const handlePrintReceipt = (dataToUse) => {
+//     if (!dataToUse?.data) { toast.error("No receipt data available to print."); return; }
+//     console.log("Print action triggered for single receipt:", dataToUse.data?.feeReceiptNumber);
+//     // TODO: Implement actual print functionality using browser print or a library
+//     toast.info("Print functionality placeholder: would print receipt " + dataToUse.data?.feeReceiptNumber);
+//     // window.print(); // This would print the whole page, need specific element printing
+//   };
+
+//   const sendMessage = (dataToUse) => {
+//     if (!dataToUse) { toast.error("No receipt data available to send message."); return; }
+//     console.log("Sending SINGLE fee response message:", dataToUse);
+//     try {
+//       FeeResponse(dataToUse); // Call the imported function
+//       toast.info(`SMS function called for ${dataToUse?.student?.studentName}`);
+//     } catch (error) {
+//        console.error("Error calling FeeResponse for single payment:", error);
+//        toast.error("Failed to initiate SMS sending.");
+//     }
+//   };
+
+//   const handleDownloadUnifiedPdf = (dataToUse) => {
+//     if (!dataToUse?.data) { toast.error("No unified receipt data available to generate PDF."); return; }
+//      // Pass necessary data to the generator function for unified receipt
+//     generatePdf(dataToUse.data, [], 0, 0, 0, 0, 0, 0, `unified-receipt-${dataToUse.data?.unifiedReceiptNumber}.pdf`);
+//   };
+
+//   const handlePrintUnifiedReceipt = (dataToUse) => {
+//     if (!dataToUse?.data) { toast.error("No unified receipt data available to print."); return; }
+//     console.log("Print action triggered for unified receipt:", dataToUse.data?.unifiedReceiptNumber);
+//     // TODO: Implement actual print functionality
+//     toast.info("Print functionality placeholder: would print unified receipt " + dataToUse.data?.unifiedReceiptNumber);
+//      // window.print();
+//   };
+
+//   const sendUnifiedMessage = (dataToUse) => {
+//     if (!dataToUse) { toast.error("No unified receipt data available to send message."); return; }
+//     console.log("Sending UNIFIED fee response message:", dataToUse);
+//     try {
+//       FeeResponse(dataToUse); // Call the imported function (assuming it handles unified structure)
+//       const studentNames = dataToUse?.students?.map(s => s.studentName).join(', ') || 'selected students';
+//       toast.info(`SMS function called for ${studentNames}`);
+//     } catch (error) {
+//       console.error("Error calling FeeResponse for unified payment:", error);
+//       toast.error("Failed to initiate SMS sending.");
+//     }
+//   };
+
+
+//   // --- JSX ---
+//   return (
+//     <div className="px-4 pb-2 min-h-screen"> {/* Added min-h-screen */}
+//       {/* Search Inputs */}
+//       <div className="flex flex-col sm:flex-row gap-4 mb-4"> {/* Added margin-bottom */}
+//         <ReactInput type="text" label="Search by Name" onChange={handleSearch} value={searchTerm} containerClassName="flex-1 min-w-[200px]" />
+//         <ReactInput type="text" label="Search by Adm. No" onChange={handleSearchbyAdmissionNo} value={searchTermbyadmissionNo} containerClassName="flex-1 min-w-[200px]" />
+//       </div>
+
+//       {/* Search Results Dropdown */}
+//       {filteredStudents.length > 0 && (
+//         <div className="relative">
+//           {/* Increased z-index and width */}
+//           <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full lg:w-3/4">
+//             <table className="w-full border-collapse">
+//               <thead className="bg-gray-100 sticky top-0 z-20">
+//                 <tr>
+//                   <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Student Name</th>
+//                   <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Admission No.</th>
+//                   <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Class</th>
+//                   <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">Parent Name</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {filteredStudents.map((student) => (
+//                   <tr
+//                     key={student._id}
+//                     className="cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out border-b border-gray-300"
+//                     onClick={() => {
+//                         console.log(`Search result clicked: ${student.studentName} (ParentID: ${student.parentId})`); // Log click
+//                         handleStudentClick(student.parentId);
+//                         setFilteredStudents([]); // Hide dropdown after selection
+//                     }}
+//                   >
+//                     <td className="p-3 font-semibold text-gray-800">{student.studentName}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.admissionNumber}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.class}</td>
+//                     <td className="p-3 text-sm text-gray-600">{student.fatherName}</td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Child Forms Area */}
+//       {showChildForms && parentData.length > 0 && (
+//         <div className="mt-6 pt-4 border-t border-gray-200">
+//           <div className="flex justify-between items-center mb-4">
+//             <h2 className="text-lg font-semibold text-gray-800">
+//               Selected Student(s) Fee Payment
+//             </h2>
+//             {selectedChildrenIndices.length > 1 && (
+//               <Button
+//                 name="Pay for Siblings Together"
+//                 onClick={handleUnifiedFeePayment}
+//                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+//               />
+//             )}
+//           </div>
+
+//           {/* Grid for Student Cards/Forms */}
+//           <div className="grid grid-cols-1 gap-6">
+//             {parentData.map((child, index) => {
+//               const currentFormData = formData[index]; // Get data specific to this child
+
+//               // --- Error Loading State ---
+//               if (!currentFormData || currentFormData.error) {
+//                 return (
+//                   <div
+//                     key={child._id || index}
+//                     className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md"
+//                     role="alert"
+//                   >
+//                     <strong className="font-bold">Error:</strong>
+//                     <span className="block sm:inline ml-2">
+//                       Could not load fee data for {child.studentName || "this student"} (Adm: {child.admissionNumber || 'N/A'}). Please try searching again or contact support.
+//                     </span>
+//                   </div>
+//                 );
+//               }
+
+//               // --- Normal State (Data Loaded) ---
+//               const isSelected = selectedChildrenIndices.includes(index);
+//               const showForm = showFormFlags[index]; // Should be true if isSelected
+
+//               // Prepare options/value for Month DynamicMultiSelect
+//               const monthOptions = currentFormData.regularFees
+//                 .filter((fee) => fee.status !== "Paid") // Only show unpaid months
+//                 .map((fee) => ({ name: fee.label, code: fee.month })); // Use label (with due amount) for display, month name as code
+//               const selectedMonthValues = currentFormData.selectedMonths.map((monthState) => ({ name: monthState.label, code: monthState.value }));
+
+//               // ***MODIFICATION: Filter options for "Additional Fees (Monthly/Other)" dropdown***
+//               // Show fees from availableAdditionalFees that are NOT 'One-Time'
+//               const additionalFeeOptions = currentFormData.availableAdditionalFees
+//                 .filter(fee => fee.type !== 'One-Time') // Filter out 'One-Time' type
+//                 .map((item) => ({ name: item.label, code: item.id })); // Use full label for display, ID as code
+//               // Map selected values back for the dropdown component
+//               const selectedAdditionalFeeValues = currentFormData.selectedAdditionalFees
+//                  .filter(fee => fee.type !== 'One-Time') // Ensure we only map non-one-time fees here
+//                  .map((selectedFee) => {
+//                     // Find the corresponding option generated above to get the correct label
+//                     const availableOption = additionalFeeOptions.find(opt => opt.code === selectedFee.id);
+//                     // Fallback label if somehow not found (shouldn't happen often)
+//                     return { name: availableOption ? availableOption.name : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`, code: selectedFee.id };
+//                 });
+
+//               // ***MODIFICATION: Prepare options for "One-Time / Due Fees" dropdown***
+//               // Use the pre-filtered oneTimeFeeOptions (which only includes items with dueAmount > 0)
+//               const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions
+//                 // No additional filtering needed here as it was done in handleStudentClick
+//                 .map((item) => ({ name: item.label, code: item.code })); // Use label (with due amount) for display, name as code
+//               // Map selected values back for the dropdown component
+//               const selectedOneTimeFeeValues = currentFormData.selectedOneTimeFees.map((fee) => {
+//                     // Find the corresponding option generated above to get the correct label
+//                     const availableOption = oneTimeFeeOptions.find(opt => opt.code === fee.name);
+//                      // Fallback label
+//                     return { name: availableOption ? availableOption.name : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`, code: fee.name };
+//                 });
+
+
+//               return (
+//                 <div
+//                   key={child._id || index}
+//                   className={`bg-white rounded-lg shadow-md border transition-all duration-300 ${
+//                     isSelected ? "border-blue-500 ring-2 ring-blue-300" : "border-gray-200 hover:border-gray-300"
+//                   } overflow-hidden`}
+//                 >
+//                   {/* --- Student Header / Checkbox --- */}
+//                   <div
+//                     className={`flex items-center px-4 py-3 border-b ${isSelected ? 'bg-blue-50' : 'bg-gray-50'} cursor-pointer`}
+//                     // *** CLICK HANDLER FOR SELECTION ***
+//                     onClick={() => {
+//                         // console.log(`DIV clicked for index: ${index}`); // Log div click
+//                         handleChildSelection(index);
+//                     }}
+//                   >
+//                     {/* Checkbox is visually present but controlled by the parent div click */}
+//                     <input
+//                       type="checkbox"
+//                       id={`child-checkbox-${index}`}
+//                       checked={isSelected} // Display reflects state
+//                       readOnly // Prevent direct interaction; controlled by div click
+//                       onClick={(e) => {
+//                           // console.log(`CHECKBOX clicked for index: ${index} - stopping propagation`); // Log checkbox click
+//                           e.stopPropagation(); // IMPORTANT: Prevent div's onClick from firing too
+//                       }}
+//                       className="mr-3 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer" // Added cursor-pointer here too
+//                       aria-labelledby={`child-label-${index}`}
+//                       tabIndex={-1} // Optional: remove from tab order
+//                     />
+//                     <label
+//                       id={`child-label-${index}`}
+//                       className="flex-grow cursor-pointer" // Label area contributes to clickable div
+//                       // Link label to checkbox for accessibility, though click is handled by div
+//                       htmlFor={`child-checkbox-${index}`}
+//                       // Prevent label click from toggling checkbox directly, rely on div click
+//                       onClick={(e) => e.preventDefault()}
+//                     >
+//                       <div className="flex justify-between items-center">
+//                         <div>
+//                           <span className="text-base font-semibold text-blue-800">{child.studentName}</span>
+//                           <span className="text-sm text-gray-600 ml-2">(Class: {child.class} / Adm#: {child.admissionNumber})</span>
+//                         </div>
+//                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isSelected ? "bg-blue-200 text-blue-800" : "bg-gray-200 text-gray-700"}`}>
+//                           {isSelected ? "SELECTED" : "SELECT"}
+//                         </span>
+//                       </div>
+//                       <div className="flex flex-wrap justify-start items-center gap-x-4 text-xs mt-1">
+//                         <span className="text-red-600 font-medium">Total Dues: ₹{currentFormData?.totalDues?.toFixed(2) || "0.00"}</span>
+//                         {currentFormData?.pastDues > 0 && (<span className="text-purple-600 font-medium">Past Dues: ₹{currentFormData?.pastDues?.toFixed(2)}</span>)}
+//                         {currentFormData?.lateFine > 0 && (<span className="text-orange-600 font-medium">Late Fine: ₹{currentFormData?.lateFine?.toFixed(2)}</span>)}
+//                          <span className="text-gray-600 font-medium">Base Monthly Fee: ₹{currentFormData?.classFee?.toFixed(2) || "0.00"}</span>
+//                       </div>
+//                     </label>
+//                   </div>
+
+//                   {/* --- Collapsible Form Area --- */}
+//                   {/* Use CSS for smooth transition (requires adding transition classes potentially) */}
+//                   <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showForm ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+//                    {showForm && ( // Still useful to prevent rendering content when hidden
+//                     <div className="px-4 py-4 border-t md:flex md:gap-6 bg-white">
+//                       {/* --- Main Form Section --- */}
+//                       <form
+//                         onSubmit={(e) => handleSubmit(e, index)}
+//                         className="flex-grow md:w-2/3 space-y-5 mb-6 md:mb-0"
+//                         noValidate // Prevent default browser validation, rely on custom logic
+//                       >
+//                         {/* Fee Selection Area */}
+//                         <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 lg:grid-cols-3 gap-4">
+//                           {/* Regular Monthly Fees */}
+//                           <div className="lg:col-span-1">
+//                             <label className="block text-sm font-medium text-gray-700 mb-1">Regular Monthly Fees</label>
+//                             <DynamicMultiSelect
+//                               name={`regularFees-${index}`} searchable={false} placeholderName="Select month(s)..."
+//                               dynamicOptions={monthOptions} // Filtered unpaid months
+//                               handleChange={(name, opts) => handleMonthMultiSelectChange(index, name, opts)}
+//                               value={selectedMonthValues} // Reflects current selection
+//                               requiredClassName={"required-fields"}
+//                             />
+//                             <p className="text-xs text-gray-500 mt-1">Select consecutive months.</p>
+//                           </div>
+//                           {/* Additional Fees (Monthly/Other) */}
+//                           <div className="lg:col-span-1">
+//                             <label className="block text-sm font-medium text-gray-700 mb-1">Additional Fees (Monthly/Other)</label>
+//                             <DynamicMultiSelect
+//                                 name={`additionalFees-${index}`} searchable={true} placeholderName="Select additional fee(s)..."
+//                                 dynamicOptions={additionalFeeOptions} // Filtered: non-'One-Time'
+//                                 handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedAdditionalFees", opts)}
+//                                 value={selectedAdditionalFeeValues} // Reflects current selection
+//                                 requiredClassName={"required-fields"}
+//                             />
+//                              <p className="text-xs text-gray-500 mt-1">Monthly types auto-selected with month.</p>
+//                           </div>
+//                           {/* One-Time / Due Fees */}
+//                            <div className="lg:col-span-1">
+//                             <label className="block text-sm font-medium text-gray-700 mb-1">One-Time / Due Fees</label>
+//                             <DynamicMultiSelect
+//                                 name={`oneTimeFees-${index}`} searchable={true} placeholderName="Select one-time fee(s)..."
+//                                 dynamicOptions={oneTimeFeeOptions} // Filtered: dueAmount > 0
+//                                 handleChange={(name, opts) => handleDynamicMultiSelectChange(index, "selectedOneTimeFees", opts)}
+//                                 value={selectedOneTimeFeeValues} // Reflects current selection
+//                                 requiredClassName={"required-fields"}
+//                             />
+//                              <p className="text-xs text-gray-500 mt-1">Select fees currently due.</p>
+//                           </div>
+//                         </div>
+
+//                         {/* Payment Details Area */}
+//                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                            <ReactInput
+//                             type="number" label="Concession (-)" value={currentFormData.concession}
+//                             onChange={(e) => handleInputChange(index, "concession", e.target.value)}
+//                             min="0" step="0.01" containerClassName="sm:col-span-1"
+//                            />
+//                           <ReactInput
+//                             type="number" label={`Total Amount to Pay (*) ${selectedChildrenIndices.length > 1 ? `(for ${child.studentName})` : ''}`}
+//                             value={currentFormData.totalAmount} onChange={(e) => handleInputChange(index, "totalAmount", e.target.value)}
+//                             min="0.01" step="0.01" isRequired={true} containerClassName="sm:col-span-1"
+//                           />
+//                           <div>
+//                             <label className="block text-sm font-medium text-gray-700">Payment Mode (*)</label>
+//                             <select
+//                               value={currentFormData.paymentMode} onChange={(e) => handleInputChange(index, "paymentMode", e.target.value)}
+//                               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+//                               required
+//                             >
+//                               <option value="Cash">Cash</option> <option value="Online">Online</option>
+//                               <option value="Cheque">Cheque</option> <option value="Card">Card</option>
+//                             </select>
+//                           </div>
+//                           <ReactInput
+//                             type="date" label="Payment Date (*)" value={currentFormData.date}
+//                             onChange={(e) => handleInputChange(index, "date", e.target.value)}
+//                             isRequired={true} max={moment().format("YYYY-MM-DD")}
+//                           />
+//                           {(currentFormData.paymentMode === "Online" || currentFormData.paymentMode === "Card") && (
+//                             <ReactInput
+//                               type="text" label="Transaction ID (*)" value={currentFormData.transactionId}
+//                               onChange={(e) => handleInputChange(index, "transactionId", e.target.value)} isRequired={true}
+//                             />
+//                           )}
+//                           {currentFormData.paymentMode === "Cheque" && (
+//                             <ReactInput
+//                               type="text" label="Cheque Number (*)" value={currentFormData.chequeBookNo}
+//                               onChange={(e) => handleInputChange(index, "chequeBookNo", e.target.value)} isRequired={true}
+//                             />
+//                           )}
+//                         </div>
+
+//                         {/* Remarks Area */}
+//                         <div className="sm:col-span-2">
+//                           <label className="block text-sm font-medium text-gray-700">Remarks</label>
+//                           <textarea
+//                             value={currentFormData.remarks} onChange={(e) => handleInputChange(index, "remarks", e.target.value)}
+//                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+//                             rows="2" placeholder="Optional remarks about payment..."
+//                           />
+//                         </div>
+
+//                         {/* Submit Button (Only for single student selection) */}
+//                         {selectedChildrenIndices.length <= 1 && (
+//                           <div className="flex justify-end pt-4 mt-4 border-t">
+//                             <Button
+//                               type="submit" name={`Submit Payment for ${child.studentName}`}
+//                               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+//                             />
+//                           </div>
+//                         )}
+//                       </form>
+
+//                       {/* --- Fee Breakdown Sidebar --- */}
+//                       <div className="flex-shrink-0 md:w-1/3 border rounded-md p-3 bg-blue-50 md:ml-4 mt-4 md:mt-0"> {/* Added mt-4 for spacing on small screens */}
+//                         <h3 className="text-base font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-3">Payment Summary</h3>
+//                         <table className="w-full text-sm">
+//                           <tbody>
+//                             {/* Display items being paid based on current state */}
+//                             {currentFormData.pastDues > 0 && (<tr className="border-b border-blue-100"><td className="text-gray-700 py-1.5">Past Dues:</td><td className="font-medium text-purple-700 py-1.5 text-right">₹{currentFormData.pastDues.toFixed(2)}</td></tr>)}
+//                             {currentFormData.lateFine > 0 && (<tr className="border-b border-blue-100"><td className="text-gray-700 py-1.5">Late Fines:</td><td className="font-medium text-orange-700 py-1.5 text-right">₹{currentFormData.lateFine.toFixed(2)}</td></tr>)}
+
+//                             {/* Regular Fees Selected */}
+//                             {currentFormData.selectedMonths.length > 0 && (
+//                               <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="py-1.5">Regular Fees:</td></tr>
+//                                 {currentFormData.selectedMonths.map((monthState, i) => (
+//                                     <tr key={`reg-sum-${index}-${i}`} className="border-b border-blue-100">
+//                                         <td className="text-gray-600 py-1 pl-3">{monthState.value}:</td>
+//                                         {/* Show the 'due' amount for that month */}
+//                                         <td className="font-medium text-blue-700 py-1 text-right">₹{(monthState?.due || 0).toFixed(2)}</td>
+//                                     </tr>
+//                                 ))}
+//                               </>
+//                             )}
+
+//                             {/* Additional Fees Selected */}
+//                             {currentFormData.selectedAdditionalFees.length > 0 && (
+//                                <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1">Additional Fees:</td></tr>
+//                                 {currentFormData.selectedAdditionalFees.map((fee, i) => (
+//                                     <tr key={`add-sum-${index}-${i}`} className="border-b border-blue-100">
+//                                         <td className="text-gray-600 py-1 pl-3">{fee.name} {fee.type === 'Monthly' ? `(${fee.type})` : ''}:</td>
+//                                         {/* Show the amount associated with this fee */}
+//                                         <td className="font-medium text-blue-700 py-1 text-right">₹{(fee?.amount || 0).toFixed(2)}</td>
+//                                     </tr>
+//                                 ))}
+//                                </>
+//                             )}
+
+//                             {/* One-Time Fees Selected */}
+//                             {currentFormData.selectedOneTimeFees.length > 0 && (
+//                                <><tr className="border-b border-blue-100 font-medium text-gray-800"><td colSpan="2" className="pt-2 pb-1">One-Time Fees:</td></tr>
+//                                 {currentFormData.selectedOneTimeFees.map((fee, i) => (
+//                                     <tr key={`one-time-sum-${index}-${i}`} className="border-b border-blue-100">
+//                                         <td className="text-gray-600 py-1 pl-3">{fee.name}:</td>
+//                                         {/* Show the due amount associated with this fee */}
+//                                         <td className="font-medium text-blue-700 py-1 text-right">₹{(fee?.dueAmount || 0).toFixed(2)}</td>
+//                                     </tr>
+//                                 ))}
+//                                </>
+//                             )}
+
+//                             {/* Concession */}
+//                             {currentFormData.concession > 0 && (<tr className="border-b border-blue-100"><td className="text-green-700 py-1.5">Concession:</td><td className="font-medium text-green-700 py-1.5 text-right">- ₹{parseFloat(currentFormData.concession).toFixed(2)}</td></tr>)}
+//                           </tbody>
+
+//                           {/* Totals Footer */}
+//                           <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
+//                             {/* Calculate total payable based on selections */}
+//                             <tr><td className="pt-2 font-semibold text-blue-900 py-1.5">Total Payable Now</td><td className="pt-2 font-bold text-blue-900 py-1.5 text-right">₹{calculateNetPayableAmount(index).toFixed(2)}</td></tr>
+//                             {/* Show breakdown if amount is entered */}
+//                             {parseFloat(currentFormData.totalAmount) > 0 && (() => {
+//                               const distribution = calculateAutoDistribution(index);
+//                               return (
+//                                 <>
+//                                   <tr><td className="text-gray-700 py-1.5">Amount Paying:</td><td className="font-medium text-black py-1.5 text-right">₹{parseFloat(currentFormData.totalAmount).toFixed(2)}</td></tr>
+//                                   <tr><td className="font-semibold text-red-700 py-1.5">Remaining Dues:</td><td className="font-bold text-red-700 py-1.5 text-right">₹{distribution.remainingDues.toFixed(2)}</td></tr>
+//                                   {distribution.remainingAfterDistribution > 0 && (<tr><td className="font-semibold text-green-700 py-1 text-xs">(Advance/Excess):</td><td className="font-semibold text-green-700 py-1 text-right text-xs">₹{distribution.remainingAfterDistribution.toFixed(2)}</td></tr>)}
+//                                 </>
+//                               );
+//                             })()}
+//                           </tfoot>
+//                         </table>
+//                       </div> {/* End Sidebar */}
+//                     </div> // End Form Content Area
+//                    )}
+//                   </div> {/* End Collapsible Container */}
+//                 </div> // End of student card
+//               );
+//             })} {/* End of parentData.map */}
+//           </div> {/* End of grid */}
+//         </div> // End of Child Forms Area
+//       )}
+
+//       {/* Fee History Display Area */}
+//       {showChildForms && childFeeHistory?.monthlyStatus?.length > 0 && selectedChildrenIndices.length > 0 && (
+//         <div className="mt-8 border-t border-gray-300 pt-6">
+//           <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">
+//             Fee History for {childFeeHistory?.studentName || "Selected Student"} ({childFeeHistory?.session || session})
+//           </h2>
+//           <div className="max-w-4xl mx-auto bg-white p-4 rounded shadow"> {/* Added styling */}
+//             <MonthFeeCard childFeeHistory={childFeeHistory} />
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Modals */}
+//       {/* Message Confirmation Modal */}
+//       <Modal setIsOpen={setIsMessageModalOpen} isOpen={isMessageModalOpen} title="Send Confirmation?" maxWidth="md">
+//         <div className="p-5">
+//           <p className="text-gray-700 mb-4 text-center">
+//             Fee submitted successfully for <span className="font-semibold">{responseData?.student?.studentName || unifiedReceiptData?.students?.map((s) => s.studentName).join(", ") || "student(s)"}</span>.
+//             <br/>Receipt Number: <span className="font-semibold">{responseData?.feeReceiptNumber || unifiedReceiptData?.unifiedReceiptNumber || "N/A"}</span>
+//             <br/>Do you want to send an SMS confirmation to the parent?
+//             <br/>(<span className="font-mono text-sm">{responseData?.parent?.fatherPhone || unifiedReceiptData?.parent?.fatherPhone || "Phone number not available"}</span>)
+//           </p>
+//           <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+//             <Button type="button" name="Yes, Send SMS & View Receipt" onClick={() => handleCloseMessageModal(true)} className="w-full bg-green-600 hover:bg-green-700 text-white sm:col-start-2" />
+//             <Button type="button" name="No, Just View Receipt" onClick={() => handleCloseMessageModal(false)} className="w-full bg-gray-500 hover:bg-gray-600 text-white mt-3 sm:mt-0 sm:col-start-1" />
+//           </div>
+//         </div>
+//       </Modal>
+
+//       {/* Single Fee Receipt Preview Modal */}
+//       <Modal setIsOpen={setPdfModalOpen} isOpen={pdfModalOpen} title="Fee Receipt Preview" maxWidth="lg">
+//         <div className="p-1">
+//           {!isPreviewReady || !receiptData ? (<p className="text-center p-10 text-gray-600">Loading receipt preview...</p>) : (
+//             <FeeRecipt modalData={receiptData} handleCloseModal={() => handleClosePdfModal()} handlePrint={() => handleClosePdfModal("print")} handleDownload={() => handleClosePdfModal("download")} isPreviewReady={isPreviewReady} isUnified={false} />
+//           )}
+//         </div>
+//       </Modal>
+
+//       {/* Unified Fee Receipt Preview Modal */}
+//       <Modal setIsOpen={setUnifiedReceiptModalOpen} isOpen={unifiedReceiptModalOpen} title="Unified Fee Receipt Preview" maxWidth="lg">
+//          <div className="p-1">
+//           {!isPreviewReady || !receiptData ? (<p className="text-center p-10 text-gray-600">Loading unified receipt preview...</p>) : (
+//             // Re-use FeeRecipt component, passing isUnified=true
+//             <FeeRecipt modalData={receiptData} handleCloseModal={() => handleCloseUnifiedReceiptModal()} handlePrint={() => handleCloseUnifiedReceiptModal("print")} handleDownload={() => handleCloseUnifiedReceiptModal("download")} isPreviewReady={isPreviewReady} isUnified={true} />
+//           )}
+//         </div>
+//       </Modal>
+
+//     </div> // End of main container
+//   );
+// };
+
+// export default CreateFees;
 
 
 

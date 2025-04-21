@@ -363,6 +363,7 @@ function DynamicFormFileds(props) {
     // Save (New Admission)
     const handleSaveClick = async () => {
         if (!validateForm()) return;
+debugger
 
         setLoading(true);
         setIsLoader(true);
@@ -396,9 +397,16 @@ function DynamicFormFileds(props) {
 
             if (response.success) {
                 toast.success("Admission successful!");
+                setValues({
+                    admissionNumber: "", rollNo: "", fullName: "", class: "", section: "", gender: "",
+                    DOB: moment("1999-01-01").format("YYYY-MM-DD"), fatherName: "", motherName: "", guardianName: "",
+                    contact: "", address: "", studentImage: null, motherImage: null, fatherImage: null,
+                    guardianImage: null, transport: "", remarks: "", parentId: ""
+                 });
+                 setAvailableSections([]);
                 setReRender(true);
-                setIsOpen(false);
-                setValues({})
+               
+              
             } else {
                 toast.error(response?.message || response?.data?.message || "Admission failed.");
             }
@@ -413,7 +421,7 @@ function DynamicFormFileds(props) {
 
     // Update (Edit Admission)
     const handleUpDateClick = async () => {
-      debugger
+    //   debugger
         //  if (!validateForm()) return;
 
         setIsLoader(true);
