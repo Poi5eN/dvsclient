@@ -14,22 +14,11 @@ const SchoolDetails = () => {
 
   const SchoolDetail=JSON.parse(localStorage.getItem("SchoolDetails"))
   const { setSchoolDetails, schoolDetails, setIsLoader ,currentColor} = useStateContext();
-console.log("schoolDetails",schoolDetails)
+// console.log("schoolDetails",schoolDetails)
   useEffect(() => {
     localStorage.setItem("isFlage", JSON.stringify(isFlage));
   }, [isFlage]);
 
-  useEffect(() => {
-    const storedResponse = localStorage.getItem("user");
-    if (storedResponse) {
-      try {
-        setResponse(JSON.parse(storedResponse));
-      } catch (error) {
-        console.error("Error parsing localStorage user:", error);
-        localStorage.removeItem("user");
-      }
-    }
-  }, []);
 
   const handleSchoolChange = (event) => {
     setSelectedSchoolId(event.target.value);
@@ -60,6 +49,43 @@ console.log("schoolDetails",schoolDetails)
 
     }
   };
+
+
+  console.log("response.length",response?.assignedSchools.length)
+  const newfunctionforschool=async()=>{
+    const storedResponse = localStorage.getItem("user");
+    const data=JSON.parse(storedResponse)
+    setResponse(data);
+try {
+  if( data?.assignedSchools.length===1){
+    const fileterSchool = await data?.assignedSchools[0]
+    const schoolId = await data?.assignedSchools[0]?.schoolId
+    console.log("fileterSchool",fileterSchool)
+    console.log("schoolId",schoolId)
+    localStorage.setItem("SchoolID", schoolId);
+    // const fileterSchool = response?.assignedSchools?.find(
+    //   (val) => val?.schoolId === selectedSchoolId
+    // );
+
+    // if (fileterSchool) {
+      setSchoolDetails(fileterSchool);
+      localStorage.setItem("SchoolDetails", JSON.stringify(fileterSchool));
+     
+      toast.success(`Assigned School: ${fileterSchool?.schoolName}`);
+      setSelectedSchoolId(null);
+
+
+  // }
+  }
+} catch (error) {
+  
+}
+  }
+
+  useEffect(()=>{
+    newfunctionforschool()
+   
+  },[])
 
   useEffect(()=>{
     const fileterSchooldata= response?.assignedSchools?.filter((val)=>val?.schoolId=== selectedSchoolId)
@@ -125,14 +151,16 @@ console.log("schoolDetails",schoolDetails)
     <div className="sm:mt-20 mt-20 md:mt-0 dark:bg-main-dark-bg">
       <div className="divide-y divide-gray-200">
         <div className="text-base leading-6 space-y-2 text-gray-700 sm:text-lg sm:leading-7">
-          <div>
+          {
+            assignedSchools?.length>1 &&
+            <div>
             <select
               id="schoolSelect"
               onChange={handleSchoolChange}
               value={selectedSchoolId || ""}
-              className="shadow cursor-pointer appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow cursor-pointer bg-red-600 appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
             >
-              <option value="">-- Select School --</option>
+              <option value="" className="">-- Select School --</option>
               {assignedSchools?.map((school) => (
                 <option key={school.schoolId} value={school.schoolId}>
                   {school.schoolName}
@@ -140,6 +168,8 @@ console.log("schoolDetails",schoolDetails)
               ))}
             </select>
           </div>
+          }
+         
 
           {selectedSchoolId && (
             <button
@@ -154,27 +184,7 @@ console.log("schoolDetails",schoolDetails)
       <h1 className="text-white text-center py-1 "
       style={{background:currentColor}}
       >Selected School : {SchoolDetail?.schoolName}</h1>
-      <div className="grid grid-cols-1 gap-2 mt-4 sm:grid-cols-2 lg:grid-cols-4">
-       
-        {details.map((val, idx) => (
-          <div
-            key={idx}
-            className="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col space-y-2">
-                <span className="text-[#33ace0] font-bold">{val?.name}</span>
-                <span className="text-lg font-semibold text-[#f05a28]">
-                  {val?.Count}
-                </span>
-              </div>
-              <div className="rounded-md">
-                <img src={val?.logo} alt="" className="h-20" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* a */}
     </div>
   );
 };

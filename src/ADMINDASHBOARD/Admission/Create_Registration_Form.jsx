@@ -141,15 +141,15 @@ const newAdmission=async()=>{
       parentPassword: payload.studentContact ||"",
       parentContact: payload.studentContact ||"",
       // admissionNumber: "" ||"",
-studentCountry: payload.country ||"",
+// studentCountry: payload.country ||"",
 // parentIncome: payload.studentContact ||"",
       // parentQualification: payload.studentContact ||"",
-      religion: payload.religion ||"",
-      caste: payload.caste ||"",
-      nationality: payload.nationality ||"",
-      pincode: payload.pincode ||"",
-      state: payload.state ||"",
-      city: payload.city ||"",
+      // religion: payload.religion ||"",
+      // caste: payload.caste ||"",
+      // nationality: payload.nationality ||"",
+      // pincode: payload.pincode ||"",
+      // state: payload.state ||"",
+      // city: payload.city ||"",
       parentAdmissionNumber: payload?.parentAdmissionNumber ||"",
       studentImage: payload.studentImage ||"",
     };
@@ -441,7 +441,7 @@ studentCountry: payload.country ||"",
               onChange={handleChange}
               value={payload.studentAddress}
             />
-           <ReactInput
+           {/* <ReactInput
               type="text"
               name="city"
               required={false}
@@ -496,7 +496,7 @@ studentCountry: payload.country ||"",
               label="Nationality"
               onChange={handleChange}
               value={payload.nationality}
-            />
+            /> */}
             <ReactInput
               type="file"
               name="studentImage"
