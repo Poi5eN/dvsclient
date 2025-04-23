@@ -1,7 +1,7 @@
 import React from 'react'
 import { TabsDefault } from '../../Dynamic/TabsDefault'
 import DuesStatus from "./DuesStatus";
-import NewCheckFee2 from "./CreateFees";
+import NewCheckFee2 from "./FeeLol/CreateFees";
 import ClasswiseFee from "./ClassWise/ClasswiseFee";
 import AdditionalFee from "./Additional/AdditionalFee";
 import AddDues from "./AddDues";
