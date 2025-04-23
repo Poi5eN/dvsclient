@@ -297,7 +297,7 @@ const [availableSections, setAvailableSections] = useState([]);
   const handleUpDateClick = async () => {
     // alert("update")
     setIsLoader(true);
-    setReRender(false);
+    setReRender(true);
     setLoading(true);
     const studentId = studentData?.studentId;
 // console.log("values?.DOB",values?.DOB)
@@ -364,7 +364,7 @@ const [availableSections, setAvailableSections] = useState([]);
 
       if (response.success) {
         setIsLoader(false);
-        setReRender(true);
+        setReRender(false);
         setIsOpen(false);
         toast.success("Update successfully!");
         setValues({

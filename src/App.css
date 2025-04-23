@@ -310,14 +310,7 @@
 }
 
 /* Style the header (filter, select all) */
-.p-multiselect-header {
-  padding: 0.75rem 1rem; /* Good padding */
-  background-color: #f8f9fa; /* Very light background for separation */
-  border-bottom: 1px solid #dee2e6; /* Separator line */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Space between elements */
-}
+
 
 /* Style the filter input */
 /* .p-multiselect-filter-container .p-inputtext {
@@ -355,6 +348,7 @@
   color: #1d2124; /* Slightly darker text on hover */
 }
 
+
 /* Style selected items */
 .p-multiselect-item.p-highlight {
   background-color: #007bff;
@@ -377,13 +371,24 @@
   font-size: 10px;
 }
 
-.multiselect{
-background-color: cornsilk;
-width: 200px;
+.multiselect {
+  background-color: #1e4db785;
+  width: 270px;
+} 
+
+.p-multiselect-header {
+  padding: 0rem 9px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  display: flex
+;
+  align-items: center;
+  /* gap: 0.5rem; */
 }
 
-.p-multiselect-label .p-multiselect-header .multiselect .p-multiselect-label-container{
-width: 200px;
+.p-multiselect-label  .multiselect .p-multiselect-label-container{
+/* width: 200px; */
+width: 270px;
 }
 
 /* Style the checkbox box */

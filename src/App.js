@@ -39,6 +39,8 @@ import IDCard from "./THIRDPARTY/PhotoCard/IDCard";
 import ThirdpartPhotos from "./THIRDPARTY/NewFolder/ThirdpartPhotos";
 import PhotoForm from "./THIRDPARTY/PhotoForm";
 import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees";
+import DeActiveStudent from "./ADMINDASHBOARD/Student/AllStudent/DeActiveStudent";
+import BulkSetFees from "./ADMINDASHBOARD/Fees/BulkSetFees";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -242,6 +244,7 @@ function App() {
               <Route path="additional" element={<AdditionalFee />} />
               <Route path="allocate-additional" element={<AllocateAdditionalFees />} />
               <Route path="classwise" element={<ClasswiseFee />} />
+              <Route path="bulk-set-fees" element={<BulkSetFees />} />
               <Route path="add-dues" element={<AddDues />} />
               <Route path="lateFine" element={<LateFine />} />
               <Route path="specificFee" element={<SpecificFee />} />
@@ -249,6 +252,7 @@ function App() {
               <Route path="StudentHistory" element={<StudentFeeHistory />} />
               <Route path="classwise/edit-fees/:_id" element={<EditClasswiseFees />} />
               <Route path="allstudent" element={<Allstudent />} />
+              <Route path="deactive-student" element={<DeActiveStudent />} />
               <Route path="bulkedit" element={<BulkEdit />} />
               <Route path="bulk-edit-students" element={<BulkEditStudents />} />
               <Route path="allstudent/viewstudent/view-profile/:email" element={<StudentIdCardNew />} />

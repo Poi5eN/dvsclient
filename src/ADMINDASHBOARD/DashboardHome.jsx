@@ -177,7 +177,7 @@ const DashboardHome = () => {
           </div>
 
           <div className="grid gap-3 p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <Welcome />
+          <Welcome />
 
             {/* <div
               style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
@@ -191,7 +191,7 @@ const DashboardHome = () => {
 
             <div
               style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
-              className="w-full h-full p-2 rounded-md text-center bg-white dark:text-white dark:bg-secondary-dark-bg"
+              // className="w-full h-full p-2 rounded-md text-center bg-white dark:text-white dark:bg-secondary-dark-bg"
             >
               <TeacherNotice />
             </div>

@@ -1532,7 +1532,7 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
             <div className="grid grid-cols-1 gap-6">
               {parentData.map((child, index) => {
                 const currentFormData = formData[index];
-
+console.log("currentFormData",currentFormData)
 const preFee = currentFormData?.feeInfo?.feeStatus?.feeHistory?.flatMap(
   (val) => val?.additionalFees
 );
@@ -1612,13 +1612,32 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
                   })
                 );
 
-                const additionalFeeOptions =
-                  currentFormData.availableAdditionalFees
-                    .filter((fee) => fee.type !== "One-Time")
-                    .map((item) => ({ name: item.label, code: item.id }));
+                // const additionalFeeOptions =
+                //   currentFormData.availableAdditionalFees
+                //     .filter((fee) => fee.type !== "One-Time")
+                //     .map((item) => ({ name: item.label, code: item.id }));
+                // const selectedAdditionalFeeValues =
+                //   currentFormData.selectedAdditionalFees
+                //     .filter((fee) => fee.type !== "One-Time")
+                //     .map((selectedFee) => {
+                //       const availableOption = additionalFeeOptions.find(
+                //         (opt) => opt.code === selectedFee.id
+                //       );
+                //       return {
+                //         name: availableOption
+                //           ? availableOption.name
+                //           : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
+                //         code: selectedFee.id,
+                //       };
+                //     });
+               
+                
+                const additionalFeeOptions =currentFormData.availableAdditionalFees.filter((fee) => fee.type !== "One Time").map((item) => ({ name: item.label, code: item.id }));
+               console.log("additionalFeeOptions",additionalFeeOptions)
+            
                 const selectedAdditionalFeeValues =
                   currentFormData.selectedAdditionalFees
-                    .filter((fee) => fee.type !== "One-Time")
+                    .filter((fee) => fee.type !== "One Time")
                     .map((selectedFee) => {
                       const availableOption = additionalFeeOptions.find(
                         (opt) => opt.code === selectedFee.id
@@ -1631,14 +1650,55 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
                       };
                     });
 
-                const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
-                  (item) => ({ name: item.label, code: item.code })
-                );
+                const additionalOneTimeFeeOptions =currentFormData.availableAdditionalFees.filter((fee) => fee.type == "One Time").map((item) => ({ name: item.label, code: item.id }));
+               console.log("additionalFeeOptions",additionalFeeOptions)
+            
+                const selectedOneTimeAdditionalFeeValues =
+                // additionalOneTimeFeeOptions
+                  currentFormData.selectedAdditionalFees
+                  // currentFormData.selectedAdditionalFees
+                    .filter((fee) => fee.type !== "One Time")
+                    .map((selectedFee) => {
+                      const availableOption = additionalOneTimeFeeOptions.find(
+                        (opt) => opt.code === selectedFee.id
+                      );
+                      return {
+                        name: availableOption
+                          ? availableOption.name
+                          : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
+                        code: selectedFee.id,
+                      };
+                    }
+                  );
+
+
+
+                    const dropDownAdditionalFee=[]
+                    const paidOneTimeFee=currentFormData?.feeInfo?.feeStatus?.feeHistory?.flatMap((item)=>item?.additionalFees)
+                    const filterOntimeFee=paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0)
+                    //  console.log("paidOneTimeFee",paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0))
+     console.log("paidOneTimeFee",paidOneTimeFee)
+                     filterOntimeFee.forEach((item) => {
+                       dropDownAdditionalFee.push({
+                         name: `${item.name}(${item?.dueAmount})`,
+                         code:item.name
+                         // (item) => ({ name: item.label, code: item.code })
+     
+                       });
+                     });
+
+                  
+                // const oneTimeFeeOptions = filterOntimeFee.map(
+                //   (item) => ({ name: item.label, code: item.code })
+                // );
+                // debugger
                 const selectedOneTimeFeeValues =
-                  currentFormData.selectedOneTimeFees.map((fee) => {
-                    const availableOption = oneTimeFeeOptions.find(
-                      (opt) => opt.code === fee.name
+                filterOntimeFee.map((fee) => {
+                    const availableOption = filterOntimeFee.find(
+                      (opt) => opt.name === fee.name
+                      // (opt) => opt.code === fee.name
                     );
+                    console.log("availableOption",availableOption)
                     return {
                       name: availableOption
                         ? availableOption.name
@@ -1646,6 +1706,21 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
                       code: fee.name,
                     };
                   });
+                // const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+                //   (item) => ({ name: item.label, code: item.code })
+                // );
+                // const selectedOneTimeFeeValues =
+                //   currentFormData.selectedOneTimeFees.map((fee) => {
+                //     const availableOption = oneTimeFeeOptions.find(
+                //       (opt) => opt.code === fee.name
+                //     );
+                //     return {
+                //       name: availableOption
+                //         ? availableOption.name
+                //         : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+                //       code: fee.name,
+                //     };
+                //   });
 
                 return (
                   <div
@@ -1775,6 +1850,7 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
                                   name={`additionalFees-${index}`}
                                   searchable={true}
                                   placeholderName="Select additional fee(s)..."
+                                  // dynamicOptions={dropDownAdditionalFee}
                                   dynamicOptions={additionalFeeOptions}
                                   handleChange={(name, opts) =>
                                     handleDynamicMultiSelectChange(
@@ -1792,7 +1868,34 @@ const classDueFees = Array.from(lowesClassFeetDueMap.values()).filter(
                                   Monthly fees auto-selected with months.
                                 </p>
                               </div>
-                              
+                              {/* <div className="md:col-span-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  One-Time / Due Fees
+                                </label>
+                                <DynamicMultiSelect
+                                  name={`oneTimeFees-${index}`}
+                                  searchable={true}
+                                  placeholderName="Select one-time fee(s)..."
+                                  // dynamicOptions={oneTimeFeeOptions}
+                                  // dynamicOptions={dropDownAdditionalFee}
+                                  dynamicOptions={additionalOneTimeFeeOptions}
+                                  handleChange={(name, opts) =>
+                                    handleDynamicMultiSelectChange(
+                                      index,
+                                      "selectedOneTimeFees",
+                                      opts
+                                    )
+                                  }
+                                  value={selectedOneTimeAdditionalFeeValues}
+                                  // value={selectedOneTimeFeeValues}
+                                  requiredClassName={"required-fields"}
+                                  containerClassName="w-full"
+                                  menuClassName="w-full min-w-[200px] whitespace-normal"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Select fees currently due.
+                                </p>
+                              </div> */}
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

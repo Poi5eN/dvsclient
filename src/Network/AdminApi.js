@@ -318,6 +318,18 @@ export const ActiveStudents = async () => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const DeactiveStudents = async () => {
+
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getLastYearStudent}?status=deactivated`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const adminThirdPartystudents = async () => {
 
   try {
@@ -996,5 +1008,19 @@ export const adminRoutelibrary = async (payload) => {
   }
 };
 
+export const dynamicIDCArd = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRouteinventory}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 // inventory end 
