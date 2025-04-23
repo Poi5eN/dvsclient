@@ -371,7 +371,7 @@ const newAdmission=async()=>{
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create"} maxWidth="500px">
         <form onSubmit={handleSubmit} className="p-3">
           <div
-            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 w-full gap-3 px-1 mx-auto bg-white rounded-md "
+            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-white rounded-md "
           >
             <ReactInput
               // resPClass="grid grid-cols-2 md:grid-cols-5"
