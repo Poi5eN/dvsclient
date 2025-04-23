@@ -437,14 +437,28 @@ const CreateFees = () => {
           }
         });
 
-        // Prepare one-time fee options (for dropdown, excluding fully paid, using oneTimeAdditionalDues)
+        // Prepare one-time fee options (for dropdown, including unpaid one-time fees from feeStructure)
         const oneTimeFeeOptions = additionalFeesStructure
-          .filter((fee) => fee.frequency === "one-time")
+          .filter(
+            (fee) => fee.feeType === "One Time" && fee.frequency === "one-time"
+          )
           .filter((fee) => {
-            const dueFee = oneTimeAdditionalDues.find(
-              (d) => d.name === fee.name
+            // Check if fee is paid in feeHistory
+            const isPaidInHistory = feeHistory.some((history) =>
+              history.additionalFees.some(
+                (af) =>
+                  af.name === fee.name &&
+                  af.status === "Paid" &&
+                  af.dueAmount === 0
+              )
             );
-            return dueFee && dueFee.dueAmount > 0 && dueFee.status !== "Paid";
+            // Check if fee is paid in monthlyDues
+            const isPaidInDues = monthlyDues.additionalDues.some(
+              (d) =>
+                d.name === fee.name && d.status === "Paid" && d.dueAmount === 0
+            );
+            // Include fee if not fully paid
+            return !isPaidInHistory && !isPaidInDues;
           })
           .map((fee) => {
             const dueFee = oneTimeAdditionalDues.find(
