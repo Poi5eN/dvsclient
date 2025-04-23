@@ -19,7 +19,7 @@ import { useStateContext } from "../../contexts/ContextProvider";
 import Allstudent from "../Student/AllStudent/Allstudent";
 import Newegistrations from "../NewRegistration/Newegistrations";
 import Create_Registration_Form from "../Admission/Create_Registration_Form";
-import NewCheckFee2 from "../Fees/CreateFees";
+import NewCheckFee2 from "../Fees/FeeLol/CreateFees";
 import Primary from "../Classes/Classes";
 import AllTeachers from "../Teacher/AllTeachers";
 import CreateParents from "../Parents/AllParent/CreateParents";
