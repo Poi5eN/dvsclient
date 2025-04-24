@@ -395,23 +395,30 @@ const CreateFees = () => {
                       opt.name === fee.name && opt.frequency === "monthly"
                   );
                   if (availableFeeOption) {
-                    const existingFee = preSelectedAdditionalFees.find(
-                      (pf) => pf.name === fee.name && pf.frequency === "monthly"
+                    // Only pre-select if the month is also pre-selected in regular fees
+                    const isMonthPreSelected = preSelectedMonths.some(
+                      (m) => m.value === monthData.month
                     );
-                    if (existingFee) {
-                      if (!existingFee.dueMonths.includes(monthData.month)) {
-                        existingFee.dueMonths.push(monthData.month);
-                        existingFee.amount += dueData.dueAmount;
+                    if (isMonthPreSelected) {
+                      const existingFee = preSelectedAdditionalFees.find(
+                        (pf) =>
+                          pf.name === fee.name && pf.frequency === "monthly"
+                      );
+                      if (existingFee) {
+                        if (!existingFee.dueMonths.includes(monthData.month)) {
+                          existingFee.dueMonths.push(monthData.month);
+                          existingFee.amount += dueData.dueAmount;
+                        }
+                      } else {
+                        preSelectedAdditionalFees.push({
+                          id: availableFeeOption.id,
+                          name: availableFeeOption.name,
+                          amount: dueData.dueAmount,
+                          type: availableFeeOption.type,
+                          frequency: availableFeeOption.frequency,
+                          dueMonths: [monthData.month],
+                        });
                       }
-                    } else {
-                      preSelectedAdditionalFees.push({
-                        id: availableFeeOption.id,
-                        name: availableFeeOption.name,
-                        amount: dueData.dueAmount,
-                        type: availableFeeOption.type,
-                        frequency: availableFeeOption.frequency,
-                        dueMonths: [monthData.month],
-                      });
                     }
                   }
                 }
@@ -813,7 +820,6 @@ const CreateFees = () => {
       // Add additional fees, respecting due amounts for selected months
       total += data.selectedAdditionalFees.reduce((sum, fee) => {
         if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
-          // For monthly fees, sum the due amounts for each selected month
           return (
             sum +
             fee.dueMonths.reduce((monthSum, month) => {
@@ -839,6 +845,26 @@ const CreateFees = () => {
         (sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0),
         0
       );
+
+      // Add remaining dues from previous months for additional fees, excluding those already in selectedAdditionalFees
+      const selectedMonthNames = data.selectedMonths.map((m) => m.value);
+      const selectedAdditionalFeeDues = data.selectedAdditionalFees
+        .filter((fee) => fee.frequency === "monthly")
+        .flatMap((fee) =>
+          fee.dueMonths.map((month) => ({ name: fee.name, month }))
+        );
+      const remainingDues = data.monthlyDues.additionalDues
+        .filter(
+          (due) =>
+            due.dueAmount > 0 &&
+            !selectedMonthNames.includes(due.month) &&
+            !selectedAdditionalFeeDues.some(
+              (selected) =>
+                selected.name === due.name && selected.month === due.month
+            )
+        )
+        .reduce((sum, due) => sum + due.dueAmount, 0);
+      total += remainingDues;
 
       // Subtract concession
       total -= parseFloat(data.concession) || 0;
@@ -1170,16 +1196,17 @@ const CreateFees = () => {
     console.log(`Attempting single submission for index: ${childIndex}`);
     const childFormData = formData[childIndex];
     const child = parentData[childIndex];
-
+  
     if (!validateFormData(childFormData, child)) {
       return;
     }
-
+  
     setIsLoader(true);
-
+  
     const additionalFeesPayload = [];
     const selectedMonthNames = childFormData.selectedMonths.map((m) => m.value);
-
+  
+    // Include selected additional fees for the current payment
     childFormData.selectedAdditionalFees.forEach((fee) => {
       if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
         fee.dueMonths.forEach((monthName) => {
@@ -1202,13 +1229,31 @@ const CreateFees = () => {
         });
       }
     });
-
+  
+    // Include selected one-time fees
     childFormData.selectedOneTimeFees.forEach((fee) => {
       additionalFeesPayload.push({
         name: fee.name,
       });
     });
-
+  
+    // Automatically include remaining dues from previous months
+    const selectedAdditionalFeeDues = childFormData.selectedAdditionalFees
+      .filter((fee) => fee.frequency === "monthly")
+      .flatMap((fee) => fee.dueMonths.map((month) => ({ name: fee.name, month })));
+    const remainingDues = childFormData.monthlyDues.additionalDues
+      .filter(
+        (due) =>
+          due.dueAmount > 0 &&
+          !selectedMonthNames.includes(due.month) &&
+          !selectedAdditionalFeeDues.some(
+            (selected) => selected.name === due.name && selected.month === due.month
+          )
+      )
+      .map((due) => ({ name: due.name, month: due.month }));
+  
+    additionalFeesPayload.push(...remainingDues);
+  
     const payload = {
       studentId: child.studentId,
       session,
@@ -1228,9 +1273,9 @@ const CreateFees = () => {
         remark: childFormData.remarks || "",
       },
     };
-
+  
     console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
-
+  
     try {
       const response = await feescreateFeeStatus(payload);
       if (response?.success) {
@@ -1935,6 +1980,80 @@ const CreateFees = () => {
                                     </td>
                                   </tr>
                                 )}
+                                {/* Remaining Dues from Previous Months */}
+                                {(() => {
+                                  const selectedMonthNames =
+                                    currentFormData.selectedMonths.map(
+                                      (m) => m.value
+                                    );
+                                  const selectedAdditionalFeeDues =
+                                    currentFormData.selectedAdditionalFees
+                                      .filter(
+                                        (fee) => fee.frequency === "monthly"
+                                      )
+                                      .flatMap((fee) =>
+                                        fee.dueMonths.map((month) => ({
+                                          name: fee.name,
+                                          month,
+                                        }))
+                                      );
+                                  const remainingDues =
+                                    currentFormData.monthlyDues.additionalDues
+                                      .filter(
+                                        (due) =>
+                                          due.dueAmount > 0 &&
+                                          !selectedMonthNames.includes(
+                                            due.month
+                                          ) &&
+                                          !selectedAdditionalFeeDues.some(
+                                            (selected) =>
+                                              selected.name === due.name &&
+                                              selected.month === due.month
+                                          )
+                                      )
+                                      .reduce((acc, due) => {
+                                        const existing = acc.find(
+                                          (item) =>
+                                            item.name === due.name &&
+                                            item.month === due.month
+                                        );
+                                        if (existing) {
+                                          existing.amount += due.dueAmount;
+                                        } else {
+                                          acc.push({
+                                            name: due.name,
+                                            month: due.month,
+                                            amount: due.dueAmount,
+                                          });
+                                        }
+                                        return acc;
+                                      }, []);
+                                  if (remainingDues.length > 0) {
+                                    return (
+                                      <>
+                                        <tr className="border-b border-blue-100 font-medium text-gray-800">
+                                          <td colSpan="2" className="py-1.5">
+                                            Remaining Dues from Previous Months
+                                          </td>
+                                        </tr>
+                                        {remainingDues.map((due, i) => (
+                                          <tr
+                                            key={`remaining-due-${index}-${i}`}
+                                            className="border-b border-blue-100"
+                                          >
+                                            <td className="text-gray-600 py-1 pl-3">
+                                              {due.name} ({due.month})
+                                            </td>
+                                            <td className="font-medium text-blue-700 py-1 text-right">
+                                              ₹{due.amount.toFixed(2)}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                                 {currentFormData.selectedMonths.length > 0 && (
                                   <>
                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
@@ -1967,27 +2086,30 @@ const CreateFees = () => {
                                         Additional Fees
                                       </td>
                                     </tr>
-                                    {currentFormData.selectedAdditionalFees.map(
-                                      (fee, i) => (
+                                    {currentFormData.selectedAdditionalFees
+                                      .filter(
+                                        (fee) =>
+                                          fee.frequency === "monthly" &&
+                                          fee.dueMonths.some((month) =>
+                                            currentFormData.selectedMonths
+                                              .map((m) => m.value)
+                                              .includes(month)
+                                          )
+                                      )
+                                      .map((fee, i) => (
                                         <tr
                                           key={`add-sum-${index}-${i}`}
                                           className="border-b border-blue-100"
                                         >
                                           <td className="text-gray-600 py-1 pl-3">
-                                            {fee.name}{" "}
-                                            {fee.frequency === "monthly"
-                                              ? `(${fee.type}, ${
-                                                  fee.dueMonths?.join(", ") ||
-                                                  "Selected Months"
-                                                })`
-                                              : `(${fee.type})`}
+                                            {fee.name} ({fee.type},{" "}
+                                            {fee.dueMonths.join(", ")})
                                           </td>
                                           <td className="font-medium text-blue-700 py-1 text-right">
                                             ₹{fee.amount.toFixed(2)}
                                           </td>
                                         </tr>
-                                      )
-                                    )}
+                                      ))}
                                   </>
                                 )}
                                 {currentFormData.selectedOneTimeFees.length >

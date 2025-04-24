@@ -39,6 +39,7 @@ import IDCard from "./THIRDPARTY/PhotoCard/IDCard";
 import ThirdpartPhotos from "./THIRDPARTY/NewFolder/ThirdpartPhotos";
 import PhotoForm from "./THIRDPARTY/PhotoForm";
 import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees";
+import BulkFeesSet from "./ADMINDASHBOARD/Fees/BulkFeesSet";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -272,6 +273,7 @@ function App() {
               <Route path="registration" element={<Newegistrations />} />
               <Route path="newregistration/:registrationNumber" element={<ViewReg />} />
               <Route path="create-fees" element={<CreateFees />} />
+              <Route path="bulk-fees" element={<BulkFeesSet />} />
               <Route path="dues-status" element={<DuesStatus />} />
               <Route path="admission" element={<Registration />} />
               <Route path="admission/bulkadmission" element={<BulkAdmission />} />

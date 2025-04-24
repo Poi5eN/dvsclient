@@ -90,11 +90,12 @@ export const links = [
       children: [
           { name: 'Classwise', link: 'classwise',id :22 , icon: <GiTakeMyMoney />,},
           { name: 'Additional', link: 'additional' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'BulkSetFees', link: 'bulk-fees' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Add Dues', link: 'add-dues' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Dues Status', link: 'dues-status' ,id :23 , icon: <GiTakeMyMoney />,},
-          { name: 'Allocate Additional Fee', link: 'allocate-additional' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'Allot Fee', link: 'allocate-additional' ,id :23 , icon: <GiTakeMyMoney />,},
           
       ],
   },
