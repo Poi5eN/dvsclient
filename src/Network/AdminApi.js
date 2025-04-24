@@ -7,6 +7,7 @@ import makeApiRequest from './makeApiRequest'; // Provide the correct path
 
 //  const { currentColor ,setIsLoader} = useStateContext();
 
+// console.log("session",session)
 // Class Start
 export const login = async (payload) => {
   try {
@@ -218,6 +219,7 @@ export const getAllStudents = async () => {
       method: "GET", // Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls?.getAllStudents}`, option);
+    // const data = await makeApiRequest(`${apiUrls?.getAllStudents}`, option);
     return data;
   } catch (error) {
     console.error("Error fetching registrations:", error);
@@ -306,13 +308,13 @@ export const createBulkRegistrations = async (payload) => {
 // Registration End
 
 // Admission Start 
-export const ActiveStudents = async () => {
+export const ActiveStudents = async (session) => {
 
   try {
     const option = {
       method: "GET", // Ensure the method is GET
     };
-    const data = await makeApiRequest(`${apiUrls.getLastYearStudent}?status=active`, option);
+    const data = await makeApiRequest(`${apiUrls.getLastYearStudent}?status=active&session=${session}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");

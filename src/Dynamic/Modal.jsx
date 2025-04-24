@@ -11,9 +11,9 @@ const Modal = ({ children, isOpen, setIsOpen, title, dynamicWidth}) => {
                 isOpen && (
                     <div
 
-                  style={{zIndex:"99999999",
+                  // style={{zIndex:"99999999",
                    
-                  }}
+                  // }}
                     id="default-modal"
                     // tabIndex="-1"
                     aria-hidden="true"

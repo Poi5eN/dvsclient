@@ -20,6 +20,7 @@ import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import Breadcrumbs from "../../components/Breadcrumbs ";
 import AdmissionForm from "../../ShikshMitraWebsite/component/LoginPage/AdmissionForm";
+import DatePicker from "../../Dynamic/DatePicker/DatePicker";
 
 function Create_Registration_Form() {
   const [refreshRegistrations,setRefreshRegistrations]=useState(false)
@@ -55,6 +56,7 @@ function Create_Registration_Form() {
     parentAdmissionNumber: ""
   });
 
+  console.log("payload",payload)
   const toggleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -129,9 +131,9 @@ const newAdmission=async()=>{
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: studentEmail,
       studentPassword: payload.studentContact,
-      studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD MMMM YYYY") : "",
+      studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD-MM-YYYY") : "",
       studentGender: payload.studentGender ||"",
-      studentJoiningDate: moment(Date.now()).format("DD MMMM YYYY") ||"",
+      studentJoiningDate: moment(Date.now()).format("DD-MM-YYYY") ||"",
       studentAddress: payload.studentAddress.charAt(0).toUpperCase() + payload.studentAddress.slice(1) ||"",
       studentContact: payload.studentContact ||"",
       studentClass: selectedClass ||"",
@@ -277,6 +279,14 @@ studentCountry: payload.country ||"",
     }));
   };
 
+  const handleDateCange = (dateValue, name) => {
+    console.log(`Updating state for ${name}:`, dateValue); // For debugging
+    setPayload((prevFormData) => ({
+        ...prevFormData,
+        [name]: dateValue, // Update the state with the received date object (or null)
+    }));
+};
+
   const filteredData = filterClass
     ? submittedData?.filter((item) => item.class === filterClass)
     : submittedData;
@@ -341,6 +351,8 @@ studentCountry: payload.country ||"",
       link: "/admission"
     }
   ]
+
+
   return (
     <div 
     className=""
@@ -424,16 +436,30 @@ studentCountry: payload.country ||"",
                 { label: "Other", value: "Other" },
               ]}
             />
-            <ReactInput
+            {/* <ReactInput
               type="date"
               name="studentDateOfBirth"
               // required={true}
               label="DOB"
               onChange={handleChange}
               value={payload?.studentDateOfBirth}
-            />
+            /> */}
 
-            
+             <DatePicker
+                            className="custom-calendar"
+                            placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
+                            label={"DOB"} // Corrected typo
+                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                            name="studentDateOfBirth"
+                            id="studentDateOfBirth"
+                            value={payload?.studentDateOfBirth}
+                            // Pass an arrow function to adapt PrimeReact's onChange event
+                            // PrimeReact's event 'e' has the date in 'e.value'
+                            handleChange={(e) => handleDateCange(e.value, "studentDateOfBirth")}
+                            // showaTime // Pass prop
+                            hourFormat="12" // Pass prop
+                            // removed duplicate/incorrect handleChange props
+                        />
            
            
            <ReactInput

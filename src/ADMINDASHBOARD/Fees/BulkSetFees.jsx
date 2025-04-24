@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const BulkFeesSet = () => {
   const [mode, setMode] = useState("create");
@@ -14,7 +15,7 @@ const BulkFeesSet = () => {
 
   const [rows, setRows] = useState([{ amount: "", name: "" }]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
 
   const token = localStorage.getItem('token');
   const api = axios.create({
@@ -36,7 +37,8 @@ const BulkFeesSet = () => {
         setClasses(clsRes.data.classes || []);
         setExistingFees(feesRes.data.data || []);
       } catch (err) {
-        setMessage("Error fetching data: " + err.message);
+        console.log("error",err.message)
+        // setMessage("Error fetching data: " + err.message);
       }
     };
     fetchData();
@@ -69,13 +71,15 @@ const BulkFeesSet = () => {
 
   const handleSubmit = async () => {
     const validCount = parseInt(count, 10);
-    if (!selectedClass) return setMessage("Please select a class.");
-    if (!frequency) return setMessage("Please select a frequency.");
+    if (!selectedClass) return toast.warn("Please select a class.")
+    if (!frequency) return  toast.warn("Please select a frequency.")
     if (!validCount || validCount < 1)
-      return setMessage("Enter a valid count.");
+      return  toast.warn("Enter a valid count.")
+    // setMessage("Enter a valid count.");
+   
 
     setLoading(true);
-    setMessage("");
+    // setMessage("");
     try {
       const payload = {
         fees: rows.map((r) => ({
@@ -88,25 +92,27 @@ const BulkFeesSet = () => {
       };
       const method = mode === "create" ? "post" : "put";
       const res = await api[method]("/fees/bulk", payload);
-      setMessage(`Success: ${res.data.message}`);
+      // setMessage(`Success: ${res.data.message}`);
+      toast.success(res.data.message)
 
       const feesRes = await api.get("/fees");
       setExistingFees(feesRes.data.data || []);
 
-      setCount("");
-      setRows([{ amount: "", name: "" }]);
+      // setCount("");
+      // setRows([{ amount: "", name: "" }]);
       setMode("create");
     } catch (err) {
-      setMessage("Error: " + (err.response?.data?.message || err.message));
+      console.log("error",err.response?.data?.message || err.message)
+      // setMessage("Error: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-8">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl">
-        <h1 className="text-3xl font-extrabold text-indigo-700 mb-8 text-center">
+    <div className=" px-8">
+      <div className=" mx-auto bg-white ">
+        <h1 className="text-xl font-extrabold text-indigo-700 mb-2 text-center">
           Bulk Fees Setup
         </h1>
 
@@ -114,7 +120,7 @@ const BulkFeesSet = () => {
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
-            className="block w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="block w-full p-1 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             <option value="">Select Class</option>
             {classes.map((c) => (
@@ -127,7 +133,7 @@ const BulkFeesSet = () => {
           <select
             value={frequency}
             onChange={(e) => setFrequency(e.target.value)}
-            className="block w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="block w-full p-1 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             <option value="monthly">Monthly</option>
             <option value="one-time">One Time</option>
@@ -139,15 +145,15 @@ const BulkFeesSet = () => {
             pattern="[0-9]*"
             value={count}
             onChange={(e) => setCount(e.target.value.replace(/\D/, ""))}
-            className="block w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="block w-full p-1 px-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
             placeholder="Fees count"
           />
         </div>
 
-        <div className="flex mb-6 rounded-xl overflow-hidden border">
+        <div className="flex mb-2 rounded-xl overflow-hidden border">
           <button
             onClick={() => setIsAdditional(false)}
-            className={`flex-1 p-3 transition-all ${
+            className={`flex-1 p-1 transition-all ${
               !isAdditional
                 ? "bg-indigo-600 text-white"
                 : "bg-white text-indigo-600"
@@ -157,7 +163,7 @@ const BulkFeesSet = () => {
           </button>
           <button
             onClick={() => setIsAdditional(true)}
-            className={`flex-1 p-3 transition-all ${
+            className={`flex-1 p-1 transition-all ${
               isAdditional
                 ? "bg-indigo-600 text-white"
                 : "bg-white text-indigo-600"
@@ -167,7 +173,7 @@ const BulkFeesSet = () => {
           </button>
         </div>
 
-        {message && (
+        {/* {message && (
           <div
             className={`p-4 mb-6 rounded-xl transition-all ${
               message.startsWith("Error")
@@ -177,10 +183,10 @@ const BulkFeesSet = () => {
           >
             {message}
           </div>
-        )}
+        )} */}
 
         {mode === "edit" && (
-          <div className="mb-6">
+          <div className="mb-2">
             <h2 className="text-xl font-semibold mb-4">Existing Fees</h2>
             <div className="space-y-3">
               {existingFees.map((f) => (
@@ -212,28 +218,32 @@ const BulkFeesSet = () => {
           </div>
         )}
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4 mb-2">
           {rows.map((r, i) => (
             <div
               key={i}
-              className="flex items-center gap-4 p-4 bg-gray-100 rounded-xl"
+              className="flex items-center gap-2 p-1  rounded-xl"
             >
-              <input
-                type="number"
-                placeholder="Amount"
-                value={r.amount}
-                onChange={(e) => updateRow(i, "amount", e.target.value)}
-                className="w-1/3 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              />
+              <span>
+                ({i+1}.)
+              </span>
               {isAdditional && (
                 <input
                   type="text"
                   placeholder="Fee Name"
                   value={r.name}
                   onChange={(e) => updateRow(i, "name", e.target.value)}
-                  className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="flex-1 p-1 px-4 border bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               )}
+              <input
+                type="number"
+                placeholder="Amount"
+                value={r.amount}
+                onChange={(e) => updateRow(i, "amount", e.target.value)}
+                className="w-1/4 p-1 px-4 border bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+             
             </div>
           ))}
         </div>
@@ -241,7 +251,7 @@ const BulkFeesSet = () => {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 transition-all"
+          className="w-full py-1 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 transition-all"
         >
           {loading
             ? "Processing..."

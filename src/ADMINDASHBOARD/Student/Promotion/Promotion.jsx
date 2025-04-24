@@ -320,7 +320,7 @@ const Promotion = () => {
   const [fromSections, setFromSections] = useState([]);
   const [toSections, setToSections] = useState([]);
   const [historicalStudents, setHistoricalStudents] = useState([]);
-
+  const session=JSON.parse(localStorage.getItem("session"))
   const sessionOptions = [
     { label: "2024-2025", value: "2024-2025" },
     { label: "2025-2026", value: "2025-2026" },
@@ -337,7 +337,7 @@ const Promotion = () => {
   const studentData = async () => {
     setIsLoader(true);
     try {
-      const response = await ActiveStudents();
+      const response = await ActiveStudents(session);  
       if (response?.success) {
         setStudentDetails(response?.students?.data?.reverse() || []);
       } else {
