@@ -41,6 +41,7 @@ import PhotoForm from "./THIRDPARTY/PhotoForm";
 import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees";
 import DeActiveStudent from "./ADMINDASHBOARD/Student/AllStudent/DeActiveStudent";
 import BulkSetFees from "./ADMINDASHBOARD/Fees/BulkSetFees";
+import BulkFeesSet from "./ADMINDASHBOARD/Fees/BulkFeesSet";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));

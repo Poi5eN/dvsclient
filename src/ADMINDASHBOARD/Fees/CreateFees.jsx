@@ -24,7 +24,7 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
     const response = await axios.get(
       `${
         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
-      }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+      }/api/v1/adminRoute/fees/?additional=true&class=${className}`,
       {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },
