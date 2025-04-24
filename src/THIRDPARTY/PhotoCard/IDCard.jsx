@@ -100,14 +100,14 @@ console.log("response",response)
       setIsLoader(false);
     }
   };
-// useEffect(()=>{
-//   getStudent()
-// },[reRender])
+useEffect(()=>{
+  getStudent()
+},[reRender])
 
   useEffect(() => {
     // getStudent();
     Getclasses();
-  }, [SchoolID,reRender]);
+  }, [SchoolID]);
   // }, [reRender,schoolDetails?.schoolId]);
 
   useEffect(()=>{

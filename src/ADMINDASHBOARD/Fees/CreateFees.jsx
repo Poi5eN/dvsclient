@@ -1626,14 +1626,55 @@ const CreateFees = () => {
                       };
                     });
 
-                const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
-                  (item) => ({ name: item.label, code: item.code })
-                );
+                const additionalOneTimeFeeOptions =currentFormData.availableAdditionalFees.filter((fee) => fee.type == "One Time").map((item) => ({ name: item.label, code: item.id }));
+               console.log("additionalFeeOptions",additionalFeeOptions)
+            
+                const selectedOneTimeAdditionalFeeValues =
+                // additionalOneTimeFeeOptions
+                  currentFormData.selectedAdditionalFees
+                  // currentFormData.selectedAdditionalFees
+                    .filter((fee) => fee.type !== "One Time")
+                    .map((selectedFee) => {
+                      const availableOption = additionalOneTimeFeeOptions.find(
+                        (opt) => opt.code === selectedFee.id
+                      );
+                      return {
+                        name: availableOption
+                          ? availableOption.name
+                          : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
+                        code: selectedFee.id,
+                      };
+                    }
+                  );
+
+
+
+                    const dropDownAdditionalFee=[]
+                    const paidOneTimeFee=currentFormData?.feeInfo?.feeStatus?.feeHistory?.flatMap((item)=>item?.additionalFees)
+                    const filterOntimeFee=paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0)
+                    //  console.log("paidOneTimeFee",paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0))
+     console.log("paidOneTimeFee",paidOneTimeFee)
+                     filterOntimeFee.forEach((item) => {
+                       dropDownAdditionalFee.push({
+                         name: `${item.name}(${item?.dueAmount})`,
+                         code:item.name
+                         // (item) => ({ name: item.label, code: item.code })
+     
+                       });
+                     });
+
+                  
+                // const oneTimeFeeOptions = filterOntimeFee.map(
+                //   (item) => ({ name: item.label, code: item.code })
+                // );
+                // debugger
                 const selectedOneTimeFeeValues =
-                  currentFormData.selectedOneTimeFees.map((fee) => {
-                    const availableOption = oneTimeFeeOptions.find(
-                      (opt) => opt.code === fee.name
+                filterOntimeFee.map((fee) => {
+                    const availableOption = filterOntimeFee.find(
+                      (opt) => opt.name === fee.name
+                      // (opt) => opt.code === fee.name
                     );
+                    console.log("availableOption",availableOption)
                     return {
                       name: availableOption
                         ? availableOption.name
@@ -1641,6 +1682,21 @@ const CreateFees = () => {
                       code: fee.name,
                     };
                   });
+                // const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+                //   (item) => ({ name: item.label, code: item.code })
+                // );
+                // const selectedOneTimeFeeValues =
+                //   currentFormData.selectedOneTimeFees.map((fee) => {
+                //     const availableOption = oneTimeFeeOptions.find(
+                //       (opt) => opt.code === fee.name
+                //     );
+                //     return {
+                //       name: availableOption
+                //         ? availableOption.name
+                //         : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
+                //       code: fee.name,
+                //     };
+                //   });
 
                 return (
                   <div

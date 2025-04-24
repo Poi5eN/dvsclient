@@ -363,7 +363,7 @@ function DynamicFormFileds(props) {
     // Save (New Admission)
     const handleSaveClick = async () => {
         if (!validateForm()) return;
-debugger
+
 
         setLoading(true);
         setIsLoader(true);

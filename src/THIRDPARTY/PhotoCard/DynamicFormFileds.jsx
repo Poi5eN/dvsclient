@@ -365,7 +365,7 @@ function DynamicFormFileds(props) {
         setIsLoader(true);
 
         const requiredFields = [
-            { key: "fullName", label: "Full Name" },
+            // { key: "fullName", label: "Full Name" },
             { key: "class", label: "Class" },
             { key: "section", label: "Section" },
         ];

@@ -167,9 +167,9 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             <thead>
               <tr>
                 <th className="border border-black pl-2 text-[14px] text-start">FEE HEAD</th>
-                {/* <th className="border border-black pl-2 text-[14px]">Month</th> */}
+                <th className="border border-black pl-2 text-[14px]">Month</th>
                 <th className="border border-black pl-2 text-[14px] text-start">AMOUNT (Rs.)</th>
-                {/* <th className="border border-black pl-2 text-[14px] text-start">DUES</th> */}
+                <th className="border border-black pl-2 text-[14px] text-start">DUES</th>
                 {/* <th className="border border-black pl-2 text-[14px] text-start">STATUS</th> */}
               </tr>
             </thead>
@@ -180,16 +180,16 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                     <td className="border border-black pl-2 text-[14px]">
                       FEE
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.month || "N/A"}
-                    </td> */}
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.feeStructureAmount || 0}
+                      {addFee.month ? addFee.month: "N/A"}
+                    </td>
+                    <td className="border border-black pl-2 text-[14px] text-end">
+                      {addFee.feeStructureAmount?.toFixed(2)|| 0}
                       {/* {addFee.paidAmount || 0} */}
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.dueAmount || 0}
-                    </td> */}
+                    <td className="border border-black pl-2 text-[14px] text-red-300 text-end">
+                      {addFee.dueAmount?.toFixed(2) || "0.00"}
+                    </td>
                     {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.status || "N/A"}
                     </td> */}
@@ -204,16 +204,16 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
                     <td className="border border-black pl-2 text-[14px]">
                       {addFee.name || "N/A"}
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.month || "N/A"}
-                    </td> */}
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.feeStructureAmount || 0}
+                      {addFee.month || "N/A"}
+                    </td>
+                    <td className="border border-black pl-2 text-[14px] text-end">
+                      {addFee.feeStructureAmount?.toFixed(2) || "0.00"}
                       {/* {addFee.paidAmount || 0} */}
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.dueAmount || 0}
-                    </td> */}
+                    <td className="border border-black pl-2 text-[14px] text-red-300 text-end">
+                      {addFee.dueAmount?.toFixed(2) || "0.00"}
+                    </td>
                     {/* <td className="border border-black pl-2 text-[14px]">
                       {addFee.status || "N/A"}
                     </td> */}
@@ -230,24 +230,24 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
             <tbody>
               <tr>
                 <td className="border border-black pl-2">Total Fee Amount.</td>
-                <td className="border border-black pl-2">₹ {totalFeeAmount}</td>
+                <td className="border border-black pl-2">₹ {totalFeeAmount?.toFixed(2)}</td>
               </tr>
               <tr>
                 <td className="border border-black pl-2">Concession Amount</td>
                 <td className="border border-black pl-2">
-                  ₹ {concessionApplied ? concessionApplied : "0"}
+                  ₹ {concessionApplied ? concessionApplied?.toFixed(2) : "0.00"}
                 </td>
               </tr>
               <tr>
                 <td className="border border-black pl-2">Paid Amount</td>
                 <td className="border border-black pl-2">
-                  ₹ {totalAmountPaid}
+                  ₹ {totalAmountPaid?.toFixed(2)}
                 </td>
               </tr>
               <tr>
                 <td className="border border-black pl-2">Total Dues</td>
                 <td className="border border-black pl-2 text-red-600">
-                  ₹ {totalDues}
+                  ₹ {totalDues?.toFixed(2)}
                 </td>
               </tr>
             </tbody>

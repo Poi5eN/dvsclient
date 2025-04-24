@@ -104,6 +104,26 @@ const newAdmission=async()=>{
     }
     setIsLoader(true)
     e.preventDefault();
+    // const payloadData = {
+    //   studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
+    //   studentEmail: studentEmail,
+    //   studentPassword: payload.studentContact,
+    //   studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD MMMM YYYY") : "",
+    //   studentGender: payload.studentGender ||"",
+    //   studentJoiningDate: moment(Date.now()).format("DD MMMM YYYY") ||"",
+    //   studentAddress: payload.studentAddress.charAt(0).toUpperCase() + payload.studentAddress.slice(1) ||"",
+    //   studentContact: payload.studentContact ||"",
+    //   studentClass: selectedClass ||"",
+    //   studentSection: selectedSection ||"", // Use the selectedSection state
+    //   fatherName:  payload.fatherName.charAt(0).toUpperCase() + payload.fatherName.slice(1) ||"",
+    //   motherName:  payload.motherName.charAt(0).toUpperCase() + payload.motherName.slice(1) ||"",
+    //   parentEmail: parentEmail ||"",
+    //   parentPassword: payload.studentContact ||"",
+    //   parentContact: payload.studentContact ||"",
+    //   admissionNumber: "" ||"",
+    //   parentAdmissionNumber: payload?.parentAdmissionNumber ||"",
+    //   studentImage: payload.studentImage ||"",
+    // };
     const payloadData = {
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: studentEmail,
@@ -120,7 +140,16 @@ const newAdmission=async()=>{
       parentEmail: parentEmail ||"",
       parentPassword: payload.studentContact ||"",
       parentContact: payload.studentContact ||"",
-      admissionNumber: "" ||"",
+      // admissionNumber: "" ||"",
+// studentCountry: payload.country ||"",
+// parentIncome: payload.studentContact ||"",
+      // parentQualification: payload.studentContact ||"",
+      // religion: payload.religion ||"",
+      // caste: payload.caste ||"",
+      // nationality: payload.nationality ||"",
+      // pincode: payload.pincode ||"",
+      // state: payload.state ||"",
+      // city: payload.city ||"",
       parentAdmissionNumber: payload?.parentAdmissionNumber ||"",
       studentImage: payload.studentImage ||"",
     };
@@ -342,7 +371,7 @@ const newAdmission=async()=>{
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create"} maxWidth="500px">
         <form onSubmit={handleSubmit} className="p-3">
           <div
-            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 w-full gap-3 px-1 mx-auto bg-white rounded-md "
+            className=" mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full gap-3 px-1 mx-auto bg-white rounded-md "
           >
             <ReactInput
               // resPClass="grid grid-cols-2 md:grid-cols-5"
@@ -412,7 +441,7 @@ const newAdmission=async()=>{
               onChange={handleChange}
               value={payload.studentAddress}
             />
-           <ReactInput
+           {/* <ReactInput
               type="text"
               name="city"
               required={false}
@@ -467,7 +496,7 @@ const newAdmission=async()=>{
               label="Nationality"
               onChange={handleChange}
               value={payload.nationality}
-            />
+            /> */}
             <ReactInput
               type="file"
               name="studentImage"
@@ -528,7 +557,7 @@ const newAdmission=async()=>{
                   type="text"
                   name="parentAdmissionNumber"
                   required={true}
-                  label="Parent's Admission Number"
+                  label="Admission Number"
                   onChange={handleChange}
                   value={payload.parentAdmissionNumber}
                 />
