@@ -99,6 +99,7 @@ const BulkFeesSet = () => {
       setExistingFees(feesRes.data.data || []);
 
       // setCount("");
+      setRows([{ amount: ""}]);
       // setRows([{ amount: "", name: "" }]);
       setMode("create");
     } catch (err) {
@@ -145,7 +146,7 @@ const BulkFeesSet = () => {
             pattern="[0-9]*"
             value={count}
             onChange={(e) => setCount(e.target.value.replace(/\D/, ""))}
-            className="block w-full p-1 px-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="block w-full p-1  px-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
             placeholder="Fees count"
           />
         </div>
@@ -233,7 +234,7 @@ const BulkFeesSet = () => {
                   placeholder="Fee Name"
                   value={r.name}
                   onChange={(e) => updateRow(i, "name", e.target.value)}
-                  className="flex-1 p-1 px-4 border bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="flex-1 p-1 px-4 border text-white bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               )}
               <input
@@ -241,7 +242,7 @@ const BulkFeesSet = () => {
                 placeholder="Amount"
                 value={r.amount}
                 onChange={(e) => updateRow(i, "amount", e.target.value)}
-                className="w-1/4 p-1 px-4 border bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="w-1/4 p-1 px-4 border text-white bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
              
             </div>

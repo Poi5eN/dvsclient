@@ -320,12 +320,12 @@ const ChildSelector = ({
           />
         ))}
       </div>
-      {showFormFlags.some((flag) => flag) && childFeeHistory?.monthlyStatus?.length > 0 && (
+      {/* {showFormFlags.some((flag) => flag) && childFeeHistory?.monthlyStatus?.length > 0 && (
         <FeeHistory
           childFeeHistory={childFeeHistory}
           session={session}
         />
-      )}
+      )} */}
     </div>
   );
 };

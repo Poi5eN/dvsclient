@@ -1792,7 +1792,7 @@ const CreateFees = () => {
                                   name={`oneTimeFees-${index}`}
                                   searchable={true}
                                   placeholderName="Select one-time fee(s)..."
-                                  dynamicOptions={oneTimeFeeOptions}
+                                  // dynamicOptions={oneTimeFeeOptions}
                                   handleChange={(name, opts) =>
                                     handleDynamicMultiSelectChange(
                                       index,
