@@ -1,5 +1,8 @@
+// DatePicker.js
 import React from "react";
 import { Calendar } from "primereact/calendar";
+// No longer need moment for this component's core logic unless used elsewhere
+// import moment from "moment";
 
 function DatePicker({
   name,
@@ -7,63 +10,220 @@ function DatePicker({
   respclass,
   id,
   placeholder,
-  lable,
+  label, // Corrected typo
   value,
-  handleChange,
+  handleChange, // This prop will receive the event object from PrimeReact's Calendar
   tabIndex,
   inputClassName,
   removeFormGroupClass,
   maxDate,
   minDate,
-  disable,
+  disabled, // Changed from 'disable' for consistency
   viewDate,
-  dateFormat
+  handleSelect,
+  showTime,   // Make sure to accept these props
+  hourFormat, // Make sure to accept these props
+  keepInvalid = false // Optional: Controls behavior on invalid manual input blur
 }) {
-  return (
-    <>
-      <div className={respclass} style={{ position: "relative" }}>
-        {/* <FloatLabel>  */}
-        <div className={removeFormGroupClass ? "" : "form-group"}>
-          <Calendar
-            inputId={id}
-            // id={id}
-            showIcon
-            placeholder={placeholder}
-            className={className}
-            dateFormat={dateFormat?dateFormat:"dd-M-yy"}
-            view={viewDate?viewDate:"date"} 
-            value={value?value:null}
-            name={name}
-            maxDate={maxDate}
-            minDate={minDate}
-            disabled={disable}
-            onChange={handleChange}
-            // onChange={(e) => handleChange(name, e.target.value)}
-            wrapperclassname="datepicker"
-            inputClassName={inputClassName}
-            tabIndex={tabIndex ? tabIndex : "-1"}
-            // disabledDates={}
-            // disabledDays={}
+  // PrimeReact expects this format for display
+  const primeDateFormat = "dd/mm/yy"; // Use for display formatting
 
-          />
-          {/* <label htmlFor="birth_date">Birt h Date</label> */}
-          {lable && (
-            <label
-              htmlFor={id}
-              className="labelPicker lable truncate "
-              style={{ fontSize: "5px !important" }}
-            >
-              {lable}
-            </label>
-          )}
-        </div>
-        {/* </FloatLabel> */}
+  // Removed handleManualInput function
+
+  return (
+    <div className={respclass} style={{ position: "relative" }}>
+      <div className={removeFormGroupClass ? "" : "form-group"}>
+        <Calendar
+          inputId={id}
+          showIcon
+          placeholder={placeholder || "DD/MM/YYYY"} // Placeholder guides user
+          className={className}
+          dateFormat={primeDateFormat} // How the date is displayed once selected/entered
+          view={viewDate || "date"}
+          // Ensure value passed is a valid Date object or null
+          value={value instanceof Date && !isNaN(value) ? value : null}
+          name={name}
+          maxDate={maxDate}
+          minDate={minDate}
+          disabled={disabled} // Use the disabled prop
+          // The 'handleChange' prop passed *to* DatePicker will be called here
+          // It receives the event object from PrimeReact
+          onChange={handleChange}
+          onSelect={handleSelect} // Optional: If you need specific select handling
+          inputClassName={inputClassName}
+          tabIndex={tabIndex || "-1"}
+          // Removed onInput prop
+          showTime={showTime}     // Pass down
+          hourFormat={hourFormat}   // Pass down
+          keepInvalid={keepInvalid} // If true, allows invalid text until blur
+                                    // If false (default), clears invalid input on blur
+        />
+
+        {label && ( // Corrected typo
+          <label
+            htmlFor={id}
+            className="labelPicker label truncate" // Corrected typo
+            // style={{ fontSize: "5px !important" }} // NB: 5px font size is extremely small
+          >
+            {label}
+          </label>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
 export default DatePicker;
+
+
+// import React from "react";
+// import { Calendar } from "primereact/calendar";
+// import moment from "moment";
+
+// function DatePicker({
+//   name,
+//   className,
+//   respclass,
+//   id,
+//   placeholder,
+//   lable,
+//   value,
+//   handleChange,
+//   tabIndex,
+//   inputClassName,
+//   removeFormGroupClass,
+//   maxDate,
+//   minDate,
+//   disable,
+//   viewDate,
+//   handleSelect,
+// }) {
+//   // PrimeReact expects this format for display
+//   const primeDateFormat = "dd/mm/yy";
+
+//   // Use moment for parsing typed input
+//   const handleManualInput = (e) => {
+//     const manualInput = e.target.value;
+
+//     // Match the format you expect users to type: "DD/MM/YYYY"
+//     const parsed = moment(manualInput, "DD/MM/YYYY", true); // true = strict parsing
+
+//     if (parsed.isValid()) {
+//       // Return value as a native Date object (same as calendar pick)
+//       handleChange({ target: { name, value: parsed.toDate() } });
+//     } else {
+//       console.warn("Invalid date format entered:", manualInput);
+//       // Optional: add custom invalid-date handling here
+//     }
+//   };
+
+//   return (
+//     <div className={respclass} style={{ position: "relative" }}>
+//       <div className={removeFormGroupClass ? "" : "form-group"}>
+//         <Calendar
+//           inputId={id}
+//           showIcon
+//           placeholder={placeholder || "DD/MM/YYYY"}
+//           className={className}
+//           dateFormat={primeDateFormat} // PrimeReact format (not moment)
+//           view={viewDate || "date"}
+//           value={value && String(value) !== "Invalid Date" ? value : null}
+//           name={name}
+//           maxDate={maxDate}
+//           minDate={minDate}
+//           disabled={disable}
+//           onChange={handleChange}
+//           onSelect={handleSelect}
+//           inputClassName={inputClassName}
+//           tabIndex={tabIndex || "-1"}
+//           onInput={handleManualInput}
+//         />
+
+//         {lable && (
+//           <label
+//             htmlFor={id}
+//             className="labelPicker lable truncate"
+//             style={{ fontSize: "5px !important" }}
+//           >
+//             {lable}
+//           </label>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default DatePicker;
+
+
+
+
+// import React from "react";
+// import { Calendar } from "primereact/calendar";
+
+// function DatePicker({
+//   name,
+//   className,
+//   respclass,
+//   id,
+//   placeholder,
+//   lable,
+//   value,
+//   handleChange,
+//   tabIndex,
+//   inputClassName,
+//   removeFormGroupClass,
+//   maxDate,
+//   minDate,
+//   disable,
+//   viewDate,
+//   dateFormat
+// }) {
+//   return (
+//     <>
+//       <div className={respclass} style={{ position: "relative" }}>
+//         {/* <FloatLabel>  */}
+//         <div className={removeFormGroupClass ? "" : "form-group"}>
+//           <Calendar
+//             inputId={id}
+//             // id={id}
+//             showIcon
+//             placeholder={placeholder}
+//             className={className}
+//             dateFormat={dateFormat?dateFormat:"dd-M-yy"}
+//             view={viewDate?viewDate:"date"} 
+//             value={value?value:null}
+//             name={name}
+//             maxDate={maxDate}
+//             minDate={minDate}
+//             disabled={disable}
+//             onChange={handleChange}
+//             // onChange={(e) => handleChange(name, e.target.value)}
+//             wrapperclassname="datepicker"
+//             inputClassName={inputClassName}
+//             tabIndex={tabIndex ? tabIndex : "-1"}
+//             // disabledDates={}
+//             // disabledDays={}
+
+//           />
+//           {/* <label htmlFor="birth_date">Birt h Date</label> */}
+//           {lable && (
+//             <label
+//               htmlFor={id}
+//               className="labelPicker lable truncate "
+//               style={{ fontSize: "5px !important" }}
+//             >
+//               {lable}
+//             </label>
+//           )}
+//         </div>
+//         {/* </FloatLabel> */}
+//       </div>
+//     </>
+//   );
+// }
+
+// export default DatePicker;
 
 
 

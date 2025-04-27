@@ -1,263 +1,1384 @@
-
 import React, { useState } from "react";
-import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
-import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
-import { dynamicIDCArd } from "../Network/AdminApi";
+import { toast } from "react-toastify";
+import { design } from "../Network/AdminApi"; // Assuming API function path is correct
 
-// Placeholder component for Button if not available
-// const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
+// --- Placeholder Button ---
+const Button = ({ name, onClick, color, style }) => (
+    <button style={{ backgroundColor: color || '#007bff', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', margin: '5px', ...style }} onClick={onClick}>{name}</button>
+);
 
 const ImageTest = () => {
-  // State for the background image URL/DataURL (for preview)
-  const [backgroundImage, setBackgroundImage] = useState(
-    "https://via.placeholder.com/300"
-  );
-  // State to store the actual uploaded File object
-  const [uploadedImageFile, setUploadedImageFile] = useState(null);
-
-  const [frontTemplate, setFrontTemplate] = useState(`
-    <div style='background-image:url(\${backgroundImage});
-                background-position: center;
-                background-repeat: no-repeat;
-                width: 54mm;
-                height: 86mm;
-                position: relative;
-                background-size:cover;
-                border:1px solid'>
-      
-      <div style='margin-left: 40px;
-                  margin-top: 82px;
-                  width: 85px;
-                  height: 95px;
-                  border: 0.5px solid #ff0000;
-                  border-radius: 4px;
-                  overflow:hidden;
-                  position:absolute;
-                  background-color: #eee;'> 
-        
-        <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Image"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student Photo"/>
-      </div>
+    // --- State for Front Side ---
+    const [frontBackgroundImage, setFrontBackgroundImage] = useState("https://via.placeholder.com/204x325?text=Front+BG");
+    const [uploadedFrontImageFile, setUploadedFrontImageFile] = useState(null);
     
-      <div style='position: absolute; left: 3px; top: 190px; width: calc(100% - 6px);'> 
-        <p style='font-size:6pt; text-transform: uppercase; margin-top: 8px; color:BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'> 
-          NAME <span style="margin-left: 16px; font-weight: bold;"> : \${name} </span>
-        </p>
-        <p style='font-size:6pt; text-transform: uppercase; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
-          CLASS <span style="margin-left: 13px; font-weight: bold"> : \${class} </span>
-        </p>
-        <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
-          F.Name <span style="margin-left: 9px; font-weight: bold"> : \${father_name} </span>
-        </p>
-        <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
-          Phone <span style="margin-left: 12px; font-weight: bold"> : \${mobile} </span>
-        </p>
-        <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 15px; font-weight: bold; text-transform: uppercase; /* Removed white-space nowrap for address */'>
-          Address <span style="margin-left:1px; font-weight: bold"> : \${address} </span>
-        </p>
-      </div>
-    </div>
-  `);
-
-  // 2. Student details state (Example - typically fetched or passed as props)
-  // Using allStudent array for rendering multiple cards
-  const allStudents = [
-    {
-      id: 1,
-      name: "Alice Wonderland",
-      class: "Grade 5",
-      father_name: "Mr. Hatter",
-      mobile: "111222333",
-      address: "1st Rabbit Hole, Wonderland",
-      guardianname: "Queen Hearts",
-      studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" // Example student image
-    },
-    {
-      id: 2,
-      name: "Bob The Builder",
-      class: "Construction 101",
-      father_name: "Mr. Builder Sr.",
-      mobile: "444555666",
-      address: "Building Site #5, Townsville",
-      guardianname: "Wendy",
-      studentImage: null // Example of no image
-    },
-  ];
-
-  // 3. Template rendering function
-  const renderTemplate = (template, data) => {
-    // Replace background image placeholder first
-    let rendered = template.replace(/\${backgroundImage}/g, backgroundImage); // Use the state for preview
-
-    // Replace other placeholders (\${key})
-    rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
-        // Provide default empty string if key doesn't exist in data
-        // Handle specific cases like studentImage which might be null
-        if (key === 'studentImage') {
-            return data[key] || "https://via.placeholder.com/85x95?text=No+Image"; // Default placeholder
-        }
-        return data[key] || "";
-    });
-    return rendered;
-  };
-
-
-  // 4. Handle background file change
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Store the actual file object for upload
-      setUploadedImageFile(file);
-
-      // Read the file as Data URL for preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBackgroundImage(reader.result); // Update preview state
-      };
-      reader.onerror = (error) => {
-        console.error("FileReader error:", error);
-        toast.error("Error reading file for preview.");
-        setUploadedImageFile(null); // Clear file state on error
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // If the user cancels file selection, reset the file state
-      setUploadedImageFile(null);
-      // Optional: Reset preview to default or keep the last one?
-      // setBackgroundImage("https://via.placeholder.com/300"); // Reset to default
-    }
-  };
-
-  // 5. Handle Save Click - Construct FormData and log
-  const handleSaveClick = async () => {
-    try {
-      const formDataToSend = new FormData();
-
-      // 1. Append the template string
-      // Note: JSON.stringify might not be necessary if the backend expects a plain string.
-      // If it expects JSON, then keep stringify. Let's keep it as in your original code.
-      formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
-
-      // 2. Append the background image file *if* one was uploaded
-      if (uploadedImageFile instanceof File) {
-        // The key "backgroundImage" should match what the backend expects for the file upload.
-        formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
-         console.log("Appended background image file:", uploadedImageFile);
-      } else {
-         console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
-         // Decide if you need to send the current `backgroundImage` URL string under a different key,
-         // e.g., formDataToSend.append("backgroundImageUrl", backgroundImage);
-         // This depends entirely on your backend API design.
-      }
-
-      // --- Console Logging the Payload ---
-      console.log("--- Payload to be sent (FormData entries) ---");
-      // FormData is tricky to log directly. Iterate through its entries:
-      for (let [key, value] of formDataToSend.entries()) {
-          if (value instanceof File) {
-              console.log(`${key}:`, value); // Logs File object details
-          } else {
-              console.log(`${key}:`, value); // Logs the string value
-          }
-      }
-      console.log("------------------------------------------");
-      toast.info("Payload logged to console. Check developer tools.");
-
-      const response=await dynamicIDCArd(formDataToSend)
-      if(response?.success){
-        alert("save")
-      }
-      // --- Mock API Call (Commented out) ---
-      // console.log("Simulating API call with FormData...");
-      // const response = await fetch('/your-api-endpoint', { // Replace with your actual endpoint
-      //   method: 'POST',
-      //   body: formDataToSend,
-      //   // Headers might be needed depending on backend (e.g., Authorization)
-      //   // Don't set 'Content-Type': 'multipart/form-data', browser does it automatically with FormData
-      // });
-      //
-      // if (!response.ok) {
-      //    // Try to get error message from response body
-      //    let errorData;
-      //    try {
-      //        errorData = await response.json();
-      //    } catch (e) {
-      //        errorData = { message: 'Failed to parse error response.' };
-      //    }
-      //    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
-      // }
-      //
-      // const result = await response.json();
-      // console.log("API Response:", result);
-      //
-      // if (result.success) { // Adjust based on your actual API response structure
-      //   toast.success("Data saved successfully!");
-      // } else {
-      //   toast.error(result?.message || "Save failed.");
-      // }
-      // --- End Mock API Call ---
-
-
-    } catch (error) {
-      console.error("Error during handleSaveClick:", error);
-      toast.error(error?.message || 'An error occurred. Please try again.');
-    } finally {
-      // Optional: Add loading state handling (e.g., setLoading(false))
-    }
-  };
-
-  return (
-    <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
-      <h1>ID Card Generator</h1>
-
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
-        {/* Preview Area */}
-        <div style={{ flex: "1 1 500px", border: "2px solid #ccc", borderRadius: "8px", padding: "1rem", minWidth: "300px" }}>
-          <h2>Preview</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-            {allStudents.map((student) => (
-              <div
-                key={student.id}
-                dangerouslySetInnerHTML={{
-                  // Pass student data AND the current background image URL/DataURL
-                  __html: renderTemplate(frontTemplate, student),
-                }}
-              />
-            ))}
-          </div>
+    const [frontTemplate, setFrontTemplate] = useState(`
+      <div style='background-image:url(\${backgroundImage});
+                  background-position: center;
+                  background-repeat: no-repeat;
+                  width: 54mm;
+                  height: 86mm;
+                  position: relative;
+                  background-size: cover;
+                  border: 1px solid #ccc; 
+                  font-family: Arial, sans-serif; 
+                  overflow: hidden;
+                  box-sizing: border-box;'>
+      
+       
+        <div style='position: absolute;
+                    left: 82px;
+                    top: 90px;
+                    width: 85px;   
+                    height: 95px;  
+                    border: 0.5px solid #aaa; 
+                    border-radius: 3px;
+                    overflow: hidden;
+                    background-color: #eee;'> 
+          <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Img"}'
+               style='width: 100%; height: 100%; object-fit: cover;'
+               alt="Student"/>
         </div>
-
-        {/* Controls Area */}
-        <div style={{ flex: "1 1 400px", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px", minWidth: "300px" }}>
-          <Button color={"green"} name="Log Payload to Console" onClick={handleSaveClick} />
-          <h2 style={{ marginTop: '1rem' }}>Edit Front Template</h2>
-          <textarea
-            rows={15}
-            style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", padding: "1rem", border: "2px solid gray", boxSizing: 'border-box', fontSize: '0.8em' }}
-            value={frontTemplate}
-            onChange={(e) => setFrontTemplate(e.target.value)}
-            aria-label="Front Template Editor"
-          />
-          <h3>Change Background Image</h3>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
-            aria-label="Background Image Upload"
-          />
-          {/* Display current background image source for clarity */}
-          {uploadedImageFile ? (
-             <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
-          ) : (
-             <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using default/previous background: {backgroundImage.substring(0, 50)}...</i></p>
-          )}
+       
+       
+        <div style='position: absolute;
+                    left: 4mm;
+                    top: 200px; 
+                    width: calc(100% - 8mm);
+                    box-sizing: border-box;'>
+      
+         
+          <p style='font-size: 7pt; 
+                    text-transform: uppercase;
+                    margin: 0 0 1.5mm 0; 
+                    color: BLACK;
+                    font-weight: bold;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    line-height: 1.2;'>
+              NAME
+              
+              <span style="float: right; font-weight: normal; width: 65%;  text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${name}</span>
+          </p>
+          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+              CLASS
+              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${class}</span>
+          </p>
+          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+              F.NAME
+              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${father_name}</span>
+          </p>
+          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+              PHONE
+              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${mobile}</span>
+          </p>
+          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold;  line-height: 1.3;'> 
+              ADDRESS
+             
+              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: normal;">: \${address}</span>
+          </p>
         </div>
       </div>
+      `);
+
+    const [backBackgroundImage, setBackBackgroundImage] = useState("https://via.placeholder.com/204x325/cccccc?text=Back+BG");
+    const [uploadedBackImageFile, setUploadedBackImageFile] = useState(null);
+    // ***** Using the NEW Simplified and Cleaned backTemplate *****
+    const [backTemplate, setBackTemplate] = useState(`
+<div style='background-image:url(\${backgroundImage});
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 54mm;
+            height: 86mm;
+            position: relative;
+            background-size: cover;
+            border: 1px solid #ccc;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Crucial */
+            box-sizing: border-box;
+            padding: 5mm;'>
+
+    <h3 style='text-align:center; font-size: 9pt; margin: 0 0 5mm 0; color: #333;'>STUDENT ID CARD</h3>
+
+    <p style='font-size: 7pt; margin: 0 0 3mm 0; line-height: 1.3;'>
+        This card certifies that <strong>\${name}</strong> is a student of [Your School Name Here].
+    </p>
+
+    <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+        Session: 2024-2025
+    </p>
+
+    <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+        Guardian: \${guardianname}
+    </p>
+
+    <p style='font-size: 7pt; margin: 8mm 0 4mm 0; text-align: center; line-height: 1.3;'>
+        <strong>If found, please return to:</strong><br/>
+        [Your School Address Here]<br/>
+        [Your School Phone Here]
+    </p>
+
+    <!-- Signature block -->
+    <div style='position: absolute; bottom: 8mm;  left: 0; right: 0; text-align: center;'>
+        <p style='font-size: 6pt; margin: 0 0 0.5mm 0;'>Signature:</p>
+        <div style='border-bottom: 1px solid #555; height: 8mm; width: 40mm; margin: 0 auto;'></div>
+        <p style='font-size: 6pt; margin: 0.5mm 0 0 0;'>Principal</p>
     </div>
-  );
+
+</div>`); // Ensure closing backtick
+
+    // --- Sample Student Data ---
+    const sampleStudent = { id: 1, name: "Alice Wonderland", class: "Grade 5 - A", father_name: "Mr. Hatter", mobile: "111-222-3333", address: "1st Rabbit Hole, Wonderland Lane", guardianname: "Queen Hearts", studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" };
+
+    // --- Template Rendering Function ---
+    const renderTemplate = (template, backgroundUrl, data) => {
+        let rendered = template.replace(/\${backgroundImage}/g, backgroundUrl);
+        rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+            if (key === 'studentImage') return data[key] || "https://via.placeholder.com/85x95?text=No+Image";
+            return data[key] || "";
+        });
+        // console.log("Rendered HTML:", rendered); // DEBUG: Log the final HTML
+        return rendered;
+    };
+
+    // --- Unified File Change Handler ---
+    const handleFileChange = (e, side) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (side === 'front') { setFrontBackgroundImage(reader.result); setUploadedFrontImageFile(file); }
+                else if (side === 'back') { setBackBackgroundImage(reader.result); setUploadedBackImageFile(file); }
+            };
+            reader.onerror = (error) => { console.error("FileReader error:", error); toast.error(`Error reading ${side} file.`); if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); };
+            reader.readAsDataURL(file);
+        } else { if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); }
+        e.target.value = null;
+    };
+
+    // --- Save Handler ---
+    const handleSaveClick = async () => {
+        try {
+            const formDataToSend = new FormData();
+            const contentArray = [];
+            const frontTemplateString = JSON.stringify(frontTemplate);
+             const frontBase64 = btoa(unescape(encodeURIComponent(frontTemplateString))); contentArray.push({ data: frontBase64, name: "Front Side" });
+            const backTemplateString = JSON.stringify(backTemplate);
+             const backBase64 = btoa(unescape(encodeURIComponent(backTemplateString))); contentArray.push({ data: backBase64, name: "Back Side" });
+            formDataToSend.append("name", "Student ID Card Design");
+             formDataToSend.append("type", "idCard");
+              formDataToSend.append("description", "Front/back design");
+               formDataToSend.append("isDefault", "true"); 
+               formDataToSend.append("isPublic", "false"); 
+               formDataToSend.append("content", JSON.stringify(contentArray));
+            if (uploadedFrontImageFile instanceof File) formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
+            if (uploadedBackImageFile instanceof File) formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+            const response = await design(formDataToSend);
+            // const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1000)); // Mock
+            if (response?.success)
+               toast.success(response.message || "Saved!");
+               else toast.warn(response?.message || "Save failed/warned.");
+        } catch (error) { console.error("Save Error:", error); const msg = error?.response?.data?.message || error?.message || 'Save error.'; toast.error(msg); }
+    };
+
+    // --- JSX ---
+    return (
+        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+            <h2>ID Card Design Editor (Front & Back)</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+
+                {/* === Front Section === */}
+                <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+                    <h3>Front Side</h3>
+                    <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                        {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, sampleStudent) }} /> </div>
+                        {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="front-bg-upload">Upload Front BG:</label> <input type="file" id="front-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="front-template-edit">Edit Front HTML:</label> <textarea id="front-template-edit" value={frontTemplate} onChange={(e) => setFrontTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+                    </div>
+                </div>
+
+                {/* === Back Section === */}
+                <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+                     <h3>Back Side</h3>
+                     <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                         {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, sampleStudent) }} /> </div>
+                         {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="back-bg-upload">Upload Back BG:</label> <input type="file" id="back-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="back-template-edit">Edit Back HTML:</label> <textarea id="back-template-edit" value={backTemplate} onChange={(e) => setBackTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+                     </div>
+                </div>
+            </div>
+            {/* Save Button */}
+            <div style={{ marginTop: '30px', textAlign: 'center' }}> <Button name="Save Both Designs" onClick={handleSaveClick} color="#28a745" /> </div>
+        </div>
+    );
 };
 
 export default ImageTest;
+
+
+// import React, { useState } from "react";
+// import { toast } from "react-toastify";
+// import { design } from "../Network/AdminApi"; // Assuming API function path is correct
+
+// // --- Placeholder Button (replace with your actual Button component) ---
+// const Button = ({ name, onClick, color, style }) => (
+//     <button
+//         style={{
+//             backgroundColor: color || '#007bff', // Default blue
+//             color: 'white',
+//             padding: '10px 15px',
+//             border: 'none',
+//             borderRadius: '4px',
+//             cursor: 'pointer',
+//             fontSize: '1rem',
+//             margin: '5px',
+//             ...style // Allow overriding styles
+//         }}
+//         onClick={onClick}
+//     >
+//         {name}
+//     </button>
+// );
+// // --- End Placeholder Button ---
+
+
+// const ImageTest = () => {
+//     // --- State for Front Side ---
+//     const [frontBackgroundImage, setFrontBackgroundImage] = useState(
+//         "https://via.placeholder.com/204x325?text=Front+BG" // Placeholder for 54x86mm ratio approx
+//     );
+//     const [uploadedFrontImageFile, setUploadedFrontImageFile] = useState(null);
+//     const [frontTemplate, setFrontTemplate] = useState(`
+// <div style='background-image:url(\${backgroundImage});
+//             background-position: center;
+//             background-repeat: no-repeat;
+//             width: 54mm; /* Standard ID card size */
+//             height: 86mm; /* Standard ID card size */
+//             position: relative;
+//             background-size: cover;
+//             border: 1px solid #ccc;
+//             font-family: Arial, sans-serif;
+//             overflow: hidden;
+//             box-sizing: border-box;'>
+
+//   <!-- Student Image Area -->
+//   <div style='margin-left: 4mm;  /* Adjust positioning as needed */
+//               margin-top: 15mm; /* Adjust positioning as needed */
+//               width: 25mm;      /* Adjust size */
+//               height: 30mm;     /* Adjust size */
+//               border: 0.5px solid #aaa;
+//               border-radius: 3px;
+//               overflow: hidden;
+//               position: absolute;
+//               background-color: #eee;'>
+//     <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Img"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student"/>
+//   </div>
+
+//   <!-- Text Area -->
+//   <div style='position: absolute; left: 3mm; top: 50mm; width: calc(100% - 6mm);'>
+//     <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//       NAME<span style="float: right; margin-right: 1mm;">: \${name}</span>
+//     </p>
+//     <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//       CLASS<span style="float: right; margin-right: 1mm;">: \${class}</span>
+//     </p>
+//     <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//       F.NAME<span style="float: right; margin-right: 1mm;">: \${father_name}</span>
+//     </p>
+//     <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//       PHONE<span style="float: right; margin-right: 1mm;">: \${mobile}</span>
+//     </p>
+//     <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: BLACK; font-weight: bold; line-height: 1.2;'>
+//       ADDR.<span style="float: right; width: 65%; text-align: right; white-space: normal; margin-right: 1mm;">: \${address}</span>
+//     </p>
+//   </div>
+// </div>
+//   `);
+
+//     // --- State for Back Side ---
+//     const [backBackgroundImage, setBackBackgroundImage] = useState(
+//         "https://via.placeholder.com/204x325/cccccc?text=Back+BG"
+//     );
+//     const [uploadedBackImageFile, setUploadedBackImageFile] = useState(null);
+//     const [backTemplate, setBackTemplate] = useState(`
+// <div style='background-image:url(\${backgroundImage});
+//             background-position: center;
+//             background-repeat: no-repeat;
+//             width: 54mm;
+//             height: 86mm;
+//             position: relative;
+//             background-size: cover;
+//             border: 1px solid #ccc;
+//             font-family: Arial, sans-serif;
+//             overflow: hidden;
+//             box-sizing: border-box;
+//             padding: 5mm;'>
+
+//     <h3 style='text-align:center; font-size: 9pt; margin-top: 5mm; margin-bottom: 5mm; color: #333;'>STUDENT ID CARD</h3>
+//     <p style='font-size: 7pt; margin: 2mm 0;'>
+//         This card certifies that <strong>\${name}</strong> is a student of [Your School Name Here].
+//     </p>
+//     <p style='font-size: 7pt; margin: 2mm 0;'>
+//         Session: 2024-2025
+//     </p>
+//     <p style='font-size: 7pt; margin: 2mm 0;'>
+//         Guardian: \${guardianname}
+//     </p>
+//     <p style='font-size: 7pt; margin: 10mm 0 2mm 0; text-align: center;'>
+//         <strong>If found, please return to:</strong><br/>
+//         [Your School Address Here]<br/>
+//         [Your School Phone Here]
+//     </p>
+
+//     <div style='position: absolute; bottom: 10mm; left: 5mm; /* Or use text-align center */'>
+//         <p style='font-size: 6pt; margin: 0;'>Signature:</p>
+//         <div style='border-bottom: 1px solid #555; height: 10mm; width: 40mm; margin-top: 1mm;'></div>
+//         <p style='font-size: 6pt; margin: 0.5mm 0 0 0; text-align: center;'>Principal</p>
+//     </div>
+
+//     </div>
+//     `);
+
+//     // --- Sample Student Data (shared for both previews) ---
+//     const sampleStudent = {
+//         id: 1,
+//         name: "Alice Wonderland",
+//         class: "Grade 5 - A",
+//         father_name: "Mr. Hatter",
+//         mobile: "111-222-3333",
+//         address: "1st Rabbit Hole, Wonderland Lane, Imagination City",
+//         guardianname: "Queen Hearts", // Added for back card
+//         studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice"
+//     };
+
+//     // --- Template Rendering Function (Reusable) ---
+//     const renderTemplate = (template, backgroundUrl, data) => {
+//         // Replace background image placeholder first
+//         let rendered = template.replace(/\${backgroundImage}/g, backgroundUrl); // Use specific background URL
+
+//         // Replace other placeholders (\${key})
+//         rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//             if (key === 'studentImage') {
+//                 // Use student image from data, or a default if null/undefined
+//                 return data[key] || "https://via.placeholder.com/85x95?text=No+Image";
+//             }
+//             // Use data value or provide empty string as fallback
+//             return data[key] || "";
+//         });
+//         return rendered;
+//     };
+
+
+//     // --- Unified File Change Handler ---
+//     const handleFileChange = (e, side) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             const reader = new FileReader();
+//             reader.onloadend = () => {
+//                 if (side === 'front') {
+//                     setFrontBackgroundImage(reader.result); // Update preview
+//                     setUploadedFrontImageFile(file);      // Store file object
+//                 } else if (side === 'back') {
+//                     setBackBackgroundImage(reader.result);
+//                     setUploadedBackImageFile(file);
+//                 }
+//             };
+//             reader.onerror = (error) => {
+//                 console.error("FileReader error:", error);
+//                 toast.error(`Error reading ${side} file for preview.`);
+//                 // Clear state on error
+//                 if (side === 'front') {
+//                     setUploadedFrontImageFile(null);
+//                 } else {
+//                     setUploadedBackImageFile(null);
+//                 }
+//             };
+//             reader.readAsDataURL(file);
+//         } else {
+//              // Clear state if no file selected
+//              if (side === 'front') {
+//                 setUploadedFrontImageFile(null);
+//             } else {
+//                 setUploadedBackImageFile(null);
+//             }
+//         }
+//          // Reset input value to allow re-uploading the same file name
+//         e.target.value = null;
+//     };
+
+//     // --- Save Handler ---
+//     const handleSaveClick = async () => {
+//         try {
+//             const formDataToSend = new FormData();
+
+//             // --- Prepare Content Array ---
+//             const contentArray = [];
+
+//             // 1. Front Side Data
+//             const frontTemplateString = JSON.stringify(frontTemplate); // Stringify the HTML template itself
+//             const frontBase64 = btoa(unescape(encodeURIComponent(frontTemplateString))); // Encode the stringified template
+//             contentArray.push({ data: frontBase64, name: "Front Side" });
+
+//             // 2. Back Side Data
+//             const backTemplateString = JSON.stringify(backTemplate);
+//             const backBase64 = btoa(unescape(encodeURIComponent(backTemplateString)));
+//             contentArray.push({ data: backBase64, name: "Back Side" });
+
+
+//             // --- Append Base Fields ---
+//             formDataToSend.append("name", "Student ID Card Design"); // More descriptive name
+//             formDataToSend.append("type", "idCard");
+//             formDataToSend.append("description", "Front and back design for student ID cards");
+//             formDataToSend.append("isDefault", "true"); // Send as string
+//             formDataToSend.append("isPublic", "false"); // Send as string
+
+//             // --- Append Content Array (as string) ---
+//             // IMPORTANT: The API needs to parse this string back into an array of objects
+//             formDataToSend.append("content", JSON.stringify(contentArray));
+
+//             // --- Append Files (using indexed keys matching the content array) ---
+//             if (uploadedFrontImageFile instanceof File) {
+//                 // Key should match the backend expectation for the image associated with content[0]
+//                 formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
+//                 console.log("Appending Front Image:", uploadedFrontImageFile.name);
+//             } else {
+//                 console.log("No new front background image file was uploaded.");
+//             }
+
+//             if (uploadedBackImageFile instanceof File) {
+//                  // Key should match the backend expectation for the image associated with content[1]
+//                 formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+//                 console.log("Appending Back Image:", uploadedBackImageFile.name);
+//             } else {
+//                 console.log("No new back background image file was uploaded.");
+//             }
+
+
+//             // --- Log FormData for Debugging ---
+//             console.log("--- FormData to be sent ---");
+//             for (let [key, value] of formDataToSend.entries()) {
+//                 // Don't log file content, just its presence/name
+//                 if (value instanceof File) {
+//                     console.log(`${key}:`, `File: ${value.name}, Type: ${value.type}, Size: ${value.size}`);
+//                 } else {
+//                     console.log(`${key}:`, value); // Log other fields (like the stringified content array)
+//                 }
+//             }
+//             console.log("---------------------------");
+
+//             // --- Make API Call ---
+//             // Set isLoading(true) here if using a loader
+//             // const response = await design(formDataToSend);
+//             // Set isLoading(false) here
+
+//             // --- Mock Response (Remove when using actual API) ---
+//             const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1500));
+//             // --- End Mock Response ---
+
+
+//             if (response?.success) {
+//                 toast.success(response.message || "Designs saved successfully!");
+//                 // Optionally reset state or navigate away
+//                 // setUploadedFrontImageFile(null);
+//                 // setUploadedBackImageFile(null);
+//             } else {
+//                 // Handle potential errors or warnings from the API response
+//                 toast.warn(response?.message || "Save operation completed with warnings or failed.");
+//             }
+
+//         } catch (error) {
+//             // Set isLoading(false) here in case of error
+//             console.error("Error during handleSaveClick:", error);
+//             const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred during save. Please check console and try again.';
+//             toast.error(errorMessage);
+//         }
+//     };
+
+
+//     // --- JSX ---
+//     return (
+//         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+//             <h2>ID Card Design Editor (Front & Back)</h2>
+
+//             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px' }}>
+
+//                 {/* --- Front Side Section --- */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px', flex: 1, minWidth: '350px' }}>
+//                     <h3>Front Side</h3>
+//                     <div>
+//                         <label htmlFor="front-bg-upload">Upload Front Background Image:</label>
+//                         <input
+//                             type="file"
+//                             id="front-bg-upload"
+//                             accept="image/*"
+//                             onChange={(e) => handleFileChange(e, 'front')}
+//                             style={{ display: 'block', margin: '10px 0' }}
+//                         />
+//                     </div>
+//                     <div>
+//                         <label htmlFor="front-template-edit">Edit Front Template HTML:</label>
+//                         <textarea
+//                             id="front-template-edit"
+//                             value={frontTemplate}
+//                             onChange={(e) => setFrontTemplate(e.target.value)}
+//                             rows={15}
+//                             style={{ width: '100%', minHeight: '200px', display: 'block', margin: '10px 0', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+//                         />
+//                     </div>
+//                     <h4>Front Preview:</h4>
+//                     <div
+//                         style={{ border: '1px dashed grey', display: 'inline-block', margin: '10px 0' }}
+//                         dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, sampleStudent) }}
+//                     />
+//                 </div>
+
+//                 {/* --- Back Side Section --- */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px', flex: 1, minWidth: '350px' }}>
+//                     <h3>Back Side</h3>
+//                      <div>
+//                         <label htmlFor="back-bg-upload">Upload Back Background Image:</label>
+//                         <input
+//                             type="file"
+//                             id="back-bg-upload"
+//                             accept="image/*"
+//                             onChange={(e) => handleFileChange(e, 'back')}
+//                             style={{ display: 'block', margin: '10px 0' }}
+//                         />
+//                     </div>
+//                      <div>
+//                         <label htmlFor="back-template-edit">Edit Back Template HTML:</label>
+//                         <textarea
+//                             id="back-template-edit"
+//                             value={backTemplate}
+//                             onChange={(e) => setBackTemplate(e.target.value)}
+//                             rows={15}
+//                             style={{ width: '100%', minHeight: '200px', display: 'block', margin: '10px 0', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+//                         />
+//                     </div>
+//                     <h4>Back Preview:</h4>
+//                      <div
+//                         style={{ border: '1px dashed grey', display: 'inline-block', margin: '10px 0' }}
+//                         dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, sampleStudent) }}
+//                     />
+//                 </div>
+
+//             </div>
+
+//             {/* --- Save Button --- */}
+//             <div style={{ marginTop: '30px', textAlign: 'center' }}>
+//                 <Button
+//                     name="Save Both Designs"
+//                     onClick={handleSaveClick}
+//                     color="#28a745" // Green color for save
+//                 />
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default ImageTest;
+
+
+
+// import React, { useState } from "react";
+// import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
+// import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
+// import { design, dynamicIDCArd } from "../Network/AdminApi";
+
+// // Placeholder component for Button if not available
+// // const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
+
+// const ImageTest = () => {
+//   // State for the background image URL/DataURL (for preview)
+//   const [backgroundImage, setBackgroundImage] = useState(
+//     "https://via.placeholder.com/300"
+//   );
+//   // State to store the actual uploaded File object
+//   const [uploadedImageFile, setUploadedImageFile] = useState(null);
+
+//   const [frontTemplate, setFrontTemplate] = useState(`
+//     <div style='background-image:url(\${backgroundImage});
+//                 background-position: center;
+//                 background-repeat: no-repeat;
+//                 width: 54mm;
+//                 height: 86mm;
+//                 position: relative;
+//                 background-size:cover;
+//                 border:1px solid'>
+      
+//       <div style='margin-left: 40px;
+//                   margin-top: 82px;
+//                   width: 85px;
+//                   height: 95px;
+//                   border: 0.5px solid #ff0000;
+//                   border-radius: 4px;
+//                   overflow:hidden;
+//                   position:absolute;
+//                   background-color: #eee;'> 
+        
+//         <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Image"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student Photo"/>
+//       </div>
+    
+//       <div style='position: absolute; left: 3px; top: 190px; width: calc(100% - 6px);'> 
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 8px; color:BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'> 
+//           NAME <span style="margin-left: 16px; font-weight: bold;"> : \${name} </span>
+//         </p>
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           CLASS <span style="margin-left: 13px; font-weight: bold"> : \${class} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           F.Name <span style="margin-left: 9px; font-weight: bold"> : \${father_name} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           Phone <span style="margin-left: 12px; font-weight: bold"> : \${mobile} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 15px; font-weight: bold; text-transform: uppercase; /* Removed white-space nowrap for address */'>
+//           Address <span style="margin-left:1px; font-weight: bold"> : \${address} </span>
+//         </p>
+//       </div>
+//     </div>
+//   `);
+
+//   // 2. Student details state (Example - typically fetched or passed as props)
+//   // Using allStudent array for rendering multiple cards
+//   const allStudents = [
+//     {
+//       id: 1,
+//       name: "Alice Wonderland",
+//       class: "Grade 5",
+//       father_name: "Mr. Hatter",
+//       mobile: "111222333",
+//       address: "1st Rabbit Hole, Wonderland",
+//       guardianname: "Queen Hearts",
+//       studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" // Example student image
+//     },
+//     {
+//       id: 2,
+//       name: "Bob The Builder",
+//       class: "Construction 101",
+//       father_name: "Mr. Builder Sr.",
+//       mobile: "444555666",
+//       address: "Building Site #5, Townsville",
+//       guardianname: "Wendy",
+//       studentImage: null // Example of no image
+//     },
+//   ];
+
+//   // 3. Template rendering function
+//   const renderTemplate = (template, data) => {
+//     // Replace background image placeholder first
+//     let rendered = template.replace(/\${backgroundImage}/g, backgroundImage); // Use the state for preview
+
+//     // Replace other placeholders (\${key})
+//     rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//         // Provide default empty string if key doesn't exist in data
+//         // Handle specific cases like studentImage which might be null
+//         if (key === 'studentImage') {
+//             return data[key] || "https://via.placeholder.com/85x95?text=No+Image"; // Default placeholder
+//         }
+//         return data[key] || "";
+//     });
+//     return rendered;
+//   };
+
+
+//   // 4. Handle background file change
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       // Store the actual file object for upload
+//       setUploadedImageFile(file);
+
+//       // Read the file as Data URL for preview
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setBackgroundImage(reader.result); // Update preview state
+//       };
+//       reader.onerror = (error) => {
+//         console.error("FileReader error:", error);
+//         toast.error("Error reading file for preview.");
+//         setUploadedImageFile(null); // Clear file state on error
+//       };
+//       reader.readAsDataURL(file);
+//     } else {
+  
+//       setUploadedImageFile(null);
+     
+//     }
+//   };
+
+//   const handleSaveClick = async () => {
+//     try {
+//       const formDataToSend = new FormData();
+  
+//       const jsonString = JSON.stringify(frontTemplate);
+//       const base64String = btoa(unescape(encodeURIComponent(jsonString)));
+  
+//       // Append payload fields
+//       formDataToSend.append("name", "IDCARD");
+//       formDataToSend.append("type", "idCard");
+      
+//       // formDataToSend.append("content", [{"data":base64String, "name": "Front Side"}]);
+//       formDataToSend.append("description", "description");
+//       formDataToSend.append("isDefault", true); // boolean ko string me convert karna padta hai FormData me
+//       formDataToSend.append("isPublic", false); // boolean ko string me convert karna padta hai FormData me
+  
+//       if (uploadedImageFile instanceof File) {
+//         formDataToSend.append("content[0][image]", uploadedImageFile, uploadedImageFile.name);
+//       } else {
+//         console.log("No new background image file was uploaded.");
+//       }
+  
+//       for (let [key, value] of formDataToSend.entries()) {
+//         console.log(`${key}:`, value);
+//       }
+  
+//       const response = await design(formDataToSend);
+  
+//       if (response?.success) {
+//         toast.success("Data saved successfully!");
+//       } else {
+//         toast.warn(response?.message || "Partial success or warning from server.");
+//       }
+  
+//     } catch (error) {
+//       console.error("Error during handleSaveClick:", error);
+//       const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred during save. Please try again.';
+//       toast.error(errorMessage);
+//     }
+//   };
+  
+
+//   async function dynamicIDCArd(formData) {
+//     console.log("Simulating API call with FormData...");
+  
+//     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+//     return { success: true, message: "Data processed successfully" };
+  
+   
+//   }
+  
+
+//   return (
+//     <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
+//       <h1>ID Card Generator</h1>
+
+//       <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
+//         {/* Preview Area */}
+//         <div style={{ flex: "1 1 500px", border: "2px solid #ccc", borderRadius: "8px", padding: "1rem", minWidth: "300px" }}>
+//           <h2>Preview</h2>
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+//             {allStudents.map((student) => (
+//               <div
+//                 key={student.id}
+//                 dangerouslySetInnerHTML={{
+                 
+//                   __html: renderTemplate(frontTemplate, student),
+//                 }}
+//               />
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Controls Area */}
+//         <div style={{ flex: "1 1 400px", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px", minWidth: "300px" }}>
+//           <Button color={"green"} name="Log Payload to Console" onClick={handleSaveClick} />
+//           <h2 style={{ marginTop: '1rem' }}>Edit Front Template</h2>
+//           <textarea
+//             rows={15}
+//             style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", padding: "1rem", border: "2px solid gray", boxSizing: 'border-box', fontSize: '0.8em' }}
+//             value={frontTemplate}
+//             onChange={(e) => setFrontTemplate(e.target.value)}
+//             aria-label="Front Template Editor"
+//           />
+//           <h3>Change Background Image</h3>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
+//             aria-label="Background Image Upload"
+//           />
+        
+//           {uploadedImageFile ? (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
+//           ) : (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using default/previous background: {backgroundImage.substring(0, 50)}...</i></p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ImageTest;
+
+
+
+
+
+// import React, { useState } from "react";
+// import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
+// import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
+// import { design, dynamicIDCArd } from "../Network/AdminApi";
+
+// // Placeholder component for Button if not available
+// // const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
+
+// const ImageTest = () => {
+//   // State for the background image URL/DataURL (for preview)
+//   const [backgroundImage, setBackgroundImage] = useState(
+//     "https://via.placeholder.com/300"
+//   );
+//   // State to store the actual uploaded File object
+//   const [uploadedImageFile, setUploadedImageFile] = useState(null);
+
+//   const [frontTemplate, setFrontTemplate] = useState(`
+//     <div style='background-image:url(\${backgroundImage});
+//                 background-position: center;
+//                 background-repeat: no-repeat;
+//                 width: 54mm;
+//                 height: 86mm;
+//                 position: relative;
+//                 background-size:cover;
+//                 border:1px solid'>
+      
+//       <div style='margin-left: 40px;
+//                   margin-top: 82px;
+//                   width: 85px;
+//                   height: 95px;
+//                   border: 0.5px solid #ff0000;
+//                   border-radius: 4px;
+//                   overflow:hidden;
+//                   position:absolute;
+//                   background-color: #eee;'> 
+        
+//         <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Image"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student Photo"/>
+//       </div>
+    
+//       <div style='position: absolute; left: 3px; top: 190px; width: calc(100% - 6px);'> 
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 8px; color:BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'> 
+//           NAME <span style="margin-left: 16px; font-weight: bold;"> : \${name} </span>
+//         </p>
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           CLASS <span style="margin-left: 13px; font-weight: bold"> : \${class} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           F.Name <span style="margin-left: 9px; font-weight: bold"> : \${father_name} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           Phone <span style="margin-left: 12px; font-weight: bold"> : \${mobile} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 15px; font-weight: bold; text-transform: uppercase; /* Removed white-space nowrap for address */'>
+//           Address <span style="margin-left:1px; font-weight: bold"> : \${address} </span>
+//         </p>
+//       </div>
+//     </div>
+//   `);
+
+//   // 2. Student details state (Example - typically fetched or passed as props)
+//   // Using allStudent array for rendering multiple cards
+//   const allStudents = [
+//     {
+//       id: 1,
+//       name: "Alice Wonderland",
+//       class: "Grade 5",
+//       father_name: "Mr. Hatter",
+//       mobile: "111222333",
+//       address: "1st Rabbit Hole, Wonderland",
+//       guardianname: "Queen Hearts",
+//       studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" // Example student image
+//     },
+//     {
+//       id: 2,
+//       name: "Bob The Builder",
+//       class: "Construction 101",
+//       father_name: "Mr. Builder Sr.",
+//       mobile: "444555666",
+//       address: "Building Site #5, Townsville",
+//       guardianname: "Wendy",
+//       studentImage: null // Example of no image
+//     },
+//   ];
+
+//   // 3. Template rendering function
+//   const renderTemplate = (template, data) => {
+//     // Replace background image placeholder first
+//     let rendered = template.replace(/\${backgroundImage}/g, backgroundImage); // Use the state for preview
+
+//     // Replace other placeholders (\${key})
+//     rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//         // Provide default empty string if key doesn't exist in data
+//         // Handle specific cases like studentImage which might be null
+//         if (key === 'studentImage') {
+//             return data[key] || "https://via.placeholder.com/85x95?text=No+Image"; // Default placeholder
+//         }
+//         return data[key] || "";
+//     });
+//     return rendered;
+//   };
+
+
+//   // 4. Handle background file change
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       // Store the actual file object for upload
+//       setUploadedImageFile(file);
+
+//       // Read the file as Data URL for preview
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setBackgroundImage(reader.result); // Update preview state
+//       };
+//       reader.onerror = (error) => {
+//         console.error("FileReader error:", error);
+//         toast.error("Error reading file for preview.");
+//         setUploadedImageFile(null); // Clear file state on error
+//       };
+//       reader.readAsDataURL(file);
+//     } else {
+  
+//       setUploadedImageFile(null);
+     
+//     }
+//   };
+
+//   // import { toast } from 'react-toastify'; // Assuming you use react-toastify
+//   // Assuming dynamicIDCArd is your API call function
+//   // import { dynamicIDCArd } from './api'; 
+  
+//   // Assuming frontTemplate and uploadedImageFile are defined in your component's state or scope
+//   // let frontTemplate = { ... };
+//   // let uploadedImageFile = null; // or a File object
+  
+//   const handleSaveClick = async () => {
+//     try {
+//       const formDataToSend = new FormData();
+  
+//       // 1. Stringify the object to JSON
+//       const jsonString = JSON.stringify(frontTemplate);
+  
+//       // 2. Encode the JSON string to Base64, handling potential Unicode characters
+//       //    The `unescape(encodeURIComponent(str))` pattern ensures UTF-8 characters are handled correctly before btoa
+//       const base64String = btoa(unescape(encodeURIComponent(jsonString)));
+  
+//       // 3. Append the Base64 string
+//       formDataToSend.append("frontTemplate", base64String);
+//       console.log("Appended frontTemplate as Base64 string."); // Log confirmation
+  
+//       // Append the background image if it exists
+//       if (uploadedImageFile instanceof File) {
+//         formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
+//         console.log("Appended background image file:", uploadedImageFile);
+//       } else {
+//         console.log("No new background image file was uploaded.");
+//       }
+  
+//       // Log the final FormData content (for debugging)
+//       console.log("--- FormData Content ---");
+//       for (let [key, value] of formDataToSend.entries()) {
+//         if (value instanceof File) {
+//           console.log(`${key}:`, value); // Log File details
+//         } else {
+//            // Log the beginning of the base64 string for confirmation, avoid logging the whole potentially huge string
+//            console.log(`${key}:`, typeof value === 'string' && value.length > 100 ? value.substring(0, 50) + '... [Base64 String]' : value);
+//         }
+//       }
+//       console.log("------------------------");
+  
+//       toast.info("Payload prepared (check console). Sending request...");
+  
+//       // Make the API call
+//       const response = await design(formDataToSend); // Replace with your actual API call function
+  
+//       if (response?.success) {
+//         toast.success("Data saved successfully!"); // Use toast for success too
+//         // alert("save"); // Consider using toast instead of alert
+//       } else {
+//          // Handle non-successful but non-error responses if your API does that
+//          toast.warn(response?.message || "Save operation completed, but server indicated partial success or a warning.");
+//       }
+  
+//     } catch (error) {
+//       console.error("Error during handleSaveClick:", error);
+//       // Attempt to parse API error messages if available
+//       const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred during save. Please try again.';
+//       toast.error(errorMessage);
+//     } finally {
+//       // Any cleanup code, like resetting a loading state
+//     }
+//   };
+  
+//   // --- Helper / Placeholder for the API call ---
+//   // Replace this with your actual API call implementation
+//   async function dynamicIDCArd(formData) {
+//     console.log("Simulating API call with FormData...");
+//     // Example: using fetch
+//     // const response = await fetch('/api/your-endpoint', {
+//     //   method: 'POST',
+//     //   body: formData,
+//     //   // Headers might not be needed for FormData with fetch,
+//     //   // the browser sets Content-Type to multipart/form-data automatically
+//     // });
+//     // if (!response.ok) {
+//     //   const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
+//     //   throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+//     // }
+//     // return await response.json();
+  
+//     // Placeholder success response for testing:
+//     await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+//     return { success: true, message: "Data processed successfully" };
+  
+   
+//   }
+//   // const handleSaveClick = async () => {
+//   //   try {
+//   //     const formDataToSend = new FormData();
+//   //     formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
+//   //     if (uploadedImageFile instanceof File) {
+//   //       formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
+//   //        console.log("Appended background image file:", uploadedImageFile);
+//   //     } else {
+//   //        console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
+        
+//   //     }
+
+//   //     for (let [key, value] of formDataToSend.entries()) {
+//   //         if (value instanceof File) {
+//   //             console.log(`${key}:`, value); 
+//   //         } else {
+//   //             console.log(`${key}:`, value); 
+//   //         }
+//   //     }
+     
+//   //     toast.info("Payload logged to console. Check developer tools.");
+
+//   //     const response=await dynamicIDCArd(formDataToSend)
+//   //     if(response?.success){
+//   //       alert("save")
+//   //     }
+      
+//   //   } catch (error) {
+//   //     console.error("Error during handleSaveClick:", error);
+//   //     toast.error(error?.message || 'An error occurred. Please try again.');
+//   //   } finally {
+      
+//   //   }
+//   // };
+
+//   return (
+//     <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
+//       <h1>ID Card Generator</h1>
+
+//       <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
+//         {/* Preview Area */}
+//         <div style={{ flex: "1 1 500px", border: "2px solid #ccc", borderRadius: "8px", padding: "1rem", minWidth: "300px" }}>
+//           <h2>Preview</h2>
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+//             {allStudents.map((student) => (
+//               <div
+//                 key={student.id}
+//                 dangerouslySetInnerHTML={{
+                 
+//                   __html: renderTemplate(frontTemplate, student),
+//                 }}
+//               />
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Controls Area */}
+//         <div style={{ flex: "1 1 400px", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px", minWidth: "300px" }}>
+//           <Button color={"green"} name="Log Payload to Console" onClick={handleSaveClick} />
+//           <h2 style={{ marginTop: '1rem' }}>Edit Front Template</h2>
+//           <textarea
+//             rows={15}
+//             style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", padding: "1rem", border: "2px solid gray", boxSizing: 'border-box', fontSize: '0.8em' }}
+//             value={frontTemplate}
+//             onChange={(e) => setFrontTemplate(e.target.value)}
+//             aria-label="Front Template Editor"
+//           />
+//           <h3>Change Background Image</h3>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
+//             aria-label="Background Image Upload"
+//           />
+        
+//           {uploadedImageFile ? (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
+//           ) : (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using default/previous background: {backgroundImage.substring(0, 50)}...</i></p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ImageTest;
+
+// import React, { useState } from "react";
+// import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
+// import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
+// import { dynamicIDCArd } from "../Network/AdminApi";
+
+// // Placeholder component for Button if not available
+// // const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
+
+// const ImageTest = () => {
+//   // State for the background image URL/DataURL (for preview)
+//   const [backgroundImage, setBackgroundImage] = useState(
+//     "https://via.placeholder.com/300"
+//   );
+//   // State to store the actual uploaded File object
+//   const [uploadedImageFile, setUploadedImageFile] = useState(null);
+
+//   const [frontTemplate, setFrontTemplate] = useState(`
+//     <div style='background-image:url(\${backgroundImage});
+//                 background-position: center;
+//                 background-repeat: no-repeat;
+//                 width: 54mm;
+//                 height: 86mm;
+//                 position: relative;
+//                 background-size:cover;
+//                 border:1px solid'>
+      
+//       <div style='margin-left: 40px;
+//                   margin-top: 82px;
+//                   width: 85px;
+//                   height: 95px;
+//                   border: 0.5px solid #ff0000;
+//                   border-radius: 4px;
+//                   overflow:hidden;
+//                   position:absolute;
+//                   background-color: #eee;'> 
+        
+//         <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Image"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student Photo"/>
+//       </div>
+    
+//       <div style='position: absolute; left: 3px; top: 190px; width: calc(100% - 6px);'> 
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 8px; color:BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'> 
+//           NAME <span style="margin-left: 16px; font-weight: bold;"> : \${name} </span>
+//         </p>
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           CLASS <span style="margin-left: 13px; font-weight: bold"> : \${class} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           F.Name <span style="margin-left: 9px; font-weight: bold"> : \${father_name} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           Phone <span style="margin-left: 12px; font-weight: bold"> : \${mobile} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 15px; font-weight: bold; text-transform: uppercase; /* Removed white-space nowrap for address */'>
+//           Address <span style="margin-left:1px; font-weight: bold"> : \${address} </span>
+//         </p>
+//       </div>
+//     </div>
+//   `);
+
+//   // 2. Student details state (Example - typically fetched or passed as props)
+//   // Using allStudent array for rendering multiple cards
+//   const allStudents = [
+//     {
+//       id: 1,
+//       name: "Alice Wonderland",
+//       class: "Grade 5",
+//       father_name: "Mr. Hatter",
+//       mobile: "111222333",
+//       address: "1st Rabbit Hole, Wonderland",
+//       guardianname: "Queen Hearts",
+//       studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" // Example student image
+//     },
+//     {
+//       id: 2,
+//       name: "Bob The Builder",
+//       class: "Construction 101",
+//       father_name: "Mr. Builder Sr.",
+//       mobile: "444555666",
+//       address: "Building Site #5, Townsville",
+//       guardianname: "Wendy",
+//       studentImage: null // Example of no image
+//     },
+//   ];
+
+//   // 3. Template rendering function
+//   const renderTemplate = (template, data) => {
+//     // Replace background image placeholder first
+//     let rendered = template.replace(/\${backgroundImage}/g, backgroundImage); // Use the state for preview
+
+//     // Replace other placeholders (\${key})
+//     rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//         // Provide default empty string if key doesn't exist in data
+//         // Handle specific cases like studentImage which might be null
+//         if (key === 'studentImage') {
+//             return data[key] || "https://via.placeholder.com/85x95?text=No+Image"; // Default placeholder
+//         }
+//         return data[key] || "";
+//     });
+//     return rendered;
+//   };
+
+
+//   // 4. Handle background file change
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       // Store the actual file object for upload
+//       setUploadedImageFile(file);
+
+//       // Read the file as Data URL for preview
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setBackgroundImage(reader.result); // Update preview state
+//       };
+//       reader.onerror = (error) => {
+//         console.error("FileReader error:", error);
+//         toast.error("Error reading file for preview.");
+//         setUploadedImageFile(null); // Clear file state on error
+//       };
+//       reader.readAsDataURL(file);
+//     } else {
+//       // If the user cancels file selection, reset the file state
+//       setUploadedImageFile(null);
+//       // Optional: Reset preview to default or keep the last one?
+//       // setBackgroundImage("https://via.placeholder.com/300"); // Reset to default
+//     }
+//   };
+
+//   // 5. Handle Save Click - Construct FormData and log
+//   const handleSaveClick = async () => {
+//     try {
+//       const formDataToSend = new FormData();
+
+//       // 1. Append the template string
+//       // Note: JSON.stringify might not be necessary if the backend expects a plain string.
+//       // If it expects JSON, then keep stringify. Let's keep it as in your original code.
+//       formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
+
+//       // 2. Append the background image file *if* one was uploaded
+//       if (uploadedImageFile instanceof File) {
+//         // The key "backgroundImage" should match what the backend expects for the file upload.
+//         formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
+//          console.log("Appended background image file:", uploadedImageFile);
+//       } else {
+//          console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
+//          // Decide if you need to send the current `backgroundImage` URL string under a different key,
+//          // e.g., formDataToSend.append("backgroundImageUrl", backgroundImage);
+//          // This depends entirely on your backend API design.
+//       }
+
+//       // --- Console Logging the Payload ---
+//       console.log("--- Payload to be sent (FormData entries) ---");
+//       // FormData is tricky to log directly. Iterate through its entries:
+//       for (let [key, value] of formDataToSend.entries()) {
+//           if (value instanceof File) {
+//               console.log(`${key}:`, value); // Logs File object details
+//           } else {
+//               console.log(`${key}:`, value); // Logs the string value
+//           }
+//       }
+//       console.log("------------------------------------------");
+//       toast.info("Payload logged to console. Check developer tools.");
+
+//       const response=await dynamicIDCArd(formDataToSend)
+//       if(response?.success){
+//         alert("save")
+//       }
+//       // --- Mock API Call (Commented out) ---
+//       // console.log("Simulating API call with FormData...");
+//       // const response = await fetch('/your-api-endpoint', { // Replace with your actual endpoint
+//       //   method: 'POST',
+//       //   body: formDataToSend,
+//       //   // Headers might be needed depending on backend (e.g., Authorization)
+//       //   // Don't set 'Content-Type': 'multipart/form-data', browser does it automatically with FormData
+//       // });
+//       //
+//       // if (!response.ok) {
+//       //    // Try to get error message from response body
+//       //    let errorData;
+//       //    try {
+//       //        errorData = await response.json();
+//       //    } catch (e) {
+//       //        errorData = { message: 'Failed to parse error response.' };
+//       //    }
+//       //    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+//       // }
+//       //
+//       // const result = await response.json();
+//       // console.log("API Response:", result);
+//       //
+//       // if (result.success) { // Adjust based on your actual API response structure
+//       //   toast.success("Data saved successfully!");
+//       // } else {
+//       //   toast.error(result?.message || "Save failed.");
+//       // }
+//       // --- End Mock API Call ---
+
+
+//     } catch (error) {
+//       console.error("Error during handleSaveClick:", error);
+//       toast.error(error?.message || 'An error occurred. Please try again.');
+//     } finally {
+//       // Optional: Add loading state handling (e.g., setLoading(false))
+//     }
+//   };
+
+//   return (
+//     <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
+//       <h1>ID Card Generator</h1>
+
+//       <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
+//         {/* Preview Area */}
+//         <div style={{ flex: "1 1 500px", border: "2px solid #ccc", borderRadius: "8px", padding: "1rem", minWidth: "300px" }}>
+//           <h2>Preview</h2>
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+//             {allStudents.map((student) => (
+//               <div
+//                 key={student.id}
+//                 dangerouslySetInnerHTML={{
+//                   // Pass student data AND the current background image URL/DataURL
+//                   __html: renderTemplate(frontTemplate, student),
+//                 }}
+//               />
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Controls Area */}
+//         <div style={{ flex: "1 1 400px", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px", minWidth: "300px" }}>
+//           <Button color={"green"} name="Log Payload to Console" onClick={handleSaveClick} />
+//           <h2 style={{ marginTop: '1rem' }}>Edit Front Template</h2>
+//           <textarea
+//             rows={15}
+//             style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", padding: "1rem", border: "2px solid gray", boxSizing: 'border-box', fontSize: '0.8em' }}
+//             value={frontTemplate}
+//             onChange={(e) => setFrontTemplate(e.target.value)}
+//             aria-label="Front Template Editor"
+//           />
+//           <h3>Change Background Image</h3>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
+//             aria-label="Background Image Upload"
+//           />
+//           {/* Display current background image source for clarity */}
+//           {uploadedImageFile ? (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
+//           ) : (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using default/previous background: {backgroundImage.substring(0, 50)}...</i></p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ImageTest;
 
 
 // import React, { useState } from "react";

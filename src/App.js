@@ -251,7 +251,7 @@ function App() {
               <Route path="specificFee" element={<SpecificFee />} />
               <Route path="feehistory" element={<Table />} />
               <Route path="StudentHistory" element={<StudentFeeHistory />} />
-              <Route path="classwise/edit-fees/:_id" element={<EditClasswiseFees />} />
+              <Route path="classwise/edit-fees/:_id" element={<aEditClasswiseFees />} />
               <Route path="allstudent" element={<Allstudent />} />
               <Route path="deactive-student" element={<DeActiveStudent />} />
               <Route path="bulkedit" element={<BulkEdit />} />

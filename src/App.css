@@ -286,11 +286,11 @@
 /* Style the placeholder and selected items text area */
 .multiselect .p-multiselect-label {
   padding: 0.6rem 0.8rem; /* Adjust padding for better spacing */
-  color: #495057; /* Standard text color */
+  color: #ffffff; /* Standard text color */
 }
 
 /* Style the placeholder text specifically */
-.multiselect .p-multiselect-label.p-placeholder {
+.p-placeholder {
   color: #6c757d; /* Lighter color for placeholder */
 }
 
@@ -351,7 +351,7 @@
 
 /* Style selected items */
 .p-multiselect-item.p-highlight {
-  background-color: #007bff;
+  background-color: #56a1f1;
   color: #ffffff;
   font-weight: 500;
   font-size: 10px;
@@ -372,8 +372,9 @@
 }
 
 .multiselect {
-  background-color: #1e4db785;
+  background-color: #56a1f1;
   width: 270px;
+  color: white;
 } 
 
 .p-multiselect-header {
@@ -446,3 +447,80 @@ width: 270px;
 .p-multiselect-items-wrapper{
   max-height: 180px;
 }
+/* ======================================== */
+/* --- Style the Custom DatePicker --- */
+/* Apply styles only when p-calendar has the 'custom-calendar' class */
+/* ======================================== */
+
+/* --- 1. Input Field Styling --- */
+.custom-calendar.p-calendar .p-inputtext {
+  /* --- SET YOUR DESIRED DIMENSIONS --- */
+  height: 28px;         /* Your desired height */
+  width: 150px;         /* Your desired width */
+
+  /* --- VERTICAL ALIGNMENT & FONT --- */
+  /* Adjust padding to vertically center text inside the input */
+  /* Use box-sizing to include padding and border in the element's total width and height */
+  box-sizing: border-box;
+  padding-top: 0.3rem;    /* Adjust as needed */
+  padding-bottom: 0.3rem; /* Adjust as needed */
+  padding-left: 0.5rem;   /* Example left padding */
+  padding-right: 0.5rem;  /* Example right padding */
+  /* font-size: 0.9rem; */ /* Optional: Adjust font size */
+
+  /* --- BORDERS & OUTLINE --- */
+  /* You can customize the default input border here if needed */
+  /* border: 1px solid #ced4da; */ /* Example: Default PrimeNG border color */
+  /* border-right: none; */      /* Often useful to remove border between input and button */
+
+  /* Control focus outline/border */
+  /* The default PrimeNG focus uses box-shadow, but you can override */
+  /* &:focus { */
+    /* border-color: #792b2b; */ /* Example: Change border color on focus */
+    /* box-shadow: 0 0 0 0.1rem rgba(121, 43, 43, 0.3); */ /* Example: Custom focus shadow */
+  /* } */
+}
+
+/* --- 2. Calendar Icon Button Styling --- */
+.custom-calendar.p-calendar .p-datepicker-trigger.p-button { /* Be specific */
+  /* --- SET YOUR DESIRED DIMENSIONS --- */
+  height: 28px; /* --- MATCH THE INPUT HEIGHT for alignment --- */
+  width: 30px;  /* --- SET BUTTON WIDTH --- */
+  box-sizing: border-box; /* Include padding/border in height/width */
+
+  /* --- COLORS & BORDER --- */
+  background-color: #792b2b; /* Your desired background color */
+  border: 1px solid #792b2b; /* Set border color and style */
+  /* border-left: none; */    /* Optional: remove left border if input has right border */
+  color: white;              /* Set icon color */
+
+  /* --- POSITIONING & SHAPE --- */
+  /* Defaults are usually fine, but you can adjust if needed */
+  /* border-radius: 0; */ /* Remove default button rounding if desired */
+  /* Align button vertically if needed (usually automatic) */
+  /* vertical-align: top; */
+}
+
+/* --- 3. Button Hover State --- */
+.custom-calendar.p-calendar .p-datepicker-trigger.p-button:not(:disabled):hover {
+  background-color: #5a2020; /* Darker shade for hover */
+  border-color: #5a2020;     /* Match border color */
+  color: white;              /* Keep icon color */
+}
+
+/* --- 4. Button Focus State --- */
+.custom-calendar.p-calendar .p-datepicker-trigger.p-button:not(:disabled):focus {
+  /* Use box-shadow for the focus outline effect */
+  box-shadow: 0 0 0 0.2rem rgba(121, 43, 43, 0.5); /* Example focus ring */
+  border-color: #792b2b; /* Keep border color consistent or change if needed */
+  /* Remove default browser outline if using box-shadow */
+  outline: none;
+}
+
+/* --- 5. Icon Inside Button (Optional Size Adjustment) --- */
+.custom-calendar.p-calendar .p-datepicker-trigger.p-button .p-button-icon {
+   /* font-size: 1rem; */ /* Adjust icon size if needed */
+   /* line-height: 1; */ /* May help vertical centering */
+}
+
+

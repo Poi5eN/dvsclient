@@ -7,6 +7,7 @@ import makeApiRequest from './makeApiRequest'; // Provide the correct path
 
 //  const { currentColor ,setIsLoader} = useStateContext();
 
+// console.log("session",session)
 // Class Start
 export const login = async (payload) => {
   try {
@@ -15,6 +16,29 @@ export const login = async (payload) => {
       payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.login}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const design = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.design}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const getIDcarddesign = async (payload) => {
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getIDcarddesign}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");
@@ -218,6 +242,7 @@ export const getAllStudents = async () => {
       method: "GET", // Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls?.getAllStudents}`, option);
+    // const data = await makeApiRequest(`${apiUrls?.getAllStudents}`, option);
     return data;
   } catch (error) {
     console.error("Error fetching registrations:", error);
@@ -306,13 +331,13 @@ export const createBulkRegistrations = async (payload) => {
 // Registration End
 
 // Admission Start 
-export const ActiveStudents = async () => {
+export const ActiveStudents = async (session) => {
 
   try {
     const option = {
       method: "GET", // Ensure the method is GET
     };
-    const data = await makeApiRequest(`${apiUrls.getLastYearStudent}?status=active`, option);
+    const data = await makeApiRequest(`${apiUrls.getLastYearStudent}?status=active&session=${session}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");
@@ -629,6 +654,19 @@ export const feesadditional = async (payload) => {
       payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.feesadditional}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const updateAdditionalFee = async (payload,id) => {
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRoutefees}/${id}`, option);
+    // const data = await makeApiRequest(`${apiUrls.feesadditional}/${id}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");

@@ -25,6 +25,8 @@ import EditStudent from "./EditStudent.jsx";
 import StudentDetails from "./StudentDetails.jsx";
 
 function CreateStudent() {
+  const session=JSON.parse(localStorage.getItem("session"))
+console.log("session",session)
   const { setIsLoader } = useStateContext();
   const [getClass, setGetClass] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -43,7 +45,7 @@ function CreateStudent() {
   const fetchAllStudents = useCallback(async () => {
     setIsLoader(true);
     try {
-      const response = await ActiveStudents();
+      const response = await ActiveStudents(session);
       if (response?.success) {
         const students = response?.students?.data?.reverse() || [];
         setAllStudents(students);
