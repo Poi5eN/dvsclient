@@ -1,3 +1,4 @@
+// File: src/ADMINDASHBOARD/Fees/CreateFees.jsx
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -24,7 +25,7 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
     const response = await axios.get(
       `${
         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
-      }/api/v1/adminRoute/fees/?additional=true&class=${className}`,
+      }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
       {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },
@@ -1196,16 +1197,16 @@ const CreateFees = () => {
     console.log(`Attempting single submission for index: ${childIndex}`);
     const childFormData = formData[childIndex];
     const child = parentData[childIndex];
-  
+
     if (!validateFormData(childFormData, child)) {
       return;
     }
-  
+
     setIsLoader(true);
-  
+
     const additionalFeesPayload = [];
     const selectedMonthNames = childFormData.selectedMonths.map((m) => m.value);
-  
+
     // Include selected additional fees for the current payment
     childFormData.selectedAdditionalFees.forEach((fee) => {
       if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
@@ -1229,31 +1230,34 @@ const CreateFees = () => {
         });
       }
     });
-  
+
     // Include selected one-time fees
     childFormData.selectedOneTimeFees.forEach((fee) => {
       additionalFeesPayload.push({
         name: fee.name,
       });
     });
-  
+
     // Automatically include remaining dues from previous months
     const selectedAdditionalFeeDues = childFormData.selectedAdditionalFees
       .filter((fee) => fee.frequency === "monthly")
-      .flatMap((fee) => fee.dueMonths.map((month) => ({ name: fee.name, month })));
+      .flatMap((fee) =>
+        fee.dueMonths.map((month) => ({ name: fee.name, month }))
+      );
     const remainingDues = childFormData.monthlyDues.additionalDues
       .filter(
         (due) =>
           due.dueAmount > 0 &&
           !selectedMonthNames.includes(due.month) &&
           !selectedAdditionalFeeDues.some(
-            (selected) => selected.name === due.name && selected.month === due.month
+            (selected) =>
+              selected.name === due.name && selected.month === due.month
           )
       )
       .map((due) => ({ name: due.name, month: due.month }));
-  
+
     additionalFeesPayload.push(...remainingDues);
-  
+
     const payload = {
       studentId: child.studentId,
       session,
@@ -1273,9 +1277,9 @@ const CreateFees = () => {
         remark: childFormData.remarks || "",
       },
     };
-  
+
     console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
-  
+
     try {
       const response = await feescreateFeeStatus(payload);
       if (response?.success) {
@@ -1626,55 +1630,14 @@ const CreateFees = () => {
                       };
                     });
 
-                const additionalOneTimeFeeOptions =currentFormData.availableAdditionalFees.filter((fee) => fee.type == "One Time").map((item) => ({ name: item.label, code: item.id }));
-               console.log("additionalFeeOptions",additionalFeeOptions)
-            
-                const selectedOneTimeAdditionalFeeValues =
-                // additionalOneTimeFeeOptions
-                  currentFormData.selectedAdditionalFees
-                  // currentFormData.selectedAdditionalFees
-                    .filter((fee) => fee.type !== "One Time")
-                    .map((selectedFee) => {
-                      const availableOption = additionalOneTimeFeeOptions.find(
-                        (opt) => opt.code === selectedFee.id
-                      );
-                      return {
-                        name: availableOption
-                          ? availableOption.name
-                          : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
-                        code: selectedFee.id,
-                      };
-                    }
-                  );
-
-
-
-                    const dropDownAdditionalFee=[]
-                    const paidOneTimeFee=currentFormData?.feeInfo?.feeStatus?.feeHistory?.flatMap((item)=>item?.additionalFees)
-                    const filterOntimeFee=paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0)
-                    //  console.log("paidOneTimeFee",paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0))
-     console.log("paidOneTimeFee",paidOneTimeFee)
-                     filterOntimeFee.forEach((item) => {
-                       dropDownAdditionalFee.push({
-                         name: `${item.name}(${item?.dueAmount})`,
-                         code:item.name
-                         // (item) => ({ name: item.label, code: item.code })
-     
-                       });
-                     });
-
-                  
-                // const oneTimeFeeOptions = filterOntimeFee.map(
-                //   (item) => ({ name: item.label, code: item.code })
-                // );
-                // debugger
+                const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+                  (item) => ({ name: item.label, code: item.code })
+                );
                 const selectedOneTimeFeeValues =
-                filterOntimeFee.map((fee) => {
-                    const availableOption = filterOntimeFee.find(
-                      (opt) => opt.name === fee.name
-                      // (opt) => opt.code === fee.name
+                  currentFormData.selectedOneTimeFees.map((fee) => {
+                    const availableOption = oneTimeFeeOptions.find(
+                      (opt) => opt.code === fee.name
                     );
-                    console.log("availableOption",availableOption)
                     return {
                       name: availableOption
                         ? availableOption.name
@@ -1682,21 +1645,6 @@ const CreateFees = () => {
                       code: fee.name,
                     };
                   });
-                // const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
-                //   (item) => ({ name: item.label, code: item.code })
-                // );
-                // const selectedOneTimeFeeValues =
-                //   currentFormData.selectedOneTimeFees.map((fee) => {
-                //     const availableOption = oneTimeFeeOptions.find(
-                //       (opt) => opt.code === fee.name
-                //     );
-                //     return {
-                //       name: availableOption
-                //         ? availableOption.name
-                //         : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
-                //       code: fee.name,
-                //     };
-                //   });
 
                 return (
                   <div
