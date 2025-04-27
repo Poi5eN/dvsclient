@@ -3,7 +3,9 @@ export const apiUrls = {
    // class start
    
    login:"login",
-   design:"design",
+   design:"adminRoute/design",
+   // getIDcarddesign:"adminRoute/design?type=idCard",
+   getIDcarddesign:"adminRoute/design?type=idCard&isDefault=true",
    
    updateAdmin:"adminRoute/updateAdmin",
    getAdminInfo:"adminRoute/getAdminInfo",

@@ -33,6 +33,17 @@ export const design = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const getIDcarddesign = async (payload) => {
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getIDcarddesign}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 export const updateAdmin = async (payload) => {
   try {
