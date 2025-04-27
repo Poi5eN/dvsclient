@@ -286,11 +286,11 @@
 /* Style the placeholder and selected items text area */
 .multiselect .p-multiselect-label {
   padding: 0.6rem 0.8rem; /* Adjust padding for better spacing */
-  color: #495057; /* Standard text color */
+  color: #ffffff; /* Standard text color */
 }
 
 /* Style the placeholder text specifically */
-.multiselect .p-multiselect-label.p-placeholder {
+.p-placeholder {
   color: #6c757d; /* Lighter color for placeholder */
 }
 
@@ -351,7 +351,7 @@
 
 /* Style selected items */
 .p-multiselect-item.p-highlight {
-  background-color: #007bff;
+  background-color: #56a1f1;
   color: #ffffff;
   font-weight: 500;
   font-size: 10px;
@@ -372,8 +372,9 @@
 }
 
 .multiselect {
-  background-color: #1e4db785;
+  background-color: #56a1f1;
   width: 270px;
+  color: white;
 } 
 
 .p-multiselect-header {
