@@ -1,24 +1,21 @@
+
 import { toast } from "react-toastify";
-import { MdDelete,MdEdit} from "react-icons/md";
-import { FaEdit, FaEye, FaUsersCog } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+
 import Modal from "../../../Dynamic/Modal";
 import { useStateContext } from "../../../contexts/ContextProvider";
 import { useEffect, useState } from "react";
 import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
-import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees, updateAdditionalFee } from "../../../Network/AdminApi";
+import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees } from "../../../Network/AdminApi";
 import Table from "../../../Dynamic/Table";
 import Button from "../../../Dynamic/utils/Button";
 import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
 
 
 function AdditionalFee() {
-  // State for the master list of fees
-  const [additionFee, setAdditionalFee] = useState([]);
-  // State for the filtered list to display in the table
-  const [filteredAdditionFee, setFilteredAdditionFee] = useState([]); // <-- New state for filtered data
+  const [additionFee, setAdditionalFee] = useState([])
   const { currentColor, setIsLoader } = useStateContext();
-  // State for the class selected in the filter dropdown
-  const [selectedClass, setSelectedClass] = useState(""); // <-- State for the filter value
+  const [selectedClass, setSelectedClass] = useState("");
   const [formData, setFormData] = useState({
     className: "",
     name: "",
@@ -30,14 +27,16 @@ function AdditionalFee() {
   const [modalOpen, setModalOpen] = useState(false);
   const [getClass, setGetClass] = useState([]);
   const [editMode, setEditMode] = useState(false);
-
-  // --- Fetch All Classes ---
   const GetAllClasses = async () => {
+
     try {
       const response = await AdminGetAllClasses();
+
       if (response?.success) {
+
         let classes = response.classes;
         setGetClass(classes.sort((a, b) => a - b));
+
       } else {
         toast.error(response?.message);
       }
@@ -45,83 +44,49 @@ function AdditionalFee() {
       console.log("error", error);
     }
   };
-
   useEffect(() => {
-    GetAllClasses();
-  }, []);
-
-  // --- Fetch All Additional Fees ---
-  const getfee = async () => {
-    setIsLoader(true); // Start loader
-    try {
-      const response = await getAdditionalfees();
-      if (response?.success) {
-        setAdditionalFee(response?.data); // Update master list
-        // Initialize filtered list (show all initially or based on current filter)
-        if (selectedClass) {
-           setFilteredAdditionFee(response?.data.filter(fee => fee.className === selectedClass));
-        } else {
-           setFilteredAdditionFee(response?.data);
-        }
-      } else {
-        toast.error(response?.message);
+    GetAllClasses()
+  }, [])
+  const handleClassChange = (e) => {
+    const selectedClassName = e.target.value;
+    setSelectedClass(selectedClassName);
+    setFormData((preV) => (
+      {
+        preV,
+        className: selectedClassName
       }
-    } catch (error) {
-      console.log("error getting fees", error);
-      toast.error("Failed to fetch additional fees.");
-    } finally {
-      setIsLoader(false); // Stop loader
-    }
-  };
+    ))
 
-  useEffect(() => {
-    getfee();
-    // Note: Do not add selectedClass dependency here, getfee should fetch ALL fees.
-    // Filtering will be handled by the dedicated useEffect below.
-  }, []); // Fetch fees on initial mount
+  }
 
-  // --- Effect for Filtering based on selectedClass ---
-  useEffect(() => {
-    if (selectedClass) {
-      // If a class is selected, filter the master list
-      const filtered = additionFee.filter(fee => fee.className === selectedClass);
-      setFilteredAdditionFee(filtered);
-    } else {
-      // If "All Classes" or no class is selected, show the full list
-      setFilteredAdditionFee(additionFee);
-    }
-  }, [selectedClass, additionFee]); // Re-run filter when selection or master list changes
-
-
-  // --- Handler for the FILTER dropdown ---
-  const handleFilterClassChange = (e) => {
-    setSelectedClass(e.target.value); // Only update the filter state
-  };
-
-  const filterClassOptions = [
-    { label: "All Classes", value: "" }, // Option to clear filter
-    ...getClass.map((cls) => ({
-      label: cls.className,
-      value: cls.className,
-    }))
-  ];
-
-  // Options for the modal dropdown (doesn't need "All Classes")
-   const modalClassOptions = getClass.map((cls) => ({
+  const dynamicOptions = getClass.map((cls) => ({
     label: cls.className,
     value: cls.className,
   }));
 
-
-  // --- Fee Type Options ---
   const feeType=[
-    { label:"Select Fee Type",value:"" },
-    { label:"One Time",value:"One Time" },
-    { label:"Monthly",value:"Monthly" },
-    
-  ];
-
-  // --- Handler for form input changes (including modal dropdowns) ---
+    {
+      label:"Select Fee Type",value:""
+    },
+    // {
+    //   label:"Exam Fee",value:"Exam Fee"
+    // },
+    {
+      label:"One Time",value:"One Time"
+    },
+    {
+      label:"Monthly",value:"Monthly"
+    },
+    // {
+    //   label:"Quarterly",value:"Quarterly"
+    // },
+    // {
+    //   label:"Half Yearly",value:"Half Yearly"
+    // },
+    // {
+    //   label:"Annually",value:"Annually"
+    // },
+  ]
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -130,140 +95,76 @@ function AdditionalFee() {
     }));
   };
 
-
-  // --- Handle Form Submission (Modal) ---
-  // const handleSubmit = async () => {
-  //   // Basic Validation
-  //    if (!formData.className || !formData.name || !formData.feeType || !formData.amount) {
-  //      toast.error("Please fill in all required fields.");
-  //      return;
-  //    }
-
-  //   const payload={
-  //     className:formData?.className,
-  //     name:formData?.name,
-  //     feeType:formData?.feeType,
-  //     amount:formData?.amount,
-  //   };
-
-  //   setIsLoader(true);
-  //   try {
-  //     const response = await feesadditional(payload); // Assuming only create for now
-
-  //     if (response?.success) {
-  //       toast.success(`Fees ${editMode ? 'updated' : 'set'} successfully!`);
-  //       getfee(); // Refresh the master list (and trigger filter useEffect)
-  //       setModalOpen(false);
-  //       // Reset form only after successful submission
-  //       setFormData({ className: "", name: "", feeType: "", amount: "" });
-  //       setEditMode(false); // Reset edit mode
-  //     } else {
-  //       toast.error(response?.message || `Failed to ${editMode ? 'update' : 'set'} fees.`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting fee:", error);
-  //     toast.error(`An error occurred while ${editMode ? 'updating' : 'submitting'} the form.`);
-  //   } finally {
-  //     setIsLoader(false);
-  //   }
-  // };
-
-  const handleSubmit = async () => {
-    // Basic Validation (remains the same)
-    if (!formData.className || !formData.name || !formData.feeType || !formData.amount) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
-    // Add validation for ID if in edit mode (optional but good practice)
-    if (editMode && !formData.id) {
-        toast.error("Cannot update fee: Missing fee ID.");
-        console.error("Attempted to update fee without an ID in formData:", formData);
-        return;
-    }
-
-
-    setIsLoader(true);
+  const getfee = async () => {
     try {
-      let response;
-      let payload;
-
-      if (editMode) {
-        // --- Payload for UPDATE ---
-        // id: formData.id,
-        payload = {
-          // id: formData.id, // Include the ID for the update API
-          className: formData.className,
-          name: formData.name,
-          feeType: formData.feeType,
-          amount: formData.amount,
-        };
-        console.log("Updating fee with payload:", payload); // Debug log
-        // console.log("id", id); // Debug log
-        // --- Call UPDATE API ---
-        response = await updateAdditionalFee(payload,formData.id);
-      } else {
-        // --- Payload for CREATE ---
-        payload = {
-          // No ID for create
-          className: formData.className,
-          name: formData.name,
-          feeType: formData.feeType,
-          amount: formData.amount,
-        };
-        console.log("Creating fee with payload:", payload); // Debug log
-        // --- Call CREATE API ---
-        response = await feesadditional(payload);
-      }
+      const response = await getAdditionalfees()
 
       if (response?.success) {
-        toast.success(`Fees ${editMode ? 'updated' : 'set'} successfully!`);
-        getfee(); // Refresh the master list
-        setModalOpen(false);
-        // Reset form AND id after successful submission
-        setFormData({ id: null, className: "", name: "", feeType: "", amount: "" });
-        setEditMode(false); // Reset edit mode
-      } else {
-        toast.error(response?.message || `Failed to ${editMode ? 'update' : 'set'} fees.`);
+        setAdditionalFee(response?.data)
+
+      }
+      else {
+        toast.error(response?.message)
       }
     } catch (error) {
-      console.error(`Error ${editMode ? 'updating' : 'submitting'} fee:`, error);
-      toast.error(`An error occurred while ${editMode ? 'updating' : 'submitting'} the form.`);
-    } finally {
-      setIsLoader(false);
+      console.log("error", error)
     }
-  };
-
-  // --- Handle Delete ---
-  const handleDelete = async (feeId) => { // Changed param name for clarity
-     if (!window.confirm("Are you sure you want to delete this fee entry?")) {
-        return; // Don't proceed if user cancels
-     }
-    setIsLoader(true);
-    const payload = {
-      id: feeId // Use the specific ID of the fee structure
-    };
+  }
+  useEffect(() => {
+    getfee()
+  }, [])
+  const handleSubmit = async () => {
+    const payload={
+      className:formData?.className,
+      name:formData?.name,
+      feeType:formData?.feeType,
+      amount:formData?.amount,
+      // frequency:String(formData?.feeType==="One Time"?"one-time":"monthly"),
+        // enum: ["monthly", "one-time", "annual"],
+        // default: "monthly"
+      
+    }
+    setIsLoader(true)
     try {
-        const response = await deletefees(payload);
-        if (response?.success) {
-          toast.success(response?.message || "Fee deleted successfully!");
-          getfee(); // Refresh list after delete
-        } else {
-          toast.error(response?.message || "Failed to delete fee.");
-        }
+      const response = await feesadditional(payload)
+      if (response?.success) {
+        toast.success("Fees set successfully !")
+        setIsLoader(false)
+        getfee()
+        setModalOpen(false);
+        setSelectedClass("")
+      }
+      else {
+        setIsLoader(false)
+        toast.error(response?.message)
+      }
+
     } catch (error) {
-        console.error("Error deleting fee:", error);
-        toast.error("An error occurred while deleting the fee.");
-    } finally {
-       setIsLoader(false);
+      console.error("Error:", error);
+      // setLoading(false);
+      // toast.error("An error occurred while submitting the form.");
+    }
+    finally {
+      setIsLoader(false)
     }
   };
 
-  // --- Handle Edit Button Click (if needed later) ---
+  const handleDelete = async (feeStructureIda) => {
+    const payload = {
+      id: feeStructureIda
+    }
+    const response = await deletefees(payload);
+    if (response?.success) {
+      toast?.success(response?.message)
+      getfee()
+    }
+
+  };
+
   const handleEdit = (item) => {
     setEditMode(true);
+
     setFormData({
-      // Assuming your API returns an id or you use feeStructureId
-      id: item.feeStructureId, // Make sure item has an identifier
       className: item.className,
       name: item.name,
       feeType: item.feeType,
@@ -272,7 +173,6 @@ function AdditionalFee() {
     setModalOpen(true);
   };
 
-  // --- Table Configuration ---
   const THEAD = [
     { id: "SN", label: "S No.", width: "5" },
     { id: "class", label: "Class", width: "7" },
@@ -280,410 +180,102 @@ function AdditionalFee() {
     { id: "feetype", label: "fee Type" },
     { id: "amount", label: "Amount" },
     { id: "action", label: "Action" },
+
   ];
 
-  // Generate table body using the FILTERED list
-  const tBody = filteredAdditionFee.map((val, ind) => ({
+  const tBody = additionFee.map((val, ind) => ({
     SN: ind + 1,
+
     class: (
       <span className="text-green-800 font-semibold">{val.className}</span>
     ),
     name: val.name,
     feetype: val.feeType,
     amount: val.amount,
-    action: (
-      <div className="flex justify-center gap-2">
-         <button
-                  title="Edit Student"
-                  onClick={() => handleEdit(val)}
-                  className="text-yellow-600 hover:text-yellow-800 text-lg"
-                >
-                  <FaEdit />
-                </button>
-         {/* <span onClick={() => handleEdit(val)} className="cursor-pointer">
-           <MdEdit className="text-[25px] text-blue-700" />
-         </span> */}
-        
-        <span onClick={() => handleDelete(val?.feeStructureId)} className="cursor-pointer">
-          <MdDelete className="text-[25px] text-red-700" />
-        </span>
-      </div>
+ 
+
+    action: (<div className="flex justify-center">
+
+      <span onClick={() => handleDelete(val?.feeStructureId)} className="cursor-pointer">
+        <MdDelete className="text-[25px] text-red-700" />
+      </span>
+
+    </div>
     ),
   }));
 
-
   return (
-    <div className="mx-auto p-4"> {/* Added padding */}
-    
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-        {/* Filter Dropdown */}
-        <div className="w-full md:w-1/3">
-            <ReactSelect
-                name="filterClass" // Different name for clarity
-                value={selectedClass} // Bind to filter state
-                handleChange={handleFilterClassChange} // Use filter handler
-                label="Filter by Class"
-                dynamicOptions={filterClassOptions} // Use options with "All Classes"
-             />
-        </div>
-         {/* Add Fee Button */}
-        <div className="w-full md:w-auto">
-            <Button
-               name="Set Additional Fee"
-               // variant="contained" // Assuming Button component handles styling
-               // style={{ backgroundColor: currentColor }}
-               onClick={() => {
-                 setEditMode(false);
-                 // Reset form when opening for new entry
-                 setFormData({ className: "", name: "", feeType: "", amount: "" });
-                 setModalOpen(true);
-               }}
-             />
-         </div>
-      </div>
+    <div className="mx-auto">
+     
+      <div className="">
+        <Button
+        name="Set Additional Fee"
+          // variant="contained"
+          // style={{ backgroundColor: currentColor }}
+          onClick={() => {
+            setEditMode(false);
 
+            setFormData({ className: "", name: "", feeType: "", amount: "" });
+            setModalOpen(true);
+          }}
+        >
+          
+        </Button>
+      </div>
 
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Additional Fee" : "Create Additional Fee"}>
         <div className="p-4 space-y-4 bg-gray-50">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6  md:grid-cols-2">
 
-            {/* Modal Class Select */}
             <ReactSelect
-              name="className" // Matches formData key
-              value={formData.className} // Bind to formData
-              handleChange={handleFieldChange} // Use general field handler
-              label="Select a Class *"
-              dynamicOptions={modalClassOptions} // Use options without "All Classes"
-              required={true}
+              name="studentClass"
+              value={selectedClass}
+              handleChange={handleClassChange}
+              label="Select a Class"
+              dynamicOptions={dynamicOptions}
             />
-            {/* Modal Fee Type Select */}
             <ReactSelect
-              name="feeType" // Matches formData key
-              value={formData.feeType} // Bind to formData
-              handleChange={handleFieldChange} // Use general field handler
-              label="Select Fee Type *"
+              name="feeType"
+              value={formData.feeType}
+              handleChange={handleFieldChange}
+              label="Select Fee Type"
               dynamicOptions={feeType}
-              required={true}
             />
-
-            <ReactInput
+ 
+  <ReactInput
+              // resPClass="grid grid-cols-2 md:grid-cols-5"
               type="text"
-              name="name" // Matches formData key
+              name="name"
               required={true}
-              label="Name *"
-              onChange={handleFieldChange} // Use general field handler
-              value={formData.name} // Bind to formData
+              label="Name"
+              onChange={handleFieldChange}
+              value={formData.name}
             />
              <ReactInput
+              // resPClass="grid grid-cols-2 md:grid-cols-5"
               type="number"
-              name="amount" // Matches formData key
+              name="amount"
               required={true}
-              label="Amount *"
-              onChange={handleFieldChange} // Use general field handler
-              value={formData.amount} // Bind to formData
+              label="Amount"
+              onChange={handleFieldChange}
+              value={formData.amount}
             />
-
+            
           </div>
 
-          <div className="flex justify-end pt-2"> {/* Align button */}
-             <Button
-                name={editMode ? "Update Fee" : "Submit Fee"}
-                // variant="contained"
-                // style={{ backgroundColor: currentColor }}
-                onClick={handleSubmit}
-              />
-          </div>
+          
+
+          <Button
+          name="Submit"
+          // variant="contained" style={{ backgroundColor: currentColor }} 
+          onClick={handleSubmit}>
+            {/* {editMode ? "Update" : "Submit"} */}
+          </Button>
         </div>
       </Modal>
-
-      {/* Table Displaying Filtered Data */}
       <Table tHead={THEAD} tBody={tBody} />
-      {filteredAdditionFee.length === 0 && !setIsLoader && ( // Show message if table is empty and not loading
-         <p className="text-center text-gray-500 mt-4">No additional fees found{selectedClass ? ` for class ${selectedClass}` : ''}.</p>
-      )}
     </div>
   );
 }
 
 export default AdditionalFee;
-
-// import { toast } from "react-toastify";
-// import { MdDelete } from "react-icons/md";
-
-// import Modal from "../../../Dynamic/Modal";
-// import { useStateContext } from "../../../contexts/ContextProvider";
-// import { useEffect, useState } from "react";
-// import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
-// import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees } from "../../../Network/AdminApi";
-// import Table from "../../../Dynamic/Table";
-// import Button from "../../../Dynamic/utils/Button";
-// import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
-
-
-// function AdditionalFee() {
-//   const [additionFee, setAdditionalFee] = useState([])
-//   const { currentColor, setIsLoader } = useStateContext();
-//   const [selectedClass, setSelectedClass] = useState("");
-//   const [formData, setFormData] = useState({
-//     className: "",
-//     name: "",
-//     feeType: "",
-//     amount: "",
-//   });
-
-
-//   const [modalOpen, setModalOpen] = useState(false);
-//   const [getClass, setGetClass] = useState([]);
-//   const [editMode, setEditMode] = useState(false);
-//   const GetAllClasses = async () => {
-
-//     try {
-//       const response = await AdminGetAllClasses();
-
-//       if (response?.success) {
-
-//         let classes = response.classes;
-//         setGetClass(classes.sort((a, b) => a - b));
-
-//       } else {
-//         toast.error(response?.message);
-//       }
-//     } catch (error) {
-//       console.log("error", error);
-//     }
-//   };
-//   useEffect(() => {
-//     GetAllClasses()
-//   }, [])
-//   const handleClassChange = (e) => {
-//     const selectedClassName = e.target.value;
-//     setSelectedClass(selectedClassName);
-//     setFormData((preV) => (
-//       {
-//         preV,
-//         className: selectedClassName
-//       }
-//     ))
-
-//   }
-
-//   const dynamicOptions = getClass.map((cls) => ({
-//     label: cls.className,
-//     value: cls.className,
-//   }));
-
-//   const feeType=[
-//     {
-//       label:"Select Fee Type",value:""
-//     },
-//     // {
-//     //   label:"Exam Fee",value:"Exam Fee"
-//     // },
-//     {
-//       label:"One Time",value:"One Time"
-//     },
-//     {
-//       label:"Monthly",value:"Monthly"
-//     },
-//     // {
-//     //   label:"Quarterly",value:"Quarterly"
-//     // },
-//     // {
-//     //   label:"Half Yearly",value:"Half Yearly"
-//     // },
-//     // {
-//     //   label:"Annually",value:"Annually"
-//     // },
-//   ]
-//   const handleFieldChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prevFormData) => ({
-//       ...prevFormData,
-//       [name]: value,
-//     }));
-//   };
-
-//   const getfee = async () => {
-//     try {
-//       const response = await getAdditionalfees()
-
-//       if (response?.success) {
-//         setAdditionalFee(response?.data)
-
-//       }
-//       else {
-//         toast.error(response?.message)
-//       }
-//     } catch (error) {
-//       console.log("error", error)
-//     }
-//   }
-//   useEffect(() => {
-//     getfee()
-//   }, [])
-//   const handleSubmit = async () => {
-//     const payload={
-//       className:formData?.className,
-//       name:formData?.name,
-//       feeType:formData?.feeType,
-//       amount:formData?.amount,
-//       // frequency:String(formData?.feeType==="One Time"?"one-time":"monthly"),
-//         // enum: ["monthly", "one-time", "annual"],
-//         // default: "monthly"
-//       
-//     }
-//     setIsLoader(true)
-//     try {
-//       const response = await feesadditional(payload)
-//       if (response?.success) {
-//         toast.success("Fees set successfully !")
-//         setIsLoader(false)
-//         getfee()
-//         setModalOpen(false);
-//         setSelectedClass("")
-//       }
-//       else {
-//         setIsLoader(false)
-//         toast.error(response?.message)
-//       }
-
-//     } catch (error) {
-//       console.error("Error:", error);
-//       // setLoading(false);
-//       // toast.error("An error occurred while submitting the form.");
-//     }
-//     finally {
-//       setIsLoader(false)
-//     }
-//   };
-
-//   const handleDelete = async (feeStructureIda) => {
-//     const payload = {
-//       id: feeStructureIda
-//     }
-//     const response = await deletefees(payload);
-//     if (response?.success) {
-//       toast?.success(response?.message)
-//       getfee()
-//     }
-
-//   };
-
-//   const handleEdit = (item) => {
-//     setEditMode(true);
-
-//     setFormData({
-//       className: item.className,
-//       name: item.name,
-//       feeType: item.feeType,
-//       amount: item.amount,
-//     });
-//     setModalOpen(true);
-//   };
-
-//   const THEAD = [
-//     { id: "SN", label: "S No.", width: "5" },
-//     { id: "class", label: "Class", width: "7" },
-//     { id: "name", label: "Name", width: "7" },
-//     { id: "feetype", label: "fee Type" },
-//     { id: "amount", label: "Amount" },
-//     { id: "action", label: "Action" },
-
-//   ];
-
-//   const tBody = additionFee.map((val, ind) => ({
-//     SN: ind + 1,
-
-//     class: (
-//       <span className="text-green-800 font-semibold">{val.className}</span>
-//     ),
-//     name: val.name,
-//     feetype: val.feeType,
-//     amount: val.amount,
- 
-
-//     action: (<div className="flex justify-center">
-
-//       <span onClick={() => handleDelete(val?.feeStructureId)} className="cursor-pointer">
-//         <MdDelete className="text-[25px] text-red-700" />
-//       </span>
-
-//     </div>
-//     ),
-//   }));
-
-//   return (
-//     <div className="mx-auto">
-     
-//       <div className="">
-//         <Button
-//         name="Set Additional Fee"
-//           // variant="contained"
-//           // style={{ backgroundColor: currentColor }}
-//           onClick={() => {
-//             setEditMode(false);
-
-//             setFormData({ className: "", name: "", feeType: "", amount: "" });
-//             setModalOpen(true);
-//           }}
-//         >
-          
-//         </Button>
-//       </div>
-
-//       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={editMode ? "Edit Additional Fee" : "Create Additional Fee"}>
-//         <div className="p-4 space-y-4 bg-gray-50">
-//           <div className="grid gap-6  md:grid-cols-2">
-
-//             <ReactSelect
-//               name="studentClass"
-//               value={selectedClass}
-//               handleChange={handleClassChange}
-//               label="Select a Class"
-//               dynamicOptions={dynamicOptions}
-//             />
-//             <ReactSelect
-//               name="feeType"
-//               value={formData.feeType}
-//               handleChange={handleFieldChange}
-//               label="Select Fee Type"
-//               dynamicOptions={feeType}
-//             />
- 
-//   <ReactInput
-//               // resPClass="grid grid-cols-2 md:grid-cols-5"
-//               type="text"
-//               name="name"
-//               required={true}
-//               label="Name"
-//               onChange={handleFieldChange}
-//               value={formData.name}
-//             />
-//              <ReactInput
-//               // resPClass="grid grid-cols-2 md:grid-cols-5"
-//               type="number"
-//               name="amount"
-//               required={true}
-//               label="Amount"
-//               onChange={handleFieldChange}
-//               value={formData.amount}
-//             />
-            
-//           </div>
-
-          
-
-//           <Button
-//           name="Submit"
-//           // variant="contained" style={{ backgroundColor: currentColor }} 
-//           onClick={handleSubmit}>
-//             {/* {editMode ? "Update" : "Submit"} */}
-//           </Button>
-//         </div>
-//       </Modal>
-//       <Table tHead={THEAD} tBody={tBody} />
-//     </div>
-//   );
-// }
-
-// export default AdditionalFee;

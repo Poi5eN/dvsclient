@@ -23,7 +23,6 @@
 //   const paidAdditionalFees = additionalFees?.filter(fee => fee.status === 'Paid') || [];
 //   // --- END: Filter paid additional fees ---
 
-
 //   return (
 //     <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 flex flex-col h-full">
 //       {/* Month Header */}
@@ -84,10 +83,6 @@
 // };
 
 // export default MonthFeeCard;
-
-
-
-
 
 // import React from 'react';
 
@@ -164,22 +159,25 @@
 
 // export default MonthFeeCard;
 
-import React from 'react';
+import React from "react";
 
 // Helper function to format currency (Using INR as default)
 const formatCurrency = (amount) => {
   const numericAmount = Number(amount) || 0;
-  return `₹${numericAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `₹${numericAmount.toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 };
 
 // Helper function to format date strings (Example: DD/MM/YYYY)
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'; // Handle null or undefined dates
+  if (!dateString) return "N/A"; // Handle null or undefined dates
   try {
     const date = new Date(dateString);
     // Use options for toLocaleDateString to get desired format
-    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return date.toLocaleDateString('en-IN', options); // 'en-IN' locale often gives DD/MM/YYYY
+    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+    return date.toLocaleDateString("en-IN", options); // 'en-IN' locale often gives DD/MM/YYYY
     // Alternative formats:
     // return date.toLocaleDateString('en-GB', options); // Also often DD/MM/YYYY
     // return date.toLocaleDateString('en-US', options); // MM/DD/YYYY
@@ -189,12 +187,11 @@ const formatDate = (dateString) => {
   }
 };
 
-
 const MonthFeeCard = ({ childFeeHistory }) => {
+  console.log("childFeeHistory", childFeeHistory); // Debugging line to check the data structure
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200 flex flex-col h-full">
-
       {/* Changed Title to be more general for history */}
       <h3 className="text-base font-semibold text-gray-700 mb-2 pb-1 border-b border-gray-100">
         Fee Payment History
@@ -204,94 +201,195 @@ const MonthFeeCard = ({ childFeeHistory }) => {
       <div className="">
         <div className="overflow-x-auto shadow rounded-lg">
           <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
-              <thead className="bg-gray-100">
-                  <tr>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Rcpt No.</th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Date</th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Payment Breakdown</th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Mode</th>
-                      <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r">Amount Paid</th>
-                      <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Remaining Dues</th>
-                  </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                  {/* Check if feeHistory exists and is an array before mapping */}
-                  {childFeeHistory?.feeStatus?.feeHistory && Array.isArray(childFeeHistory.feeStatus.feeHistory) && childFeeHistory.feeStatus.feeHistory.length > 0 ? (
-                     childFeeHistory.feeStatus.feeHistory?.slice().reverse().map((history) => (
+            <thead className="bg-gray-100">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Rcpt No.
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Date
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Payment Breakdown
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Mode
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Amount Paid
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r"
+                >
+                  Concession
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider"
+                >
+                  Remaining Dues
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {/* Check if feeHistory exists and is an array before mapping */}
+              {childFeeHistory?.feeStatus?.feeHistory &&
+              Array.isArray(childFeeHistory.feeStatus.feeHistory) &&
+              childFeeHistory.feeStatus.feeHistory.length > 0 ? (
+                childFeeHistory.feeStatus.feeHistory
+                  ?.slice()
+                  .reverse()
+                  .map((history) => (
                     //   childFeeHistory.feeStatus.feeHistory?.reverse().map((history) => (
-                          // Use history._id as the key
-                          <tr key={history._id} className="hover:bg-gray-50">
+                    // Use history._id as the key
+                    <tr key={history._id} className="hover:bg-gray-50">
+                      {/* Cell for Receipt Number */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
+                        {history.feeReceiptNumber || "N/A"}
+                      </td>
 
-                              {/* Cell for Receipt Number */}
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
-                                  {history.feeReceiptNumber || 'N/A'}
-                              </td>
+                      {/* Cell for Date - NOW CALLS DEFINED FUNCTION */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
+                        {formatDate(history.date)}{" "}
+                        {/* Calls the helper function */}
+                      </td>
 
-                              {/* Cell for Date - NOW CALLS DEFINED FUNCTION */}
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
-                                  {formatDate(history.date)} {/* Calls the helper function */}
-                              </td>
+                      {/* Cell for Payment Breakdown */}
+                      <td className="px-4 py-3 text-sm text-gray-700 border-r">
+                        {/* Display Regular Fees paid in this transaction */}
+                        {history.regularFees?.map((fee, idx) => (
+                          <div
+                            key={`reg-${history._id}-${idx}`}
+                            className="text-xs mb-1"
+                          >
+                            Regular: {fee.month} (
+                            {formatCurrency(fee.paidAmount)})
+                          </div>
+                        ))}
+                        {/* Display Additional Fees paid in this transaction */}
+                        {history.additionalFees?.map((fee, idx) => (
+                          <div
+                            key={`add-${history._id}-${idx}`}
+                            className="text-xs mb-1"
+                          >
+                            {fee.name || "Additional"}: (
+                            {formatCurrency(fee.paidAmount)})
+                          </div>
+                        ))}
+                        {/* Show concession applied if any */}
+                        {(history.regularFees?.some(
+                          (fee) => fee.concessionApplied > 0
+                        ) ||
+                          history.additionalFees?.some(
+                            (fee) => fee.concessionApplied > 0
+                          )) && (
+                          <div className="text-xs mb-1 text-green-600">
+                            Concession: (
+                            {formatCurrency(
+                              (history.regularFees || []).reduce(
+                                (sum, fee) =>
+                                  sum + (fee.concessionApplied || 0),
+                                0
+                              ) +
+                                (history.additionalFees || []).reduce(
+                                  (sum, fee) =>
+                                    sum + (fee.concessionApplied || 0),
+                                  0
+                                )
+                            )}
+                            )
+                          </div>
+                        )}
 
-                              {/* Cell for Payment Breakdown */}
-                              <td className="px-4 py-3 text-sm text-gray-700 border-r">
-                                  {/* Display Regular Fees paid in this transaction */}
-                                  {history.regularFees?.map((fee, idx) => (
-                                      <div key={`reg-${history._id}-${idx}`} className="text-xs mb-1">
-                                          Regular: {fee.month} ({formatCurrency(fee.paidAmount)})
-                                      </div>
-                                  ))}
-                                  {/* Display Additional Fees paid in this transaction */}
-                                  {history.additionalFees?.map((fee, idx) => (
-                                      <div key={`add-${history._id}-${idx}`} className="text-xs mb-1">
-                                          {fee.name || 'Additional'}: ({formatCurrency(fee.paidAmount)})
-                                      </div>
-                                  ))}
-                                  {/* Display if Past Dues were paid */}
-                                  {history.pastDuesPaid > 0 && (
-                                      <div className="text-xs mb-1">
-                                          Past Dues Cleared: ({formatCurrency(history.pastDuesPaid)})
-                                      </div>
-                                  )}
-                                  {/* Fallback if no breakdown */}
-                                  {(history.regularFees?.length === 0 && history.additionalFees?.length === 0 && (!history.pastDuesPaid || history.pastDuesPaid === 0)) && (
-                                      <span className='text-xs text-gray-400'>No specific breakdown</span>
-                                  )}
-                              </td>
+                        {/* Display if Past Dues were paid */}
+                        {history.pastDuesPaid > 0 && (
+                          <div className="text-xs mb-1">
+                            Past Dues Cleared: (
+                            {formatCurrency(history.pastDuesPaid)})
+                          </div>
+                        )}
+                        {/* Fallback if no breakdown */}
+                        {history.regularFees?.length === 0 &&
+                          history.additionalFees?.length === 0 &&
+                          (!history.pastDuesPaid ||
+                            history.pastDuesPaid === 0) && (
+                            <span className="text-xs text-gray-400">
+                              No specific breakdown
+                            </span>
+                          )}
+                      </td>
 
-                              {/* Cell for Payment Mode */}
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
-                                  {history.paymentMode || 'N/A'}
-                                  {history.paymentMode === 'Online' && history.transactionId && history.transactionId !== 'N/A' && (
-                                      <span className="block text-xs text-gray-500 truncate" title={history.transactionId}>
-                                          (ID: {history.transactionId})
-                                      </span>
-                                  )}
-                              </td>
+                      {/* Cell for Payment Mode */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
+                        {history.paymentMode || "N/A"}
+                        {history.paymentMode === "Online" &&
+                          history.transactionId &&
+                          history.transactionId !== "N/A" && (
+                            <span
+                              className="block text-xs text-gray-500 truncate"
+                              title={history.transactionId}
+                            >
+                              (ID: {history.transactionId})
+                            </span>
+                          )}
+                      </td>
 
-                              {/* Cell for Total Amount Paid in this transaction */}
-                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right border-r">
-                                  {formatCurrency(history.totalAmountPaid)}
-                              </td>
+                      {/* Cell for Total Amount Paid in this transaction */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right border-r">
+                        {formatCurrency(history.totalAmountPaid)}
+                      </td>
 
-                              {/* Cell for Remaining Dues after this transaction */}
-                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
-                                  {formatCurrency(history.totalDues)}
-                              </td>
-                          </tr>
-                      ))
-                  ) : (
-                       // Display a message if there's no history data
-                       <tr>
-                          <td colSpan="6" className="px-4 py-4 text-center text-sm text-gray-500">
-                              No fee payment history found.
-                          </td>
-                      </tr>
-                  )}
-              </tbody>
+                      {/* Cell for Total Concession Applied */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-green-700 text-right border-r">
+                        {formatCurrency(
+                          (history.regularFees || []).reduce(
+                            (sum, fee) => sum + (fee.concessionApplied || 0),
+                            0
+                          ) +
+                            (history.additionalFees || []).reduce(
+                              (sum, fee) => sum + (fee.concessionApplied || 0),
+                              0
+                            )
+                        )}
+                      </td>
+
+                      {/* Cell for Remaining Dues after this transaction */}
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                        {formatCurrency(history.totalDues)}
+                      </td>
+                    </tr>
+                  ))
+              ) : (
+                // Display a message if there's no history data
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="px-4 py-4 text-center text-sm text-gray-500"
+                  >
+                    No fee payment history found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
       </div>
-
     </div>
   );
 };
@@ -307,7 +405,6 @@ export default MonthFeeCard;
 // };
 
 // const MonthFeeCard = ({ childFeeHistory }) => {
- 
 
 //   return (
 //     <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200 flex flex-col h-full">
@@ -316,13 +413,9 @@ export default MonthFeeCard;
 //         Regular Fees
 //       </h3>
 
-    
-   
 //         <div className="space-y-2">
 //             <>
-          
-                                    
-                                      
+
 //                                          {
 //                                           <div className="overflow-x-auto shadow rounded-lg">
 //                                           <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
@@ -347,31 +440,31 @@ export default MonthFeeCard;
 //                                                       childFeeHistory.feeStatus.feeHistory.map((history) => (
 //                                                           // Use history._id as the key
 //                                                           <tr key={history._id} className="hover:bg-gray-50">
-                                      
+
 //                                                               {/* Cell for Receipt Number */}
 //                                                               <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
 //                                                                   {history.feeReceiptNumber || 'N/A'}
 //                                                               </td>
-                                      
+
 //                                                               {/* Cell for Date */}
 //                                                               <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
 //                                                                   {formatDate(history.date)} {/* Assumes formatDate exists */}
 //                                                               </td>
-                                      
+
 //                                                               {/* Cell for Payment Breakdown */}
 //                                                               <td className="px-4 py-3 text-sm text-gray-700 border-r">
 //                                                                    {/* Display Regular Fees paid in this transaction */}
 //                                                                   {history.regularFees?.map((fee, idx) => (
 //                                                                       <div key={`reg-${history._id}-${idx}`} className="text-xs mb-1">
 //                                                                           Regular: {fee.month} ({formatCurrency(fee.paidAmount)}) {/* Show amount paid for this item */}
-                                                                        
+
 //                                                                       </div>
 //                                                                   ))}
 //                                                                    {/* Display Additional Fees paid in this transaction */}
 //                                                                   {history.additionalFees?.map((fee, idx) => (
 //                                                                       <div key={`add-${history._id}-${idx}`} className="text-xs mb-1">
 //                                                                           {fee.name || 'Additional'}: ({formatCurrency(fee.paidAmount)})
-                                                                          
+
 //                                                                       </div>
 //                                                                   ))}
 //                                                                    {/* Display if Past Dues were paid */}
@@ -385,7 +478,7 @@ export default MonthFeeCard;
 //                                                                       <span className='text-xs text-gray-400'>No specific breakdown</span>
 //                                                                   )}
 //                                                               </td>
-                                      
+
 //                                                               {/* Cell for Payment Mode */}
 //                                                               <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
 //                                                                   {history.paymentMode || 'N/A'}
@@ -395,12 +488,12 @@ export default MonthFeeCard;
 //                                                                       </span>
 //                                                                   )}
 //                                                               </td>
-                                      
+
 //                                                               {/* Cell for Total Amount Paid in this transaction */}
 //                                                               <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right border-r">
 //                                                                   {formatCurrency(history.totalAmountPaid)} {/* Use totalAmountPaid */}
 //                                                               </td>
-                                      
+
 //                                                                {/* Cell for Remaining Dues after this transaction */}
 //                                                               <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
 //                                                                   {formatCurrency(history.totalDues)} {/* Use totalDues */}
@@ -418,12 +511,11 @@ export default MonthFeeCard;
 //                                               </tbody>
 //                                           </table>
 //                                       </div>
-                                             
+
 //                                          }
-                                          
-                                      
-//                                   </> 
-        
+
+//                                   </>
+
 //         </div>
 
 //     </div>
@@ -431,7 +523,6 @@ export default MonthFeeCard;
 // };
 
 // export default MonthFeeCard;
-
 
 // import React from 'react';
 
@@ -556,10 +647,9 @@ export default MonthFeeCard;
 //        {
 //         data?.regularFees?.map((val)=>(
 //           <>
-          
-          
+
 //           <div className="flex justify-between items-center mb-1">
-          
+
 //           <span >
 //             {val.month}
 //           </span>

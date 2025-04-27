@@ -1,3 +1,4 @@
+// File: src/ADMINDASHBOARD/Fees/CreateFees.jsx
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -17,6 +18,38 @@ import { FeeResponse } from "../../Dynamic/utils/Message";
 import generatePdf from "../../Dynamic/utils/pdfGenerator";
 import FeeRecipt from "./FeeRecipt";
 import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+// import { Switch } from "@headlessui/react"; // Ensure you have @headlessui/react installed
+
+// Replace the ExemptionToggle component with this:
+const ExemptionToggle = ({ isExempt, onChange, studentName }) => {
+  
+  return (
+    <label className="flex items-center gap-2 cursor-pointer">
+      <div className="relative">
+        <input
+          type="checkbox"
+          checked={isExempt}
+          onChange={(e) => onChange(e.target.checked)}
+          className="sr-only"
+        />
+        <div
+          className={`w-12 h-6 rounded-full transition-colors duration-300 ease-in-out ${
+            isExempt ? "bg-light-blue-800" : "bg-gray-300"
+          }`}
+        >
+          <div
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 ease-in-out transform ${
+              isExempt ? "translate-x-6" : "translate-x-0"
+            }`}
+          />
+        </div>
+      </div>
+      <span className="text-sm font-medium text-gray-700">
+        {isExempt ? `Exempt for ${studentName}` : `Mark as Exempt`}
+      </span>
+    </label>
+  );
+};
 
 // Helper to fetch additional fees
 const fetchAdditionalFeesForClass = async (className, authToken) => {
@@ -103,7 +136,7 @@ const CreateFees = () => {
   const getAllStudent = useCallback(async () => {
     setIsLoader(true);
     try {
-      const response = await ActiveStudents();
+      const response = await ActiveStudents(session);
       setAllStudent(response?.students?.data || []);
     } catch (error) {
       console.error("Failed to fetch student list:", error);
@@ -204,6 +237,18 @@ const CreateFees = () => {
     setUnifiedReceiptData(null);
     setReceiptData(null);
     setIsPreviewReady(false);
+  };
+
+
+  const calculateTotalOutstandingDues = (index) => {
+    const data = formData[index];
+    if (!data || data.error) return 0;
+    let total = 0;
+    total += parseFloat(data.pastDues) || 0;
+    total += parseFloat(data.lateFine) || 0;
+    total += data.monthlyDues.regularDues.reduce((sum, d) => sum + d.dueAmount, 0);
+    total += data.monthlyDues.additionalDues.reduce((sum, d) => sum + d.dueAmount, 0);
+    return total;
   };
 
   const handleStudentClick = async (parentId) => {
@@ -395,23 +440,30 @@ const CreateFees = () => {
                       opt.name === fee.name && opt.frequency === "monthly"
                   );
                   if (availableFeeOption) {
-                    const existingFee = preSelectedAdditionalFees.find(
-                      (pf) => pf.name === fee.name && pf.frequency === "monthly"
+                    // Only pre-select if the month is also pre-selected in regular fees
+                    const isMonthPreSelected = preSelectedMonths.some(
+                      (m) => m.value === monthData.month
                     );
-                    if (existingFee) {
-                      if (!existingFee.dueMonths.includes(monthData.month)) {
-                        existingFee.dueMonths.push(monthData.month);
-                        existingFee.amount += dueData.dueAmount;
+                    if (isMonthPreSelected) {
+                      const existingFee = preSelectedAdditionalFees.find(
+                        (pf) =>
+                          pf.name === fee.name && pf.frequency === "monthly"
+                      );
+                      if (existingFee) {
+                        if (!existingFee.dueMonths.includes(monthData.month)) {
+                          existingFee.dueMonths.push(monthData.month);
+                          existingFee.amount += dueData.dueAmount;
+                        }
+                      } else {
+                        preSelectedAdditionalFees.push({
+                          id: availableFeeOption.id,
+                          name: availableFeeOption.name,
+                          amount: dueData.dueAmount,
+                          type: availableFeeOption.type,
+                          frequency: availableFeeOption.frequency,
+                          dueMonths: [monthData.month],
+                        });
                       }
-                    } else {
-                      preSelectedAdditionalFees.push({
-                        id: availableFeeOption.id,
-                        name: availableFeeOption.name,
-                        amount: dueData.dueAmount,
-                        type: availableFeeOption.type,
-                        frequency: availableFeeOption.frequency,
-                        dueMonths: [monthData.month],
-                      });
                     }
                   }
                 }
@@ -437,14 +489,28 @@ const CreateFees = () => {
           }
         });
 
-        // Prepare one-time fee options (for dropdown, excluding fully paid, using oneTimeAdditionalDues)
+        // Prepare one-time fee options (for dropdown, including unpaid one-time fees from feeStructure)
         const oneTimeFeeOptions = additionalFeesStructure
-          .filter((fee) => fee.frequency === "one-time")
+          .filter(
+            (fee) => fee.feeType === "One Time" && fee.frequency === "one-time"
+          )
           .filter((fee) => {
-            const dueFee = oneTimeAdditionalDues.find(
-              (d) => d.name === fee.name
+            // Check if fee is paid in feeHistory
+            const isPaidInHistory = feeHistory.some((history) =>
+              history.additionalFees.some(
+                (af) =>
+                  af.name === fee.name &&
+                  af.status === "Paid" &&
+                  af.dueAmount === 0
+              )
             );
-            return dueFee && dueFee.dueAmount > 0 && dueFee.status !== "Paid";
+            // Check if fee is paid in monthlyDues
+            const isPaidInDues = monthlyDues.additionalDues.some(
+              (d) =>
+                d.name === fee.name && d.status === "Paid" && d.dueAmount === 0
+            );
+            // Include fee if not fully paid
+            return !isPaidInHistory && !isPaidInDues;
           })
           .map((fee) => {
             const dueFee = oneTimeAdditionalDues.find(
@@ -476,6 +542,8 @@ const CreateFees = () => {
           chequeBookNo: "",
           lateFine: feeInfo.feeStatus?.totalLateFines || 0,
           concession: "",
+          exemption: "",
+          isExempt: false, // New field
           date: moment().format("YYYY-MM-DD"),
           remarks: "",
           monthlyDues,
@@ -568,6 +636,7 @@ const CreateFees = () => {
     }
   };
 
+  // Replace the handleInputChange function with this:
   const handleInputChange = (index, field, value) => {
     const updatedFormData = [...formData];
     if (updatedFormData[index]) {
@@ -581,6 +650,97 @@ const CreateFees = () => {
           updatedFormData[index].chequeBookNo = "";
         }
       }
+
+      if (field === "isExempt") {
+        if (value) {
+          // Calculate net payable without considering exemption
+          const data = updatedFormData[index];
+          let total = 0;
+          total += parseFloat(data.pastDues) || 0;
+          total += parseFloat(data.lateFine) || 0;
+
+          // Add regular fees for selected months
+          total += data.selectedMonths.reduce(
+            (sum, monthState) => sum + (monthState?.due || 0),
+            0
+          );
+
+          // Add additional fees
+          total += data.selectedAdditionalFees.reduce((sum, fee) => {
+            if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
+              return (
+                sum +
+                fee.dueMonths.reduce((monthSum, month) => {
+                  const feeDetail = data.additionalFeeDetails.find(
+                    (fd) => fd.name === fee.name && fd.frequency === "monthly"
+                  );
+                  if (feeDetail) {
+                    const monthData = feeDetail.months.find(
+                      (m) => m.month === month
+                    );
+                    return monthSum + (monthData?.dueAmount || 0);
+                  }
+                  return monthSum;
+                }, 0)
+              );
+            } else if (fee.frequency === "one-time") {
+              const oneTimeDue = data.feeInfo?.oneTimeAdditionalDues?.find(
+                (d) => d.name === fee.name
+              );
+              return (
+                sum +
+                (oneTimeDue
+                  ? oneTimeDue.dueAmount
+                  : parseFloat(fee.amount) || 0)
+              );
+            }
+            return sum;
+          }, 0);
+
+          // Add one-time fees
+          total += data.selectedOneTimeFees.reduce(
+            (sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0),
+            0
+          );
+
+          // Add remaining dues from previous months
+          const selectedMonthNames = data.selectedMonths.map((m) => m.value);
+          const selectedAdditionalFeeDues = data.selectedAdditionalFees
+            .filter((fee) => fee.frequency === "monthly")
+            .flatMap((fee) =>
+              fee.dueMonths.map((month) => ({ name: fee.name, month }))
+            );
+          const remainingDues = data.monthlyDues.additionalDues
+            .filter((due) => {
+              const feeStructure =
+                data.feeInfo?.feeStructure?.additionalFees?.find(
+                  (fs) => fs.name === due.name
+                );
+              return (
+                due.dueAmount > 0 &&
+                !selectedMonthNames.includes(due.month) &&
+                !selectedAdditionalFeeDues.some(
+                  (selected) =>
+                    selected.name === due.name && selected.month === due.month
+                ) &&
+                feeStructure?.frequency === "monthly"
+              );
+            })
+            .reduce((sum, due) => sum + due.dueAmount, 0);
+          total += remainingDues;
+
+          // Subtract concession
+          total -= parseFloat(data.concession) || 0;
+
+          // Set exemption to the calculated total
+          updatedFormData[index].exemption = Math.max(0, total).toFixed(2);
+          updatedFormData[index].totalAmount = "0";
+        } else {
+          updatedFormData[index].exemption = "";
+          updatedFormData[index].totalAmount = "";
+        }
+      }
+
       setFormData(updatedFormData);
     } else {
       console.error(
@@ -782,6 +942,7 @@ const CreateFees = () => {
     setFormData(updatedFormData);
   };
 
+  // Update calculateNetPayableAmount to account for exemption
   const calculateNetPayableAmount = useCallback(
     (index) => {
       const data = formData[index];
@@ -799,7 +960,6 @@ const CreateFees = () => {
       // Add additional fees, respecting due amounts for selected months
       total += data.selectedAdditionalFees.reduce((sum, fee) => {
         if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
-          // For monthly fees, sum the due amounts for each selected month
           return (
             sum +
             fee.dueMonths.reduce((monthSum, month) => {
@@ -815,19 +975,53 @@ const CreateFees = () => {
               return monthSum;
             }, 0)
           );
+        } else if (fee.frequency === "one-time") {
+          // For one-time fees in selectedAdditionalFees, use dueAmount from oneTimeAdditionalDues if available
+          const oneTimeDue = data.feeInfo?.oneTimeAdditionalDues?.find(
+            (d) => d.name === fee.name
+          );
+          return (
+            sum +
+            (oneTimeDue ? oneTimeDue.dueAmount : parseFloat(fee.amount) || 0)
+          );
         }
-        // For one-time fees, use the fee amount directly
-        return sum + (parseFloat(fee?.amount) || 0);
+        return sum;
       }, 0);
 
-      // Add one-time fees
+      // Add one-time fees using dueAmount from selectedOneTimeFees
       total += data.selectedOneTimeFees.reduce(
         (sum, fee) => sum + (parseFloat(fee?.dueAmount) || 0),
         0
       );
 
-      // Subtract concession
+      // Add remaining dues from previous months for additional fees, excluding those already in selectedAdditionalFees
+      const selectedMonthNames = data.selectedMonths.map((m) => m.value);
+      const selectedAdditionalFeeDues = data.selectedAdditionalFees
+        .filter((fee) => fee.frequency === "monthly")
+        .flatMap((fee) =>
+          fee.dueMonths.map((month) => ({ name: fee.name, month }))
+        );
+      const remainingDues = data.monthlyDues.additionalDues
+        .filter((due) => {
+          const feeStructure = data.feeInfo?.feeStructure?.additionalFees?.find(
+            (fs) => fs.name === due.name
+          );
+          return (
+            due.dueAmount > 0 &&
+            !selectedMonthNames.includes(due.month) &&
+            !selectedAdditionalFeeDues.some(
+              (selected) =>
+                selected.name === due.name && selected.month === due.month
+            ) &&
+            feeStructure?.frequency === "monthly" // Only include monthly fees
+          );
+        })
+        .reduce((sum, due) => sum + due.dueAmount, 0);
+      total += remainingDues;
+
+      // Subtract concession and exemption
       total -= parseFloat(data.concession) || 0;
+      total -= parseFloat(data.exemption) || 0; // New
       return Math.max(0, total);
     },
     [formData]
@@ -921,10 +1115,7 @@ const CreateFees = () => {
   };
 
   const validateFormData = (childFormData, child, isUnified = false) => {
-    console.log(
-      `Validating form data for ${child?.studentName}`,
-      childFormData
-    );
+    console.log(`Validating form data for ${child?.studentName}`, childFormData);
     if (!childFormData || childFormData.error) {
       toast.error(
         `Cannot submit for ${
@@ -933,13 +1124,46 @@ const CreateFees = () => {
       );
       return false;
     }
-    const totalAmount = parseFloat(childFormData.totalAmount) || 0;
-    if (totalAmount <= 0) {
-      toast.warn(
-        `Please enter a valid amount (> 0) to pay for ${child.studentName}.`
+  
+    if (childFormData.isExempt) {
+      // If exempt, set exemption to net payable amount and skip total amount check
+      const netPayable = calculateNetPayableAmount(
+        formData.findIndex((fd) => fd.studentId === child.studentId)
       );
-      return false;
+      childFormData.exemption = netPayable.toFixed(2);
+      childFormData.totalAmount = "0";
+    } else {
+      // Non-exempt: validate total amount
+      const totalAmount = parseFloat(childFormData.totalAmount) || 0;
+      if (totalAmount <= 0) {
+        toast.warn(
+          `Please enter a valid amount (> 0) to pay for ${child.studentName}.`
+        );
+        return false;
+      }
+  
+      // Validate concession: totalAmount + concession must equal netPayable
+      const concession = parseFloat(childFormData.concession) || 0;
+      if (concession > 0) {
+        const netPayable = calculateNetPayableAmount(
+          formData.findIndex((fd) => fd.studentId === child.studentId)
+        );
+        const totalWithConcession = totalAmount + concession;
+        if (totalWithConcession !== netPayable) {
+          toast.warn(
+            `Concession for ${child.studentName} can only be applied when the total amount paid (₹${totalAmount.toFixed(
+              2
+            )}) plus concession (₹${concession.toFixed(
+              2
+            )}) equals the net payable amount (₹${netPayable.toFixed(
+              2
+            )}). Please adjust the amounts.`
+          );
+          return false;
+        }
+      }
     }
+  
     if (!childFormData.paymentMode) {
       toast.error(`Payment mode is required for ${child.studentName}.`);
       return false;
@@ -954,6 +1178,11 @@ const CreateFees = () => {
       );
       return false;
     }
+    const exemption = parseFloat(childFormData.exemption) || 0;
+    if (exemption < 0) {
+      toast.warn(`Exemption amount cannot be negative for ${child.studentName}.`);
+      return false;
+    }
     if (childFormData.paymentMode === "Cheque" && !childFormData.chequeBookNo) {
       toast.error(
         `Cheque Number is required for Cheque payment for ${child.studentName}.`
@@ -964,12 +1193,10 @@ const CreateFees = () => {
       !childFormData.date ||
       !moment(childFormData.date, "YYYY-MM-DD", true).isValid()
     ) {
-      toast.error(
-        `Please select a valid payment date for ${child.studentName}.`
-      );
+      toast.error(`Please select a valid payment date for ${child.studentName}.`);
       return false;
     }
-
+  
     const payableExcludingDuesFines =
       calculateNetPayableAmount(
         formData.findIndex((fd) => fd.studentId === child.studentId)
@@ -979,21 +1206,25 @@ const CreateFees = () => {
     const onlyPayingDuesAndFines =
       (parseFloat(childFormData.pastDues) || 0) +
       (parseFloat(childFormData.lateFine) || 0);
-
+  
     if (
-      totalAmount > 0 &&
+      !childFormData.isExempt &&
+      parseFloat(childFormData.totalAmount) > 0 &&
       childFormData.selectedMonths.length === 0 &&
       childFormData.selectedAdditionalFees.length === 0 &&
       childFormData.selectedOneTimeFees.length === 0 &&
-      totalAmount > onlyPayingDuesAndFines
+      parseFloat(childFormData.totalAmount) > onlyPayingDuesAndFines
     ) {
       toast.warn(
-        `Amount paid for ${child.studentName} (₹${totalAmount.toFixed(
+        `Amount paid for ${child.studentName} (₹${parseFloat(
+          childFormData.totalAmount
+        ).toFixed(
           2
         )}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(
           2
         )}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`
       );
+      return false;
     }
     return true;
   };
@@ -1004,22 +1235,29 @@ const CreateFees = () => {
       toast.warn("Please select at least two students for unified payment.");
       return;
     }
-
+  
     let isValid = true;
     let totalUnifiedAmount = 0;
     const studentsPayload = [];
-
+  
     for (const index of selectedChildrenIndices) {
       const childFormData = formData[index];
       const child = parentData[index];
-
+  
+      if (childFormData.isExempt) {
+        // Calculate exemption amount based on net payable
+        const netPayable = calculateNetPayableAmount(index);
+        childFormData.exemption = netPayable.toFixed(2);
+        childFormData.totalAmount = "0";
+      }
+  
       if (!validateFormData(childFormData, child, true)) {
         isValid = false;
         break;
       }
-
+  
       const amountForThisChild = parseFloat(childFormData.totalAmount) || 0;
-      if (amountForThisChild <= 0) {
+      if (!childFormData.isExempt && amountForThisChild <= 0) {
         toast.warn(
           `Please enter an amount (> 0) to pay for ${child.studentName} in the unified payment.`
         );
@@ -1027,12 +1265,12 @@ const CreateFees = () => {
         break;
       }
       totalUnifiedAmount += amountForThisChild;
-
+  
       const additionalFeesPayload = [];
       const selectedMonthNames = childFormData.selectedMonths.map(
         (m) => m.value
       );
-
+  
       childFormData.selectedAdditionalFees.forEach((fee) => {
         if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
           fee.dueMonths.forEach((monthName) => {
@@ -1050,11 +1288,17 @@ const CreateFees = () => {
           additionalFeesPayload.push({ name: fee.name });
         }
       });
-
+  
       childFormData.selectedOneTimeFees.forEach((fee) => {
         additionalFeesPayload.push({ name: fee.name });
       });
-
+  
+      // Calculate exemption amount for payload
+      let exemptionAmount = parseFloat(childFormData.exemption) || 0;
+      if (childFormData.isExempt) {
+        exemptionAmount = calculateNetPayableAmount(index);
+      }
+  
       studentsPayload.push({
         studentId: child.studentId,
         paymentDetails: {
@@ -1065,19 +1309,20 @@ const CreateFees = () => {
           pastDuesPaid: 0,
           lateFinesPaid: 0,
           concession: parseFloat(childFormData.concession) || 0,
-          totalAmount: amountForThisChild,
+          exemption: exemptionAmount,
+          totalAmount: childFormData.isExempt ? 0 : amountForThisChild,
         },
       });
     }
-
+  
     if (!isValid || studentsPayload.length !== selectedChildrenIndices.length) {
       console.error("Unified payment validation failed or payload mismatch.");
       return;
     }
-
+  
     const firstChildIndex = selectedChildrenIndices[0];
     const firstChildFormData = formData[firstChildIndex];
-
+  
     if (!firstChildFormData.paymentMode) {
       toast.error(
         `Payment mode is required (using details from ${parentData[firstChildIndex].studentName}).`
@@ -1112,7 +1357,7 @@ const CreateFees = () => {
       );
       return false;
     }
-
+  
     const unifiedPaymentDetails = {
       paymentMode: firstChildFormData.paymentMode,
       transactionId: firstChildFormData.transactionId || undefined,
@@ -1120,15 +1365,15 @@ const CreateFees = () => {
       date: moment(firstChildFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
       remark: firstChildFormData.remarks || "",
     };
-
+  
     const payload = {
       students: studentsPayload,
       session,
       unifiedPaymentDetails,
     };
-
+  
     console.log("Unified Payload:", JSON.stringify(payload, null, 2));
-
+  
     setIsLoader(true);
     try {
       const response = await feescreateUnifiedFeeStatus(payload);
@@ -1156,16 +1401,21 @@ const CreateFees = () => {
     console.log(`Attempting single submission for index: ${childIndex}`);
     const childFormData = formData[childIndex];
     const child = parentData[childIndex];
-
+  
     if (!validateFormData(childFormData, child)) {
       return;
     }
-
+  
     setIsLoader(true);
-
-    const additionalFeesPayload = [];
+  
+    const monthlyFeesPayload = [];
+    const oneTimeFeesPayload = [];
     const selectedMonthNames = childFormData.selectedMonths.map((m) => m.value);
-
+    const selectedOneTimeFeeNames = childFormData.selectedOneTimeFees.map(
+      (fee) => fee.name
+    );
+  
+    // Include selected additional fees for the current payment (monthly only)
     childFormData.selectedAdditionalFees.forEach((fee) => {
       if (fee.frequency === "monthly" && fee.dueMonths?.length > 0) {
         fee.dueMonths.forEach((monthName) => {
@@ -1176,25 +1426,61 @@ const CreateFees = () => {
             (mf) => mf.name === fee.name && mf.status !== "Paid"
           );
           if (isFeeDueForThisMonth) {
-            additionalFeesPayload.push({
+            monthlyFeesPayload.push({
               name: fee.name,
               month: monthName,
             });
           }
         });
-      } else if (fee.frequency === "one-time") {
-        additionalFeesPayload.push({
-          name: fee.name,
-        });
       }
     });
-
+  
+    // Automatically include remaining dues from previous months (monthly fees only)
+    const selectedAdditionalFeeDues = childFormData.selectedAdditionalFees
+      .filter((fee) => fee.frequency === "monthly")
+      .flatMap((fee) =>
+        fee.dueMonths.map((month) => ({ name: fee.name, month }))
+      );
+    const remainingDues = childFormData.monthlyDues.additionalDues
+      .filter((due) => {
+        const feeStructure =
+          childFormData.feeInfo?.feeStructure?.additionalFees?.find(
+            (fs) => fs.name === due.name
+          );
+        return (
+          due.dueAmount > 0 &&
+          !selectedMonthNames.includes(due.month) &&
+          !selectedAdditionalFeeDues.some(
+            (selected) =>
+              selected.name === due.name && selected.month === due.month
+          ) &&
+          feeStructure?.frequency === "monthly" &&
+          !selectedOneTimeFeeNames.includes(due.name)
+        );
+      })
+      .map((due) => ({ name: due.name, month: due.month }));
+  
+    monthlyFeesPayload.push(...remainingDues);
+  
+    // Include selected one-time fees from selectedOneTimeFees
     childFormData.selectedOneTimeFees.forEach((fee) => {
-      additionalFeesPayload.push({
+      oneTimeFeesPayload.push({
         name: fee.name,
       });
     });
-
+  
+    // Combine payloads: monthly fees first, then one-time fees
+    const additionalFeesPayload = [
+      ...monthlyFeesPayload,
+      ...oneTimeFeesPayload,
+    ];
+  
+    // Calculate exemption amount if isExempt is true
+    let exemptionAmount = parseFloat(childFormData.exemption) || 0;
+    if (childFormData.isExempt) {
+      exemptionAmount = calculateNetPayableAmount(childIndex);
+    }
+  
     const payload = {
       studentId: child.studentId,
       session,
@@ -1206,7 +1492,10 @@ const CreateFees = () => {
         pastDuesPaid: 0,
         lateFinesPaid: 0,
         concession: parseFloat(childFormData.concession) || 0,
-        totalAmount: parseFloat(childFormData.totalAmount) || 0,
+        exemption: exemptionAmount,
+        totalAmount: childFormData.isExempt
+          ? 0
+          : parseFloat(childFormData.totalAmount) || 0,
         date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
         paymentMode: childFormData.paymentMode,
         transactionId: childFormData.transactionId || undefined,
@@ -1214,9 +1503,9 @@ const CreateFees = () => {
         remark: childFormData.remarks || "",
       },
     };
-
+  
     console.log("Single Submission Payload:", JSON.stringify(payload, null, 2));
-
+  
     try {
       const response = await feescreateFeeStatus(payload);
       if (response?.success) {
@@ -1567,55 +1856,14 @@ const CreateFees = () => {
                       };
                     });
 
-                const additionalOneTimeFeeOptions =currentFormData.availableAdditionalFees.filter((fee) => fee.type == "One Time").map((item) => ({ name: item.label, code: item.id }));
-               console.log("additionalFeeOptions",additionalFeeOptions)
-            
-                const selectedOneTimeAdditionalFeeValues =
-                // additionalOneTimeFeeOptions
-                  currentFormData.selectedAdditionalFees
-                  // currentFormData.selectedAdditionalFees
-                    .filter((fee) => fee.type !== "One Time")
-                    .map((selectedFee) => {
-                      const availableOption = additionalOneTimeFeeOptions.find(
-                        (opt) => opt.code === selectedFee.id
-                      );
-                      return {
-                        name: availableOption
-                          ? availableOption.name
-                          : `${selectedFee.name} (${selectedFee.type}) - ₹${selectedFee.amount}`,
-                        code: selectedFee.id,
-                      };
-                    }
-                  );
-
-
-
-                    const dropDownAdditionalFee=[]
-                    const paidOneTimeFee=currentFormData?.feeInfo?.feeStatus?.feeHistory?.flatMap((item)=>item?.additionalFees)
-                    const filterOntimeFee=paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0)
-                    //  console.log("paidOneTimeFee",paidOneTimeFee.filter((item)=>!item?.month && item?.dueAmount>0))
-     console.log("paidOneTimeFee",paidOneTimeFee)
-                     filterOntimeFee.forEach((item) => {
-                       dropDownAdditionalFee.push({
-                         name: `${item.name}(${item?.dueAmount})`,
-                         code:item.name
-                         // (item) => ({ name: item.label, code: item.code })
-     
-                       });
-                     });
-
-                  
-                // const oneTimeFeeOptions = filterOntimeFee.map(
-                //   (item) => ({ name: item.label, code: item.code })
-                // );
-                // debugger
+                const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
+                  (item) => ({ name: item.label, code: item.code })
+                );
                 const selectedOneTimeFeeValues =
-                filterOntimeFee.map((fee) => {
-                    const availableOption = filterOntimeFee.find(
-                      (opt) => opt.name === fee.name
-                      // (opt) => opt.code === fee.name
+                  currentFormData.selectedOneTimeFees.map((fee) => {
+                    const availableOption = oneTimeFeeOptions.find(
+                      (opt) => opt.code === fee.name
                     );
-                    console.log("availableOption",availableOption)
                     return {
                       name: availableOption
                         ? availableOption.name
@@ -1623,21 +1871,6 @@ const CreateFees = () => {
                       code: fee.name,
                     };
                   });
-                // const oneTimeFeeOptions = currentFormData.oneTimeFeeOptions.map(
-                //   (item) => ({ name: item.label, code: item.code })
-                // );
-                // const selectedOneTimeFeeValues =
-                //   currentFormData.selectedOneTimeFees.map((fee) => {
-                //     const availableOption = oneTimeFeeOptions.find(
-                //       (opt) => opt.code === fee.name
-                //     );
-                //     return {
-                //       name: availableOption
-                //         ? availableOption.name
-                //         : `${fee.name} (Due: ₹${fee.dueAmount.toFixed(2)})`,
-                //       code: fee.name,
-                //     };
-                //   });
 
                 return (
                   <div
@@ -1792,7 +2025,7 @@ const CreateFees = () => {
                                   name={`oneTimeFees-${index}`}
                                   searchable={true}
                                   placeholderName="Select one-time fee(s)..."
-                                  // dynamicOptions={oneTimeFeeOptions}
+                                  dynamicOptions={oneTimeFeeOptions}
                                   handleChange={(name, opts) =>
                                     handleDynamicMultiSelectChange(
                                       index,
@@ -1830,24 +2063,20 @@ const CreateFees = () => {
                               />
                               <ReactInput
                                 type="number"
-                                label={`Total Amount to Pay (*) ${
-                                  selectedChildrenIndices.length > 1
-                                    ? `(for ${child.studentName})`
-                                    : ""
-                                }`}
-                                value={currentFormData.totalAmount}
+                                label="Exemption (-)"
+                                value={currentFormData.exemption}
                                 onChange={(e) =>
                                   handleInputChange(
                                     index,
-                                    "totalAmount",
+                                    "exemption",
                                     e.target.value
                                   )
                                 }
-                                min="0.01"
+                                min="0"
                                 step="0.01"
-                                isRequired={true}
                                 containerClassName="sm:col-span-1"
                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                disabled={!currentFormData.isExempt}
                               />
                               <div>
                                 <label className="block text-sm font-medium text-gray-700">
@@ -1872,20 +2101,56 @@ const CreateFees = () => {
                                 </select>
                               </div>
                               <ReactInput
-                                type="date"
-                                label="Payment Date (*)"
-                                value={currentFormData.date}
+                                type="number"
+                                label={`Total Amount to Pay (*) ${
+                                  selectedChildrenIndices.length > 1
+                                    ? `(for ${child.studentName})`
+                                    : ""
+                                }`}
+                                value={currentFormData.totalAmount}
                                 onChange={(e) =>
                                   handleInputChange(
                                     index,
-                                    "date",
+                                    "totalAmount",
                                     e.target.value
                                   )
                                 }
-                                isRequired={true}
-                                max={moment().format("YYYY-MM-DD")}
+                                min="0.01"
+                                step="0.01"
+                                isRequired={!currentFormData.isExempt}
+                                containerClassName="sm:col-span-1"
                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                disabled={currentFormData.isExempt}
                               />
+                              
+                              {/* // Replace the div with className="flex items-end
+                              gap-4" and its children with: */}
+                              <div className="sm:col-span-1">
+                                <ReactInput
+                                  type="date"
+                                  label="Payment Date (*)"
+                                  value={currentFormData.date}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "date",
+                                      e.target.value
+                                    )
+                                  }
+                                  isRequired={true}
+                                  max={moment().format("YYYY-MM-DD")}
+                                  className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                              </div>
+                              <div className="sm:col-span-1 flex justify-end items-center">
+                                <ExemptionToggle
+                                  isExempt={currentFormData.isExempt}
+                                  onChange={(value) =>
+                                    handleInputChange(index, "isExempt", value)
+                                  }
+                                  studentName={child.studentName}
+                                />
+                              </div>
                               {(currentFormData.paymentMode === "Online" ||
                                 currentFormData.paymentMode === "Card") && (
                                 <ReactInput
@@ -1977,6 +2242,87 @@ const CreateFees = () => {
                                     </td>
                                   </tr>
                                 )}
+                                {/* Remaining Dues from Previous Months */}
+                                {(() => {
+                                  const selectedMonthNames =
+                                    currentFormData.selectedMonths.map(
+                                      (m) => m.value
+                                    );
+                                  const selectedAdditionalFeeDues =
+                                    currentFormData.selectedAdditionalFees
+                                      .filter(
+                                        (fee) => fee.frequency === "monthly"
+                                      )
+                                      .flatMap((fee) =>
+                                        fee.dueMonths.map((month) => ({
+                                          name: fee.name,
+                                          month,
+                                        }))
+                                      );
+                                  // Filter out one-time fees from remaining dues
+                                  const remainingDues =
+                                    currentFormData.monthlyDues.additionalDues
+                                      .filter((due) => {
+                                        const feeStructure =
+                                          currentFormData.feeInfo?.feeStructure?.additionalFees?.find(
+                                            (fs) => fs.name === due.name
+                                          );
+                                        return (
+                                          due.dueAmount > 0 &&
+                                          !selectedMonthNames.includes(
+                                            due.month
+                                          ) &&
+                                          !selectedAdditionalFeeDues.some(
+                                            (selected) =>
+                                              selected.name === due.name &&
+                                              selected.month === due.month
+                                          ) &&
+                                          feeStructure?.frequency === "monthly" // Only include monthly fees
+                                        );
+                                      })
+                                      .reduce((acc, due) => {
+                                        const existing = acc.find(
+                                          (item) =>
+                                            item.name === due.name &&
+                                            item.month === due.month
+                                        );
+                                        if (existing) {
+                                          existing.amount += due.dueAmount;
+                                        } else {
+                                          acc.push({
+                                            name: due.name,
+                                            month: due.month,
+                                            amount: due.dueAmount,
+                                          });
+                                        }
+                                        return acc;
+                                      }, []);
+                                  if (remainingDues.length > 0) {
+                                    return (
+                                      <>
+                                        <tr className="border-b border-blue-100 font-medium text-gray-800">
+                                          <td colSpan="2" className="py-1.5">
+                                            Remaining Dues from Previous Months
+                                          </td>
+                                        </tr>
+                                        {remainingDues.map((due, i) => (
+                                          <tr
+                                            key={`remaining-due-${index}-${i}`}
+                                            className="border-b border-blue-100"
+                                          >
+                                            <td className="text-gray-600 py-1 pl-3">
+                                              {due.name} ({due.month})
+                                            </td>
+                                            <td className="font-medium text-blue-700 py-1 text-right">
+                                              ₹{due.amount.toFixed(2)}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </>
+                                    );
+                                  }
+                                  return null;
+                                })()}
                                 {currentFormData.selectedMonths.length > 0 && (
                                   <>
                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
@@ -2009,27 +2355,30 @@ const CreateFees = () => {
                                         Additional Fees
                                       </td>
                                     </tr>
-                                    {currentFormData.selectedAdditionalFees.map(
-                                      (fee, i) => (
+                                    {currentFormData.selectedAdditionalFees
+                                      .filter(
+                                        (fee) =>
+                                          fee.frequency === "monthly" &&
+                                          fee.dueMonths.some((month) =>
+                                            currentFormData.selectedMonths
+                                              .map((m) => m.value)
+                                              .includes(month)
+                                          )
+                                      )
+                                      .map((fee, i) => (
                                         <tr
                                           key={`add-sum-${index}-${i}`}
                                           className="border-b border-blue-100"
                                         >
                                           <td className="text-gray-600 py-1 pl-3">
-                                            {fee.name}{" "}
-                                            {fee.frequency === "monthly"
-                                              ? `(${fee.type}, ${
-                                                  fee.dueMonths?.join(", ") ||
-                                                  "Selected Months"
-                                                })`
-                                              : `(${fee.type})`}
+                                            {fee.name} ({fee.type},{" "}
+                                            {fee.dueMonths.join(", ")})
                                           </td>
                                           <td className="font-medium text-blue-700 py-1 text-right">
                                             ₹{fee.amount.toFixed(2)}
                                           </td>
                                         </tr>
-                                      )
-                                    )}
+                                      ))}
                                   </>
                                 )}
                                 {currentFormData.selectedOneTimeFees.length >
@@ -2056,6 +2405,19 @@ const CreateFees = () => {
                                       )
                                     )}
                                   </>
+                                )}
+                                {currentFormData.exemption > 0 && ( // New row
+                                  <tr className="border-b border-blue-100">
+                                    <td className="text-green-700 py-1.5">
+                                      Exemption
+                                    </td>
+                                    <td className="font-medium text-green-700 py-1.5 text-right">
+                                      - ₹
+                                      {parseFloat(
+                                        currentFormData.exemption
+                                      ).toFixed(2)}
+                                    </td>
+                                  </tr>
                                 )}
                                 {currentFormData.concession > 0 && (
                                   <tr className="border-b border-blue-100">
