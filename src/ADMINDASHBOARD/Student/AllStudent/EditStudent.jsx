@@ -9,6 +9,7 @@ import {
   editStudentParent,
 } from "../../../Network/AdminApi";
 import { useStateContext } from "../../../contexts/ContextProvider";
+import DatePicker from "../../../Dynamic/DatePicker/DatePicker";
 
 const EditStudent = ({ studentDetails, onFinished }) => {
   const { setIsLoader } = useStateContext();
@@ -128,7 +129,13 @@ const EditStudent = ({ studentDetails, onFinished }) => {
     }));
   };
 
-
+  const handleDateCange = (dateValue, name) => {
+    console.log(`Updating state for ${name}:`, dateValue); // For debugging
+    setStudentData((prevFormData) => ({
+        ...prevFormData,
+        [name]: dateValue, // Update the state with the received date object (or null)
+    }));
+};
   // --- Options for Select ---
   const dynamicOptions = getClass.map((cls) => ({
     label: cls.className,
@@ -222,7 +229,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
       <h1 className="text-xl font-semibold text-gray-700 mb-6 border-b pb-2">Edit Student Profile</h1>
 
         {/* Use studentData for values and ensure names match state keys */}
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <ReactInput type="text" name="studentName" label="Student's Name" onChange={handleOnChange} value={studentData?.studentName || ""} />
         <ReactInput type="email" name="email" label="Student's Email" onChange={handleOnChange} value={studentData?.email || ""} />
         <ReactInput type="number" name="contact" label="Student's Contact" onChange={handleOnChange} value={studentData?.contact || ""} />
@@ -230,14 +237,35 @@ const EditStudent = ({ studentDetails, onFinished }) => {
           // readOnly={true}
           // disabled={true} // Use disabled visually and functionally
           type="text" name="admissionNumber" label="Admission Number"  onChange={handleOnChange} value={studentData?.admissionNumber || ""} />
-        <ReactInput
+        {/* <ReactInput
             type="date"
             label="Date Of Birth"
             onChange={handleOnChange}
             name="dateOfBirth"
             value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("YYYY-MM-DD") : ""} // Format for display
             max={moment().format("YYYY-MM-DD")} // Prevent future dates
-            />
+            /> */}
+            {console.log("studentData?.dateOfBirth",moment(studentData.dateOfBirth).format("DD-mm-yyyy"))}
+              <DatePicker
+                            className="custom-calendar"
+                            placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
+                            label={"DOB"} // Corrected typo
+                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                            name="dateOfBirth"
+                            id="dateOfBirth"
+                            // value={studentData?.dateOfBirth}
+                            // value={studentData?.dateOfBirth ?moment(studentData.dateOfBirth).format("DD-mm-yyyy") : ""}
+                            value={studentData?.dateOfBirth ? new Date(studentData.dateOfBirth) : null}
+
+                            // value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("DD-MM-YYYY") : ""}
+                            // Pass an arrow function to adapt PrimeReact's onChange event
+                            // PrimeReact's event 'e' has the date in 'e.value'
+                            handleChange={(e) => handleDateCange(e.value, "dateOfBirth")}
+                            // showaTime // Pass prop
+                            hourFormat="12" // Pass prop
+                            // removed duplicate/incorrect handleChange props
+                        />
+           
         <ReactSelect name="gender" value={studentData?.gender || ""} handleChange={handleOnChange} label="Gender" dynamicOptions={[{ label: "Male", value: "Male" }, { label: "Female", value: "Female" }, { label: "Other", value: "Other" }]} />
         <ReactSelect
           required={true}

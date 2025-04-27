@@ -21,6 +21,18 @@ export const login = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const design = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.design}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 export const updateAdmin = async (payload) => {
   try {
@@ -631,6 +643,19 @@ export const feesadditional = async (payload) => {
       payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.feesadditional}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const updateAdditionalFee = async (payload,id) => {
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRoutefees}/${id}`, option);
+    // const data = await makeApiRequest(`${apiUrls.feesadditional}/${id}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");

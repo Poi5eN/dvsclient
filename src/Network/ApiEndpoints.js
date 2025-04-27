@@ -3,6 +3,7 @@ export const apiUrls = {
    // class start
    
    login:"login",
+   design:"design",
    
    updateAdmin:"adminRoute/updateAdmin",
    getAdminInfo:"adminRoute/getAdminInfo",

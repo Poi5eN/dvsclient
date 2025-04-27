@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
 import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
-import { dynamicIDCArd } from "../Network/AdminApi";
+import { design, dynamicIDCArd } from "../Network/AdminApi";
 
 // Placeholder component for Button if not available
 // const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
@@ -120,90 +120,135 @@ const ImageTest = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      // If the user cancels file selection, reset the file state
+  
       setUploadedImageFile(null);
-      // Optional: Reset preview to default or keep the last one?
-      // setBackgroundImage("https://via.placeholder.com/300"); // Reset to default
+     
     }
   };
 
-  // 5. Handle Save Click - Construct FormData and log
+  // import { toast } from 'react-toastify'; // Assuming you use react-toastify
+  // Assuming dynamicIDCArd is your API call function
+  // import { dynamicIDCArd } from './api'; 
+  
+  // Assuming frontTemplate and uploadedImageFile are defined in your component's state or scope
+  // let frontTemplate = { ... };
+  // let uploadedImageFile = null; // or a File object
+  
   const handleSaveClick = async () => {
     try {
       const formDataToSend = new FormData();
-
-      // 1. Append the template string
-      // Note: JSON.stringify might not be necessary if the backend expects a plain string.
-      // If it expects JSON, then keep stringify. Let's keep it as in your original code.
-      formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
-
-      // 2. Append the background image file *if* one was uploaded
+  
+      // 1. Stringify the object to JSON
+      const jsonString = JSON.stringify(frontTemplate);
+  
+      // 2. Encode the JSON string to Base64, handling potential Unicode characters
+      //    The `unescape(encodeURIComponent(str))` pattern ensures UTF-8 characters are handled correctly before btoa
+      const base64String = btoa(unescape(encodeURIComponent(jsonString)));
+  
+      // 3. Append the Base64 string
+      formDataToSend.append("frontTemplate", base64String);
+      console.log("Appended frontTemplate as Base64 string."); // Log confirmation
+  
+      // Append the background image if it exists
       if (uploadedImageFile instanceof File) {
-        // The key "backgroundImage" should match what the backend expects for the file upload.
         formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
-         console.log("Appended background image file:", uploadedImageFile);
+        console.log("Appended background image file:", uploadedImageFile);
       } else {
-         console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
-         // Decide if you need to send the current `backgroundImage` URL string under a different key,
-         // e.g., formDataToSend.append("backgroundImageUrl", backgroundImage);
-         // This depends entirely on your backend API design.
+        console.log("No new background image file was uploaded.");
       }
-
-      // --- Console Logging the Payload ---
-      console.log("--- Payload to be sent (FormData entries) ---");
-      // FormData is tricky to log directly. Iterate through its entries:
+  
+      // Log the final FormData content (for debugging)
+      console.log("--- FormData Content ---");
       for (let [key, value] of formDataToSend.entries()) {
-          if (value instanceof File) {
-              console.log(`${key}:`, value); // Logs File object details
-          } else {
-              console.log(`${key}:`, value); // Logs the string value
-          }
+        if (value instanceof File) {
+          console.log(`${key}:`, value); // Log File details
+        } else {
+           // Log the beginning of the base64 string for confirmation, avoid logging the whole potentially huge string
+           console.log(`${key}:`, typeof value === 'string' && value.length > 100 ? value.substring(0, 50) + '... [Base64 String]' : value);
+        }
       }
-      console.log("------------------------------------------");
-      toast.info("Payload logged to console. Check developer tools.");
-
-      const response=await dynamicIDCArd(formDataToSend)
-      if(response?.success){
-        alert("save")
+      console.log("------------------------");
+  
+      toast.info("Payload prepared (check console). Sending request...");
+  
+      // Make the API call
+      const response = await design(formDataToSend); // Replace with your actual API call function
+  
+      if (response?.success) {
+        toast.success("Data saved successfully!"); // Use toast for success too
+        // alert("save"); // Consider using toast instead of alert
+      } else {
+         // Handle non-successful but non-error responses if your API does that
+         toast.warn(response?.message || "Save operation completed, but server indicated partial success or a warning.");
       }
-      // --- Mock API Call (Commented out) ---
-      // console.log("Simulating API call with FormData...");
-      // const response = await fetch('/your-api-endpoint', { // Replace with your actual endpoint
-      //   method: 'POST',
-      //   body: formDataToSend,
-      //   // Headers might be needed depending on backend (e.g., Authorization)
-      //   // Don't set 'Content-Type': 'multipart/form-data', browser does it automatically with FormData
-      // });
-      //
-      // if (!response.ok) {
-      //    // Try to get error message from response body
-      //    let errorData;
-      //    try {
-      //        errorData = await response.json();
-      //    } catch (e) {
-      //        errorData = { message: 'Failed to parse error response.' };
-      //    }
-      //    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
-      // }
-      //
-      // const result = await response.json();
-      // console.log("API Response:", result);
-      //
-      // if (result.success) { // Adjust based on your actual API response structure
-      //   toast.success("Data saved successfully!");
-      // } else {
-      //   toast.error(result?.message || "Save failed.");
-      // }
-      // --- End Mock API Call ---
-
-
+  
     } catch (error) {
       console.error("Error during handleSaveClick:", error);
-      toast.error(error?.message || 'An error occurred. Please try again.');
+      // Attempt to parse API error messages if available
+      const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred during save. Please try again.';
+      toast.error(errorMessage);
     } finally {
-      // Optional: Add loading state handling (e.g., setLoading(false))
+      // Any cleanup code, like resetting a loading state
     }
   };
+  
+  // --- Helper / Placeholder for the API call ---
+  // Replace this with your actual API call implementation
+  async function dynamicIDCArd(formData) {
+    console.log("Simulating API call with FormData...");
+    // Example: using fetch
+    // const response = await fetch('/api/your-endpoint', {
+    //   method: 'POST',
+    //   body: formData,
+    //   // Headers might not be needed for FormData with fetch,
+    //   // the browser sets Content-Type to multipart/form-data automatically
+    // });
+    // if (!response.ok) {
+    //   const errorData = await response.json().catch(() => ({ message: 'Failed to parse error response' }));
+    //   throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    // }
+    // return await response.json();
+  
+    // Placeholder success response for testing:
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+    return { success: true, message: "Data processed successfully" };
+  
+   
+  }
+  // const handleSaveClick = async () => {
+  //   try {
+  //     const formDataToSend = new FormData();
+  //     formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
+  //     if (uploadedImageFile instanceof File) {
+  //       formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
+  //        console.log("Appended background image file:", uploadedImageFile);
+  //     } else {
+  //        console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
+        
+  //     }
+
+  //     for (let [key, value] of formDataToSend.entries()) {
+  //         if (value instanceof File) {
+  //             console.log(`${key}:`, value); 
+  //         } else {
+  //             console.log(`${key}:`, value); 
+  //         }
+  //     }
+     
+  //     toast.info("Payload logged to console. Check developer tools.");
+
+  //     const response=await dynamicIDCArd(formDataToSend)
+  //     if(response?.success){
+  //       alert("save")
+  //     }
+      
+  //   } catch (error) {
+  //     console.error("Error during handleSaveClick:", error);
+  //     toast.error(error?.message || 'An error occurred. Please try again.');
+  //   } finally {
+      
+  //   }
+  // };
 
   return (
     <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
@@ -218,7 +263,7 @@ const ImageTest = () => {
               <div
                 key={student.id}
                 dangerouslySetInnerHTML={{
-                  // Pass student data AND the current background image URL/DataURL
+                 
                   __html: renderTemplate(frontTemplate, student),
                 }}
               />
@@ -245,7 +290,7 @@ const ImageTest = () => {
             style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
             aria-label="Background Image Upload"
           />
-          {/* Display current background image source for clarity */}
+        
           {uploadedImageFile ? (
              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
           ) : (
@@ -258,6 +303,266 @@ const ImageTest = () => {
 };
 
 export default ImageTest;
+
+// import React, { useState } from "react";
+// import Button from "../Dynamic/utils/Button"; // Assuming this path is correct
+// import { toast } from "react-toastify"; // Assuming react-toastify is installed and configured
+// import { dynamicIDCArd } from "../Network/AdminApi";
+
+// // Placeholder component for Button if not available
+// // const Button = ({ name, onClick, color }) => <button style={{ backgroundColor: color, color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={onClick}>{name}</button>;
+
+// const ImageTest = () => {
+//   // State for the background image URL/DataURL (for preview)
+//   const [backgroundImage, setBackgroundImage] = useState(
+//     "https://via.placeholder.com/300"
+//   );
+//   // State to store the actual uploaded File object
+//   const [uploadedImageFile, setUploadedImageFile] = useState(null);
+
+//   const [frontTemplate, setFrontTemplate] = useState(`
+//     <div style='background-image:url(\${backgroundImage});
+//                 background-position: center;
+//                 background-repeat: no-repeat;
+//                 width: 54mm;
+//                 height: 86mm;
+//                 position: relative;
+//                 background-size:cover;
+//                 border:1px solid'>
+      
+//       <div style='margin-left: 40px;
+//                   margin-top: 82px;
+//                   width: 85px;
+//                   height: 95px;
+//                   border: 0.5px solid #ff0000;
+//                   border-radius: 4px;
+//                   overflow:hidden;
+//                   position:absolute;
+//                   background-color: #eee;'> 
+        
+//         <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Image"}' style='width: 100%; height: 100%; object-fit: cover;' alt="Student Photo"/>
+//       </div>
+    
+//       <div style='position: absolute; left: 3px; top: 190px; width: calc(100% - 6px);'> 
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 8px; color:BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'> 
+//           NAME <span style="margin-left: 16px; font-weight: bold;"> : \${name} </span>
+//         </p>
+//         <p style='font-size:6pt; text-transform: uppercase; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           CLASS <span style="margin-left: 13px; font-weight: bold"> : \${class} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           F.Name <span style="margin-left: 9px; font-weight: bold"> : \${father_name} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 1px; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>
+//           Phone <span style="margin-left: 12px; font-weight: bold"> : \${mobile} </span>
+//         </p>
+//         <p style='font-size:6pt; margin-top: 4px; color:BLACK; margin-right: 15px; font-weight: bold; text-transform: uppercase; /* Removed white-space nowrap for address */'>
+//           Address <span style="margin-left:1px; font-weight: bold"> : \${address} </span>
+//         </p>
+//       </div>
+//     </div>
+//   `);
+
+//   // 2. Student details state (Example - typically fetched or passed as props)
+//   // Using allStudent array for rendering multiple cards
+//   const allStudents = [
+//     {
+//       id: 1,
+//       name: "Alice Wonderland",
+//       class: "Grade 5",
+//       father_name: "Mr. Hatter",
+//       mobile: "111222333",
+//       address: "1st Rabbit Hole, Wonderland",
+//       guardianname: "Queen Hearts",
+//       studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" // Example student image
+//     },
+//     {
+//       id: 2,
+//       name: "Bob The Builder",
+//       class: "Construction 101",
+//       father_name: "Mr. Builder Sr.",
+//       mobile: "444555666",
+//       address: "Building Site #5, Townsville",
+//       guardianname: "Wendy",
+//       studentImage: null // Example of no image
+//     },
+//   ];
+
+//   // 3. Template rendering function
+//   const renderTemplate = (template, data) => {
+//     // Replace background image placeholder first
+//     let rendered = template.replace(/\${backgroundImage}/g, backgroundImage); // Use the state for preview
+
+//     // Replace other placeholders (\${key})
+//     rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//         // Provide default empty string if key doesn't exist in data
+//         // Handle specific cases like studentImage which might be null
+//         if (key === 'studentImage') {
+//             return data[key] || "https://via.placeholder.com/85x95?text=No+Image"; // Default placeholder
+//         }
+//         return data[key] || "";
+//     });
+//     return rendered;
+//   };
+
+
+//   // 4. Handle background file change
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       // Store the actual file object for upload
+//       setUploadedImageFile(file);
+
+//       // Read the file as Data URL for preview
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setBackgroundImage(reader.result); // Update preview state
+//       };
+//       reader.onerror = (error) => {
+//         console.error("FileReader error:", error);
+//         toast.error("Error reading file for preview.");
+//         setUploadedImageFile(null); // Clear file state on error
+//       };
+//       reader.readAsDataURL(file);
+//     } else {
+//       // If the user cancels file selection, reset the file state
+//       setUploadedImageFile(null);
+//       // Optional: Reset preview to default or keep the last one?
+//       // setBackgroundImage("https://via.placeholder.com/300"); // Reset to default
+//     }
+//   };
+
+//   // 5. Handle Save Click - Construct FormData and log
+//   const handleSaveClick = async () => {
+//     try {
+//       const formDataToSend = new FormData();
+
+//       // 1. Append the template string
+//       // Note: JSON.stringify might not be necessary if the backend expects a plain string.
+//       // If it expects JSON, then keep stringify. Let's keep it as in your original code.
+//       formDataToSend.append("frontTemplate", JSON.stringify(frontTemplate));
+
+//       // 2. Append the background image file *if* one was uploaded
+//       if (uploadedImageFile instanceof File) {
+//         // The key "backgroundImage" should match what the backend expects for the file upload.
+//         formDataToSend.append("backgroundImage", uploadedImageFile, uploadedImageFile.name);
+//          console.log("Appended background image file:", uploadedImageFile);
+//       } else {
+//          console.log("No new background image file was uploaded. The existing URL/default will be used in the template string, but no file is being sent.");
+//          // Decide if you need to send the current `backgroundImage` URL string under a different key,
+//          // e.g., formDataToSend.append("backgroundImageUrl", backgroundImage);
+//          // This depends entirely on your backend API design.
+//       }
+
+//       // --- Console Logging the Payload ---
+//       console.log("--- Payload to be sent (FormData entries) ---");
+//       // FormData is tricky to log directly. Iterate through its entries:
+//       for (let [key, value] of formDataToSend.entries()) {
+//           if (value instanceof File) {
+//               console.log(`${key}:`, value); // Logs File object details
+//           } else {
+//               console.log(`${key}:`, value); // Logs the string value
+//           }
+//       }
+//       console.log("------------------------------------------");
+//       toast.info("Payload logged to console. Check developer tools.");
+
+//       const response=await dynamicIDCArd(formDataToSend)
+//       if(response?.success){
+//         alert("save")
+//       }
+//       // --- Mock API Call (Commented out) ---
+//       // console.log("Simulating API call with FormData...");
+//       // const response = await fetch('/your-api-endpoint', { // Replace with your actual endpoint
+//       //   method: 'POST',
+//       //   body: formDataToSend,
+//       //   // Headers might be needed depending on backend (e.g., Authorization)
+//       //   // Don't set 'Content-Type': 'multipart/form-data', browser does it automatically with FormData
+//       // });
+//       //
+//       // if (!response.ok) {
+//       //    // Try to get error message from response body
+//       //    let errorData;
+//       //    try {
+//       //        errorData = await response.json();
+//       //    } catch (e) {
+//       //        errorData = { message: 'Failed to parse error response.' };
+//       //    }
+//       //    throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+//       // }
+//       //
+//       // const result = await response.json();
+//       // console.log("API Response:", result);
+//       //
+//       // if (result.success) { // Adjust based on your actual API response structure
+//       //   toast.success("Data saved successfully!");
+//       // } else {
+//       //   toast.error(result?.message || "Save failed.");
+//       // }
+//       // --- End Mock API Call ---
+
+
+//     } catch (error) {
+//       console.error("Error during handleSaveClick:", error);
+//       toast.error(error?.message || 'An error occurred. Please try again.');
+//     } finally {
+//       // Optional: Add loading state handling (e.g., setLoading(false))
+//     }
+//   };
+
+//   return (
+//     <div style={{ margin: "2rem auto", fontFamily: "sans-serif", padding: "1rem" }}>
+//       <h1>ID Card Generator</h1>
+
+//       <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginBottom: "2rem" }}>
+//         {/* Preview Area */}
+//         <div style={{ flex: "1 1 500px", border: "2px solid #ccc", borderRadius: "8px", padding: "1rem", minWidth: "300px" }}>
+//           <h2>Preview</h2>
+//           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+//             {allStudents.map((student) => (
+//               <div
+//                 key={student.id}
+//                 dangerouslySetInnerHTML={{
+//                   // Pass student data AND the current background image URL/DataURL
+//                   __html: renderTemplate(frontTemplate, student),
+//                 }}
+//               />
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Controls Area */}
+//         <div style={{ flex: "1 1 400px", backgroundColor: "#f0f0f0", padding: "1rem", borderRadius: "8px", minWidth: "300px" }}>
+//           <Button color={"green"} name="Log Payload to Console" onClick={handleSaveClick} />
+//           <h2 style={{ marginTop: '1rem' }}>Edit Front Template</h2>
+//           <textarea
+//             rows={15}
+//             style={{ width: "100%", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", padding: "1rem", border: "2px solid gray", boxSizing: 'border-box', fontSize: '0.8em' }}
+//             value={frontTemplate}
+//             onChange={(e) => setFrontTemplate(e.target.value)}
+//             aria-label="Front Template Editor"
+//           />
+//           <h3>Change Background Image</h3>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem", boxSizing: 'border-box' }}
+//             aria-label="Background Image Upload"
+//           />
+//           {/* Display current background image source for clarity */}
+//           {uploadedImageFile ? (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using uploaded file: {uploadedImageFile.name}</i></p>
+//           ) : (
+//              <p style={{fontSize: '0.8em', marginTop: '5px', wordBreak: 'break-all'}}><i>Using default/previous background: {backgroundImage.substring(0, 50)}...</i></p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ImageTest;
 
 
 // import React, { useState } from "react";

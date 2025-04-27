@@ -1,11 +1,11 @@
 import { toast } from "react-toastify";
-import { MdDelete } from "react-icons/md";
-
+import { MdDelete,MdEdit} from "react-icons/md";
+import { FaEdit, FaEye, FaUsersCog } from "react-icons/fa";
 import Modal from "../../../Dynamic/Modal";
 import { useStateContext } from "../../../contexts/ContextProvider";
 import { useEffect, useState } from "react";
 import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
-import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees } from "../../../Network/AdminApi";
+import { AdminGetAllClasses, deletefees, feesadditional, getAdditionalfees, updateAdditionalFee } from "../../../Network/AdminApi";
 import Table from "../../../Dynamic/Table";
 import Button from "../../../Dynamic/utils/Button";
 import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
@@ -98,8 +98,6 @@ function AdditionalFee() {
     setSelectedClass(e.target.value); // Only update the filter state
   };
 
-  // --- Prepare Class Options for Select Dropdowns ---
-  // Add "All Classes" option for the filter dropdown
   const filterClassOptions = [
     { label: "All Classes", value: "" }, // Option to clear filter
     ...getClass.map((cls) => ({
@@ -118,12 +116,9 @@ function AdditionalFee() {
   // --- Fee Type Options ---
   const feeType=[
     { label:"Select Fee Type",value:"" },
-    // { label:"Exam Fee",value:"Exam Fee" },
     { label:"One Time",value:"One Time" },
     { label:"Monthly",value:"Monthly" },
-    // { label:"Quarterly",value:"Quarterly" },
-    // { label:"Half Yearly",value:"Half Yearly" },
-    // { label:"Annually",value:"Annually" },
+    
   ];
 
   // --- Handler for form input changes (including modal dropdowns) ---
@@ -137,39 +132,101 @@ function AdditionalFee() {
 
 
   // --- Handle Form Submission (Modal) ---
-  const handleSubmit = async () => {
-    // Basic Validation
-     if (!formData.className || !formData.name || !formData.feeType || !formData.amount) {
-       toast.error("Please fill in all required fields.");
-       return;
-     }
+  // const handleSubmit = async () => {
+  //   // Basic Validation
+  //    if (!formData.className || !formData.name || !formData.feeType || !formData.amount) {
+  //      toast.error("Please fill in all required fields.");
+  //      return;
+  //    }
 
-    const payload={
-      className:formData?.className,
-      name:formData?.name,
-      feeType:formData?.feeType,
-      amount:formData?.amount,
-      // frequency:String(formData?.feeType==="One Time"?"one-time":"monthly"), // Consider if backend needs this
-    };
+  //   const payload={
+  //     className:formData?.className,
+  //     name:formData?.name,
+  //     feeType:formData?.feeType,
+  //     amount:formData?.amount,
+  //   };
+
+  //   setIsLoader(true);
+  //   try {
+  //     const response = await feesadditional(payload); // Assuming only create for now
+
+  //     if (response?.success) {
+  //       toast.success(`Fees ${editMode ? 'updated' : 'set'} successfully!`);
+  //       getfee(); // Refresh the master list (and trigger filter useEffect)
+  //       setModalOpen(false);
+  //       // Reset form only after successful submission
+  //       setFormData({ className: "", name: "", feeType: "", amount: "" });
+  //       setEditMode(false); // Reset edit mode
+  //     } else {
+  //       toast.error(response?.message || `Failed to ${editMode ? 'update' : 'set'} fees.`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting fee:", error);
+  //     toast.error(`An error occurred while ${editMode ? 'updating' : 'submitting'} the form.`);
+  //   } finally {
+  //     setIsLoader(false);
+  //   }
+  // };
+
+  const handleSubmit = async () => {
+    // Basic Validation (remains the same)
+    if (!formData.className || !formData.name || !formData.feeType || !formData.amount) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    // Add validation for ID if in edit mode (optional but good practice)
+    if (editMode && !formData.id) {
+        toast.error("Cannot update fee: Missing fee ID.");
+        console.error("Attempted to update fee without an ID in formData:", formData);
+        return;
+    }
+
 
     setIsLoader(true);
     try {
-      // Using editMode state is good practice if you plan to add edit functionality later
-      // const response = editMode ? await updateFeeApi(formData.id, payload) : await feesadditional(payload);
-      const response = await feesadditional(payload); // Assuming only create for now
+      let response;
+      let payload;
+
+      if (editMode) {
+        // --- Payload for UPDATE ---
+        // id: formData.id,
+        payload = {
+          // id: formData.id, // Include the ID for the update API
+          className: formData.className,
+          name: formData.name,
+          feeType: formData.feeType,
+          amount: formData.amount,
+        };
+        console.log("Updating fee with payload:", payload); // Debug log
+        // console.log("id", id); // Debug log
+        // --- Call UPDATE API ---
+        response = await updateAdditionalFee(payload,formData.id);
+      } else {
+        // --- Payload for CREATE ---
+        payload = {
+          // No ID for create
+          className: formData.className,
+          name: formData.name,
+          feeType: formData.feeType,
+          amount: formData.amount,
+        };
+        console.log("Creating fee with payload:", payload); // Debug log
+        // --- Call CREATE API ---
+        response = await feesadditional(payload);
+      }
 
       if (response?.success) {
         toast.success(`Fees ${editMode ? 'updated' : 'set'} successfully!`);
-        getfee(); // Refresh the master list (and trigger filter useEffect)
+        getfee(); // Refresh the master list
         setModalOpen(false);
-        // Reset form only after successful submission
-        setFormData({ className: "", name: "", feeType: "", amount: "" });
+        // Reset form AND id after successful submission
+        setFormData({ id: null, className: "", name: "", feeType: "", amount: "" });
         setEditMode(false); // Reset edit mode
       } else {
         toast.error(response?.message || `Failed to ${editMode ? 'update' : 'set'} fees.`);
       }
     } catch (error) {
-      console.error("Error submitting fee:", error);
+      console.error(`Error ${editMode ? 'updating' : 'submitting'} fee:`, error);
       toast.error(`An error occurred while ${editMode ? 'updating' : 'submitting'} the form.`);
     } finally {
       setIsLoader(false);
@@ -236,11 +293,17 @@ function AdditionalFee() {
     amount: val.amount,
     action: (
       <div className="flex justify-center gap-2">
-        {/* Add Edit button later if needed
-         <span onClick={() => handleEdit(val)} className="cursor-pointer">
+         <button
+                  title="Edit Student"
+                  onClick={() => handleEdit(val)}
+                  className="text-yellow-600 hover:text-yellow-800 text-lg"
+                >
+                  <FaEdit />
+                </button>
+         {/* <span onClick={() => handleEdit(val)} className="cursor-pointer">
            <MdEdit className="text-[25px] text-blue-700" />
-         </span>
-        */}
+         </span> */}
+        
         <span onClick={() => handleDelete(val?.feeStructureId)} className="cursor-pointer">
           <MdDelete className="text-[25px] text-red-700" />
         </span>
