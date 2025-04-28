@@ -42,6 +42,7 @@ import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees
 import DeActiveStudent from "./ADMINDASHBOARD/Student/AllStudent/DeActiveStudent";
 import BulkSetFees from "./ADMINDASHBOARD/Fees/BulkSetFees";
 import BulkFeesSet from "./ADMINDASHBOARD/Fees/BulkFeesSet";
+import ClassExemption from "./ADMINDASHBOARD/Fees/ClassExemption";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -278,6 +279,7 @@ function App() {
               <Route path="newregistration/:registrationNumber" element={<ViewReg />} />
               <Route path="create-fees" element={<CreateFees />} />
               <Route path="bulk-fees" element={<BulkFeesSet />} />
+              <Route path="exemption" element={<ClassExemption />} />
               <Route path="dues-status" element={<DuesStatus />} />
               <Route path="admission" element={<Registration />} />
               <Route path="admission/bulkadmission" element={<BulkAdmission />} />
