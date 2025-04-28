@@ -101,7 +101,9 @@ const Topbar = () => {
             className={`${normalLinkClass} items-center w-full`}
             style={{ backgroundColor: openDropdownIndex === index ? "rgba(0,0,0,0.05)" : "" }}
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2"
+            style={{color:currentColor}}
+            >
               {item.icon}
               {item.name}
             </span>
@@ -113,7 +115,7 @@ const Topbar = () => {
             onClick={closeMenus}
             style={({ isActive }) => ({
               backgroundColor: isActive ? currentColor : "",
-              color: isActive ? "white" : "",
+              color: isActive ? "white" : currentColor,
             })}
             className={({ isActive }) => `${isActive ? activeLinkClass : normalLinkClass}`}
           >

@@ -448,18 +448,15 @@ studentCountry: payload.country ||"",
 
              <DatePicker
                             className="custom-calendar"
-                            placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
-                            label={"DOB"} // Corrected typo
+                            placeholder="" 
+                            label={"DOB"}
                             respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
                             name="studentDateOfBirth"
                             id="studentDateOfBirth"
                             value={payload?.studentDateOfBirth}
-                            // Pass an arrow function to adapt PrimeReact's onChange event
-                            // PrimeReact's event 'e' has the date in 'e.value'
                             handleChange={(e) => handleDateCange(e.value, "studentDateOfBirth")}
-                            // showaTime // Pass prop
-                            hourFormat="12" // Pass prop
-                            // removed duplicate/incorrect handleChange props
+                            // showaTime 
+                            hourFormat="12"
                         />
            
            

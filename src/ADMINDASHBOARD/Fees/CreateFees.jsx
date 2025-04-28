@@ -18,6 +18,8 @@ import { FeeResponse } from "../../Dynamic/utils/Message";
 import generatePdf from "../../Dynamic/utils/pdfGenerator";
 import FeeRecipt from "./FeeRecipt";
 import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
+import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
+import DatePicker from "../../Dynamic/DatePicker/DatePicker";
 // import { Switch } from "@headlessui/react"; // Ensure you have @headlessui/react installed
 
 // Replace the ExemptionToggle component with this:
@@ -44,7 +46,7 @@ const ExemptionToggle = ({ isExempt, onChange, studentName }) => {
           />
         </div>
       </div>
-      <span className="text-sm font-medium text-gray-700">
+      <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
         {isExempt ? `Exempt for ${studentName}` : `Mark as Exempt`}
       </span>
     </label>
@@ -1496,7 +1498,7 @@ const CreateFees = () => {
         totalAmount: childFormData.isExempt
           ? 0
           : parseFloat(childFormData.totalAmount) || 0,
-        date: moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+        date: childFormData.date?moment(childFormData.date, "YYYY-MM-DD").format("DD-MM-YYYY") :moment(new Date()).format("DD-MM-YYYY"),
         paymentMode: childFormData.paymentMode,
         transactionId: childFormData.transactionId || undefined,
         chequeNumber: childFormData.chequeBookNo || undefined,
@@ -1713,9 +1715,9 @@ const CreateFees = () => {
   };
 
   return (
-    <div className="px-4 pb-2 min-h-screen bg-gray-100">
+    <div className="px-4 pb-2 min-h-screen ">
       <div className=" mx-auto">
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 ">
           <ReactInput
             type="text"
             label="Search by Name"
@@ -1736,7 +1738,7 @@ const CreateFees = () => {
 
         {filteredStudents.length > 0 && (
           <div className="relative">
-            <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
+            <div className="absolute z-30 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
               <table className="w-full border-collapse">
                 <thead className="bg-gray-100 sticky top-0 z-20">
                   <tr>
@@ -1788,11 +1790,11 @@ const CreateFees = () => {
         )}
 
         {showChildForms && parentData.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+          <div className=" pt-2 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+              <h5 className="text-sm font-semibold text-gray-800">
                 Selected Student(s) Fee Payment
-              </h2>
+              </h5>
               {selectedChildrenIndices.length > 1 && (
                 <Button
                   name="Pay for Siblings Together"
@@ -1882,7 +1884,7 @@ const CreateFees = () => {
                     } overflow-hidden`}
                   >
                     <div
-                      className={`flex items-center px-4 py-3 border-b ${
+                      className={`flex items-center px-4 py-1 border-b ${
                         isSelected ? "bg-blue-50" : "bg-gray-50"
                       } cursor-pointer`}
                       onClick={() => {
@@ -1960,13 +1962,13 @@ const CreateFees = () => {
                       }`}
                     >
                       {showForm && (
-                        <div className="px-4 py-4 border-t flex flex-col lg:flex-row gap-6 bg-white">
+                        <div className="px-1 py-1 border-t flex flex-col lg:flex-row gap-1 bg-white">
                           <form
                             onSubmit={(e) => handleSubmit(e, index)}
                             className="flex-grow lg:w-2/3 space-y-5 mb-6 lg:mb-0"
                             noValidate
                           >
-                            <div className="border rounded-md p-3 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="border rounded-md p-1 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Regular Monthly Fees
@@ -1988,9 +1990,9 @@ const CreateFees = () => {
                                   containerClassName="w-full"
                                   menuClassName="w-full min-w-[200px] whitespace-normal"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                {/* <p className="text-xs text-gray-500 mt-1">
                                   Select consecutive months with dues.
-                                </p>
+                                </p> */}
                               </div>
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -2013,9 +2015,9 @@ const CreateFees = () => {
                                   containerClassName="w-full"
                                   menuClassName="w-full min-w-[200px] whitespace-normal"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                {/* <p className="text-xs text-gray-500 mt-1">
                                   Monthly fees auto-selected with months.
-                                </p>
+                                </p> */}
                               </div>
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -2038,16 +2040,18 @@ const CreateFees = () => {
                                   containerClassName="w-full"
                                   menuClassName="w-full min-w-[200px] whitespace-normal"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                {/* <p className="text-xs text-gray-500 mt-1">
                                   Select one-time fees currently due.
-                                </p>
+                                </p> */}
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* <div className="grid grid-cols-2  sm:grid-cols-5  gap-2"> */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+
                               <ReactInput
                                 type="number"
-                                label="Concession (-)"
+                                label="Concession"
                                 value={currentFormData.concession}
                                 onChange={(e) =>
                                   handleInputChange(
@@ -2063,7 +2067,7 @@ const CreateFees = () => {
                               />
                               <ReactInput
                                 type="number"
-                                label="Exemption (-)"
+                                label="Exemption"
                                 value={currentFormData.exemption}
                                 onChange={(e) =>
                                   handleInputChange(
@@ -2078,7 +2082,7 @@ const CreateFees = () => {
                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                 disabled={!currentFormData.isExempt}
                               />
-                              <div>
+                              {/* <div>
                                 <label className="block text-sm font-medium text-gray-700">
                                   Payment Mode (*)
                                 </label>
@@ -2099,10 +2103,28 @@ const CreateFees = () => {
                                   <option value="Cheque">Cheque</option>
                                   <option value="Card">Card</option>
                                 </select>
-                              </div>
+                              </div> */}
+                               <ReactSelect
+                                        name="filterClass"
+                                        value={currentFormData.paymentMode}
+                                        handleChange={(e) =>
+                                          handleInputChange(
+                                            index,
+                                            "paymentMode",
+                                            e.target.value
+                                          )
+                                        }
+                                        label="Payment Mode "
+                                        dynamicOptions={[
+                                          { label: "Cash", value: "Cash" },
+                                          { label: "Online", value: "Online" },
+                                          { label: "Cheque", value: "Cheque" },
+                                          { label: "Card", value: "Card" },
+                                        ]}
+                                      />
                               <ReactInput
                                 type="number"
-                                label={`Total Amount to Pay (*) ${
+                                label={`Amount to Pay  ${
                                   selectedChildrenIndices.length > 1
                                     ? `(for ${child.studentName})`
                                     : ""
@@ -2125,10 +2147,28 @@ const CreateFees = () => {
                               
                               {/* // Replace the div with className="flex items-end
                               gap-4" and its children with: */}
-                              <div className="sm:col-span-1">
+                               <DatePicker
+                                                          className="custom-calendar"
+                                                          placeholder="" 
+                                                           label="Payment Date"
+                                                          respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                                                          name="date"
+                                                          id="date"
+                                                          value={currentFormData.date ? new Date(currentFormData.date) : new Date()}
+                                                          handleChange={(e) =>
+                                                            handleInputChange(
+                                                              index,
+                                                              "date",
+                                                              e.target.value
+                                                            )
+                                                          }
+                                                          // showaTime 
+                                                          hourFormat="12"
+                                                      />
+                              {/* <div className="sm:col-span-1">
                                 <ReactInput
                                   type="date"
-                                  label="Payment Date (*)"
+                                  label="Payment Date"
                                   value={currentFormData.date}
                                   onChange={(e) =>
                                     handleInputChange(
@@ -2141,7 +2181,7 @@ const CreateFees = () => {
                                   max={moment().format("YYYY-MM-DD")}
                                   className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                 />
-                              </div>
+                              </div> */}
                               <div className="sm:col-span-1 flex justify-end items-center">
                                 <ExemptionToggle
                                   isExempt={currentFormData.isExempt}
@@ -2155,7 +2195,7 @@ const CreateFees = () => {
                                 currentFormData.paymentMode === "Card") && (
                                 <ReactInput
                                   type="text"
-                                  label="Transaction ID (*)"
+                                  label="Transaction ID "
                                   value={currentFormData.transactionId}
                                   onChange={(e) =>
                                     handleInputChange(
@@ -2171,7 +2211,7 @@ const CreateFees = () => {
                               {currentFormData.paymentMode === "Cheque" && (
                                 <ReactInput
                                   type="text"
-                                  label="Cheque Number (*)"
+                                  label="Cheque Number"
                                   value={currentFormData.chequeBookNo}
                                   onChange={(e) =>
                                     handleInputChange(
@@ -2199,8 +2239,8 @@ const CreateFees = () => {
                                     e.target.value
                                   )
                                 }
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                rows="2"
+                                className=" block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                rows="1"
                                 placeholder="Optional remarks about payment..."
                               />
                             </div>
@@ -2216,28 +2256,28 @@ const CreateFees = () => {
                             )}
                           </form>
 
-                          <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-4 bg-blue-50 lg:ml-4 mt-4 lg:mt-0">
-                            <h3 className="text-base font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-3">
+                          <div className="flex-shrink-0 lg:w-1/3 border rounded-md p-1 bg-blue-50 lg:ml-4  lg:mt-0">
+                            <h3 className="text-sm font-semibold text-blue-900 border-b border-blue-200 ">
                               Payment Summary
                             </h3>
                             <table className="w-full text-sm">
                               <tbody>
                                 {currentFormData.pastDues > 0 && (
                                   <tr className="border-b border-blue-100">
-                                    <td className="text-gray-700 py-1.5">
+                                    <td className="text-gray-700 py-1">
                                       Past Dues
                                     </td>
-                                    <td className="font-medium text-purple-700 py-1.5 text-right">
+                                    <td className="font-medium text-purple-700 py-1 text-right">
                                       ₹{currentFormData.pastDues.toFixed(2)}
                                     </td>
                                   </tr>
                                 )}
                                 {currentFormData.lateFine > 0 && (
                                   <tr className="border-b border-blue-100">
-                                    <td className="text-gray-700 py-1.5">
+                                    <td className="text-gray-700 py-1">
                                       Late Fines
                                     </td>
-                                    <td className="font-medium text-orange-700 py-1.5 text-right">
+                                    <td className="font-medium text-orange-700 py-1 text-right">
                                       ₹{currentFormData.lateFine.toFixed(2)}
                                     </td>
                                   </tr>
@@ -2301,7 +2341,7 @@ const CreateFees = () => {
                                     return (
                                       <>
                                         <tr className="border-b border-blue-100 font-medium text-gray-800">
-                                          <td colSpan="2" className="py-1.5">
+                                          <td colSpan="2" className="py-1">
                                             Remaining Dues from Previous Months
                                           </td>
                                         </tr>
@@ -2326,7 +2366,7 @@ const CreateFees = () => {
                                 {currentFormData.selectedMonths.length > 0 && (
                                   <>
                                     <tr className="border-b border-blue-100 font-medium text-gray-800">
-                                      <td colSpan="2" className="py-1.5">
+                                      <td colSpan="2" className="py-[2px]">
                                         Regular Fees
                                       </td>
                                     </tr>
@@ -2336,10 +2376,10 @@ const CreateFees = () => {
                                           key={`reg-sum-${index}-${i}`}
                                           className="border-b border-blue-100"
                                         >
-                                          <td className="text-gray-600 py-1 pl-3">
+                                          <td className="text-gray-600 py-[2px] pl-3">
                                             {monthState.value}
                                           </td>
-                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                          <td className="font-medium text-blue-700 py-[2px] text-right">
                                             ₹{(monthState?.due || 0).toFixed(2)}
                                           </td>
                                         </tr>
@@ -2370,11 +2410,11 @@ const CreateFees = () => {
                                           key={`add-sum-${index}-${i}`}
                                           className="border-b border-blue-100"
                                         >
-                                          <td className="text-gray-600 py-1 pl-3">
+                                          <td className="text-gray-600 py-[2px] pl-3">
                                             {fee.name} ({fee.type},{" "}
                                             {fee.dueMonths.join(", ")})
                                           </td>
-                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                          <td className="font-medium text-blue-700 py-[2px] text-right">
                                             ₹{fee.amount.toFixed(2)}
                                           </td>
                                         </tr>
@@ -2395,10 +2435,10 @@ const CreateFees = () => {
                                           key={`one-time-sum-${index}-${i}`}
                                           className="border-b border-blue-100"
                                         >
-                                          <td className="text-gray-600 py-1 pl-3">
+                                          <td className="text-gray-600 py-[2px] pl-3">
                                             {fee.name}
                                           </td>
-                                          <td className="font-medium text-blue-700 py-1 text-right">
+                                          <td className="font-medium text-blue-700 py-[2px] text-right">
                                             ₹{(fee?.dueAmount || 0).toFixed(2)}
                                           </td>
                                         </tr>
@@ -2408,10 +2448,10 @@ const CreateFees = () => {
                                 )}
                                 {currentFormData.exemption > 0 && ( // New row
                                   <tr className="border-b border-blue-100">
-                                    <td className="text-green-700 py-1.5">
+                                    <td className="text-green-700 py-[2px]">
                                       Exemption
                                     </td>
-                                    <td className="font-medium text-green-700 py-1.5 text-right">
+                                    <td className="font-medium text-green-700 py-[2px] text-right">
                                       - ₹
                                       {parseFloat(
                                         currentFormData.exemption
@@ -2421,10 +2461,10 @@ const CreateFees = () => {
                                 )}
                                 {currentFormData.concession > 0 && (
                                   <tr className="border-b border-blue-100">
-                                    <td className="text-green-700 py-1.5">
+                                    <td className="text-green-700 py-[2px]">
                                       Concession
                                     </td>
-                                    <td className="font-medium text-green-700 py-1.5 text-right">
+                                    <td className="font-medium text-green-700 py-[2px] text-right">
                                       - ₹
                                       {parseFloat(
                                         currentFormData.concession
@@ -2435,10 +2475,10 @@ const CreateFees = () => {
                               </tbody>
                               <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
                                 <tr>
-                                  <td className="pt-2 font-semibold text-blue-900 py-1.5">
+                                  <td className="pt-2 font-semibold text-blue-900 py-[2px]">
                                     Total Payable
                                   </td>
-                                  <td className="pt-2 font-bold text-blue-900 py-1.5 text-right">
+                                  <td className="pt-2 font-bold text-blue-900 py-[2px] text-right">
                                     ₹
                                     {calculateNetPayableAmount(index).toFixed(
                                       2
@@ -2449,10 +2489,10 @@ const CreateFees = () => {
                                   0 && (
                                   <>
                                     <tr>
-                                      <td className="text-gray-700 py-1.5">
+                                      <td className="text-gray-700 py-[2px]">
                                         Amount Paying
                                       </td>
-                                      <td className="font-medium text-black py-1.5 text-right">
+                                      <td className="font-medium text-black py-[2px] text-right">
                                         ₹
                                         {parseFloat(
                                           currentFormData.totalAmount
@@ -2460,10 +2500,10 @@ const CreateFees = () => {
                                       </td>
                                     </tr>
                                     <tr>
-                                      <td className="font-semibold text-red-700 py-1.5">
+                                      <td className="font-semibold text-red-700 py-[2px]">
                                         Remaining Dues
                                       </td>
-                                      <td className="font-bold text-red-700 py-1.5 text-right">
+                                      <td className="font-bold text-red-700 py-[2px] text-right">
                                         ₹
                                         {calculateAutoDistribution(
                                           index
@@ -2504,8 +2544,8 @@ const CreateFees = () => {
         {showChildForms &&
           childFeeHistory?.monthlyStatus?.length > 0 &&
           selectedChildrenIndices.length > 0 && (
-            <div className="mt-8 border-t border-gray-300 pt-6">
-              <h2 className="text-xl font-semibold text-center text-gray-800 mb-4">
+            <div className=" mt-2 border-t border-gray-300 ">
+              <h2 className="text-xl font-semibold text-center text-gray-800">
                 Fee History for{" "}
                 {childFeeHistory?.studentName || "Selected Student"} (
                 {childFeeHistory?.session || session})

@@ -117,7 +117,7 @@
 .labelPicker {
   position: absolute;
   background-color: white;
-  top: -5px !important;
+  top: -7px !important;
   /* padding: 5px 3px !important; */
   padding: 5px 3px !important;
   line-height: 3px;
@@ -255,101 +255,84 @@
 
 } */
 
-/* === General MultiSelect Styling === */
 
-/* Style the main component wrapper/input area */
-
+/* 
 .p-multiselect-filter-container .p-inputtext {
-  /* padding: 0.5rem 0.75rem; */
+  
   border: 1px solid #ced4da;
   border-radius: 4px;
   width: 100%;
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 .multiselect .p-multiselect {
-  border: 1px solid #ced4da; /* Softer border color */
-  border-radius: 6px; /* Slightly rounded corners */
-  background-color: #ffffff; /* Clean white background */
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transitions */
-  width: 100%; /* Make it take full width of its container */
-  min-height: 40px; /* Ensure a minimum height */
+  border: 1px solid #ced4da; 
+  border-radius: 6px; 
+  background-color: #ffffff; 
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+  width: 100%;
+  min-height: 40px;
   display: flex;
   align-items: center;
 }
 
-/* Style when the component is focused */
+
 .multiselect .p-multiselect.p-focus {
-  border-color: #80bdff; /* Highlight border on focus */
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Add a glow effect */
+  border-color: #80bdff; 
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); 
 }
 
-/* Style the placeholder and selected items text area */
+
 .multiselect .p-multiselect-label {
-  padding: 0.6rem 0.8rem; /* Adjust padding for better spacing */
-  color: #ffffff; /* Standard text color */
+  padding: 0.6rem 0.8rem; 
+  color: #ffffff; 
 }
 
-/* Style the placeholder text specifically */
+
 .p-placeholder {
-  color: #6c757d; /* Lighter color for placeholder */
+  color: #6c757d; 
 }
 
-/* Style the dropdown trigger icon */
+
 .multiselect .p-multiselect-trigger {
-  color: #6c757d; /* Icon color */
+  color: #6c757d; 
 }
 
-/* === Dropdown Panel Styling === */
-
-/* Style the dropdown panel itself */
 .p-multiselect-panel {
-  border: 1px solid #dee2e6; /* Consistent border */
-  border-radius: 6px; /* Match component rounding */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  border: 1px solid #dee2e6;
+  border-radius: 6px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
 }
 
-/* Style the header (filter, select all) */
 
-
-/* Style the filter input */
-/* .p-multiselect-filter-container .p-inputtext {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  width: 100%; 
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-} */
 .p-multiselect-filter-container .p-inputtext:focus {
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Style the filter icon (if present) */
 .p-multiselect-filter-icon {
- margin-left: -25px; /* Position icon inside the input */
+ margin-left: -25px; 
  color:#6c757d;
 }
 
-/* Style the "Select All" checkbox container */
+
 .p-multiselect-select-all {
-  margin-right: 0.5rem; /* Space before the label */
+  margin-right: 0.5rem; 
 }
 
-/* === Dropdown Item Styling === */
 
 .p-multiselect-item .p-checkbox {
-  /* margin-right: 0.5rem; */
+ 
 }
 
-/* Style item on hover (when NOT selected) */
+
 .p-multiselect-item:not(.p-highlight):hover {
-  background-color: #e9ecef; /* Light grey hover background */
-  color: #1d2124; /* Slightly darker text on hover */
+  background-color: #e9ecef; 
+  color: #1d2124; 
 }
 
 
-/* Style selected items */
+
 .p-multiselect-item.p-highlight {
   background-color: #56a1f1;
   color: #ffffff;
@@ -384,59 +367,55 @@
   display: flex
 ;
   align-items: center;
-  /* gap: 0.5rem; */
+
 }
 
 .p-multiselect-label  .multiselect .p-multiselect-label-container{
-/* width: 200px; */
+
 width: 270px;
 }
 
-/* Style the checkbox box */
+
 .p-checkbox .p-checkbox-box {
   border: 1px solid #adb5bd;
   border-radius: 4px;
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Style the checkbox box when checked */
+
 .p-checkbox .p-checkbox-box.p-highlight {
   border-color: #007bff;
   background: #007bff;
 }
 
-/* Style the check icon inside the checkbox */
+
 .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon {
   color: #ffffff;
 }
 
 
-/* === Required Field Styling === */
-
-/* Add a visual indicator for required fields */
 .multiselect.required-fields .p-multiselect {
-  border-left: 3px solid #dc3545; /* Red indicator on the left */
-  /* Or use border-color: #dc3545; for the whole border */
+  border-left: 3px solid #dc3545; 
+
 }
 
-/* === Selected Label Chips (Tokens) in the input === */
+
 .p-multiselect-token {
   padding: 0.25rem 0.5rem;
-  background-color: #e9ecef; /* Light background for chips */
+  background-color: #e9ecef; 
   color: #495057;
   border-radius: 4px;
-  margin: 2px; /* Spacing between chips */
+  margin: 2px;
 }
 
 .p-multiselect-token .p-multiselect-token-icon {
-  margin-left: 0.5rem; /* Space before the close icon */
+  margin-left: 0.5rem; 
   cursor: pointer;
 }
 .p-multiselect-token .p-multiselect-token-icon:hover {
-  color: #dc3545; /* Red hover for close icon */
+  color: #dc3545; 
 }
 
-/* === Close Icon in Header === */
 .p-multiselect-close {
   color: #6c757d;
   transition: color 0.2s;
@@ -446,17 +425,172 @@ width: 270px;
 }
 .p-multiselect-items-wrapper{
   max-height: 180px;
-}
-/* ======================================== */
-/* --- Style the Custom DatePicker --- */
-/* Apply styles only when p-calendar has the 'custom-calendar' class */
-/* ======================================== */
+} */
 
-/* --- 1. Input Field Styling --- */
+
+
+
+/* custom.css */
+.p-multiselect {
+  height: 26px;
+  /* border: 2px solid #4CAF50;  */
+  /* border-radius: 10px;     */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.p-multiselect .p-multiselect-label-container {
+  background-color: #f0f0f0;
+  /* Change background color of the label container */
+}
+
+.p-multiselect .p-multiselect-label {
+  font-size: 10px !important;
+  padding: 0px 0px 0px 12px !important;
+  background: #fff !important;
+}
+
+.p-multiselect .p-multiselect-items .p-multiselect-item {
+  font-size: 16px;
+  /* Change font size of the items */
+  color: #333;
+  /* Change font color of the items */
+}
+
+.p-multiselect .p-multiselect-items .p-multiselect-item.p-highlight {
+  background-color: #e0e0e0;
+  /* Change background color of the selected item */
+}
+
+.p-multiselect .p-multiselect-token {
+  background-color: #4caf50;
+  /* Change background color of the tokens */
+  color: #fff;
+  /* Change text color of the tokens */
+}
+
+.p-multiselect .p-multiselect-token-icon {
+  color: #fff;
+  /* Change color of the token icons */
+}
+
+.p-multiselect-item {
+  align-items: center;
+  padding: 5px 10px;
+  background: aliceblue;
+}
+
+.p-checkbox .p-checkbox-box {
+  width: 15px !important;
+  height: 15px !important;
+  border-radius: 1px !important;
+}
+
+.p-multiselect-item {
+  align-items: center;
+  padding: 5px 10px;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox {
+  align-items: center;
+  /* width: 196px !important; */
+}
+
+.p-multiselect-items span {
+  font-size: 12px !important;
+}
+
+
+.p-multiselect-panel {
+  width: 200px;
+}
+
+/* .p-multiselect-header{display:none !important;} */
+
+.p-multiselect-panel .p-multiselect-header {
+  padding: 0.5rem 0.35rem;
+}
+
+.p-multiselect-panel .p-multiselect-header .p-checkbox {
+  align-items: center !important;
+}
+
+.multiselect-container {
+  margin: 10px;
+}
+
+.multiselect {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.multiselect .p-multiselect-label {
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.multiselect .p-multiselect-panel {
+  background-color: #f5f5f5;
+}
+
+
+
+.p-multiselect-close {
+  display: none;
+}
+
+.p-multiselect-panel .p-multiselect-header .p-checkbox {
+  margin-right: 0.5rem;
+  margin-left: 6px;
+}
+
+.multiselect .p-multiselect-label {
+  color: #051c68 !important;
+  font-size: 12px !important;
+}
+
+
+
+.multiselect-container {
+  margin: 10px;
+}
+
+.multiselect {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.multiselect .p-multiselect-label {
+  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.multiselect .p-multiselect-panel {
+  background-color: #f5f5f5;
+}
+
+.labelPicker label .truncate{
+  color: #1e4c82;
+  font-size: 13px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 15px;
+  top: 2px;
+  padding: 0 5px;
+  background: #fff;
+  transition: 0.2s ease all;
+  line-height: normal;
+}
 .custom-calendar.p-calendar .p-inputtext {
   /* --- SET YOUR DESIRED DIMENSIONS --- */
-  height: 28px;         /* Your desired height */
-  width: 150px;         /* Your desired width */
+  height: 24px;         /* Your desired height */
+  width: 130px;         /* Your desired width */
 
   /* --- VERTICAL ALIGNMENT & FONT --- */
   /* Adjust padding to vertically center text inside the input */
@@ -484,7 +618,7 @@ width: 270px;
 /* --- 2. Calendar Icon Button Styling --- */
 .custom-calendar.p-calendar .p-datepicker-trigger.p-button { /* Be specific */
   /* --- SET YOUR DESIRED DIMENSIONS --- */
-  height: 28px; /* --- MATCH THE INPUT HEIGHT for alignment --- */
+  height: 23px; /* --- MATCH THE INPUT HEIGHT for alignment --- */
   width: 30px;  /* --- SET BUTTON WIDTH --- */
   box-sizing: border-box; /* Include padding/border in height/width */
 
