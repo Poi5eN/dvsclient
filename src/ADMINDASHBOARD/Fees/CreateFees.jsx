@@ -1141,27 +1141,6 @@ const CreateFees = () => {
         );
         return false;
       }
-  
-      // Validate concession: totalAmount + concession must equal netPayable
-      const concession = parseFloat(childFormData.concession) || 0;
-      if (concession > 0) {
-        const netPayable = calculateNetPayableAmount(
-          formData.findIndex((fd) => fd.studentId === child.studentId)
-        );
-        const totalWithConcession = totalAmount + concession;
-        // if (totalWithConcession !== netPayable) {
-        //   toast.warn(
-        //     `Concession for ${child.studentName} can only be applied when the total amount paid (₹${totalAmount.toFixed(
-        //       2
-        //     )}) plus concession (₹${concession.toFixed(
-        //       2
-        //     )}) equals the net payable amount (₹${netPayable.toFixed(
-        //       2
-        //     )}). Please adjust the amounts.`
-        //   );
-        //   return false;
-        // }
-      }
     }
   
     if (!childFormData.paymentMode) {
