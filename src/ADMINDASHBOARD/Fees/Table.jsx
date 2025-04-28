@@ -372,6 +372,9 @@ const Table = ({ reLoad }) => {
               Paid
             </th>
             <th scope="col" className="px-6 py-3">
+            Concession
+            </th>
+            <th scope="col" className="px-6 py-3">
               Dues
             </th>
             <th scope="col" className="px-1 py-3">
@@ -398,32 +401,32 @@ const Table = ({ reLoad }) => {
                 } border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600`}
                 style={{ color: "black" }}
               >
-                <td className="px-6 py-4 font-bold">
+                <td className="px-6 py-4 border font-bold">
                   {index + 1 + (currentPage - 1) * itemsPerPage}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border">
                   {isUnified
                     ? fees.students?.map((s) => s.admissionNumber).join(", ") ||
                       "N/A"
                     : fees.admissionNumber || "N/A"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border">
                   {isUnified
                     ? fees.students?.map((s) => s.studentName).join(", ") ||
                       "N/A"
                     : fees.studentName || "N/A"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border">
                   {isUnified
                     ? fees.parentName || "N/A"
                     : fees.fatherName || "N/A"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border">
                   {isUnified
                     ? fees.students?.map((s) => s.class).join(", ") || "N/A"
                     : fees.studentClass || "N/A"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border">
                   {isUnified
                     ? fees.unifiedReceiptNumber
                     : fees.feeReceiptNumber}
@@ -551,9 +554,10 @@ const Table = ({ reLoad }) => {
                     ? format(parseISO(fees.date), "dd/MM/yyyy")
                     : "N/A"}
                 </td>
-                <td className="px-6 py-4">{fees.totalFeeAmount || 0}</td>
-                <td className="px-6 py-4">{fees.totalAmountPaid || 0}</td>
-                <td className="px-6 py-4">{fees.totalDues || 0}</td>
+                <td className="px-6 py-4 border ">{fees.totalFeeAmount || 0}</td>
+                <td className="px-6 py-4 border">{fees.totalAmountPaid || 0}</td>
+                <td className="px-6 py-4 border">{fees.concessionApplied || 0}</td>
+                <td className="px-6 py-4 border">{fees.totalDues || 0}</td>
              
                 <td className="px-4 py-4">
                   <a
@@ -987,6 +991,7 @@ const Table = ({ reLoad }) => {
 };
 
 export default Table;
+
 
 
 

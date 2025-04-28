@@ -7,83 +7,83 @@ const Button = ({ name, onClick, color, style }) => (
     <button style={{ backgroundColor: color || '#007bff', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', margin: '5px', ...style }} onClick={onClick}>{name}</button>
 );
 
+// --- Sample Student Data (using the provided structure) ---
+const detailedSampleStudent = {
+    "_id": "680836dcc86519be36edb8b1",
+    "studentId": "91b2793f-d08d-4c24-92a6-5d95929bc242",
+    "schoolId": "ef335693-3a2a-47c2-8dc6-cb8c882075f5",
+    "session": "2025-2026",
+    "studentName": "dk",
+    "email": "dk1234567890@gmail.com",
+    "dateOfBirth": "2025-04-23T00:00:00.000Z",
+    "motherName": "",
+    "fatherName": "dkppppp",
+    "parentContact": 1234567890,
+    "role": "student",
+    "status": "active",
+    "gender": "Male",
+    "joiningDate": "23-Apr-2025",
+    "address": "Delhi ,laxami nagar",
+    "contact": 1234567890,
+    "class": "I",
+    "section": "A",
+    "subject": [],
+    "guardianName": "Mrs. Guardian Sample",
+    "studentImage": {
+        "public_id": "students/photos/1745368734538-student_photo_1745368718886.jpeg",
+        "url": "https://minio.digitalvidyasaarthi.in/digitalvidyasaarthi/students/photos/1745368734538-student_photo_1745368718886.jpeg"
+        // "url": "https://via.placeholder.com/85x95/aabbcc?text=Student"
+    },
+    "fatherImage": { "public_id": "", "url": "" },
+    "motherImage": { "public_id": "", "url": "" },
+    "guardianImage": { "public_id": "", "url": "" },
+    "admissionNumber": "DI1151",
+    "isGenerated": true,
+    "isPrinted": false,
+    "approvalStatus": "pending",
+    "sessionHistory": [],
+    "isNewAdmission": true,
+    "assignedThirdParty": "d00d14fb-04c1-4cdb-9143-28d815107d90",
+    "photoId": "e4555584-e113-41a4-8e11-0bd4c8d31a03",
+    "udisePlusDetails": { "mother_name": "", "father_name": "dkppppp", "guardian_name": "" },
+    "createdAt": "2025-04-23T00:39:56.140Z",
+    "__v": 0,
+    "parentAdmissionNumber": "DI1109",
+    "parentId": "680836dcc86519be36edb8b6"
+};
+
+
 const ImageTest = () => {
-    // --- State for Front Side ---
-    const [frontBackgroundImage, setFrontBackgroundImage] = useState("https://via.placeholder.com/204x325?text=Front+BG");
+    const [frontBackgroundImage, setFrontBackgroundImage] = useState("https://via.placeholder.com/204x325/e0f0ff?text=Front+BG");
     const [uploadedFrontImageFile, setUploadedFrontImageFile] = useState(null);
-    
+
     const [frontTemplate, setFrontTemplate] = useState(`
-      <div style='background-image:url(\${backgroundImage});
-                  background-position: center;
-                  background-repeat: no-repeat;
-                  width: 54mm;
-                  height: 86mm;
-                  position: relative;
-                  background-size: cover;
-                  border: 1px solid #ccc; 
-                  font-family: Arial, sans-serif; 
-                  overflow: hidden;
-                  box-sizing: border-box;'>
-      
-       
-        <div style='position: absolute;
-                    left: 82px;
-                    top: 90px;
-                    width: 85px;   
-                    height: 95px;  
-                    border: 0.5px solid #aaa; 
-                    border-radius: 3px;
-                    overflow: hidden;
-                    background-color: #eee;'> 
-          <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Img"}'
-               style='width: 100%; height: 100%; object-fit: cover;'
-               alt="Student"/>
+        <div style='background-image:url(\${backgroundImage}); background-position: center;background-repeat: no-repeat;width: 54mm;height: 86mm;position: relative;background-size:cover;border:1px solid'>
+
+
+            <div style='margin-left: 60px;margin-top: 92px;width: 85px;height: 95px;border: 0.5px solid #ff0000;border-radius: 4px;overflow:hidden;position:absolute'>
+             <img src='\${studentImage}' style='width: 100%;height: 100%; object-fit: cover;' alt="Student"/>
+            </div>
+
+
+            <div style='position: absolute; left: 3px; top: 205px; 
+             width: calc(54mm - 6px);font-family: sans-serif; '>
+
+               
+                <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>NAME<span style="margin-left: 16px; font-weight: bold;">: \${name}</span></p>
+                <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>CLASS<span style="margin-left: 13px; font-weight: bold;">: \${class}</span></p>
+                <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>F.NAME<span style="margin-left: 9px; font-weight: bold;">: \${father_name}</span></p>
+                <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>PHONE<span style="margin-left: 12px; font-weight: bold;">: \${mobile}</span></p>
+               
+                <p style='font-size:10px; text-transform: uppercase; margin: 0; color:BLACK; font-weight: bold; line-height: 1.2;'>ADDRESS<span style="margin-left: 1px; font-weight: bold;">: \${address}</span></p>
+           
+
+            </div>
         </div>
-       
-       
-        <div style='position: absolute;
-                    left: 4mm;
-                    top: 200px; 
-                    width: calc(100% - 8mm);
-                    box-sizing: border-box;'>
-      
-         
-          <p style='font-size: 7pt; 
-                    text-transform: uppercase;
-                    margin: 0 0 1.5mm 0; 
-                    color: BLACK;
-                    font-weight: bold;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    line-height: 1.2;'>
-              NAME
-              
-              <span style="float: right; font-weight: normal; width: 65%;  text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${name}</span>
-          </p>
-          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
-              CLASS
-              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${class}</span>
-          </p>
-          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
-              F.NAME
-              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${father_name}</span>
-          </p>
-          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
-              PHONE
-              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${mobile}</span>
-          </p>
-          <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold;  line-height: 1.3;'> 
-              ADDRESS
-             
-              <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: normal;">: \${address}</span>
-          </p>
-        </div>
-      </div>
-      `);
+        `);
 
     const [backBackgroundImage, setBackBackgroundImage] = useState("https://via.placeholder.com/204x325/cccccc?text=Back+BG");
     const [uploadedBackImageFile, setUploadedBackImageFile] = useState(null);
-    // ***** Using the NEW Simplified and Cleaned backTemplate *****
     const [backTemplate, setBackTemplate] = useState(`
 <div style='background-image:url(\${backgroundImage});
             background-position: center;
@@ -94,7 +94,7 @@ const ImageTest = () => {
             background-size: cover;
             border: 1px solid #ccc;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Crucial */
+            overflow: hidden;
             box-sizing: border-box;
             padding: 5mm;'>
 
@@ -103,15 +103,12 @@ const ImageTest = () => {
     <p style='font-size: 7pt; margin: 0 0 3mm 0; line-height: 1.3;'>
         This card certifies that <strong>\${name}</strong> is a student of [Your School Name Here].
     </p>
-
     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
-        Session: 2024-2025
+        Session: \${session}
     </p>
-
     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
         Guardian: \${guardianname}
     </p>
-
     <p style='font-size: 7pt; margin: 8mm 0 4mm 0; text-align: center; line-height: 1.3;'>
         <strong>If found, please return to:</strong><br/>
         [Your School Address Here]<br/>
@@ -119,29 +116,46 @@ const ImageTest = () => {
     </p>
 
     <!-- Signature block -->
-    <div style='position: absolute; bottom: 8mm;  left: 0; right: 0; text-align: center;'>
+    <div style='position: absolute; bottom: 8mm; left: 0; right: 0; text-align: center;'>
         <p style='font-size: 6pt; margin: 0 0 0.5mm 0;'>Signature:</p>
         <div style='border-bottom: 1px solid #555; height: 8mm; width: 40mm; margin: 0 auto;'></div>
         <p style='font-size: 6pt; margin: 0.5mm 0 0 0;'>Principal</p>
     </div>
+</div>`);
 
-</div>`); // Ensure closing backtick
+    const renderTemplate = (templateString, backgroundUrl, student) => {
+        const data = {
+          studentImage: student?.studentImage?.url || "https://via.placeholder.com/85x95.png?text=No+Img",
+          name: student?.studentName?.toUpperCase() || 'N/A',
+          class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
+          father_name: student?.fatherName?.toUpperCase() || 'N/A',
+          mobile: student?.contact || 'N/A',
+          address: student?.address || 'N/A',
+          guardianname: student?.guardianName || 'N/A',
+          session: student?.session || 'N/A'
+        };
 
-    // --- Sample Student Data ---
-    const sampleStudent = { id: 1, name: "Alice Wonderland", class: "Grade 5 - A", father_name: "Mr. Hatter", mobile: "111-222-3333", address: "1st Rabbit Hole, Wonderland Lane", guardianname: "Queen Hearts", studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" };
+        let renderedHtml = templateString;
 
-    // --- Template Rendering Function ---
-    const renderTemplate = (template, backgroundUrl, data) => {
-        let rendered = template.replace(/\${backgroundImage}/g, backgroundUrl);
-        rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
-            if (key === 'studentImage') return data[key] || "https://via.placeholder.com/85x95?text=No+Image";
-            return data[key] || "";
-        });
-        // console.log("Rendered HTML:", rendered); // DEBUG: Log the final HTML
-        return rendered;
-    };
+        try {
+          renderedHtml = renderedHtml.replace(/\$\{backgroundImage\}/g, backgroundUrl || '');
 
-    // --- Unified File Change Handler ---
+          renderedHtml = renderedHtml.replace(/\$\{\s*([a-zA-Z0-9_]+)\s*\}/g, (match, key) => {
+            const cleanKey = key.trim();
+            if (data.hasOwnProperty(cleanKey)) {
+              return String(data[cleanKey] ?? '');
+            } else {
+              return '';
+            }
+          });
+        } catch (error) {
+          console.error("Error during template placeholder replacement:", error);
+          renderedHtml = `<div style='width: 54mm; height: 86mm; border: 1px solid red; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: red; box-sizing: border-box; text-align: center; padding: 5px; page-break-inside: avoid;'>Template Rendering Error</div>`;
+        }
+        return renderedHtml;
+      };
+
+
     const handleFileChange = (e, side) => {
         const file = e.target.files[0];
         if (file) {
@@ -150,68 +164,770 @@ const ImageTest = () => {
                 if (side === 'front') { setFrontBackgroundImage(reader.result); setUploadedFrontImageFile(file); }
                 else if (side === 'back') { setBackBackgroundImage(reader.result); setUploadedBackImageFile(file); }
             };
-            reader.onerror = (error) => { console.error("FileReader error:", error); toast.error(`Error reading ${side} file.`); if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); };
+            reader.onerror = (error) => {
+                console.error("FileReader error:", error);
+                toast.error(`Error reading ${side} file.`);
+                if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null);
+            };
             reader.readAsDataURL(file);
-        } else { if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); }
+        } else {
+             if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null);
+        }
         e.target.value = null;
     };
 
-    // --- Save Handler ---
     const handleSaveClick = async () => {
         try {
             const formDataToSend = new FormData();
             const contentArray = [];
+
+            const utf8ToBase64 = (str) => {
+                try {
+                    return btoa(unescape(encodeURIComponent(str)));
+                } catch (e) {
+                    console.error("Base64 encoding error:", e);
+                    toast.error("Error encoding template data.");
+                    return null;
+                }
+            };
+
             const frontTemplateString = JSON.stringify(frontTemplate);
-             const frontBase64 = btoa(unescape(encodeURIComponent(frontTemplateString))); contentArray.push({ data: frontBase64, name: "Front Side" });
+            const frontBase64 = utf8ToBase64(frontTemplateString);
+            if (frontBase64 === null) return;
+            contentArray.push({ data: frontBase64, name: "Front Side" });
+
             const backTemplateString = JSON.stringify(backTemplate);
-             const backBase64 = btoa(unescape(encodeURIComponent(backTemplateString))); contentArray.push({ data: backBase64, name: "Back Side" });
+            const backBase64 = utf8ToBase64(backTemplateString);
+            if (backBase64 === null) return;
+            contentArray.push({ data: backBase64, name: "Back Side" });
+
             formDataToSend.append("name", "Student ID Card Design");
-             formDataToSend.append("type", "idCard");
-              formDataToSend.append("description", "Front/back design");
-               formDataToSend.append("isDefault", "true"); 
-               formDataToSend.append("isPublic", "false"); 
-               formDataToSend.append("content", JSON.stringify(contentArray));
-            if (uploadedFrontImageFile instanceof File) formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
-            if (uploadedBackImageFile instanceof File) formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+            formDataToSend.append("type", "idCard");
+            formDataToSend.append("description", "Front/back design");
+            formDataToSend.append("isDefault", "true");
+            formDataToSend.append("isPublic", "false");
+            formDataToSend.append("content", JSON.stringify(contentArray));
+
+            if (uploadedFrontImageFile instanceof File) {
+                formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
+            }
+            if (uploadedBackImageFile instanceof File) {
+                formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+            }
+
             const response = await design(formDataToSend);
-            // const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1000)); // Mock
-            if (response?.success)
+            // const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1000)); // Mock Response
+
+            if (response?.success) {
                toast.success(response.message || "Saved!");
-               else toast.warn(response?.message || "Save failed/warned.");
-        } catch (error) { console.error("Save Error:", error); const msg = error?.response?.data?.message || error?.message || 'Save error.'; toast.error(msg); }
+            } else {
+               toast.warn(response?.message || "Save failed or warning received.");
+            }
+        } catch (error) {
+            console.error("Save Error:", error);
+            const msg = error?.response?.data?.message || error?.message || 'An error occurred while saving.';
+            toast.error(msg);
+        }
     };
 
-    // --- JSX ---
     return (
         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
             <h2>ID Card Design Editor (Front & Back)</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
 
-                {/* === Front Section === */}
                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
                     <h3>Front Side</h3>
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                        {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, sampleStudent) }} /> </div>
-                        {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="front-bg-upload">Upload Front BG:</label> <input type="file" id="front-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="front-template-edit">Edit Front HTML:</label> <textarea id="front-template-edit" value={frontTemplate} onChange={(e) => setFrontTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+                        <div style={{ flex: 'none', width: '210px' }}>
+                            <h4>Preview:</h4>
+                            <div
+                                style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }}
+                                dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, detailedSampleStudent) }}
+                            />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <div>
+                                <label htmlFor="front-bg-upload">Upload Front BG:</label>
+                                <input type="file" id="front-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} style={{ display: 'block', margin: '5px 0 15px 0' }} />
+                            </div>
+                            <div>
+                                <label htmlFor="front-template-edit">Edit Front HTML:</label>
+                                <textarea
+                                    id="front-template-edit"
+                                    value={frontTemplate}
+                                    onChange={(e) => setFrontTemplate(e.target.value)}
+                                    rows={15}
+                                    style={{ width: '100%', minHeight: '300px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* === Back Section === */}
                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
                      <h3>Back Side</h3>
                      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-                         {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, sampleStudent) }} /> </div>
-                         {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="back-bg-upload">Upload Back BG:</label> <input type="file" id="back-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="back-template-edit">Edit Back HTML:</label> <textarea id="back-template-edit" value={backTemplate} onChange={(e) => setBackTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+                         <div style={{ flex: 'none', width: '210px' }}>
+                             <h4>Preview:</h4>
+                             <div
+                                 style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }}
+                                 dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, detailedSampleStudent) }}
+                             />
+                         </div>
+                         <div style={{ flex: 1 }}>
+                             <div>
+                                 <label htmlFor="back-bg-upload">Upload Back BG:</label>
+                                 <input type="file" id="back-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} style={{ display: 'block', margin: '5px 0 15px 0' }} />
+                             </div>
+                             <div>
+                                 <label htmlFor="back-template-edit">Edit Back HTML:</label>
+                                 <textarea
+                                     id="back-template-edit"
+                                     value={backTemplate}
+                                     onChange={(e) => setBackTemplate(e.target.value)}
+                                     rows={15}
+                                     style={{ width: '100%', minHeight: '300px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+                                 />
+                             </div>
+                         </div>
                      </div>
                 </div>
             </div>
-            {/* Save Button */}
-            <div style={{ marginTop: '30px', textAlign: 'center' }}> <Button name="Save Both Designs" onClick={handleSaveClick} color="#28a745" /> </div>
+            <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                 <Button name="Save Both Designs" onClick={handleSaveClick} color="#28a745" />
+            </div>
         </div>
     );
 };
 
 export default ImageTest;
+
+
+// import React, { useState } from "react";
+// import { toast } from "react-toastify";
+// import { design } from "../Network/AdminApi"; // Assuming API function path is correct
+
+// // --- Placeholder Button ---
+// const Button = ({ name, onClick, color, style }) => (
+//     <button style={{ backgroundColor: color || '#007bff', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', margin: '5px', ...style }} onClick={onClick}>{name}</button>
+// );
+
+// // --- Sample Student Data (using the provided structure) ---
+// const detailedSampleStudent = {
+//     "_id": "680836dcc86519be36edb8b1",
+//     "studentId": "91b2793f-d08d-4c24-92a6-5d95929bc242",
+//     "schoolId": "ef335693-3a2a-47c2-8dc6-cb8c882075f5",
+//     "session": "2025-2026",
+//     "studentName": "dk",
+//     "email": "dk1234567890@gmail.com",
+//     "dateOfBirth": "2025-04-23T00:00:00.000Z",
+//     "motherName": "",
+//     "fatherName": "dkppppp",
+//     "parentContact": 1234567890,
+//     "role": "student",
+//     "status": "active",
+//     "gender": "Male",
+//     "joiningDate": "23-Apr-2025",
+//     "address": "Delhi ,laxami nagar",
+//     "contact": 1234567890,
+//     "class": "I",
+//     "section": "A",
+//     "subject": [],
+//     "guardianName": "Mrs. Guardian Sample", // Added for back template testing
+//     "studentImage": {
+//         "public_id": "students/photos/1745368734538-student_photo_1745368718886.jpeg",
+//         "url": "https://minio.digitalvidyasaarthi.in/digitalvidyasaarthi/students/photos/1745368734538-student_photo_1745368718886.jpeg"
+//         // Using a placeholder if the above link is broken/inaccessible for testing
+//         // "url": "https://via.placeholder.com/85x95/aabbcc?text=Student"
+//     },
+//     "fatherImage": { "public_id": "", "url": "" },
+//     "motherImage": { "public_id": "", "url": "" },
+//     "guardianImage": { "public_id": "", "url": "" },
+//     "admissionNumber": "DI1151",
+//     "isGenerated": true,
+//     "isPrinted": false,
+//     "approvalStatus": "pending",
+//     "sessionHistory": [],
+//     "isNewAdmission": true,
+//     "assignedThirdParty": "d00d14fb-04c1-4cdb-9143-28d815107d90",
+//     "photoId": "e4555584-e113-41a4-8e11-0bd4c8d31a03",
+//     "udisePlusDetails": { "mother_name": "", "father_name": "dkppppp", "guardian_name": "" },
+//     "createdAt": "2025-04-23T00:39:56.140Z",
+//     "__v": 0,
+//     "parentAdmissionNumber": "DI1109",
+//     "parentId": "680836dcc86519be36edb8b6"
+// };
+
+
+// const ImageTest = () => {
+//     // --- State for Front Side ---
+//     const [frontBackgroundImage, setFrontBackgroundImage] = useState("https://via.placeholder.com/204x325/e0f0ff?text=Front+BG"); // Lighter BG
+//     const [uploadedFrontImageFile, setUploadedFrontImageFile] = useState(null);
+
+//     // *** Using the MM-based layout for frontTemplate ***
+//     const [frontTemplate, setFrontTemplate] = useState(`
+//       <div style='background-image:url(\${backgroundImage});
+//                   background-position: center;
+//                   background-repeat: no-repeat;
+//                   width: 54mm;
+//                   height: 86mm;
+//                   position: relative;
+//                   background-size: cover;
+//                   border: 1px solid #ccc;
+//                   font-family: Arial, sans-serif;
+//                   overflow: hidden;
+//                   box-sizing: border-box;'>
+
+//         {/* --- Student Image Area (Using MM) --- */}
+//         <div style='position: absolute;
+//                     left: 4mm;
+//                     top: 15mm;  /* Position from top in mm */
+//                     width: 25mm;
+//                     height: 30mm;
+//                     border: 0.5px solid #aaa;
+//                     border-radius: 3px;
+//                     overflow: hidden;
+//                     background-color: #eee;'>
+//           <img src='\${studentImage}' /* Placeholder handled in renderTemplate */
+//                style='width: 100%; height: 100%; object-fit: cover;'
+//                alt="Student"/>
+//         </div>
+
+//         {/* --- Text Information Area (Using MM) --- */}
+//         <div style='position: absolute;
+//                     left: 4mm;
+//                     top: 48mm; /* Position below image (15mm + 30mm + 3mm gap) */
+//                     width: calc(100% - 8mm); /* Full width minus margins */
+//                     box-sizing: border-box;'>
+
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               NAME
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${name}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               CLASS
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${class}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               F.NAME
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${father_name}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               PHONE
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${mobile}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; line-height: 1.3;'>
+//               ADDRESS
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: normal;">: \${address}</span>
+//           </p>
+//         </div>
+//       </div>
+//       `);
+
+//     // --- State for Back Side ---
+//     const [backBackgroundImage, setBackBackgroundImage] = useState("https://via.placeholder.com/204x325/cccccc?text=Back+BG");
+//     const [uploadedBackImageFile, setUploadedBackImageFile] = useState(null);
+//     const [backTemplate, setBackTemplate] = useState(`
+// <div style='background-image:url(\${backgroundImage});
+//             background-position: center;
+//             background-repeat: no-repeat;
+//             width: 54mm;
+//             height: 86mm;
+//             position: relative;
+//             background-size: cover;
+//             border: 1px solid #ccc;
+//             font-family: Arial, sans-serif;
+//             overflow: hidden;
+//             box-sizing: border-box;
+//             padding: 5mm;'>
+
+//     <h3 style='text-align:center; font-size: 9pt; margin: 0 0 5mm 0; color: #333;'>STUDENT ID CARD</h3>
+
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0; line-height: 1.3;'>
+//         This card certifies that <strong>\${name}</strong> is a student of [Your School Name Here].
+//     </p>
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+//         Session: \${session} {/* Added session placeholder */}
+//     </p>
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+//         Guardian: \${guardianname} {/* Placeholder remains */}
+//     </p>
+//     <p style='font-size: 7pt; margin: 8mm 0 4mm 0; text-align: center; line-height: 1.3;'>
+//         <strong>If found, please return to:</strong><br/>
+//         [Your School Address Here]<br/>
+//         [Your School Phone Here]
+//     </p>
+
+//     <div style='position: absolute; bottom: 8mm; left: 0; right: 0; text-align: center;'>
+//         <p style='font-size: 6pt; margin: 0 0 0.5mm 0;'>Signature:</p>
+//         <div style='border-bottom: 1px solid #555; height: 8mm; width: 40mm; margin: 0 auto;'></div>
+//         <p style='font-size: 6pt; margin: 0.5mm 0 0 0;'>Principal</p>
+//     </div>
+// </div>`);
+
+//     // --- Refined Template Rendering Function ---
+//     const renderTemplate = (templateString, backgroundUrl, student) => {
+//         // 1. Prepare the data mapping from the student object
+//         const data = {
+//           // Background is handled separately now
+//           studentImage: student?.studentImage?.url || "https://via.placeholder.com/85x95.png?text=No+Img",
+//           name: student?.studentName?.toUpperCase() || 'N/A',
+//           // Combine class and section, handle if section is missing
+//           class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
+//           father_name: student?.fatherName?.toUpperCase() || 'N/A',
+//           mobile: student?.contact || 'N/A', // Map contact to mobile
+//           address: student?.address || 'N/A',
+//           guardianname: student?.guardianName || 'N/A', // Map guardianName
+//           session: student?.session || 'N/A' // Map session
+//           // Add other mappings here if needed for the templates
+//         };
+
+//         let renderedHtml = templateString;
+
+//         try {
+//           // 2. Replace the background image placeholder first
+//           renderedHtml = renderedHtml.replace(/\$\{backgroundImage\}/g, backgroundUrl || ''); // Use provided backgroundUrl
+
+//           // 3. Replace all other placeholders using the data map
+//           renderedHtml = renderedHtml.replace(/\$\{\s*([a-zA-Z0-9_]+)\s*\}/g, (match, key) => {
+//             const cleanKey = key.trim();
+//             // Check if the key exists in our prepared data map
+//             if (data.hasOwnProperty(cleanKey)) {
+//               // Return the value, converting null/undefined to empty string
+//               return String(data[cleanKey] ?? '');
+//             } else {
+//               // console.warn(`Placeholder \${${cleanKey}} not found in data for student ${student?.studentName}`);
+//               return ''; // Return empty string if key is not in our map
+//             }
+//           });
+//         } catch (error) {
+//           console.error("Error during template placeholder replacement:", error);
+//           // Provide a fallback error display matching card dimensions
+//           renderedHtml = `<div style='width: 54mm; height: 86mm; border: 1px solid red; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: red; box-sizing: border-box; text-align: center; padding: 5px; page-break-inside: avoid;'>Template Rendering Error</div>`;
+//         }
+//         return renderedHtml;
+//       };
+
+
+//     // --- Unified File Change Handler ---
+//     const handleFileChange = (e, side) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             const reader = new FileReader();
+//             reader.onloadend = () => {
+//                 if (side === 'front') { setFrontBackgroundImage(reader.result); setUploadedFrontImageFile(file); }
+//                 else if (side === 'back') { setBackBackgroundImage(reader.result); setUploadedBackImageFile(file); }
+//             };
+//             reader.onerror = (error) => {
+//                 console.error("FileReader error:", error);
+//                 toast.error(`Error reading ${side} file.`);
+//                 if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null);
+//             };
+//             reader.readAsDataURL(file);
+//         } else {
+//              if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null);
+//         }
+//         // Reset file input value to allow re-uploading the same file
+//         e.target.value = null;
+//     };
+
+//     // --- Save Handler (Updated btoa encoding) ---
+//     const handleSaveClick = async () => {
+//         try {
+//             const formDataToSend = new FormData();
+//             const contentArray = [];
+
+//             // --- Correct Base64 Encoding for UTF-8 ---
+//             // Function to handle potential UTF-8 characters in templates safely
+//             const utf8ToBase64 = (str) => {
+//                 try {
+//                     // 1. Encode URI components to handle special chars -> %xx format
+//                     // 2. Decode these %xx sequences into their byte representation using unescape
+//                     // 3. Encode the byte string into Base64
+//                     return btoa(unescape(encodeURIComponent(str)));
+//                 } catch (e) {
+//                     console.error("Base64 encoding error:", e);
+//                     toast.error("Error encoding template data.");
+//                     return null; // Indicate error
+//                 }
+//             };
+
+//             // Stringify first, then encode
+//             const frontTemplateString = JSON.stringify(frontTemplate);
+//             const frontBase64 = utf8ToBase64(frontTemplateString);
+//             if (frontBase64 === null) return; // Stop if encoding failed
+//             contentArray.push({ data: frontBase64, name: "Front Side" });
+
+//             const backTemplateString = JSON.stringify(backTemplate);
+//             const backBase64 = utf8ToBase64(backTemplateString);
+//             if (backBase64 === null) return; // Stop if encoding failed
+//             contentArray.push({ data: backBase64, name: "Back Side" });
+
+//             // Append other form data
+//             formDataToSend.append("name", "Student ID Card Design");
+//             formDataToSend.append("type", "idCard");
+//             formDataToSend.append("description", "Front/back design");
+//             formDataToSend.append("isDefault", "true"); // Consider if this should be dynamic
+//             formDataToSend.append("isPublic", "false"); // Consider if this should be dynamic
+//             formDataToSend.append("content", JSON.stringify(contentArray));
+
+//             // Append files if they exist
+//             if (uploadedFrontImageFile instanceof File) {
+//                 formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
+//             }
+//             if (uploadedBackImageFile instanceof File) {
+//                 formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+//             }
+
+//             // console.log("--- FormData Being Sent ---");
+//             // for (let [key, value] of formDataToSend.entries()) {
+//             //     console.log(key, value instanceof File ? value.name : value);
+//             // }
+//             // console.log("---------------------------");
+
+
+//             // --- API Call ---
+//             // const response = await design(formDataToSend); // Uncomment for actual API call
+//             // Mock Response for testing UI flow
+//             const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1000));
+
+//             if (response?.success) {
+//                toast.success(response.message || "Saved!");
+//             } else {
+//                toast.warn(response?.message || "Save failed or warning received.");
+//             }
+//         } catch (error) {
+//             console.error("Save Error:", error);
+//             const msg = error?.response?.data?.message || error?.message || 'An error occurred while saving.';
+//             toast.error(msg);
+//         }
+//     };
+
+//     // --- JSX ---
+//     return (
+//         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+//             <h2>ID Card Design Editor (Front & Back)</h2>
+//             <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+
+//                 {/* === Front Section === */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+//                     <h3>Front Side</h3>
+//                     <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+//                         {/* Preview: Pass template, BG URL, and student data */}
+//                         <div style={{ flex: 'none', width: '210px' }}>
+//                             <h4>Preview:</h4>
+//                             <div
+//                                 style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 /* Prevents extra space below div */ }}
+//                                 dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, detailedSampleStudent) }}
+//                             />
+//                         </div>
+//                         {/* Controls */}
+//                         <div style={{ flex: 1 }}>
+//                             <div>
+//                                 <label htmlFor="front-bg-upload">Upload Front BG:</label>
+//                                 <input type="file" id="front-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} style={{ display: 'block', margin: '5px 0 15px 0' }} />
+//                             </div>
+//                             <div>
+//                                 <label htmlFor="front-template-edit">Edit Front HTML:</label>
+//                                 <textarea
+//                                     id="front-template-edit"
+//                                     value={frontTemplate}
+//                                     onChange={(e) => setFrontTemplate(e.target.value)}
+//                                     rows={15}
+//                                     style={{ width: '100%', minHeight: '300px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+//                                 />
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 {/* === Back Section === */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+//                      <h3>Back Side</h3>
+//                      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+//                          {/* Preview: Pass template, BG URL, and student data */}
+//                          <div style={{ flex: 'none', width: '210px' }}>
+//                              <h4>Preview:</h4>
+//                              <div
+//                                  style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }}
+//                                  dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, detailedSampleStudent) }}
+//                              />
+//                          </div>
+//                          {/* Controls */}
+//                          <div style={{ flex: 1 }}>
+//                              <div>
+//                                  <label htmlFor="back-bg-upload">Upload Back BG:</label>
+//                                  <input type="file" id="back-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} style={{ display: 'block', margin: '5px 0 15px 0' }} />
+//                              </div>
+//                              <div>
+//                                  <label htmlFor="back-template-edit">Edit Back HTML:</label>
+//                                  <textarea
+//                                      id="back-template-edit"
+//                                      value={backTemplate}
+//                                      onChange={(e) => setBackTemplate(e.target.value)}
+//                                      rows={15}
+//                                      style={{ width: '100%', minHeight: '300px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }}
+//                                  />
+//                              </div>
+//                          </div>
+//                      </div>
+//                 </div>
+//             </div>
+//             {/* Save Button */}
+//             <div style={{ marginTop: '30px', textAlign: 'center' }}>
+//                  <Button name="Save Both Designs" onClick={handleSaveClick} color="#28a745" />
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default ImageTest;
+
+
+// import React, { useState } from "react";
+// import { toast } from "react-toastify";
+// import { design } from "../Network/AdminApi"; // Assuming API function path is correct
+
+// // --- Placeholder Button ---
+// const Button = ({ name, onClick, color, style }) => (
+//     <button style={{ backgroundColor: color || '#007bff', color: 'white', padding: '10px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', margin: '5px', ...style }} onClick={onClick}>{name}</button>
+// );
+
+// const ImageTest = () => {
+//     // --- State for Front Side ---
+//     const [frontBackgroundImage, setFrontBackgroundImage] = useState("https://via.placeholder.com/204x325?text=Front+BG");
+//     const [uploadedFrontImageFile, setUploadedFrontImageFile] = useState(null);
+    
+//     const [frontTemplate, setFrontTemplate] = useState(`
+//       <div style='background-image:url(\${backgroundImage});
+//                   background-position: center;
+//                   background-repeat: no-repeat;
+//                   width: 54mm;
+//                   height: 86mm;
+//                   position: relative;
+//                   background-size: cover;
+//                   border: 1px solid #ccc; 
+//                   font-family: Arial, sans-serif; 
+//                   overflow: hidden;
+//                   box-sizing: border-box;'>
+      
+       
+//         <div style='position: absolute;
+//                     left: 82px;
+//                     top: 90px;
+//                     width: 85px;   
+//                     height: 95px;  
+//                     border: 0.5px solid #aaa; 
+//                     border-radius: 3px;
+//                     overflow: hidden;
+//                     background-color: #eee;'> 
+//           <img src='\${studentImage || "https://via.placeholder.com/85x95?text=No+Img"}'
+//                style='width: 100%; height: 100%; object-fit: cover;'
+//                alt="Student"/>
+//         </div>
+       
+       
+//         <div style='position: absolute;
+//                     left: 4mm;
+//                     top: 200px; 
+//                     width: calc(100% - 8mm);
+//                     box-sizing: border-box;'>
+      
+         
+//           <p style='font-size: 7pt; 
+//                     text-transform: uppercase;
+//                     margin: 0 0 1.5mm 0; 
+//                     color: BLACK;
+//                     font-weight: bold;
+//                     white-space: nowrap;
+//                     overflow: hidden;
+//                     line-height: 1.2;'>
+//               NAME
+              
+//               <span style="float: right; font-weight: normal; width: 65%;  text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${name}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               CLASS
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${class}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               F.NAME
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${father_name}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold; white-space: nowrap; overflow: hidden; line-height: 1.2;'>
+//               PHONE
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">: \${mobile}</span>
+//           </p>
+//           <p style='font-size: 7pt; text-transform: uppercase; margin: 0 0 1.5mm 0; color: BLACK; font-weight: bold;  line-height: 1.3;'> 
+//               ADDRESS
+             
+//               <span style="float: right; font-weight: normal; width: 65%; text-align: left; padding-left: 2mm; box-sizing: border-box; white-space: normal;">: \${address}</span>
+//           </p>
+//         </div>
+//       </div>
+//       `);
+
+//     const [backBackgroundImage, setBackBackgroundImage] = useState("https://via.placeholder.com/204x325/cccccc?text=Back+BG");
+//     const [uploadedBackImageFile, setUploadedBackImageFile] = useState(null);
+//     // ***** Using the NEW Simplified and Cleaned backTemplate *****
+//     const [backTemplate, setBackTemplate] = useState(`
+// <div style='background-image:url(\${backgroundImage});
+//             background-position: center;
+//             background-repeat: no-repeat;
+//             width: 54mm;
+//             height: 86mm;
+//             position: relative;
+//             background-size: cover;
+//             border: 1px solid #ccc;
+//             font-family: Arial, sans-serif;
+//             overflow: hidden; /* Crucial */
+//             box-sizing: border-box;
+//             padding: 5mm;'>
+
+//     <h3 style='text-align:center; font-size: 9pt; margin: 0 0 5mm 0; color: #333;'>STUDENT ID CARD</h3>
+
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0; line-height: 1.3;'>
+//         This card certifies that <strong>\${name}</strong> is a student of [Your School Name Here].
+//     </p>
+
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+//         Session: 2024-2025
+//     </p>
+
+//     <p style='font-size: 7pt; margin: 0 0 3mm 0;'>
+//         Guardian: \${guardianname}
+//     </p>
+
+//     <p style='font-size: 7pt; margin: 8mm 0 4mm 0; text-align: center; line-height: 1.3;'>
+//         <strong>If found, please return to:</strong><br/>
+//         [Your School Address Here]<br/>
+//         [Your School Phone Here]
+//     </p>
+
+//     <!-- Signature block -->
+//     <div style='position: absolute; bottom: 8mm;  left: 0; right: 0; text-align: center;'>
+//         <p style='font-size: 6pt; margin: 0 0 0.5mm 0;'>Signature:</p>
+//         <div style='border-bottom: 1px solid #555; height: 8mm; width: 40mm; margin: 0 auto;'></div>
+//         <p style='font-size: 6pt; margin: 0.5mm 0 0 0;'>Principal</p>
+//     </div>
+
+// </div>`); // Ensure closing backtick
+
+//     // --- Sample Student Data ---
+//     const sampleStudent = { id: 1, name: "Alice Wonderland", class: "Grade 5 - A", father_name: "Mr. Hatter", mobile: "111-222-3333", address: "1st Rabbit Hole, Wonderland Lane", guardianname: "Queen Hearts", studentImage: "https://via.placeholder.com/85x95/aabbcc?text=Alice" };
+
+//     // --- Template Rendering Function ---
+//     // const renderTemplate = (template, backgroundUrl, data) => {
+//     //     let rendered = template.replace(/\${backgroundImage}/g, backgroundUrl);
+//     //     rendered = rendered.replace(/\${(\w+)}/g, (match, key) => {
+//     //         if (key === 'studentImage') return data[key] || "https://via.placeholder.com/85x95?text=No+Image";
+//     //         return data[key] || "";
+//     //     });
+//     //     // console.log("Rendered HTML:", rendered); // DEBUG: Log the final HTML
+//     //     return rendered;
+//     // };
+
+//     const renderTemplate = (template, student) => {
+//         const data = {
+//           backgroundImage: template?.frontImage?.url || "",
+//           studentImage: student?.studentImage?.url || "https://via.placeholder.com/85x95.png?text=No+Image",
+//           name: student?.studentName?.toUpperCase() || 'N/A',
+//           class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
+//           father_name: student?.fatherName?.toUpperCase() || 'N/A',
+//           mobile: student?.contact || 'N/A',
+//           address: student?.address || 'N/A'
+//         };
+      
+//         let renderedHtml = template;
+//         try {
+//           renderedHtml = template.replace(/\$\{\s*([a-zA-Z0-9_]+)\s*\}/g, (match, key) => {
+//             const cleanKey = key.trim();
+//             if (data.hasOwnProperty(cleanKey)) {
+//               return String(data[cleanKey] ?? '');
+//             } else {
+//               // console.warn(`Placeholder \${${cleanKey}} not found in data for student ${student?.studentName}`);
+//               return ''; // Agar key nahi mili to empty string
+//             }
+//           });
+//         } catch (error) {
+//           console.error("Error during template placeholder replacement:", error);
+//           renderedHtml = `<div style='width: 54mm; height: 86mm; border: 1px solid red; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: red; page-break-inside: avoid;'>Template Error</div>`;
+//         }
+//         return renderedHtml;
+//       };
+      
+
+//     // --- Unified File Change Handler ---
+//     const handleFileChange = (e, side) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             const reader = new FileReader();
+//             reader.onloadend = () => {
+//                 if (side === 'front') { setFrontBackgroundImage(reader.result); setUploadedFrontImageFile(file); }
+//                 else if (side === 'back') { setBackBackgroundImage(reader.result); setUploadedBackImageFile(file); }
+//             };
+//             reader.onerror = (error) => { console.error("FileReader error:", error); toast.error(`Error reading ${side} file.`); if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); };
+//             reader.readAsDataURL(file);
+//         } else { if (side === 'front') setUploadedFrontImageFile(null); else setUploadedBackImageFile(null); }
+//         e.target.value = null;
+//     };
+
+//     // --- Save Handler ---
+//     const handleSaveClick = async () => {
+//         try {
+//             const formDataToSend = new FormData();
+//             const contentArray = [];
+//             const frontTemplateString = JSON.stringify(frontTemplate);
+//              const frontBase64 = btoa(unescape(encodeURIComponent(frontTemplateString))); contentArray.push({ data: frontBase64, name: "Front Side" });
+//             const backTemplateString = JSON.stringify(backTemplate);
+//              const backBase64 = btoa(unescape(encodeURIComponent(backTemplateString))); contentArray.push({ data: backBase64, name: "Back Side" });
+//             formDataToSend.append("name", "Student ID Card Design");
+//              formDataToSend.append("type", "idCard");
+//               formDataToSend.append("description", "Front/back design");
+//                formDataToSend.append("isDefault", "true"); 
+//                formDataToSend.append("isPublic", "false"); 
+//                formDataToSend.append("content", JSON.stringify(contentArray));
+//             if (uploadedFrontImageFile instanceof File) formDataToSend.append(`content[0][image]`, uploadedFrontImageFile, uploadedFrontImageFile.name);
+//             if (uploadedBackImageFile instanceof File) formDataToSend.append(`content[1][image]`, uploadedBackImageFile, uploadedBackImageFile.name);
+//             const response = await design(formDataToSend);
+//             // const response = await new Promise(resolve => setTimeout(() => resolve({ success: true, message: "Designs saved successfully (Mock)" }), 1000)); // Mock
+//             if (response?.success)
+//                toast.success(response.message || "Saved!");
+//                else toast.warn(response?.message || "Save failed/warned.");
+//         } catch (error) { console.error("Save Error:", error); const msg = error?.response?.data?.message || error?.message || 'Save error.'; toast.error(msg); }
+//     };
+
+//     // --- JSX ---
+//     return (
+//         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+//             <h2>ID Card Design Editor (Front & Back)</h2>
+//             <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+
+//                 {/* === Front Section === */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+//                     <h3>Front Side</h3>
+//                     <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+//                         {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(frontTemplate, frontBackgroundImage, sampleStudent) }} /> </div>
+//                         {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="front-bg-upload">Upload Front BG:</label> <input type="file" id="front-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'front')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="front-template-edit">Edit Front HTML:</label> <textarea id="front-template-edit" value={frontTemplate} onChange={(e) => setFrontTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+//                     </div>
+//                 </div>
+
+//                 {/* === Back Section === */}
+//                 <div style={{ border: '1px solid #eee', padding: '15px', borderRadius: '8px' }}>
+//                      <h3>Back Side</h3>
+//                      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+//                          {/* Preview */} <div style={{ flex: 'none', width: '210px' }}> <h4>Preview:</h4> <div style={{ border: '1px dashed grey', display: 'inline-block', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: renderTemplate(backTemplate, backBackgroundImage, sampleStudent) }} /> </div>
+//                          {/* Controls */} <div style={{ flex: 1 }}> <div> <label htmlFor="back-bg-upload">Upload Back BG:</label> <input type="file" id="back-bg-upload" accept="image/*" onChange={(e) => handleFileChange(e, 'back')} style={{ display: 'block', margin: '5px 0 15px 0' }} /> </div> <div> <label htmlFor="back-template-edit">Edit Back HTML:</label> <textarea id="back-template-edit" value={backTemplate} onChange={(e) => setBackTemplate(e.target.value)} rows={15} style={{ width: '100%', minHeight: '250px', display: 'block', marginTop: '5px', fontFamily: 'monospace', fontSize: '0.8rem', border: '1px solid #ccc', borderRadius: '4px' }} /> </div> </div>
+//                      </div>
+//                 </div>
+//             </div>
+//             {/* Save Button */}
+//             <div style={{ marginTop: '30px', textAlign: 'center' }}> <Button name="Save Both Designs" onClick={handleSaveClick} color="#28a745" /> </div>
+//         </div>
+//     );
+// };
+
+// export default ImageTest;
 
 
 // import React, { useState } from "react";
