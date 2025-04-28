@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { design } from "../Network/AdminApi"; // Assuming API function path is correct
+import moment from "moment";
 
 // --- Placeholder Button ---
 const Button = ({ name, onClick, color, style }) => (
@@ -74,6 +75,7 @@ const ImageTest = () => {
                 <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>CLASS<span style="margin-left: 13px; font-weight: bold;">: \${class}</span></p>
                 <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>F.NAME<span style="margin-left: 9px; font-weight: bold;">: \${father_name}</span></p>
                 <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>PHONE<span style="margin-left: 12px; font-weight: bold;">: \${mobile}</span></p>
+                <p style='font-size:10px; text-transform: uppercase; margin: 0 0 1px 0; color:BLACK; font-weight: bold; line-height: 1.1;'>DOB<span style="margin-left: 12px; font-weight: bold;">: \${dob}</span></p>
                
                 <p style='font-size:10px; text-transform: uppercase; margin: 0; color:BLACK; font-weight: bold; line-height: 1.2;'>ADDRESS<span style="margin-left: 1px; font-weight: bold;">: \${address}</span></p>
            
@@ -130,6 +132,7 @@ const ImageTest = () => {
           class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
           father_name: student?.fatherName?.toUpperCase() || 'N/A',
           mobile: student?.contact || 'N/A',
+          dob:   moment(student?.dateOfBirth).format("DD-MM-YYYY")|| 'N/A',
           address: student?.address || 'N/A',
           guardianname: student?.guardianName || 'N/A',
           session: student?.session || 'N/A'

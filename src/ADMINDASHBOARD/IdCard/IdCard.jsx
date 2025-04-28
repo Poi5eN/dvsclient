@@ -5,6 +5,7 @@ import { Button, Grid, TextField, Typography, Box } from "@mui/material";
 import { ActiveStudents, AdminGetAllClasses, getIDcarddesign } from "../../Network/AdminApi"; // Adjust path if needed
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect"; // Adjust path if needed
 import { toast } from "react-toastify";
+import moment from "moment";
 
 const IdCard = () => {
   // --- State Variables ---
@@ -277,6 +278,7 @@ const IdCard = () => {
       backgroundImage: idCardData?.frontImage?.url || "",
       studentImage: student?.studentImage?.url || "https://via.placeholder.com/85x95.png?text=No+Image",
       name: student?.studentName?.toUpperCase() || 'N/A',
+        dob:   moment(student?.dateOfBirth).format("DD-MM-YYYY")|| 'N/A',
       class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
       father_name: student?.fatherName?.toUpperCase() || 'N/A',
       mobile: student?.contact || 'N/A',
