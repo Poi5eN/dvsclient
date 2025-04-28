@@ -18,7 +18,7 @@ const StudentFeeHistory = () => {
     const fetchAllStudents = async () => {
         setIsStudentListLoading(true);
         try {
-            const response = await ActiveStudents();
+            const response = await ActiveStudents(session);
             if (response?.success) {
                 // Ensure data is an array, default to empty array if not
                 const students = Array.isArray(response?.students?.data) ? response.students.data.reverse() : [];
@@ -186,21 +186,15 @@ const StudentFeeHistory = () => {
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {feeHistoryData.feeHistory.map((history, index) => (
-                                                    <tr key={index} className="hover:bg-gray-50">
+                                                    <tr key={index} className={`hover:bg-gray-50 ${history?.status== "canceled"?"bg-red-500":""}`}>
                                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">{formatDate(history.date)}</td>
-                                                        {/* <td className="px-4 py-3 whitespace-nowrap text-sm border-r">
-                                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                                history.status === 'Paid' ? 'bg-green-100 text-green-800' :
-                                                                history.status === 'Partial' ? 'bg-yellow-100 text-yellow-800' :
-                                                                'bg-red-100 text-red-800' // Assuming 'Due' or other statuses
-                                                            }`}>
-                                                                {history.status}
-                                                            </span>
-                                                        </td> */}
-                                                        <td className="px-4 py-3 text-sm text-gray-700 border-r">
+                                                      
+                                                        <td className={`px-4 py-3 text-sm text-gray-700 border-r  `} >
                                                              {/* Combined Fee Details */}
                                                              {history.regularFees?.map((fee, idx) => (
-                                                                <div key={`reg-${idx}`} className="text-xs mb-1">{fee.month}: {formatCurrency(fee.paidAmount)} <span className="text-gray-500">(Regular)</span></div>
+                                                                <div key={`reg-${idx}`} className={`text-xs mb-1 `}>{fee.month}: {formatCurrency(fee.paidAmount)} <span className="text-gray-500">(Regular)</span>
+                                                                {console.log("fee?.status",fee?.status)}
+                                                                </div>
                                                              ))}
                                                              {history.additionalFees?.map((fee, idx) => (
                                                                 <div key={`add-${idx}`} className="text-xs mb-1">{fee.name} ({fee.month}): {formatCurrency(fee.paidAmount)} <span className="text-gray-500">(Additional)</span></div>

@@ -339,54 +339,54 @@ const Table = ({ reLoad }) => {
           className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
         >
           <tr>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               S No.
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Adm No.
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Name
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Parent Name
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Class
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Receipt No.
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Regular Fee
             </th>
-            <th scope="col" className="px-2 py-3">
+            <th scope="col" className="px-1 py-1">
               Pay Date
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
             Fee Amount
             </th>
           
             
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Paid
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
             Concession
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-1 py-1">
               Dues
             </th>
-            <th scope="col" className="px-1 py-3">
+            <th scope="col" className="px-1 py-1">
               Action
             </th>
-            <th scope="col" className="px-1 py-3">
+            <th scope="col" className="px-1 py-1">
               Share
             </th>
-            <th scope="col" className="px-1 py-3">
+            <th scope="col" className="px-1 py-1">
               Cancel Fee
             </th>
-            <th scope="col" className="px-1 py-3">
+            <th scope="col" className="px-1 py-1">
               Receipt
             </th>
           </tr>
@@ -401,38 +401,38 @@ const Table = ({ reLoad }) => {
                 } border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600`}
                 style={{ color: "black" }}
               >
-                <td className="px-6 py-4 border font-bold">
+                <td className="px-1 py-1 border font-bold">
                   {index + 1 + (currentPage - 1) * itemsPerPage}
                 </td>
-                <td className="px-6 py-4 border">
+                <td className="px-1 py-1 border">
                   {isUnified
                     ? fees.students?.map((s) => s.admissionNumber).join(", ") ||
                       "N/A"
                     : fees.admissionNumber || "N/A"}
                 </td>
-                <td className="px-6 py-4 border">
+                <td className="px-1 py-1 border">
                   {isUnified
                     ? fees.students?.map((s) => s.studentName).join(", ") ||
                       "N/A"
                     : fees.studentName || "N/A"}
                 </td>
-                <td className="px-6 py-4 border">
+                <td className="px-1 py-1 border">
                   {isUnified
                     ? fees.parentName || "N/A"
                     : fees.fatherName || "N/A"}
                 </td>
-                <td className="px-6 py-4 border">
+                <td className="px-1 py-1 border">
                   {isUnified
                     ? fees.students?.map((s) => s.class).join(", ") || "N/A"
                     : fees.studentClass || "N/A"}
                 </td>
-                <td className="px-6 py-4 border">
+                <td className="px-1 py-1 border">
                   {isUnified
                     ? fees.unifiedReceiptNumber
                     : fees.feeReceiptNumber}
                 </td>
                 <td className="px-2">
-                  <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
+                  <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-1 overflow-x-auto">
                     <div className="inline-block min-w-full rounded-lg overflow-hidden">
                       {fees.regularFees?.length > 0 ||
                       fees.additionalFees?.length > 0 ? (
@@ -554,12 +554,12 @@ const Table = ({ reLoad }) => {
                     ? format(parseISO(fees.date), "dd/MM/yyyy")
                     : "N/A"}
                 </td>
-                <td className="px-6 py-4 border ">{fees.totalFeeAmount || 0}</td>
-                <td className="px-6 py-4 border">{fees.totalAmountPaid || 0}</td>
-                <td className="px-6 py-4 border">{fees.concessionApplied || 0}</td>
-                <td className="px-6 py-4 border">{fees.totalDues || 0}</td>
+                <td className="px-1 py-1 border ">{fees.totalFeeAmount || 0}</td>
+                <td className="px-1 py-1 border">{fees.totalAmountPaid || 0}</td>
+                <td className="px-1 py-1 border">{fees.concessionApplied || 0}</td>
+                <td className="px-1 py-1 border">{fees.totalDues || 0}</td>
              
-                <td className="px-4 py-4">
+                <td className="px-1 py-1">
                   <a
                     onClick={() => {
                       setModalData(fees);
@@ -570,7 +570,7 @@ const Table = ({ reLoad }) => {
                     <FaEye className="text-2xl" />
                   </a>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-1 py-1">
                   <Button
                     name="Share"
                     color="green"
@@ -580,7 +580,7 @@ const Table = ({ reLoad }) => {
                     <FaShareAlt className="text-2xl" />
                   </Button>
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-1 py-1">
                   <Button
                     name="Cancel"
                     onClick={() => handleCancel(fees)}
@@ -590,14 +590,15 @@ const Table = ({ reLoad }) => {
                         : ""
                     }`}
                     disabled={fees.status === "canceled"}
+                    color="red"
                   />
                 </td>
-                <td className="px-4 py-4">
+                <td className="px-1 py-1">
                   <Button
                     name="View Receipt"
                     color="blue"
                     onClick={() => handleViewReceipt(fees)}
-                    disabled={fees.status === "canceled"}
+                    // disabled={fees.status === "canceled"}
                   >
                     <FaFileAlt className="text-2xl" />
                   </Button>
@@ -658,7 +659,7 @@ const Table = ({ reLoad }) => {
   );
 
   return (
-    <div className="p-4">
+    <div className="px-4">
       {/* Tabs for Single and Unified Receipts */}
       <div className="mb-4">
         <div className="flex border-b border-gray-200">
@@ -692,7 +693,7 @@ const Table = ({ reLoad }) => {
       </div>
 
       {/* Date Filters and Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-2">
         <ReactInput
           type="date"
           label="Start Date"
@@ -728,8 +729,8 @@ const Table = ({ reLoad }) => {
       </div>
 
       {/* Payment Summary Section */}
-      <div className="mb-4 bg-gray-100 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-2">Payment Summary</h3>
+      <div className="mb-4 rounded-lg">
+        <h3 className="text-sm font-semibold mb-2">Payment Summary</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           <div>
             <p className="text-sm text-gray-600">Cash</p>
@@ -926,6 +927,7 @@ const Table = ({ reLoad }) => {
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
             />
             <Button
+            
               name="Cancel"
               onClick={() => setCancel(false)}
               className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
@@ -1279,7 +1281,7 @@ export default Table;
 //             style={{background:currentColor, color:"white",whiteSpace:"nowrap"}}
 //             className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 //               <tr>
-//                 <th scope="col" className="px-6 py-3">
+//                 <th scope="col" className="px-1 py-1">
 //                   S No.
 //                 </th>
 //                 <th scope="col" className="px-6 py-3">

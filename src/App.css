@@ -623,8 +623,8 @@ width: 270px;
   box-sizing: border-box; /* Include padding/border in height/width */
 
   /* --- COLORS & BORDER --- */
-  background-color: #792b2b; /* Your desired background color */
-  border: 1px solid #792b2b; /* Set border color and style */
+  background-color: #10598d; /* Your desired background color */
+  border: 1px solid #10598d;  /* Set border color and style */
   /* border-left: none; */    /* Optional: remove left border if input has right border */
   color: white;              /* Set icon color */
 

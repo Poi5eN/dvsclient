@@ -1,12 +1,12 @@
 import React from 'react'
 import { useStateContext } from '../../contexts/ContextProvider';
 
-const Button = ({ onClick, name, type, loading, width ,color,Icon}) => {
+const Button = ({ onClick, name, type, loading, width ,color,Icon,disabled}) => {
    const {  setIsLoader,currentColor } = useStateContext();
     return (
       <div className='inline-block items-center '>
           <button
-
+disabled={disabled}
         style={{background:color?color:currentColor,display:""}}
         type={type}
         onClick={onClick}

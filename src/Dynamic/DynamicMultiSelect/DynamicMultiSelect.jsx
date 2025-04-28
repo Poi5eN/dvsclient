@@ -42,6 +42,7 @@ const DynamicMultiSelect = (props) => {
           placeholder={placeholderName}
           maxSelectedLabels={3}
           className={`multiselect ${requiredClassName ? "required-fields" : ""}`}
+          // style={{borderColor: "red"}}
           name={name}
           closeIcon
           itemTemplate={itemTemplate}

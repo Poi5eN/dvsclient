@@ -90,9 +90,10 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
     const unifiedClasses = receiptData.classes || studentClass;
     const unifiedAdmissionNumbers =
       receiptData.admissionNumbers || admissionNumber;
-
+console.log("modalData?.status",modalData)
     return (
-      <div className="w-[400px] p-1 border-black border-1 rounded-sm dark:text-white">
+      <div className={`{w-[400px] p-1 border-black border-1 rounded-sm dark:text-white } ${modalData?.data?.status==="canceled"? " bg-red-300":"bg-white"}`}>
+      {/* <div className="w-[400px] p-1 border-black border-1 rounded-sm dark:text-white "> */}
         <div className="flex justify-between">
           <div className="h-auto w-[150px] dark:text-white">
             <img
@@ -117,7 +118,13 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
               {user?.contact || "N/A"}
             </p>
           </div>
+        </div>{
+          modalData?.data?.status==="canceled" && 
+          <div className="bg-gray-300 text-center border-b-2 border-red-500">
+          <h3 className="font-bold text-[20px] scale-125 text-red-800">Fee Cancel</h3>
         </div>
+        }
+        
         <div className="bg-gray-300 text-center border-b-2 border-red-500">
           <h3 className="font-bold text-[13px] scale-125">Fee receipt :</h3>
         </div>

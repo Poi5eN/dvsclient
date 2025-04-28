@@ -1953,6 +1953,7 @@ const CreateFees = () => {
                                   Regular Monthly Fees
                                 </label>
                                 <DynamicMultiSelect
+                                st
                                   name={`regularFees-${index}`}
                                   searchable={false}
                                   placeholderName="Select month(s)..."
