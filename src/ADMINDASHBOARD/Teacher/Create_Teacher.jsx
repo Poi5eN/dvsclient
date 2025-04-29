@@ -450,7 +450,10 @@ const THEAD = [
      
                        <div className="md:col-span-6 text-right mt-3 ">
                          <div className="flex items-center gap-5 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                           <Button
+                         <Button name="Submit" onClick={handleSubmit} />
+                         <Button name="Cancel" onClick={toggleModal} />
+                           
+                           {/* <Button
                              type="submit"
                              variant="contained"
                              onClick={handleSubmit}
@@ -480,8 +483,8 @@ const THEAD = [
                              ) : (
                                " Submit"
                              )}
-                           </Button>
-                           <Button
+                           </Button> */}
+                           {/* <Button
                              variant="contained"
                              onClick={toggleModal}
                              style={{
@@ -491,7 +494,7 @@ const THEAD = [
                              }}
                            >
                              Cancel
-                           </Button>
+                           </Button> */}
                          </div>
                        </div>
                      </div>

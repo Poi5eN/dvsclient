@@ -28,28 +28,73 @@ const ExemptionToggle = ({ isExempt, onChange, studentName }) => {
   return (
     <label className="flex items-center gap-2 cursor-pointer">
       <div className="relative">
+        {/* Screen-reader only checkbox */}
         <input
           type="checkbox"
           checked={isExempt}
           onChange={(e) => onChange(e.target.checked)}
-          className="sr-only"
+          className="sr-only peer" // Added peer class for potential future styling
         />
+        {/* Switch Track */}
         <div
-          className={`w-12 h-6 rounded-full transition-colors duration-300 ease-in-out ${
-            isExempt ? "bg-light-blue-800" : "bg-gray-300"
-          }`}
+          className={`relative w-10 h-5 rounded-full transition-colors duration-300 ease-in-out ${
+            isExempt ? "bg-light-blue-800" : "bg-gray-300" // Use your actual blue color class
+          } peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-offset-1 peer-focus:ring-light-blue-500`} // Added focus ring for accessibility
         >
+          {/* Switch Handle */}
           <div
-            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 ease-in-out transform ${
-              isExempt ? "translate-x-6" : "translate-x-0"
+            className={`absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ease-in-out transform ${
+              isExempt ? "translate-x-5" : "translate-x-0" // Adjusted positioning slightly if needed (top/left-[2px])
             }`}
           />
         </div>
       </div>
-      <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-        {isExempt ? `Exempt for ${studentName}` : `Mark as Exempt`}
+
+      {/* Text Label - Added min-width */}
+      <span
+        className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap min-w-[150px] text-left" // <-- Add min-w-[value] and text-left
+        // Adjust min-w-[150px] based on the longest expected student name + "Exempt for " text
+      >
+        {isExempt ? `Exempt` : `Exempt`}
+        {/* {isExempt ? `Exempt for ${studentName}` : `Exempt`} */}
       </span>
     </label>
+//     <label className="flex items-center gap-2 cursor-pointer">
+//       <div className="relative">
+//         <input
+//           type="checkbox"
+//           checked={isExempt}
+//           onChange={(e) => onChange(e.target.checked)}
+//           className="sr-only"
+//         />
+//         <div
+//   className={`relative w-10 h-5 rounded-full transition-colors  ${
+//     isExempt ? "bg-light-blue-800" : "bg-gray-300"
+//   }`}
+// >
+//   <div
+//     className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-300 ease-in-out transform ${
+//       isExempt ? "translate-x-5" : "translate-x-0"
+//     }`}
+//   />
+// </div>
+
+//         {/* <div
+//           className={`w-12 h-6 rounded-full transition-colors duration-300 ease-in-out ${
+//             isExempt ? "bg-light-blue-800" : "bg-gray-300"
+//           }`}
+//         >
+//           <div
+//             className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 ease-in-out transform ${
+//               isExempt ? "translate-x-6" : "translate-x-0"
+//             }`}
+//           />
+//         </div> */}
+//       </div>
+//       <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+//         {isExempt ? `Exempt for ${studentName}` : `Mark as Exempt`}
+//       </span>
+//     </label>
   );
 };
 
@@ -1786,7 +1831,8 @@ const CreateFees = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
+            {/* <div className="grid grid-cols-1 gap-6"> */}
+            <div className="flex flex-col gap-2">
               {parentData.map((child, index) => {
                 const currentFormData = formData[index];
 
@@ -1861,13 +1907,14 @@ const CreateFees = () => {
                     key={child._id || index}
                     className={`bg-white rounded-lg shadow-md border transition-all duration-300 ${
                       isSelected
-                        ? "border-blue-500 ring-2 ring-blue-300"
+                        ? "border-blue-500 ring-1 ring-blue-300"
                         : "border-gray-200 hover:border-gray-300"
                     } overflow-hidden`}
                   >
                     <div
                       className={`flex items-center px-4 py-1 border-b ${
-                        isSelected ? "bg-blue-50" : "bg-gray-50"
+                        isSelected ? "" : ""
+                        // isSelected ? "bg-blue-50" : "bg-gray-50"
                       } cursor-pointer`}
                       onClick={() => {
                         console.log(`DIV clicked for index: ${index}`);
@@ -1953,10 +2000,10 @@ const CreateFees = () => {
                             <div className="border rounded-md p-1 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Regular Monthly Fees
+                                Monthly Fees
                                 </label>
                                 <DynamicMultiSelect
-                                st
+                                
                                   name={`regularFees-${index}`}
                                   searchable={false}
                                   placeholderName="Select month(s)..."
@@ -1979,7 +2026,7 @@ const CreateFees = () => {
                               </div>
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Additional Fees (Monthly)
+                                  Additional(Monthly)
                                 </label>
                                 <DynamicMultiSelect
                                   name={`additionalFees-${index}`}
@@ -2004,7 +2051,7 @@ const CreateFees = () => {
                               </div>
                               <div className="md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  One-Time / Due Fees
+                                  One-Time
                                 </label>
                                 <DynamicMultiSelect
                                   name={`oneTimeFees-${index}`}
@@ -2030,7 +2077,77 @@ const CreateFees = () => {
                             </div>
 
                             {/* <div className="grid grid-cols-2  sm:grid-cols-5  gap-2"> */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            <div className="flex flex-wrap gap-4">
+                            {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"> */}
+                            
+                                <ExemptionToggle
+                                  isExempt={currentFormData.isExempt}
+                                  onChange={(value) =>
+                                    handleInputChange(index, "isExempt", value)
+                                  }
+                                  studentName={child.studentName}
+                                />
+                                {
+                                  currentFormData.isExempt && <ReactInput
+                                  type="number"
+                                  label="Exemption"
+                                  value={currentFormData.exemption}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "exemption",
+                                      e.target.value
+                                    )
+                                  }
+                                  min="0"
+                                  step="0.01"
+                                  containerClassName="sm:col-span-1"
+                                  className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                  disabled={!currentFormData.isExempt}
+                                />
+                                }
+                         <DatePicker
+                                                          className="custom-calendar"
+                                                          placeholder="" 
+                                                           label="Payment Date"
+                                                          respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                                                          name="date"
+                                                          id="date"
+                                                          value={currentFormData.date ? new Date(currentFormData.date) : new Date()}
+                                                          handleChange={(e) =>
+                                                            handleInputChange(
+                                                              index,
+                                                              "date",
+                                                              e.target.value
+                                                            )
+                                                          }
+                                                          // showaTime 
+                                                          hourFormat="12"
+                                                      />
+  {/* Add a top border to separate */}
+  <tr className="border-t bg-blue-50 rounded-md dark:border-gray-600 dark:bg-blue-900/20"> {/* Light blue background */}
+      <td className="px-4 py-1 text-sm font-medium text-gray-700 dark:text-gray-300"> {/* Slightly more vertical padding */}
+          Payable
+      </td>
+      <td className="px-4 py-1 text-sm font-semibold text-blue-700 dark:text-blue-400 text-right whitespace-nowrap">
+          ₹ {calculateNetPayableAmount(index).toFixed(2)}
+      </td>
+  </tr>
+
+  {
+    currentFormData.totalAmount>0 &&  <tr className="bg-red-50 rounded-md dark:bg-red-900/20"> {/* Light red background */}
+    <td className="px-4 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+        Dues
+    </td>
+    <td className="px-4 py-1 text-sm font-semibold text-red-600 dark:text-red-400 text-right whitespace-nowrap">
+        ₹ {calculateAutoDistribution(index).remainingDues.toFixed(2)}
+    </td>
+</tr>
+  }
+ 
+                           </div>
+                            <div className="flex  gap-4">
+                            {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"> */}
 
                               <ReactInput
                                 type="number"
@@ -2048,23 +2165,7 @@ const CreateFees = () => {
                                 containerClassName="sm:col-span-1"
                                 className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                               />
-                              <ReactInput
-                                type="number"
-                                label="Exemption"
-                                value={currentFormData.exemption}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    index,
-                                    "exemption",
-                                    e.target.value
-                                  )
-                                }
-                                min="0"
-                                step="0.01"
-                                containerClassName="sm:col-span-1"
-                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                disabled={!currentFormData.isExempt}
-                              />
+                              
                               {/* <div>
                                 <label className="block text-sm font-medium text-gray-700">
                                   Payment Mode (*)
@@ -2105,49 +2206,10 @@ const CreateFees = () => {
                                           { label: "Card", value: "Card" },
                                         ]}
                                       />
-                              <ReactInput
-                                type="number"
-                                label={`Amount to Pay  ${
-                                  selectedChildrenIndices.length > 1
-                                    ? `(for ${child.studentName})`
-                                    : ""
-                                }`}
-                                value={currentFormData.totalAmount}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    index,
-                                    "totalAmount",
-                                    e.target.value
-                                  )
-                                }
-                                min="0.01"
-                                step="0.01"
-                                isRequired={!currentFormData.isExempt}
-                                containerClassName="sm:col-span-1"
-                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                disabled={currentFormData.isExempt}
-                              />
                               
                               {/* // Replace the div with className="flex items-end
                               gap-4" and its children with: */}
-                               <DatePicker
-                                                          className="custom-calendar"
-                                                          placeholder="" 
-                                                           label="Payment Date"
-                                                          respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
-                                                          name="date"
-                                                          id="date"
-                                                          value={currentFormData.date ? new Date(currentFormData.date) : new Date()}
-                                                          handleChange={(e) =>
-                                                            handleInputChange(
-                                                              index,
-                                                              "date",
-                                                              e.target.value
-                                                            )
-                                                          }
-                                                          // showaTime 
-                                                          hourFormat="12"
-                                                      />
+                               
                               {/* <div className="sm:col-span-1">
                                 <ReactInput
                                   type="date"
@@ -2165,15 +2227,7 @@ const CreateFees = () => {
                                   className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                 />
                               </div> */}
-                              <div className="sm:col-span-1 flex justify-end items-center">
-                                <ExemptionToggle
-                                  isExempt={currentFormData.isExempt}
-                                  onChange={(value) =>
-                                    handleInputChange(index, "isExempt", value)
-                                  }
-                                  studentName={child.studentName}
-                                />
-                              </div>
+                              
                               {(currentFormData.paymentMode === "Online" ||
                                 currentFormData.paymentMode === "Card") && (
                                 <ReactInput
@@ -2207,12 +2261,36 @@ const CreateFees = () => {
                                   className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                 />
                               )}
+                              <ReactInput
+                                type="number"
+                                // label={`Amount to Pay  ${
+                                //   selectedChildrenIndices.length > 1
+                                //     ? `(for ${child.studentName})`
+                                //     : ""
+                                // }`}
+                                label={`Amount to Pay`}
+                                value={currentFormData.totalAmount}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    index,
+                                    "totalAmount",
+                                    e.target.value
+                                  )
+                                }
+                                min="0.01"
+                                step="0.01"
+                                isRequired={!currentFormData.isExempt}
+                                containerClassName="sm:col-span-1"
+                                className="w-full rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                disabled={currentFormData.isExempt}
+                              />
+                              
                             </div>
 
                             <div className="sm:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700">
+                              {/* <label className="block text-sm font-medium text-gray-700">
                                 Remarks
-                              </label>
+                              </label> */}
                               <textarea
                                 value={currentFormData.remarks}
                                 onChange={(e) =>
@@ -2229,7 +2307,7 @@ const CreateFees = () => {
                             </div>
 
                             {selectedChildrenIndices.length <= 1 && (
-                              <div className="flex justify-end pt-4 mt-4 border-t">
+                              <div className="flex justify-end ">
                                 <Button
                                   type="submit"
                                   name={`Submit Payment for ${child.studentName}`}
@@ -2243,8 +2321,9 @@ const CreateFees = () => {
                             <h3 className="text-sm font-semibold text-blue-900 border-b border-blue-200 ">
                               Payment Summary
                             </h3>
-                            <table className="w-full text-sm">
-                              <tbody>
+                            <div className="overflow-y-auto max-h-52 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800">
+                            <table className="w-full text-sm ">
+                              <tbody className="">
                                 {currentFormData.pastDues > 0 && (
                                   <tr className="border-b border-blue-100">
                                     <td className="text-gray-700 py-1">
@@ -2456,7 +2535,10 @@ const CreateFees = () => {
                                   </tr>
                                 )}
                               </tbody>
-                              <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
+                           
+                            </table>
+                          </div>
+                          <tfoot className="border-t-2 border-blue-200 mt-2 pt-2">
                                 <tr>
                                   <td className="pt-2 font-semibold text-blue-900 py-[2px]">
                                     Total Payable
@@ -2512,7 +2594,6 @@ const CreateFees = () => {
                                   </>
                                 )}
                               </tfoot>
-                            </table>
                           </div>
                         </div>
                       )}

@@ -3,11 +3,13 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { MdOutlineCancel } from "react-icons/md";
 import { AiOutlineMenu, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
-import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+// TooltipComponent import seems unused, remove if not needed elsewhere
+// import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { links as adminLinks, Thirdpartylinks } from "../data/dummy";
 import { Studentlinks, Teacherslinks, Parentslinks } from "../data/dummy";
 import { useStateContext } from "../contexts/ContextProvider";
 import { BiSolidSchool } from "react-icons/bi";
+// Make sure this path is correct relative to Topbar.js
 import logo from "../../src/ShikshMitraWebsite/digitalvidya.png";
 
 const Topbar = () => {
@@ -16,9 +18,11 @@ const Topbar = () => {
   const [dropdownPosition, setDropdownPosition] = useState(null);
   const topbarRef = useRef(null);
   const openDropdownRef = useRef(null);
+  const navContainerRef = useRef(null); // Ref for the scrollable nav container
   const location = useLocation();
 
-  // Role-based Links
+  // --- Role-based Links ---
+  // Ensure consistency: access the 'links' array within the first object
   let linksToDisplay = [];
   let dashboardPath = "/";
   if (userRole === "student") {
@@ -27,46 +31,115 @@ const Topbar = () => {
   } else if (userRole === "teacher") {
     linksToDisplay = Teacherslinks[0]?.links || [];
     dashboardPath = "/teacher";
-  } 
-  else if (userRole === "parent") {
+  } else if (userRole === "parent") {
     linksToDisplay = Parentslinks[0]?.links || [];
     dashboardPath = "/parent";
-  }
-  else if (userRole === "thirdparty") {
+  } else if (userRole === "thirdparty") {
     linksToDisplay = Thirdpartylinks[0]?.links || [];
-    // dashboardPath = "/school-details";///
     dashboardPath = "/thirdparty";
-  }
-   else {
-    linksToDisplay = adminLinks;
+  } else {
+     // Assuming adminLinks might also follow the [{ title: '...', links: [...] }] structure
+    linksToDisplay = adminLinks[0]?.links || adminLinks || []; // Handle both structures
     dashboardPath = "/admin";
   }
+  // --- End Role-based Links ---
 
+
+  // Close dropdown on location change
   useEffect(() => {
     setOpenDropdownIndex(null);
     setDropdownPosition(null);
   }, [location]);
 
+
+  // Close dropdown on click outside
   const handleClickOutside = useCallback((event) => {
-    setTimeout(() => {
-      if (
-        openDropdownRef.current &&
-        !openDropdownRef.current.contains(event.target) &&
-        !event.target.closest("[data-dropdown-trigger]")
-      ) {
-        setOpenDropdownIndex(null);
-        setDropdownPosition(null);
-      }
-    }, 100);
-  }, []);
+     // Check if the click is outside the dropdown AND outside the topbar triggers
+    if (
+      openDropdownRef.current &&
+      !openDropdownRef.current.contains(event.target) &&
+      !event.target.closest('[data-dropdown-trigger]') // Check if click was on a trigger
+    ) {
+       // Use timeout to ensure any state updates from trigger clicks happen first
+       setTimeout(() => {
+            setOpenDropdownIndex(null);
+            setDropdownPosition(null);
+       }, 0);
+    }
+  }, []); // No dependencies needed if it only uses refs
+
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    // Only add listener if a dropdown is potentially open
+    if (openDropdownIndex !== null) {
+        document.addEventListener("mousedown", handleClickOutside);
+    } else {
+        document.removeEventListener("mousedown", handleClickOutside); // Clean up if no dropdown is open
+    }
+    // Cleanup on unmount or when dropdown closes
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [handleClickOutside]);
+  }, [openDropdownIndex, handleClickOutside]); // Re-run when dropdown state changes
+
+
+  // --- Horizontal Scroll with Vertical Mouse Wheel ---
+  useEffect(() => {
+    const navContainer = navContainerRef.current;
+
+    if (!navContainer) {
+      console.warn("Horizontal scroll: Nav container ref not found.");
+      return; // Exit if the ref isn't attached yet
+    }
+
+    // --- Debugging: Check initial scroll dimensions ---
+    console.log('Horizontal scroll: Initial check - ScrollWidth:', navContainer.scrollWidth, 'ClientWidth:', navContainer.clientWidth);
+    if (navContainer.scrollWidth <= navContainer.clientWidth) {
+        console.warn("Horizontal scroll: Content does not overflow. Scrolling disabled.");
+        // Optional: Add a visual indicator if needed
+        // navContainer.style.border = '1px solid orange'; // Example: highlight non-scrollable
+    }
+    // --- End Debugging ---
+
+    const handleWheelScroll = (event) => {
+      // Ensure the ref is still valid inside the handler
+      const currentNavContainer = navContainerRef.current;
+      if (!currentNavContainer) return;
+
+      // Check if the container *actually* has horizontal overflow
+      const canScrollHorizontally = currentNavContainer.scrollWidth > currentNavContainer.clientWidth;
+
+      // Only act on vertical scroll (deltaY) and if horizontal scroll is possible
+      if (event.deltaY !== 0 && canScrollHorizontally) {
+        // console.log('Wheel event:', event.deltaY, 'scrollLeft before:', currentNavContainer.scrollLeft); // Debug log
+        event.preventDefault(); // Prevent default vertical page scroll
+        // Adjust scrollLeft. DeltaY might be positive (down) or negative (up).
+        // Scrolling down (positive deltaY) should move scrollLeft right (increase).
+        currentNavContainer.scrollLeft += event.deltaY;
+        // console.log('scrollLeft after:', currentNavContainer.scrollLeft); // Debug log
+      }
+       // Optional: Handle horizontal wheel scroll (deltaX) if needed
+       // else if (event.deltaX !== 0 && canScrollHorizontally) {
+       //    // Allow default horizontal scroll or handle manually:
+       //    // currentNavContainer.scrollLeft += event.deltaX; // (Default usually handles this)
+       // }
+    };
+
+    // Add the listener with passive: false to allow preventDefault
+    navContainer.addEventListener('wheel', handleWheelScroll, { passive: false });
+    console.log("Horizontal scroll: Wheel listener attached.");
+
+    // Cleanup function
+    return () => {
+      navContainer.removeEventListener('wheel', handleWheelScroll);
+      console.log("Horizontal scroll: Wheel listener removed.");
+       // Optional: Remove visual indicator on cleanup
+       // if (navContainer.style.border === '1px solid orange') navContainer.style.border = '';
+    };
+  }, [linksToDisplay]); // Re-run if links change, as content width might change
+  // --- End Horizontal Scroll ---
+
 
   const handleDropdownToggle = (index, event) => {
-    event.stopPropagation();
+    event.stopPropagation(); // Prevent triggering handleClickOutside immediately
     const isOpen = openDropdownIndex === index;
     if (isOpen) {
       setOpenDropdownIndex(null);
@@ -74,10 +147,12 @@ const Topbar = () => {
     } else {
       const button = event.currentTarget;
       const rect = button.getBoundingClientRect();
+      // Close any previously open dropdown first
       setOpenDropdownIndex(index);
+      // Position relative to the viewport using fixed positioning
       setDropdownPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 2, // Add a small gap below the button
+        left: rect.left,
       });
     }
   };
@@ -87,94 +162,109 @@ const Topbar = () => {
     setDropdownPosition(null);
   };
 
+  // --- Link Styles --- (Keep as they are)
   const activeLinkClass = `flex items-center gap-1 px-2 py-1 rounded-md text-white text-[12px] uppercase whitespace-nowrap`;
-  const normalLinkClass = `flex items-center gap-1 px-2 py-1 rounded-md text-[12px] uppercase text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`;
+  const normalLinkClass = `flex items-center gap-1 px-2 py-1 rounded-md text-[12px] uppercase text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`;
 
+  // --- Render Links Function ---
   const renderLinks = () =>
     linksToDisplay.map((item, index) => (
-      <div key={item.name || item.title || index} className="flex-shrink-0">
-        {item.children ? (
-          <button
-            data-dropdown-trigger
-            data-index={index}
-            onClick={(e) => handleDropdownToggle(index, e)}
-            className={`${normalLinkClass} items-center w-full`}
-            style={{ backgroundColor: openDropdownIndex === index ? "rgba(0,0,0,0.05)" : "" }}
-          >
-            <span className="flex items-center gap-2"
-            style={{color:currentColor}}
+        // Use item.name or generate a unique key if name isn't guaranteed
+        <div key={item.name || `toplink-${index}`} className="flex-shrink-0">
+            {item.children && item.children.length > 0 ? (
+            <button
+                data-dropdown-trigger // Important for click outside logic
+                data-index={index}
+                onClick={(e) => handleDropdownToggle(index, e)}
+                className={`${normalLinkClass} items-center w-full justify-between`}
+                style={{
+                    backgroundColor: openDropdownIndex === index ? 'rgba(0,0,0,0.05)' : '',
+                    color: currentColor // Apply currentColor to button text
+                }}
             >
-              {item.icon}
-              {item.name}
-            </span>
-            {openDropdownIndex === index ? <AiOutlineUp /> : <AiOutlineDown />}
-          </button>
-        ) : (
-          <NavLink
-            to={item.link || `/${item.route}`}
-            onClick={closeMenus}
-            style={({ isActive }) => ({
-              backgroundColor: isActive ? currentColor : "",
-              color: isActive ? "white" : currentColor,
-            })}
-            className={({ isActive }) => `${isActive ? activeLinkClass : normalLinkClass}`}
-          >
-            {item.icon}
-            {item.name}
-          </NavLink>
-        )}
-      </div>
+                <span className="flex items-center gap-1">
+                {item.icon}
+                {item.name}
+                </span>
+                {openDropdownIndex === index ? <AiOutlineUp className="ml-1"/> : <AiOutlineDown className="ml-1"/>}
+            </button>
+            ) : item.link || item.route ? (
+                <NavLink
+                    to={item.link ? item.link : `/${item.route}`.replace('//', '/')}
+                    onClick={closeMenus} // Close dropdowns when a direct link is clicked
+                    style={({ isActive }) => ({
+                    backgroundColor: isActive ? currentColor : "",
+                    color: isActive ? "white" : currentColor,
+                    })}
+                    className={({ isActive }) =>
+                    `${isActive ? activeLinkClass : normalLinkClass}`
+                    }
+                >
+                    {item.icon}
+                    {item.name}
+                </NavLink>
+            ) : ( // Fallback for items without links/children (e.g., titles)
+                <span className={`${normalLinkClass} opacity-50 cursor-default`} style={{ color: currentColor }}>
+                    {item.icon}
+                    {item.name || item.title}
+                </span>
+            )}
+        </div>
     ));
+  // --- End Render Links ---
+
 
   return (
     <div
       ref={topbarRef}
       className="relative flex flex-col pt-1 bg-white dark:bg-main-dark-bg border-b dark:border-gray-700 z-30"
     >
-      {/* <div className="flex justify-between items-center px-2 py-1">
-        <Link to={dashboardPath} onClick={closeMenus} className="flex items-center">
-          {logo ? (
-            <img src={logo} alt="Logo" className="h-8 w-auto" />
-          ) : (
-            <BiSolidSchool className="text-2xl text-blue-600" />
-          )}
-        </Link>
-      </div> */}
+      {/* Optional Logo Section */}
+       {/* <div className="flex justify-between items-center px-2 py-1"> ... </div> */}
 
-      {/* 🔄 Unified nav section for all screen sizes */}
-      <div className="w-full overflow-x-auto px-2">
+      {/* 🔄 Unified nav section */}
+      <div
+        ref={navContainerRef} // Attach ref here
+        className="w-full overflow-x-auto px-2 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800" // Added more specific scrollbar styles
+      >
         <nav className="flex items-center gap-1 flex-nowrap pb-[2px]">
-          {renderLinks()}
+          {/* Ensure linksToDisplay is actually an array before mapping */}
+          {Array.isArray(linksToDisplay) && linksToDisplay.length > 0 ? (
+             renderLinks()
+          ) : (
+             <div className="p-2 text-gray-500 text-xs whitespace-nowrap">No navigation links available for this role.</div>
+          )}
         </nav>
       </div>
 
       {/* 🔽 Dropdown */}
-      {openDropdownIndex !== null && dropdownPosition && (
+      {openDropdownIndex !== null && dropdownPosition && linksToDisplay[openDropdownIndex]?.children && (
         <div
           ref={openDropdownRef}
           className="absolute bg-white dark:bg-secondary-dark-bg rounded-md shadow-xl z-50 border dark:border-gray-700"
-          style={{
-            position: "fixed",
-            top: `${dropdownPosition.top}px`,
-            left: `${dropdownPosition.left}px`,
-            width: screenSize <= 640 ? "90%" : "auto",
-            minWidth: "200px",
-          }}
+           style={{
+                position: "fixed", // Use fixed for viewport positioning
+                top: `${dropdownPosition.top}px`,
+                left: `${dropdownPosition.left}px`,
+                minWidth: "200px",
+                // Optional: Limit max width if needed on small screens
+                // maxWidth: screenSize <= 640 ? "calc(100vw - 20px)" : "300px",
+            }}
         >
-          <ul className="py-1">
-            {linksToDisplay[openDropdownIndex]?.children.map((child) => (
+          <ul className="py-1 max-h-72 overflow-y-auto"> {/* Increased max-height */}
+            {linksToDisplay[openDropdownIndex].children.map((child) => (
               <li key={child.name}>
                 <NavLink
-                  to={child.link}
-                  onClick={closeMenus}
-                  style={({ isActive }) => ({
-                    backgroundColor: isActive ? currentColor : "",
-                    color: isActive ? "white" : "",
-                  })}
+                   to={child.link || '#'} // Provide fallback '#' if link missing
+                   onClick={closeMenus} // Close dropdown on item click
+                   style={({ isActive }) => ({
+                     backgroundColor: isActive ? currentColor : "",
+                     color: isActive ? "white" : "",
+                   })}
                   className={({ isActive }) =>
                     `flex items-center gap-3 w-full px-4 py-2 text-sm ${
                       isActive ? "text-white font-semibold" : "text-gray-700 dark:text-gray-200"
-                    } hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-black whitespace-nowrap`
+                    } hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap`
                   }
                 >
                   {child.icon}
@@ -190,6 +280,203 @@ const Topbar = () => {
 };
 
 export default Topbar;
+
+
+
+
+
+// // 🧠 Imports remain the same
+// import React, { useState, useRef, useEffect, useCallback } from "react";
+// import { Link, NavLink, useLocation } from "react-router-dom";
+// import { MdOutlineCancel } from "react-icons/md";
+// import { AiOutlineMenu, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
+// import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+// import { links as adminLinks, Thirdpartylinks } from "../data/dummy";
+// import { Studentlinks, Teacherslinks, Parentslinks } from "../data/dummy";
+// import { useStateContext } from "../contexts/ContextProvider";
+// import { BiSolidSchool } from "react-icons/bi";
+// import logo from "../../src/ShikshMitraWebsite/digitalvidya.png";
+
+// const Topbar = () => {
+//   const { currentColor, screenSize, userRole } = useStateContext();
+//   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
+//   const [dropdownPosition, setDropdownPosition] = useState(null);
+//   const topbarRef = useRef(null);
+//   const openDropdownRef = useRef(null);
+//   const location = useLocation();
+
+//   // Role-based Links
+//   let linksToDisplay = [];
+//   let dashboardPath = "/";
+//   if (userRole === "student") {
+//     linksToDisplay = Studentlinks[0]?.links || [];
+//     dashboardPath = "/student";
+//   } else if (userRole === "teacher") {
+//     linksToDisplay = Teacherslinks[0]?.links || [];
+//     dashboardPath = "/teacher";
+//   } 
+//   else if (userRole === "parent") {
+//     linksToDisplay = Parentslinks[0]?.links || [];
+//     dashboardPath = "/parent";
+//   }
+//   else if (userRole === "thirdparty") {
+//     linksToDisplay = Thirdpartylinks[0]?.links || [];
+//     // dashboardPath = "/school-details";///
+//     dashboardPath = "/thirdparty";
+//   }
+//    else {
+//     linksToDisplay = adminLinks;
+//     dashboardPath = "/admin";
+//   }
+
+//   useEffect(() => {
+//     setOpenDropdownIndex(null);
+//     setDropdownPosition(null);
+//   }, [location]);
+
+//   const handleClickOutside = useCallback((event) => {
+//     setTimeout(() => {
+//       if (
+//         openDropdownRef.current &&
+//         !openDropdownRef.current.contains(event.target) &&
+//         !event.target.closest("[data-dropdown-trigger]")
+//       ) {
+//         setOpenDropdownIndex(null);
+//         setDropdownPosition(null);
+//       }
+//     }, 100);
+//   }, []);
+
+//   useEffect(() => {
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, [handleClickOutside]);
+
+//   const handleDropdownToggle = (index, event) => {
+//     event.stopPropagation();
+//     const isOpen = openDropdownIndex === index;
+//     if (isOpen) {
+//       setOpenDropdownIndex(null);
+//       setDropdownPosition(null);
+//     } else {
+//       const button = event.currentTarget;
+//       const rect = button.getBoundingClientRect();
+//       setOpenDropdownIndex(index);
+//       setDropdownPosition({
+//         top: rect.bottom + window.scrollY,
+//         left: rect.left + window.scrollX,
+//       });
+//     }
+//   };
+
+//   const closeMenus = () => {
+//     setOpenDropdownIndex(null);
+//     setDropdownPosition(null);
+//   };
+
+//   const activeLinkClass = `flex items-center gap-1 px-2 py-1 rounded-md text-white text-[12px] uppercase whitespace-nowrap`;
+//   const normalLinkClass = `flex items-center gap-1 px-2 py-1 rounded-md text-[12px] uppercase text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap`;
+
+//   const renderLinks = () =>
+//     linksToDisplay.map((item, index) => (
+//       <div key={item.name || item.title || index} className="flex-shrink-0">
+//         {item.children ? (
+//           <button
+//             data-dropdown-trigger
+//             data-index={index}
+//             onClick={(e) => handleDropdownToggle(index, e)}
+//             className={`${normalLinkClass} items-center w-full`}
+//             style={{ backgroundColor: openDropdownIndex === index ? "rgba(0,0,0,0.05)" : "" }}
+//           >
+//             <span className="flex items-center gap-2"
+//             style={{color:currentColor}}
+//             >
+//               {item.icon}
+//               {item.name}
+//             </span>
+//             {openDropdownIndex === index ? <AiOutlineUp /> : <AiOutlineDown />}
+//           </button>
+//         ) : (
+//           <NavLink
+//             to={item.link || `/${item.route}`}
+//             onClick={closeMenus}
+//             style={({ isActive }) => ({
+//               backgroundColor: isActive ? currentColor : "",
+//               color: isActive ? "white" : currentColor,
+//             })}
+//             className={({ isActive }) => `${isActive ? activeLinkClass : normalLinkClass}`}
+//           >
+//             {item.icon}
+//             {item.name}
+//           </NavLink>
+//         )}
+//       </div>
+//     ));
+
+//   return (
+//     <div
+//       ref={topbarRef}
+//       className="relative flex flex-col pt-1 bg-white dark:bg-main-dark-bg border-b dark:border-gray-700 z-30"
+//     >
+//       {/* <div className="flex justify-between items-center px-2 py-1">
+//         <Link to={dashboardPath} onClick={closeMenus} className="flex items-center">
+//           {logo ? (
+//             <img src={logo} alt="Logo" className="h-8 w-auto" />
+//           ) : (
+//             <BiSolidSchool className="text-2xl text-blue-600" />
+//           )}
+//         </Link>
+//       </div> */}
+
+//       {/* 🔄 Unified nav section for all screen sizes */}
+//       <div className="w-full overflow-x-auto px-2">
+//         <nav className="flex items-center gap-1 flex-nowrap pb-[2px]">
+//           {renderLinks()}
+//         </nav>
+//       </div>
+
+//       {/* 🔽 Dropdown */}
+//       {openDropdownIndex !== null && dropdownPosition && (
+//         <div
+//           ref={openDropdownRef}
+//           className="absolute bg-white dark:bg-secondary-dark-bg rounded-md shadow-xl z-50 border dark:border-gray-700"
+//           style={{
+//             position: "fixed",
+//             top: `${dropdownPosition.top}px`,
+//             left: `${dropdownPosition.left}px`,
+//             width: screenSize <= 640 ? "90%" : "auto",
+//             minWidth: "200px",
+//           }}
+//         >
+//           <ul className="py-1">
+//             {linksToDisplay[openDropdownIndex]?.children.map((child) => (
+//               <li key={child.name}>
+//                 <NavLink
+//                   to={child.link}
+//                   onClick={closeMenus}
+//                   style={({ isActive }) => ({
+//                     backgroundColor: isActive ? currentColor : "",
+//                     color: isActive ? "white" : "",
+//                   })}
+//                   className={({ isActive }) =>
+//                     `flex items-center gap-3 w-full px-4 py-2 text-sm ${
+//                       isActive ? "text-white font-semibold" : "text-gray-700 dark:text-gray-200"
+//                     } hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-black whitespace-nowrap`
+//                   }
+//                 >
+//                   {child.icon}
+//                   <span className="capitalize">{child.name}</span>
+//                 </NavLink>
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Topbar;
 
 
 

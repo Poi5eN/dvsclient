@@ -731,7 +731,7 @@ const Table = ({ reLoad }) => {
       {/* Payment Summary Section */}
       <div className="mb-4 rounded-lg">
         <h3 className="text-sm font-semibold mb-2">Payment Summary</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
           <div>
             <p className="text-sm text-gray-600">Cash</p>
             <p className="font-medium">₹{cashPayment.toFixed(2)}</p>
@@ -752,8 +752,6 @@ const Table = ({ reLoad }) => {
             <p className="text-sm text-gray-600">Other</p>
             <p className="font-medium">₹{otherPayment.toFixed(2)}</p>
           </div>
-        </div>
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-gray-600">Total Paid</p>
             <p className="font-semibold text-green-600">
@@ -777,6 +775,31 @@ const Table = ({ reLoad }) => {
             </p>
           </div>
         </div>
+       
+        {/* <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm text-gray-600">Total Paid</p>
+            <p className="font-semibold text-green-600">
+              ₹
+              {overallTotalPaid(
+                activeTab === "single"
+                  ? filteredFeeHistory
+                  : filteredUnifiedFeeHistory
+              ).toFixed(2)}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Total Dues</p>
+            <p className="font-semibold text-red-600">
+              ₹
+              {overallTotalDuesSum(
+                activeTab === "single"
+                  ? filteredFeeHistory
+                  : filteredUnifiedFeeHistory
+              ).toFixed(2)}
+            </p>
+          </div>
+        </div> */}
       </div>
 
       {/* Render Table Based on Active Tab */}
