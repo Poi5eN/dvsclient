@@ -202,7 +202,17 @@ export const links = [
 //         // { name: 'Syllabus', link: 'curriculum' },
 //     ],
 // },
-{ name: 'ID Card', link: 'idcard' ,icon: <FaIdCard />},
+{
+  name: 'ID Card',
+  icon: <BiSolidStoreAlt />,
+  children: [
+      // { name: 'Records', link: 'records' },
+      { name: 'Print', link: 'idcard' },
+      { name: 'Set Design', link: 'testing' }, 
+    
+  ],
+},
+// { name: 'ID Card', link: 'idcard' ,icon: <FaIdCard />},
 // { name: 'Udise', link: 'udise' ,icon: <FaIdCard />},
 // { name: 'Admit Card', link: 'admitcards' ,icon: <BsFillCreditCard2FrontFill />},
 // { name: 'All Form', link: 'allforms' ,icon: <FaWpforms />},
@@ -216,11 +226,11 @@ export const links = [
   icon: <FaArrowDownUpAcrossLine />, link: 'userdetails'
 
 },
-{
-  name: 'Testing',
-  icon: <FaArrowDownUpAcrossLine />, link: 'testing'
+// {
+//   name: 'Testing',
+//   icon: <FaArrowDownUpAcrossLine />, link: 'testing'
 
-},
+// },
 // {
 //   name: 'Admit Design',
 //   icon: <FaArrowDownUpAcrossLine />, link: 'admitdesign'

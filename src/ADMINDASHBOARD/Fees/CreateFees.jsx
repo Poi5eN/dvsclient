@@ -154,7 +154,8 @@ const CreateFees = () => {
   }, [getAllStudent, triggerRefresh]);
 
   const handleSearch = (event) => {
-    const searchValue = event.target.value.toLowerCase().trim();
+    const searchValue = event.target.value.toLowerCase();
+    // const searchValue = event.target.value.toLowerCase().trim();
     setSearchTerm(searchValue);
     if (searchValue === "") {
       setFilteredStudents([]);
@@ -1717,20 +1718,21 @@ const CreateFees = () => {
 
         {filteredStudents.length > 0 && (
           <div className="relative">
-            <div className="absolute z-30 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto w-full">
+            <div className="absolute z-30 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ">
               <table className="w-full border-collapse">
                 <thead className="bg-gray-100 sticky top-0 z-20">
                   <tr>
-                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                  <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Adm No.
+                    </th>
+                    <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                       Student Name
                     </th>
-                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
-                      Admission No.
-                    </th>
-                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                   
+                    <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                       Class
                     </th>
-                    <th className="p-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                    <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                       Parent Name
                     </th>
                   </tr>
@@ -1748,16 +1750,17 @@ const CreateFees = () => {
                         setFilteredStudents([]);
                       }}
                     >
-                      <td className="p-3 font-semibold text-gray-800">
-                        {student.studentName}
-                      </td>
-                      <td className="p-3 text-sm text-grey-600">
+                      <td className="p-1 text-[13px] text-grey-600">
                         {student.admissionNumber}
                       </td>
-                      <td className="p-3 text-sm text-gray-600">
+                      <td className="p-1 font-semibold text-[13px] text-gray-800">
+                        {student.studentName}
+                      </td>
+                      
+                      <td className="p-1 text-[13px]  text-gray-600">
                         {student.class}
                       </td>
-                      <td className="p-3 text-sm text-gray-600">
+                      <td className="p-1 text-[13px]  text-gray-600">
                         {student.fatherName}
                       </td>
                     </tr>

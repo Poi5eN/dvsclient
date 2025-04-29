@@ -79,7 +79,7 @@ const Table = ({ reLoad }) => {
   };
 
   const getUnifiedFeeHistory = async () => {
-    setIsLoader(true);
+    // setIsLoader(true);  
     try {
       const response = await axios.get(
         `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
@@ -100,7 +100,7 @@ const Table = ({ reLoad }) => {
       console.error("Error fetching unified receipts:", error);
       toast.error("Error fetching unified receipts: " + error.message);
     } finally {
-      setIsLoader(false);
+      // setIsLoader(false);
     }
   };
 

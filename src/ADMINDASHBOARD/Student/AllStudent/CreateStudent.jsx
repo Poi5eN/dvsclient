@@ -26,7 +26,7 @@ import StudentDetails from "./StudentDetails.jsx";
 
 function CreateStudent() {
   const session=JSON.parse(localStorage.getItem("session"))
-console.log("session",session)
+
   const { setIsLoader } = useStateContext();
   const [getClass, setGetClass] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
