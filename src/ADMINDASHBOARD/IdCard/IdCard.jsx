@@ -278,28 +278,28 @@ const IdCard = () => {
         const data = {
             backgroundImage: idCardData?.frontImage?.url || "", // Use API background or empty
             studentImage: student?.studentImage?.url, // Placeholder handled by replacePlaceholders
-            name: student?.studentName?.toUpperCase() || 'N/A',
-            dob: student?.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : 'N/A',
-            class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
+            name: student?.studentName?.toUpperCase() || '',
+            dob: student?.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '',
+            class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : '',
             section: student?.section || '',
             gender: student?.gender || '',
             contact: student?.contact || '',
             transport: student?.transport || '',
-            father_name: student?.fatherName?.toUpperCase() || 'N/A',
-            mother_name: student?.motherName?.toUpperCase() || 'N/A',
-            mobile: student?.contact || student?.parentContact || 'N/A', // Prioritize student contact
-            address: student?.address || 'N/A',
-            session: student?.session || session?.name || 'N/A', // Use student session or fallback to current
-            admissionNumber: student?.admissionNumber || 'N/A',
+            father_name: student?.fatherName?.toUpperCase() || '',
+            mother_name: student?.motherName?.toUpperCase() || '',
+            mobile: student?.contact || student?.parentContact || '', // Prioritize student contact
+            address: student?.address || '',
+            session: student?.session || session?.name || '', // Use student session or fallback to current
+            admissionNumber: student?.admissionNumber || '',
             backgroundImage: idCardData?.backImage?.url || "", // Use API background or empty
             fatherImage: student?.fatherImage?.url, // Placeholder handled by replacePlaceholders
             motherImage: student?.motherImage?.url, // Placeholder handled by replacePlaceholders
             guardianImage: student?.guardianImage?.url, // Placeholder handled by replacePlaceholders
-            session: student?.session || session?.name || 'N/A', // Use student session or fallback
-            admissionNumber: student?.admissionNumber || 'N/A',
-            guardianname: student?.guardianName || 'N/A',
-            parentContact: student?.parentContact || 'N/A', // Primary contact on back might be parent
-            address: student?.address || 'N/A', // Address might be relevant on back too
+            session: student?.session || session?.name || '', // Use student session or fallback
+            admissionNumber: student?.admissionNumber || '',
+            guardianname: student?.guardianName || '',
+            parentContact: student?.parentContact || '', // Primary contact on back might be parent
+            address: student?.address || '', // Address might be relevant on back too
           };
           return replacePlaceholders(frontTemplateToUse, data, 'Front');
     }, [idCardData, frontTemplateToUse, replacePlaceholders, session]);
