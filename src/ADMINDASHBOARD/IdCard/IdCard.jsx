@@ -272,8 +272,9 @@ const IdCard = () => {
         }
         return renderedHtml;
     }, []); 
-    
     const renderFrontTemplate = useCallback((student) => {
+    console.log("student",student)
+
         const data = {
             backgroundImage: idCardData?.frontImage?.url || "", // Use API background or empty
             studentImage: student?.studentImage?.url, // Placeholder handled by replacePlaceholders
@@ -281,6 +282,9 @@ const IdCard = () => {
             dob: student?.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : 'N/A',
             class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : 'N/A',
             section: student?.section || '',
+            gender: student?.gender || '',
+            contact: student?.contact || '',
+            transport: student?.transport || '',
             father_name: student?.fatherName?.toUpperCase() || 'N/A',
             mother_name: student?.motherName?.toUpperCase() || 'N/A',
             mobile: student?.contact || student?.parentContact || 'N/A', // Prioritize student contact

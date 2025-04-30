@@ -485,6 +485,7 @@ const detailedSampleStudent = {
     "gender": "Male",
     "joiningDate": "23-Apr-2025",
     "address": "Delhi ,laxami nagar",
+    "transport": "Bus",
     "contact": 1234567890,
     "class": "I",
     "section": "A",
@@ -658,7 +659,9 @@ const [backTemplate, setBackTemplate] = useState(`
           fatherImage: student?.fatherImage?.url || placeholderPersonImage,
           motherImage: student?.motherImage?.url || placeholderPersonImage,
           guardianImage: student?.guardianImage?.url || placeholderPersonImage,
-          admissionNumber: student?.admissionNumber || 'N/A'
+          admissionNumber: student?.admissionNumber || 'N/A',
+          parentContact: student?.parentContact || 'N/A',
+          transport: student?.transport || 'N/A'
         };
 
         let renderedHtml = templateString;
