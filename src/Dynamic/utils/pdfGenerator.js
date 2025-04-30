@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { toast } from "react-toastify";
 
 const generatePdf = (
   data,
@@ -18,8 +19,9 @@ const generatePdf = (
 
   // === Data Validation ===
   if (!dataArray || dataArray.length === 0) {
-    console.error("PDF generate karne ke liye data nahi hai.");
-    alert("PDF generate karne ke liye data nahi hai.");
+    console.error("No Data Found");
+    toast.warn("No Data Found");
+
     return;
   }
   if (!dataArray[0] && !isUnified) {

@@ -380,7 +380,7 @@ function DynamicFormFileds(props) {
                 studentClass: values.class, studentSection: values.section, studentAddress: values.address || "",
                 studentContact: values.contact, parentContact: values.contact, fatherName: values.fatherName,
                 motherName: values.motherName || "", guardianName: values.guardianName || "",
-                studentAdmissionNumber: values.admissionNumber || "", studentRollNo: values.rollNo || "",
+                studentAdmissionNumber: values.admissionNumber || "", rollNo: values.rollNo || "",
                 remarks: values.remarks || "", transport: values.transport || "",
             };
 
@@ -441,7 +441,7 @@ function DynamicFormFileds(props) {
                 studentGender: values.gender, studentClass: values.class, studentSection: values.section,
                 studentAddress: values.address || "", studentContact: values.contact, contact: values.contact, // Keep both if API needs 'contact' too
                 fatherName: values.fatherName, motherName: values.motherName || "", guardianName: values.guardianName || "",
-                studentAdmissionNumber: values.admissionNumber || "", studentRollNo: values.rollNo || "",
+                studentAdmissionNumber: values.admissionNumber || "", rollNo: values.rollNo || "",
                 remarks: values.remarks || "", transport: values.transport || "",
                 // Do not send emails or passwords unless they are being explicitly changed
             };
@@ -1013,7 +1013,7 @@ export default DynamicFormFileds;
 //         fatherName: values?.fatherName || "",
 //         motherName: values?.motherName || "",
 //         studentAdmissionNumber: values?.admissionNumber || "",
-//         studentRollNo: values?.rollNo || "",
+//         rollNo: values?.rollNo || "",
 //         remarks: values?.remarks || "",
 //         transport: values?.transport || "",
 //          guardianName: values?.guardianName || "",

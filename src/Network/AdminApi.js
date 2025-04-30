@@ -846,13 +846,17 @@ export const getAdditionalfees = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
-export const feesfeeHistory = async () => {
+export const feesfeeHistory = async (startDate,endDate,session) => {
+// export const feesfeeHistory = async (currentPage,limit) => {
   try {
     const option = {
       method: "GET",
       // payloadData: payload// Ensure the method is GET
     };
-    const data = await makeApiRequest(`${apiUrls.feesfeeHistory}`, option);
+    // const data = await makeApiRequest(`${apiUrls.feesfeeHistory}?page=${currentPage}&limit=${limit}`, option);
+    // const data = await makeApiRequest(`${apiUrls.feesfeeHistory}?session=${session}`, option);
+    const data = await makeApiRequest(`${apiUrls.feesfeeHistory}?limit=2000&from=${startDate}&to=${endDate}`, option);
+    // const data = await makeApiRequest(`${apiUrls.feesfeeHistory}?limit=2000&from=${startDate}&to=${endDate}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");

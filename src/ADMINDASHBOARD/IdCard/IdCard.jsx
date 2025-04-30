@@ -18,6 +18,7 @@ const ITEMS_PER_PRINT_PAGE = 10; // Max items (single cards or pairs) per printe
 const IdCard = () => {
     // --- State Variables ---
     const [idCardData, setIdCardData] = useState(null); // Holds fetched template design
+    console.log("idCardData",idCardData)
     const [studentData, setStudentData] = useState([]); // All active students
     const [classData, setClassData] = useState([]); // All classes for filtering
     const [filteredStudentData, setFilteredStudentData] = useState([]); // Students matching filters
@@ -272,6 +273,7 @@ const IdCard = () => {
         }
         return renderedHtml;
     }, []); 
+    console.log("idCardData",idCardData)
     const renderFrontTemplate = useCallback((student) => {
     console.log("student",student)
 
@@ -291,7 +293,6 @@ const IdCard = () => {
             address: student?.address || '',
             session: student?.session || session?.name || '', // Use student session or fallback to current
             admissionNumber: student?.admissionNumber || '',
-            backgroundImage: idCardData?.backImage?.url || "", // Use API background or empty
             fatherImage: student?.fatherImage?.url, // Placeholder handled by replacePlaceholders
             motherImage: student?.motherImage?.url, // Placeholder handled by replacePlaceholders
             guardianImage: student?.guardianImage?.url, // Placeholder handled by replacePlaceholders

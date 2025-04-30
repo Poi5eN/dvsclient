@@ -99,7 +99,7 @@ const BulkFeesSet = () => {
       setExistingFees(feesRes.data.data || []);
 
       // setCount("");
-      setRows([{ amount: ""}]);
+      // setRows([{ amount: ""}]);
       // setRows([{ amount: "", name: "" }]);
       setMode("create");
     } catch (err) {
@@ -114,7 +114,7 @@ const BulkFeesSet = () => {
     <div className=" px-8">
       <div className=" mx-auto bg-white ">
         <h1 className="text-xl font-extrabold text-indigo-700 mb-2 text-center">
-          Bulk Fees Setup
+          Bulk Fees Setup 
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -219,14 +219,14 @@ const BulkFeesSet = () => {
           </div>
         )}
 
-        <div className="space-y-4 mb-2">
+        <div className="w-full flex flex-wrap  gap-2 mb-2">
           {rows.map((r, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 p-1  rounded-xl"
+              className="gap-2 p-1  rounded-xl"
             >
-              <span>
-                ({i+1}.)
+              <span className="mr-1">
+                ({i+1})
               </span>
               {isAdditional && (
                 <input
@@ -234,7 +234,7 @@ const BulkFeesSet = () => {
                   placeholder="Fee Name"
                   value={r.name}
                   onChange={(e) => updateRow(i, "name", e.target.value)}
-                  className="flex-1 p-1 px-4 border text-white bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className=" p-1 max-w-[200px] px-4 border text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               )}
               <input
@@ -242,24 +242,26 @@ const BulkFeesSet = () => {
                 placeholder="Amount"
                 value={r.amount}
                 onChange={(e) => updateRow(i, "amount", e.target.value)}
-                className="w-1/4 p-1 px-4 border text-white bg-blue-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className=" ml-2 w-[100px] p-1 px-4 border text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
              
             </div>
           ))}
         </div>
 
+        <div className="w-full flex justify-end">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-1 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 transition-all"
+          className="py-1 px-3 text-sm tet bg-green-600 text-end text-white rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 transition-all"
         >
           {loading
             ? "Processing..."
             : mode === "create"
-            ? "Create Fees"
+            ? "Submit"
             : "Update Fee"}
         </button>
+        </div>
       </div>
     </div>
   );

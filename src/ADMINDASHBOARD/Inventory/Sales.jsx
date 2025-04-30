@@ -122,7 +122,7 @@ const Sales = () => {
             throw new Error(itemResponse.data.message || "Failed to fetch items");
         }
         if (salesResponse.data.success) {
-          setSales(salesResponse.data.sales || []);
+          setSales(salesResponse.data.sales?.reverse() || []);
         } else {
             throw new Error(salesResponse.data.message || "Failed to fetch sales");
         }
@@ -649,8 +649,8 @@ const Sales = () => {
 </div>
 <div className="mt-2 flex flex-wrap gap-3">
 <div className="flex flex-row">
-                <span className="text-[13px] font-medium text-gray-600 block">Total : </span>
-                <span className="text-[13px] font-bold text-gray-800">₹{subtotal.toFixed(2)}</span>
+                <span className="text-[16px] font-bold text-gray-600 block">Total : </span>
+                <span className="text-[16px] font-bold text-blue-800">₹{subtotal.toFixed(2)}</span>
             </div>
            
 <ReactInput
@@ -725,7 +725,7 @@ const Sales = () => {
                 </td>
             </tr>
           ) : (
-            selectedItems.map((item) => (
+            selectedItems?.map((item) => (
               <tr key={item.itemId} className="hover:bg-gray-50">
                 {/* Item Name */}
                 <td className="px-4 py-1 font-medium text-gray-900 whitespace-nowrap">
@@ -797,61 +797,14 @@ const Sales = () => {
         )}
      </div>
 </div>
-
-        {/* --- Summary and Payment --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-6">
-             {/* <div className="text-right md:text-left p-3 rounded bg-gray-100 shadow-inner">
-                <span className="text-sm font-medium text-gray-600 block">Subtotal</span>
-                <span className="text-xl font-bold text-gray-800">₹{subtotal.toFixed(2)}</span>
-            </div> */}
-             {/* <ReactInput
-                label="Amount Paid"
-                type="number"
-                name="paidAmount"
-                value={paidAmount}
-                onChange={(e) => setPaidAmount(e.target.value)}
-                placeholder="0.00"
-                required={false}
-            /> */}
-            {/* <div className={`text-right md:text-left p-3 rounded shadow-inner ${dueAmount > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
-                <span className={`text-sm font-medium block ${dueAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>Amount Due</span>
-                <span className={`text-xl font-bold ${dueAmount > 0 ? 'text-red-700' : 'text-green-700'}`}>₹{dueAmount.toFixed(2)}</span>
-            </div> */}
-
-        </div>
-
-        {/* --- Submit Button --- */}
-        {/* <div className="text-center mt-8">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className={`px-8 py-3 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 flex items-center justify-center mx-auto ${isSubmitting || !selectedStudent || selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={isSubmitting || !selectedStudent || selectedItems.length === 0}
-            >
-              {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </>
-              ) : 'Create Sale & Generate Receipt'}
-            </button>
-        </div> */}
-
       </div>
 
-
-      {/* --- Sales History Table --- */}
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mt-6">
-        {/* ... (Sales History Table remains the same) ... */}
          <h2 className="text-xl font-semibold text-gray-800 mb-4">Sales History</h2>
         <div className="overflow-x-auto">
            <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
              <thead className="bg-gray-50">
                <tr>
-                 {/* <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale ID</th> */}
                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -867,7 +820,7 @@ const Sales = () => {
                         <td colSpan="8" className="px-4 py-4 text-center text-sm text-gray-500 italic">No sales records found.</td>
                     </tr>
                 )}
-               {sales.map((s) => {
+               {sales?.map((s) => {
                  const student = students.find((st) => st.studentId === s.studentId);
                  const studentDisplay = student
                    ? `${student.studentName} (${student.class}-${student.section})`

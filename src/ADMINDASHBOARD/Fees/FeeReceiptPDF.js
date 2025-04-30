@@ -24,9 +24,10 @@ const PrintableReceipt = React.forwardRef(({ dataToPrint }, ref) => {
         { id: "mode", label: "Mode" },
         { id: "tid", label: "TID" },
         { id: "month", label: "Month" },
-        { id: "pdues", label: "Dues" },
+       
         { id: "fee", label: "Fee" },
         { id: "paid", label: "Paid " },
+        { id: "pdues", label: "Dues" },
         { id: "status", label: "Status" },
       
     ];
@@ -42,9 +43,10 @@ const PrintableReceipt = React.forwardRef(({ dataToPrint }, ref) => {
         mode: val.paymentMode,
         tid: val.transactionId,
         month: val.regularFees?.map((val)=>val?.month),
-        pdues: val.dues,
+        
         fee: val.totalFeeAmount,
         paid: val.totalAmountPaid,
+        pdues: val.dues,
         status: val.regularFees?.map((val)=>val?.status),
      
     }));
@@ -126,26 +128,9 @@ function FeeReceiptPDF({ details }) {
             setDataToPrint([]);
         },
 
-         // --- Optional: You could also use onBeforePrint ---
-         // onBeforePrint: () => {
-         //    console.log(`Opening print dialog in ${printOrientation} mode...`);
-         //    managePrintStyle(printOrientation); // Could also inject here
-         //    return Promise.resolve();
-         // },
+       
     });
-
-    // --- Trigger print when data is ready ---
-    // We no longer need useEffect to trigger handlePrint,
-    // because handlePrint itself is now called directly by button clicks.
-    // useEffect(() => {
-    //      if (isPreparingPrint && dataToPrint.length > 0 && componentToPrintRef.current) {
-    //         handlePrint(); // This is handled differently now
-    //     }
-    // }, [isPreparingPrint, dataToPrint, handlePrint]); // Dependency array needs handlePrint if used
-
-
-    // --- Function to set data and trigger print process ---
-    const prepareAndPrint = (data, orientation = 'portrait') => { // Accept orientation
+  const prepareAndPrint = (data, orientation = 'portrait') => { // Accept orientation
         if (!data || data.length === 0) {
             alert("No data available to print/save.");
             return;
@@ -155,26 +140,15 @@ function FeeReceiptPDF({ details }) {
             return; // Prevent multiple clicks while busy
         }
 
-        console.log(`Setting orientation to: ${orientation}`);
         setPrintOrientation(orientation); // 1. Set the desired orientation STATE
         setDataToPrint(data);           // 2. Set the data
 
-        // 3. IMPORTANT: Trigger handlePrint directly AFTER state updates are likely processed.
-        // Using a microtask (Promise.resolve().then()) or setTimeout ensures
-        // that the state updates have been processed before handlePrint reads them,
-        // especially for setting the correct printOrientation in onBeforeGetContent.
-        // Or, we can rely on onBeforeGetContent reading the *latest* state, which usually works.
-        // Let's call handlePrint directly here. The hooks within handlePrint will manage the style.
-
-        // We need the component to render with the new data *before* handlePrint is called.
-        // A short timeout helps ensure PrintableReceipt has the data.
         setTimeout(() => {
             if (componentToPrintRef.current) {
                  handlePrint(); // 4. Call the actual print trigger function
             } else {
                 console.error("Printable component ref not ready.");
-                 // Maybe set isPreparingPrint back to false here if ref is null?
-                 // Or handle this state more robustly.
+               
             }
         }, 0); // Small delay to allow state update and re-render
     };
@@ -222,15 +196,7 @@ function FeeReceiptPDF({ details }) {
             <div 
             className="flex flex-wrap justify-end w-full gap-2 "
             >
-                 {/* Added mb-4 for spacing */}
-                {/* Print All Buttons */}
-                {/* <Button
-                    color="blue"
-                    name={"Print All (Portrait)"}
-                    Icon={<FaPrint />}
-                    onClick={handlePrintClickAllPortrait}
-                    disabled={isPreparingPrint}
-                /> */}
+                 
                  <Button
                     color="blue" // Maybe slightly different color?
                     name={"Print"}
@@ -256,9 +222,6 @@ function FeeReceiptPDF({ details }) {
                 />
             </div>
 
-            {/* Hidden component area for printing */}
-            {/* Keep this rendered conditionally ONLY when data is ready,
-                to ensure the ref is attached to the correct content */}
             {dataToPrint.length > 0 && (
                  <div
                   style={hiddenPrintComponentStyle}>

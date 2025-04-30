@@ -151,15 +151,14 @@ function Classes() {
       <Modal
         setIsOpen={() => setIsOpen(false)}
         isOpen={isOpen} title={"Create Class"} maxWidth="100px">
-        <div className=" px-4 py-2 text-center gap-y-3 ">
-          <div className="my-2">
+        <div className=" px-4 py-2 text-center gap-y-3 w-full flex flex-wrap">
+          {/* <div className="my-2"> */}
           <ReactSelect
             name="className"
             value={formData?.className}
             handleChange={handleFieldChange}
             label="class"
             dynamicOptions={[
-             
               { label: "PRE NUR", value: "PRE NUR" },
               { label: "NUR", value: "NUR" },
               { label: "LKG", value: "LKG" },
@@ -176,11 +175,23 @@ function Classes() {
               { label: "X", value: "X" },
               { label: "XI", value: "XI" },
               { label: "XII", value: "XII" },
+              { label: "XI(ARTS)", value: "XI(ARTS)" },
+              { label:  "XI(COMM)", value:  "XI(COMM)" },
+              { label: "XI(SCI)", value: "XI(SCI)" },
+              { label: "XI(SCI)-MED", value: "XI(SCI)-MED" },
+              { label: "XI(SCI)-NONMED", value: "XI(SCI)-NONMED" },
+              { label: "XII(ARTS)", value: "XII(ARTS)" },
+              { label:  "XII(COMM)", value:  "XII(COMM)" },
+              { label: "XII(SCI)", value: "XII(SCI)" },
+              { label: "XII(SCI)-MED", value: "XII(SCI)-MED" },
+              { label: "XII(SCI)-NONMED", value: "XII(SCI)-NONMED" },
               { label: "PASS OUT", value: "PASS OUT" },
+             
+       
             ]}
           />
-          </div>
-        <div className="my-5">
+          {/* </div> */}
+        {/* <div className="my-5"> */}
         <ReactInput
             type="text"
             name="subjects"
@@ -191,7 +202,7 @@ function Classes() {
               ? formData.subjects.join(",")
               : formData.subjects}
           />
-        </div>
+        {/* </div> */}
           <ReactInput
             type="text"
             name="sections"
@@ -202,7 +213,9 @@ function Classes() {
               ? formData.sections.join(",")
               : formData.sections}
           />
-          <div className="flex items-center gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
+         
+        </div>
+        <div className="mt-2 flex justify-end m-2 gap-5  border-t border-gray-200 rounded-b dark:border-gray-600">
             <Button
               // type="submit"
               name="Submit"
@@ -221,7 +234,6 @@ function Classes() {
               
             </Button>
           </div>
-        </div>
       </Modal>
 
       <div>

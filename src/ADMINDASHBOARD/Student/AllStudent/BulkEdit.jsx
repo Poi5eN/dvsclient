@@ -13,6 +13,7 @@ import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
 import moment from 'moment';
 
 const BulkEdit = () => {
+    const session=JSON.parse(localStorage.getItem("session"))
     const { currentColor, setIsLoader } = useStateContext();
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [studentDetails, setStudentDetails] = useState([]); // Holds all fetched students
@@ -33,7 +34,7 @@ const BulkEdit = () => {
         setIsLoader(true);
         try {
             // Pass filters to API if supported, otherwise filter client-side later
-            const response = await ActiveStudents(/* { class: cls, section: sec } */);
+            const response = await ActiveStudents(session);
             if (response?.success && response?.students?.data) {
                 const students = response.students.data.map(s => ({ ...s, id: s.studentId })).reverse();
                 setStudentDetails(students);
@@ -57,7 +58,7 @@ const BulkEdit = () => {
 
     // Fetch all classes
     const fetchAllClasses = useCallback(async () => {
-        setIsLoader(true);
+        // setIsLoader(true);
         try {
             const response = await AdminGetAllClasses();
             if (response?.success) {
@@ -69,7 +70,7 @@ const BulkEdit = () => {
             toast.error("Error fetching classes");
             console.error("Error fetching classes:", error);
         } finally {
-            setIsLoader(false);
+            // setIsLoader(false);
         }
     }, [setIsLoader]);
 
