@@ -336,8 +336,8 @@ function DynamicFormFileds(props) {
         const requiredFields = [
             { key: "fullName", message: "Student Name" }, { key: "fatherName", message: "Father Name" },
             { key: "contact", message: "Contact Number" }, { key: "class", message: "Class" },
-            { key: "section", message: "Section" }, { key: "gender", message: "Gender" },
-            { key: "DOB", message: "Date of Birth" },
+            { key: "section", message: "Section" }, 
+           
         ];
 
         const missing = requiredFields.filter(f => !values[f.key]).map(f => f.message);
