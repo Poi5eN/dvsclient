@@ -53,7 +53,8 @@ function Create_Registration_Form() {
     studentImage: null, // CHANGED:  Initialize as null, not ""
     fatherName: "",
     motherName: "",
-    parentAdmissionNumber: ""
+    parentAdmissionNumber: "",
+    parentContact: ""
   });
 
   console.log("payload",payload)
@@ -131,19 +132,19 @@ const newAdmission=async()=>{
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: studentEmail,
       studentPassword: payload.studentContact,
-      studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("MM-DD-YYYY") : "",
+      studentDateOfBirth: payload.studentDateOfBirth ? moment(payload?.studentDateOfBirth).format("MM-DD-YYYY") : "",
       // studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD-MM-YYYY") : "",
       studentGender: payload.studentGender ||"",
-      studentJoiningDate: moment(Date.now()).format("DD-MM-YYYY") ||"",
-      studentAddress: payload.studentAddress.charAt(0).toUpperCase() + payload.studentAddress.slice(1) ||"",
+      studentJoiningDate: moment(Date.now())?.format("DD-MM-YYYY") ||"",
+      studentAddress: payload.studentAddress?.charAt(0)?.toUpperCase() + payload?.studentAddress?.slice(1) ||"",
       studentContact: payload.studentContact ||"",
       studentClass: selectedClass ||"",
       studentSection: selectedSection ||"", // Use the selectedSection state
-      fatherName:  payload.fatherName.charAt(0).toUpperCase() + payload.fatherName.slice(1) ||"",
-      motherName:  payload.motherName.charAt(0).toUpperCase() + payload.motherName.slice(1) ||"",
+      fatherName:  payload.fatherName?.charAt(0)?.toUpperCase() + payload?.fatherName?.slice(1) ||"",
+      motherName:  payload.motherName?.charAt(0)?.toUpperCase() + payload?.motherName?.slice(1) ||"",
       parentEmail: parentEmail ||"",
       parentPassword: payload.studentContact ||"",
-      parentContact: payload.studentContact ||"",
+      parentContact: payload.parentContact ||"",
       // admissionNumber: "" ||"",
 studentCountry: payload.country ||"",
 // parentIncome: payload.studentContact ||"",
@@ -306,6 +307,7 @@ studentCountry: payload.country ||"",
     { id: "fatherName", label: "Father Name", width: "20%"  },
     { id: "class", label: "Class", width: "5%"  },
     { id: "contact", label: "Contact" , width: "20%" },
+    { id: "parentc", label: "Parent Contact" , width: "20%" },
     { id: "action", label: "Action",width: "2", width: "2%"   },
   ];
 
@@ -323,6 +325,7 @@ studentCountry: payload.country ||"",
     fatherName: val.fatherName,
     class: val.class,
     contact: val.contact,
+    parentc: val?.parentContact,
     feeStatus: val.feeStatus,
     action: (<>
       <span onClick={() => handlePrintClick(val)} className="cursor-pointer">
@@ -479,13 +482,15 @@ studentCountry: payload.country ||"",
 
             />
             <br/>
-            <button 
-            className="block w-full"
+            <Button 
+            // className="block w-full"
+            color="green"
+            name="More Details"
             // onClick={()=>setIsMoreDetails(true)}
             onClick={()=>setIsMoreDetails(!isMoreDetails)}
-            >
-              More Details
-            </button>
+            
+              
+            />
           {
             isMoreDetails && <>
              <ReactInput
@@ -587,6 +592,14 @@ studentCountry: payload.country ||"",
                 label="Mother Name"
                 onChange={handleChange}
                 value={payload.motherName}
+              />
+              <ReactInput
+                type="text"
+                name="parentContact"
+                required={false}
+                label="Contact"
+                onChange={handleChange}
+                value={payload.parentContact}
               />
             </div>
           ) : (
