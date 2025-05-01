@@ -296,12 +296,12 @@ function CreateStudent() {
         </div>
 
         {filteredData.length > 0 ? (
-          <Table tHead={THEAD} tBody={tBody} isSearch={true} />
+          <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students" />
         ) : (
           <NoDataFound message="No students found matching the criteria." />
         )}
         <div className="hidden">
-          <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} />{" "}
+          <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000}  />{" "}
           {/* <PrintTable ref={printRef} data={filteredData} itemsPerPage={1000} /> */}
         </div>
       </div>

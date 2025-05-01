@@ -328,8 +328,9 @@ studentCountry: payload.country ||"",
     parentc: val?.parentContact,
     feeStatus: val.feeStatus,
     action: (<>
-      <span onClick={() => handlePrintClick(val)} className="cursor-pointer">
-        <MdLocalPrintshop className="text-[25px] text-green-700" />
+      <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
+        {/* <MdLocalPrintshop className="text-[25px] text-green-700" /> */}
+        🖨️
       </span>
 
     </>
@@ -648,7 +649,7 @@ studentCountry: payload.country ||"",
 
       {filteredData?.length > 0 ? (
       <div className="mt-1">
-          <Table tHead={THEAD} tBody={tBody} isSearch={true} />
+          <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Admission" />
         </div>
       ) : (
         <NoDataFound />
