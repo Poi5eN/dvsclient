@@ -16,6 +16,7 @@ const DynamicMultiSelect = (props) => {
         placeholderName,
         requiredClassName,
         disabled,
+        style
       } = props;
       const isMobile = window.innerWidth <= 768;
   // --- Truncate and Item Template (No changes needed here) ---
@@ -43,6 +44,7 @@ const DynamicMultiSelect = (props) => {
           maxSelectedLabels={3}
           className={`multiselect ${requiredClassName ? "required-fields" : ""}`}
           // style={{borderColor: "red"}}
+          style={style}
           name={name}
           closeIcon
           itemTemplate={itemTemplate}

@@ -2003,7 +2003,7 @@ const CreateFees = () => {
                                 Monthly Fees
                                 </label>
                                 <DynamicMultiSelect
-                                
+                                // style={{backgroundColor:"red"}}
                                   name={`regularFees-${index}`}
                                   searchable={false}
                                   placeholderName="Select month(s)..."

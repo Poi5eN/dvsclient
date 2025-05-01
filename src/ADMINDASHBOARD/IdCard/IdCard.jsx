@@ -46,6 +46,7 @@ const IdCard = () => {
             <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>CLASS<span style="float: right;">: \${class}</span></p>
             <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>F.NAME<span style="float: right; max-width: 65%; overflow: hidden; text-overflow: ellipsis;">: \${father_name}</span></p>
             <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>DOB<span style="float: right;">: \${dob}</span></p>
+            <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>Roll<span style="float: right;">: \${rollNo}</span></p>
             <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>PHONE<span style="float: right;">: \${mobile}</span></p>
             <p style='font-size: 7pt; text-transform: uppercase; margin: 1mm 0; color: #000; font-weight: bold; line-height: 1.2;'>ADDR.<span style="float: right; width: 70%; text-align: right; white-space: normal; word-break: break-word;">: \${address}</span></p>
           </div>
@@ -301,6 +302,7 @@ const IdCard = () => {
             guardianname: student?.guardianName || '',
             parentContact: student?.parentContact || '', // Primary contact on back might be parent
             address: student?.address || '', // Address might be relevant on back too
+            rollNo: student?.rollNo || '', // Address might be relevant on back too
           };
           return replacePlaceholders(frontTemplateToUse, data, 'Front');
     }, [idCardData, frontTemplateToUse, replacePlaceholders, session]);
@@ -330,6 +332,7 @@ const IdCard = () => {
             address: student?.address || '',
             session: student?.session || session?.name || '', // Use student session or fallback to current
             admissionNumber: student?.admissionNumber || '',
+            rollNo: student?.rollNo || '',
           };
           return replacePlaceholders(backTemplateToUse, data, 'Back');
     }, [idCardData, backTemplateToUse, replacePlaceholders, session]);

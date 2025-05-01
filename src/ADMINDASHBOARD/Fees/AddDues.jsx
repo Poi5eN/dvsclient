@@ -252,11 +252,7 @@ const {  setIsLoader} = useStateContext();
             <Button name="Cancel" color="gray" onClick={() => setAddDues(false)} />
           </div>
         )}
-      </div>
-    
-      {/* <div className=" dark:text-white dark:bg-secondary-dark-bg mx-auto bg-white mt-2 rounded-md overflow-scroll w-full"> */}
-        <Table tHead={tHead} tBody={tBody} />
-      {/* </div> */}
+      </div>       <Table tHead={tHead} tBody={tBody} isSearch={true}/>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { forwardRef } from "react";
 
 // Forward ref to access this component in parent
@@ -18,8 +19,8 @@ const PrintTable = forwardRef(({ data, itemsPerPage = 20 }, ref) => {
           <table className="print-table">
             <thead>
               <tr className="whitespace-nowrap">
-                <th>S.No</th>
-                <th>Adm No.</th>
+                <th>#</th>
+                <th className="w-[10px]">AdmNo</th>
                 <th>Class</th>
                 <th>Name</th>
                 <th>Father's Name</th>
@@ -35,7 +36,7 @@ const PrintTable = forwardRef(({ data, itemsPerPage = 20 }, ref) => {
               {pageData?.map((student, index) => (
                 <tr key={student?.email} className="whitespace-nowrap">
                   <td>{index + 1 + pageIndex * itemsPerPage}</td>
-                  <td>{student?.admissionNumber}</td>
+                  <td  className="w-[10px]">{student?.admissionNumber}</td>
                   <td>{student?.class}</td>
                   <td>
                     {" "}
@@ -63,8 +64,15 @@ const PrintTable = forwardRef(({ data, itemsPerPage = 20 }, ref) => {
                       : student?.email}
                   </td> */}
                   <td>{student?.contact}</td>
-                  <td>{student?.address}</td>
-                  <td>{student?.joiningDate}</td>
+                  <td>
+                    {/* {student?.address} */}
+
+
+                  {student?.address?.length > 12
+                      ? student?.address?.substring(0, 12)
+                      : student?.address}
+                  </td>
+                  <td>{moment(student?.joiningDate).format("DD-MM-YYYY")}</td>
                 </tr>
               ))}
             </tbody>

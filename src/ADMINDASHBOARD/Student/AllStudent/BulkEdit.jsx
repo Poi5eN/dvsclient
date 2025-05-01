@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useStateContext } from '../../../contexts/ContextProvider';
 import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
 import moment from 'moment';
+import DatePicker from '../../../Dynamic/DatePicker/DatePicker';
 
 const BulkEdit = () => {
     const session=JSON.parse(localStorage.getItem("session"))
@@ -337,7 +338,7 @@ const BulkEdit = () => {
         const isSelected = selectedStudentIds.includes(student.studentId);
         const canEdit = edit && isSelected;
         const currentEditData = editFormData[student.studentId] || {};
-
+console.log("first",student)
         return {
             id: student.studentId, // Key for React
             select: (
@@ -411,19 +412,41 @@ const BulkEdit = () => {
                 student.email
             ),
             dateOfBirth: canEdit ? (
-                <input
-                    type="date"
-                    className="border p-1 w-[120px] bg-gray-300 dark:bg-gray-700 rounded"
-                    value={
-                        currentEditData.dateOfBirth ??
-                        (student.dateOfBirth ? moment(student.dateOfBirth).format("YYYY-MM-DD") : '')
-                    }
-                    onChange={(e) =>
-                        handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)
-                    }
-                />
+                 <DatePicker
+                                            className="custom-calendar"
+                                            placeholder="" 
+                                            // label={"DOB"}
+                                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                                            name="dateOfBirth"
+                                            id="dateOfBirth"
+                                            value={
+                                                currentEditData.dateOfBirth
+                                                  ? new Date(currentEditData.dateOfBirth)
+                                                  : student.dateOfBirth
+                                                  ? new Date(student.dateOfBirth)
+                                                  : null
+                                              }
+                                            // value={
+                                            //     currentEditData.dateOfBirth ??
+                                            //     (student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '')
+                                            // }
+                                            handleChange={(e) =>handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)}
+                                            // showaTime 
+                                            hourFormat="12"
+                                        />
+                // <input
+                //     type="date"
+                //     className="border p-1 w-[120px] bg-gray-300 dark:bg-gray-700 rounded"
+                //     value={
+                //         currentEditData.dateOfBirth ??
+                //         (student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '')
+                //     }
+                //     onChange={(e) =>
+                //         handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)
+                //     }
+                // />
             ) : (
-                moment(student.dateOfBirth).format("YYYY-MM-DD")
+                moment(student.dateOfBirth).format("DD-MM-YYYY")
             ),
             contact: canEdit ? (
                 <input

@@ -134,6 +134,10 @@ function CreateStudent() {
   const handleSectionChange = (e) => {
     setSelectedSection(e.target.value);
   };
+  // const handlePrint = useReactToPrint({
+  //   content: () => printRef.current,
+  //   pageStyle: `@media print { @page { size: A4 landscape; margin: 15mm; } body { font-family: Arial, sans-serif; -webkit-print-color-adjust: exact; } .page { page-break-after: always; } .print-header { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 10px; } .print-table { width: 100%; border-collapse: collapse; } .print-table th, .print-table td { border: 1px solid black; padding: 5px; text-align: left; } .print-table th { background-color: #f2f2f2; } }`,
+  // });
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     pageStyle: `@media print { @page { size: A4 landscape; margin: 15mm; } body { font-family: Arial, sans-serif; -webkit-print-color-adjust: exact; } .page { page-break-after: always; } .print-header { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 10px; } .print-table { width: 100%; border-collapse: collapse; } .print-table th, .print-table td { border: 1px solid black; padding: 5px; text-align: left; } .print-table th { background-color: #f2f2f2; } }`,
@@ -268,7 +272,7 @@ function CreateStudent() {
             dynamicOptions={DynamicSection}
           />
           {filteredData?.length > 0 && (
-            <span className="text-green-700 text-[18px] font-bold">
+            <span className="text-green-700 text-[15px] font-bold">
               COUNT = {filteredData?.length}
             </span>
           )}

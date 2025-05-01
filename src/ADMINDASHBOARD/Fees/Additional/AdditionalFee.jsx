@@ -372,6 +372,7 @@ function AdditionalFee() {
               label="Name *"
               onChange={handleFieldChange} // Use general field handler
               value={formData.name} // Bind to formData
+              disabled={editMode?true:false}
             />
              <ReactInput
               type="number"

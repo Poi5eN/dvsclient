@@ -57,7 +57,7 @@ const Table = ({ tHead, tBody, isSearch, }) => {
              
                 {tHead.map((header) => (
                
-                  <th class={`px-2 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-[${header?.width}]`}
+                  <th class={`px-2 text-start border-b border-slate-300 bg-white whitespace-nowrap uppercase w-[${header?.width}]`}
                   // <th class={`px-2 py-1 text-start border-b border-slate-300 bg-slate-50 whitespace-nowrap uppercase w-${header?.width}`}
                     // style={{ background: currentColor, color: "white", }}
                     style={{ background: currentColor, color: "white"}}
@@ -75,12 +75,12 @@ const Table = ({ tHead, tBody, isSearch, }) => {
                   const rowClassName = getStatusColorClass(row.feeStatus);
 
                   return (
-                    <tr key={index} className={`${rowClassName} hover:bg-[#26aae2ad] py-1`}>
+                    <tr key={index} className={`${rowClassName} hover:bg-gray-100 py-1`}>
                       
                       {tHead.map((header) => (
                         <td
                           key={`${index}-${header.id}`}
-                          className="border px-2 py-1 align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
+                          className="border-b-1 px-2 py-[2px] align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
                         >
                           <p class="block text-sm font-normal leading-none text-slate-500">
                             {row[header.id]}

@@ -11,6 +11,7 @@ export function ReactInput({
   value = "",
   readOnly,
   placeholder,
+
 }) {
   return (
     <div
@@ -30,6 +31,7 @@ export function ReactInput({
           disabled={disabled}
           id={name}
           placeholder={placeholder}
+        
         />
         <label className="did-floating-label">{label}</label>
       </div>

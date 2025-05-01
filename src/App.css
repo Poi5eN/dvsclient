@@ -425,10 +425,29 @@ width: 270px;
 }
 .p-multiselect-items-wrapper{
   max-height: 180px;
-} */
+} 
+  */
 
-
-
+  .p-multiselect-items-wrapper{
+    /* max-height: 180px; */
+    background-color: #000000;
+   
+  } 
+  .p-multiselect-items-wrapper ul li {
+  
+    background-color: #5f9ea0;
+    color: white;
+    margin: 1px;
+    
+    
+  } 
+  .p-multiselect-filter svg{
+    margin-bottom: "10px";
+  }
+  svg.p-icon {
+ 
+    visibility: hidden;
+}
 
 /* custom.css */
 .p-multiselect {
@@ -481,11 +500,11 @@ width: 270px;
   background: aliceblue;
 }
 
-.p-checkbox .p-checkbox-box {
+/* .p-checkbox .p-checkbox-box {
   width: 15px !important;
   height: 15px !important;
   border-radius: 1px !important;
-}
+} */
 
 .p-multiselect-item {
   align-items: center;
@@ -510,6 +529,7 @@ width: 270px;
 
 .p-multiselect-panel .p-multiselect-header {
   padding: 0.5rem 0.35rem;
+  background: cadetblue;
 }
 
 .p-multiselect-panel .p-multiselect-header .p-checkbox {
@@ -522,8 +542,8 @@ width: 270px;
 
 .multiselect {
   width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  /* border: 1px solid #ccc;
+  border-radius: 4px; */
 }
 
 .multiselect .p-multiselect-label {
@@ -558,11 +578,6 @@ width: 270px;
   margin: 10px;
 }
 
-.multiselect {
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
 
 .multiselect .p-multiselect-label {
   color: #333;
@@ -634,7 +649,10 @@ width: 270px;
   /* Align button vertically if needed (usually automatic) */
   /* vertical-align: top; */
 }
-
+.p-checkbox input
+{
+  background-color: #01f315 !important;
+}
 /* --- 3. Button Hover State --- */
 .custom-calendar.p-calendar .p-datepicker-trigger.p-button:not(:disabled):hover {
   background-color: #5a2020; /* Darker shade for hover */
@@ -657,4 +675,49 @@ width: 270px;
    /* line-height: 1; */ /* May help vertical centering */
 }
 
+/* Target the panel with your custom class */
+.custom-multiselect-panel .p-multiselect-items .p-multiselect-item {
+  /* Style the container of each item (checkbox + label) if needed */
+  /* Example: Add some padding */
+   padding: 0.5rem 0.8rem;
+   background-color:#5f9ea0;
+}
 
+/* Target the checkbox visual representation (the box) */
+.custom-multiselect-panel .p-multiselect-item .p-checkbox .p-checkbox-box {
+  border: 2px solid #007bff; /* Example: Blue border */
+  background-color: #e7f3ff; /* Example: Light blue background for unchecked */
+  transition: background-color 0.2s, border-color 0.2s; /* Smooth transition */
+}
+
+/* Target the checkbox box when the item is selected (highlighted) */
+/* .p-highlight is added to the .p-multiselect-item when selected */
+.custom-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox .p-checkbox-box {
+  background-color: #0056b3; /* Example: Darker blue background for checked */
+  border-color: #003f80; /* Example: Darker blue border for checked */
+}
+
+/* Target the checkmark icon inside the checkbox (when checked) */
+.custom-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox .p-checkbox-box .p-checkbox-icon {
+  color: white; /* Example: White checkmark */
+}
+
+/* Target the text label (span) next to the checkbox */
+.custom-multiselect-panel .p-multiselect-item span {
+  /* Be careful, this might target other spans if present in itemTemplate */
+  /* Use a more specific selector if needed based on your itemTemplate */
+  color: #6b1414; /* Example: Dark grey text */
+  margin-left: 0.5rem; /* Add some space between checkbox and text */
+  /* background-color: yellow; */ /* Example: If you wanted label background */
+}
+
+
+
+/* Optional: Style on hover */
+.custom-multiselect-panel .p-multiselect-item:not(.p-highlight):hover .p-checkbox .p-checkbox-box {
+    background-color: #d0e7ff; /* Slightly different background on hover */
+    border-color: #0056b3;
+}
+.custom-multiselect-panel .p-multiselect-item:not(.p-highlight):hover {
+    background-color: #f8f9fa; /* Subtle background for the whole item on hover */
+}

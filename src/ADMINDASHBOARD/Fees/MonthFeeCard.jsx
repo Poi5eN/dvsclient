@@ -258,7 +258,11 @@ const MonthFeeCard = ({ childFeeHistory }) => {
                   .map((history) => (
                     //   childFeeHistory.feeStatus.feeHistory?.reverse().map((history) => (
                     // Use history._id as the key
-                    <tr key={history._id} className="hover:bg-gray-50">
+                    <tr
+  key={history._id}
+  className="hover:bg-gray-50"
+  style={history?.status === "canceled" ? { background: "red",color:"white" } : {}}
+>
                       {/* Cell for Receipt Number */}
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-r">
                         {history.feeReceiptNumber || "N/A"}
