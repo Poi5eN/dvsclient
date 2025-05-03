@@ -56,7 +56,7 @@ const StockDataTable = ({ data }) => {
               <TableCell>{item.quantity}</TableCell>
               <TableCell>₹{item.price}</TableCell>
               <TableCell>
-                <Link to={`/admin/stocks/editstock/${item._id}`}>
+                <Link to={`/admin/stocks/editstock/${item.itemId}`}>
                   <Button size="small" variant="outlined" sx={{ mr: 1, color: theme.palette.tertiary.main, "&:hover": { background: theme.palette.tertiary.light } }}>
                     <EditIcon />
                   </Button>

@@ -1,43 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import jsPDF from "jspdf"; // Keep import if needed later for dedicated download
-import html2canvas from "html2canvas"; // Keep import if needed later
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 
-// --- Reusable Input Component --- (Keep as is)
+// --- Reusable Input Component ---
 const ReactInput = ({ label, value, onChange, placeholder, type = "text", name, required, maxLength, onFocus, onBlur }) => (
     <div className="relative">
-      {/* Removed label element for cleaner look, placeholder acts as label */}
       <input
         id={name}
         name={name}
         type={type}
         value={value}
         onChange={onChange}
-        placeholder={placeholder || label} // Use placeholder effectively
+        placeholder={placeholder || label}
         required={required}
         maxLength={maxLength}
         onFocus={onFocus}
         onBlur={onBlur}
-        className="w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer placeholder-transparent" // Added peer, placeholder-transparent
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer bg-white text-gray-900 placeholder-gray-400"
         autoComplete="off"
       />
-       {/* Floating label effect */}
       <label
         htmlFor={name}
-        className={`absolute left-3 -top-2 text-xs text-gray-500 bg-white px-1 transition-all
-                   peer-placeholder-shown:top-1.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
-                   peer-focus:-top-2 peer-focus:text-xs peer-focus:text-indigo-600
-                   ${value ? '-top-2 text-xs' : ''} ${value ? 'text-indigo-600' : ''}
-                   pointer-events-none`} // Added pointer-events-none
+        className={`absolute left-3 -top-2.5 text-xs text-gray-600 bg-white px-1 transition-all duration-200
+                   peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
+                   peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-indigo-600
+                   ${value ? '-top-2.5 text-xs text-indigo-600' : 'top-2 text-sm text-gray-400'}
+                   pointer-events-none z-10`}
       >
-        {label || placeholder} {required && '*'}
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
     </div>
-  );
+);
 
-// --- Reusable Select Component --- (Keep as is)
+// --- Reusable Select Component ---
 const ReactSelect = ({ label, value, handleChange, options, name, required }) => (
     <div className="relative">
       <select
@@ -46,7 +44,7 @@ const ReactSelect = ({ label, value, handleChange, options, name, required }) =>
         value={value}
         onChange={handleChange}
         required={required}
-        className="w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white appearance-none peer" // Added appearance-none peer
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white appearance-none peer text-gray-900"
       >
         <option value="" disabled>{`Select ${label}`}</option>
         {options.map(option => (
@@ -55,56 +53,58 @@ const ReactSelect = ({ label, value, handleChange, options, name, required }) =>
           </option>
         ))}
       </select>
-       {/* Floating label */}
-       <label
+      <label
         htmlFor={name}
-        className={`absolute left-3 -top-2 text-xs text-gray-500 bg-white px-1 transition-all
-                   ${value ? '-top-2 text-xs text-indigo-600' : 'top-1.5 text-sm text-gray-400'}
-                   peer-focus:-top-2 peer-focus:text-xs peer-focus:text-indigo-600
-                   pointer-events-none`}
+        className={`absolute left-3 -top-2.5 text-xs text-gray-600 bg-white px-1 transition-all duration-200
+                   peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-indigo-600
+                   ${value ? '-top-2.5 text-xs text-indigo-600' : 'top-2 text-sm text-gray-400'}
+                   pointer-events-none z-10`}
       >
-        {label} {required && '*'}
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
-      {/* Arrow Icon */}
       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.516 7.548c.436-.446 1.043-.481 1.576 0L10 10.405l2.908-2.857c.533-.481 1.141-.446 1.574 0 .436.445.408 1.197 0 1.615-.406.418-4.695 4.502-4.695 4.502a1.095 1.095 0 0 1-1.576 0S5.11 9.581 5.11 9.163c0-.418.08-.1.406-1.615z"/></svg>
       </div>
     </div>
-  );
-
+);
 
 // --- Main Sales Component ---
 const Sales = () => {
   // State variables
   const [students, setStudents] = useState([]);
   const [items, setItems] = useState([]);
-  const [sales, setSales] = useState([]); // Holds all sales history
+  const [sales, setSales] = useState([]);
+  const [duesSales, setDuesSales] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedStudentDisplay, setSelectedStudentDisplay] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
-  const [selectedItems, setSelectedItems] = useState([]); // Cart items
-  const [subtotal, setSubtotal] = useState(0); // Current sale subtotal
-  const [paidAmount, setPaidAmount] = useState(""); // Current sale paid amount
-  const [dueAmount, setDueAmount] = useState(0); // Current sale due amount
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [paidAmount, setPaidAmount] = useState("");
+  const [additionalDuePayment, setAdditionalDuePayment] = useState("");
+  const [dueAmount, setDueAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetchingReceipt, setIsFetchingReceipt] = useState(false);
   const [error, setError] = useState(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [receiptHtmlContent, setReceiptHtmlContent] = useState("");
-
-  // *** NEW: State for selected student's previous due amounts ***
   const [selectedStudentTotalDue, setSelectedStudentTotalDue] = useState(0);
   const [selectedStudentUnpaidSales, setSelectedStudentUnpaidSales] = useState([]);
+  const [dueSaleNumber, setDueSaleNumber] = useState("");
+  const [duePaymentAmount, setDuePaymentAmount] = useState("");
+  const [dueNewItems, setDueNewItems] = useState([]);
+  const [dueSelectedItem, setDueSelectedItem] = useState("");
 
   // Refs
   const receiptModalContentRef = useRef();
   const searchContainerRef = useRef();
 
-  // --- Fetch Initial Data --- (Keep as is)
+  // Fetch Initial Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,25 +112,28 @@ const Sales = () => {
         setError(null);
         const token = localStorage.getItem("token");
         if (!token) {
-            throw new Error("Authentication token not found.");
+          throw new Error("Authentication token not found.");
         }
         const headers = { Authorization: `Bearer ${token}` };
 
-        const [studentResponse, itemResponse, salesResponse] =
-          await Promise.all([
-            axios.get(
-              "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
-              { withCredentials: true, headers }
-            ),
-            axios.get(
-              "https://dvsserver.onrender.com/api/v1/adminRoute/items",
-              { withCredentials: true, headers }
-            ),
-            axios.get(
-              "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
-              { withCredentials: true, headers }
-            ),
-          ]);
+        const [studentResponse, itemResponse, salesResponse, duesResponse] = await Promise.all([
+          axios.get(
+            "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+            { withCredentials: true, headers }
+          ),
+          axios.get(
+            "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+            { withCredentials: true, headers }
+          ),
+          axios.get(
+            "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+            { withCredentials: true, headers }
+          ),
+          axios.get(
+            "https://dvsserver.onrender.com/api/v1/adminRoute/salesdues",
+            { withCredentials: true, headers }
+          ),
+        ]);
 
         if (studentResponse.data.success) {
           setStudents(studentResponse.data.students.data || []);
@@ -140,15 +143,18 @@ const Sales = () => {
         if (itemResponse.data.success) {
           setItems(itemResponse.data.listOfAllItems || []);
         } else {
-            throw new Error(itemResponse.data.message || "Failed to fetch items");
+          throw new Error(itemResponse.data.message || "Failed to fetch items");
         }
         if (salesResponse.data.success) {
-          // Ensure sales are sorted if needed, or sort later. Reverse is fine.
           setSales(salesResponse.data.sales?.reverse() || []);
         } else {
-            throw new Error(salesResponse.data.message || "Failed to fetch sales");
+          throw new Error(salesResponse.data.message || "Failed to fetch sales");
         }
-
+        if (duesResponse.data.success) {
+          setDuesSales(duesResponse.data.sales?.reverse() || []);
+        } else {
+          throw new Error(duesResponse.data.message || "Failed to fetch dues");
+        }
       } catch (error) {
         console.error("Fetch data error:", error);
         const errorMessage = error.response?.data?.message || error.message || "Failed to fetch data.";
@@ -161,7 +167,25 @@ const Sales = () => {
     fetchData();
   }, []);
 
-  // --- Student Search Logic --- (Keep as is)
+  // Update unpaid sales when sales or student changes
+  useEffect(() => {
+    if (selectedStudent && selectedStudent.studentId && sales.length > 0) {
+      const studentId = selectedStudent.studentId;
+      const unpaidSales = sales.filter(s =>
+        s.studentId === studentId &&
+        s.paymentStatus !== 'paid'
+      );
+      const totalDue = unpaidSales.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+      setSelectedStudentTotalDue(totalDue);
+      setSelectedStudentUnpaidSales(unpaidSales);
+    } else {
+      setSelectedStudentTotalDue(0);
+      setSelectedStudentUnpaidSales([]);
+      setDueSaleNumber("");
+    }
+  }, [sales, selectedStudent]);
+
+  // Student Search Logic
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
@@ -169,17 +193,17 @@ const Sales = () => {
       return;
     }
     const filtered = students.filter(s => {
-        const term = searchTerm.toLowerCase();
-        const nameMatch = s.studentName.toLowerCase().includes(term);
-        const admissionMatch = s.admissionNumber ? String(s.admissionNumber).toLowerCase().includes(term) : false;
-        const idMatch = s.studentId.toLowerCase().includes(term);
-        return nameMatch || admissionMatch || idMatch;
+      const term = searchTerm.toLowerCase();
+      const nameMatch = s.studentName.toLowerCase().includes(term);
+      const admissionMatch = s.admissionNumber ? String(s.admissionNumber).toLowerCase().includes(term) : false;
+      const idMatch = s.studentId.toLowerCase().includes(term);
+      return nameMatch || admissionMatch || idMatch;
     }).slice(0, 10);
     setSearchResults(filtered);
     setShowSuggestions(true);
   }, [searchTerm, students]);
 
-  // --- Handle Clicking Outside Search Suggestions --- (Keep as is)
+  // Handle Clicking Outside Search Suggestions
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
@@ -188,56 +212,43 @@ const Sales = () => {
     };
     if (showSuggestions) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showSuggestions]);
 
-  // --- Handle Student Selection (MODIFIED) ---
+  // Handle Student Selection
   const handleStudentSelect = (student) => {
     setSelectedStudent(student);
     const displayName = `${student.studentName} (${student.class} - ${student.section})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}]` : ''}`;
     setSelectedStudentDisplay(displayName);
-    setSearchTerm(student.studentName); // Update search bar
+    setSearchTerm(student.studentName);
     setShowSuggestions(false);
     setSearchResults([]);
+    setDueSaleNumber("");
+    setDuePaymentAmount("");
+    setDueNewItems([]);
+    setDueSelectedItem("");
+  };
 
-    // *** NEW: Calculate and set previous due amount ***
-    if (student && student.studentId && sales.length > 0) {
-        const studentId = student.studentId;
-        const unpaidSales = sales.filter(s =>
-            s.studentId === studentId &&
-            s.paymentStatus !== 'paid' // Find 'pending' or 'partial'
-        );
-
-        const totalDue = unpaidSales.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
-
-        setSelectedStudentTotalDue(totalDue);
-        setSelectedStudentUnpaidSales(unpaidSales); // Store details for potential display
-    } else {
-        // Reset if no student or no sales data
-        setSelectedStudentTotalDue(0);
-        setSelectedStudentUnpaidSales([]);
+  // Handle Search Input Change
+  const handleSearchChange = (e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+    if (newSearchTerm.trim() === "") {
+      setSelectedStudent(null);
+      setSelectedStudentDisplay("");
+      setSelectedStudentTotalDue(0);
+      setSelectedStudentUnpaidSales([]);
+      setDueSaleNumber("");
+      setDuePaymentAmount("");
+      setDueNewItems([]);
+      setDueSelectedItem("");
     }
   };
 
-    // --- Handle Search Input Change (MODIFIED) ---
-    const handleSearchChange = (e) => {
-        const newSearchTerm = e.target.value;
-        setSearchTerm(newSearchTerm);
-        if (newSearchTerm.trim() === "") {
-            setSelectedStudent(null);
-            setSelectedStudentDisplay("");
-            // *** NEW: Reset due amount info when search is cleared ***
-            setSelectedStudentTotalDue(0);
-            setSelectedStudentUnpaidSales([]);
-        }
-    };
-
-  // --- Item Handling (Add, Quantity, Remove) --- (Keep as is)
+  // Item Handling (Add, Quantity, Remove)
   const itemOptions = items.map(item => ({
     value: item.itemId,
     label: `${item.itemName} - ₹${item.price.toFixed(2)}`
@@ -245,17 +256,17 @@ const Sales = () => {
 
   const handleAddItem = () => {
     if (!selectedItem) {
-        toast.warn("Please select an item to add.");
-        return;
+      toast.warn("Please select an item to add.");
+      return;
     }
     const itemToAdd = items.find((i) => i.itemId === selectedItem);
     if (itemToAdd) {
-        const existingItemIndex = selectedItems.findIndex(i => i.itemId === selectedItem);
-        if (existingItemIndex > -1) {
-            handleIncreaseQuantity(selectedItem);
-        } else {
-            setSelectedItems([...selectedItems, { ...itemToAdd, quantity: 1 }]);
-        }
+      const existingItemIndex = selectedItems.findIndex(i => i.itemId === selectedItem);
+      if (existingItemIndex > -1) {
+        handleIncreaseQuantity(selectedItem);
+      } else {
+        setSelectedItems([...selectedItems, { ...itemToAdd, quantity: 1 }]);
+      }
       setSelectedItem("");
     }
   };
@@ -283,7 +294,7 @@ const Sales = () => {
         i.itemId === itemId && i.quantity > 1
           ? { ...i, quantity: i.quantity - 1 }
           : i
-      ).filter(i => !(i.itemId === itemId && i.quantity <= 1)) // Remove if quantity would be 0
+      ).filter(i => !(i.itemId === itemId && i.quantity <= 1))
     );
   };
 
@@ -291,7 +302,59 @@ const Sales = () => {
     setSelectedItems(selectedItems.filter((i) => i.itemId !== itemId));
   };
 
-  // --- Update Subtotal and Due Amount (Current Sale) --- (Keep as is)
+  // Dues Payment Item Handling
+  const handleAddDueItem = () => {
+    if (!dueSelectedItem) {
+      toast.warn("Please select an item to add for dues payment.");
+      return;
+    }
+    const itemToAdd = items.find((i) => i.itemId === dueSelectedItem);
+    if (itemToAdd) {
+      const existingItemIndex = dueNewItems.findIndex(i => i.itemId === dueSelectedItem);
+      if (existingItemIndex > -1) {
+        const updatedItems = dueNewItems.map(i =>
+          i.itemId === dueSelectedItem ? { ...i, quantity: i.quantity + 1 } : i
+        );
+        setDueNewItems(updatedItems);
+      } else {
+        setDueNewItems([...dueNewItems, { ...itemToAdd, quantity: 1 }]);
+      }
+      setDueSelectedItem("");
+    }
+  };
+
+  const handleDueQuantityChange = (itemId, quantityStr) => {
+    const quantity = Math.max(1, parseInt(quantityStr) || 1);
+    setDueNewItems(
+      dueNewItems.map((i) =>
+        i.itemId === itemId ? { ...i, quantity: quantity } : i
+      )
+    );
+  };
+
+  const handleDueIncreaseQuantity = (itemId) => {
+    setDueNewItems(
+      dueNewItems.map((i) =>
+        i.itemId === itemId ? { ...i, quantity: i.quantity + 1 } : i
+      )
+    );
+  };
+
+  const handleDueDecreaseQuantity = (itemId) => {
+    setDueNewItems(
+      dueNewItems.map((i) =>
+        i.itemId === itemId && i.quantity > 1
+          ? { ...i, quantity: i.quantity - 1 }
+          : i
+      ).filter(i => !(i.itemId === itemId && i.quantity <= 1))
+    );
+  };
+
+  const handleDueRemoveItem = (itemId) => {
+    setDueNewItems(dueNewItems.filter((i) => i.itemId !== itemId));
+  };
+
+  // Update Subtotal and Due Amount (Current Sale)
   useEffect(() => {
     const calculatedSubtotal = selectedItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -299,23 +362,21 @@ const Sales = () => {
     );
     setSubtotal(calculatedSubtotal);
     const paid = parseFloat(paidAmount) || 0;
-    // Ensure due amount is never negative for the *current* sale calculation
     setDueAmount(Math.max(0, calculatedSubtotal - paid));
   }, [selectedItems, paidAmount]);
 
-  // --- Handle Submit --- (Keep as is, logic doesn't change)
+  // Handle Submit (Create Sale and Optionally Pay Dues)
   const handleSubmit = async () => {
     if (!selectedStudent || !selectedStudent.studentId) {
-        toast.error("Please search and select a student.");
-        return;
+      toast.error("Please search and select a student.");
+      return;
     }
     if (selectedItems.length === 0) {
-        toast.error("Please add items to the sale.");
-        return;
+      toast.error("Please add items to the sale.");
+      return;
     }
-    // Suggestion: Warn if there's a previous due amount?
     if (selectedStudentTotalDue > 0) {
-        toast.info(`Note: This student has a previous due balance of ₹${selectedStudentTotalDue.toFixed(2)}.`);
+      toast.info(`Note: This student has a previous due balance of ₹${selectedStudentTotalDue.toFixed(2)}.`);
     }
 
     const saleData = {
@@ -323,12 +384,9 @@ const Sales = () => {
       items: selectedItems.map((i) => ({
         itemId: i.itemId,
         quantity: i.quantity,
-        price: i.price
       })),
-      totalAmount: subtotal,
+      paymentStatus: (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : "pending",
       paidAmount: parseFloat(paidAmount) || 0,
-      dueAmount: dueAmount, // Current sale due
-      paymentStatus: (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : ((parseFloat(paidAmount) || 0) > 0 ? "partial" : "pending"),
     };
 
     try {
@@ -344,55 +402,82 @@ const Sales = () => {
       );
       if (response.data.success) {
         const newSale = response.data.data.sale;
-        // Keep details for receipt
         const studentDetailsForReceipt = { ...selectedStudent };
-        const itemsForReceipt = response.data.data.receiptItems || selectedItems.map(item => ({
-            itemName: item.itemName,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.price * item.quantity
+        const itemsForReceipt = response.data.receipt?.items || selectedItems.map(item => ({
+          itemName: item.itemName,
+          quantity: item.quantity,
+          price: item.price,
+          total: item.price * item.quantity
         }));
 
-        // Add new sale to the beginning of the sales list
-        const updatedSales = [newSale, ...sales];
+        let updatedSales = [newSale, ...sales];
         setSales(updatedSales);
+        setDuesSales(prev => newSale.paymentStatus !== 'paid' ? [newSale, ...prev] : prev);
 
-        // *** IMPORTANT: Re-calculate previous due amount with the updated sales list ***
         const studentId = selectedStudent.studentId;
-        const unpaidSalesAfterSubmit = updatedSales.filter(s =>
-            s.studentId === studentId &&
-            s.paymentStatus !== 'paid'
+        let unpaidSalesAfterSubmit = updatedSales.filter(s =>
+          s.studentId === studentId &&
+          s.paymentStatus !== 'paid'
         );
-        const totalDueAfterSubmit = unpaidSalesAfterSubmit.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+        let totalDueAfterSubmit = unpaidSalesAfterSubmit.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
         setSelectedStudentTotalDue(totalDueAfterSubmit);
         setSelectedStudentUnpaidSales(unpaidSalesAfterSubmit);
 
-
-        // Clear form *after* recalculating due
-        // setSearchTerm(student.studentName); // Keep student name for context, maybe? Or clear? User choice.
-        // Resetting student might be better UX if they want to clear everything:
-        // setSearchTerm("");
-        // setSelectedStudent(null);
-        // setSelectedStudentDisplay("");
-        // setSelectedStudentTotalDue(0); // Reset if clearing student
-        // setSelectedStudentUnpaidSales([]);
+        // Handle additional dues payment
+        if (parseFloat(additionalDuePayment) > 0 && unpaidSalesAfterSubmit.length > 0) {
+          const oldestUnpaidSale = unpaidSalesAfterSubmit.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+          if (oldestUnpaidSale) {
+            const duesData = {
+              saleNumber: oldestUnpaidSale.saleNumber,
+              paymentAmount: parseFloat(additionalDuePayment),
+              newItems: [],
+            };
+            const duesResponse = await axios.post(
+              "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+              duesData,
+              {
+                withCredentials: true,
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            if (duesResponse.data.success) {
+              const updatedSale = duesResponse.data.data.sale;
+              updatedSales = updatedSales.map(s =>
+                s.saleNumber === updatedSale.saleNumber ? updatedSale : s
+              );
+              setSales(updatedSales);
+              setDuesSales(prev => prev.map(s =>
+                s.saleNumber === updatedSale.saleNumber ? updatedSale : s
+              ).filter(s => s.paymentStatus !== 'paid'));
+              unpaidSalesAfterSubmit = updatedSales.filter(s =>
+                s.studentId === studentId &&
+                s.paymentStatus !== 'paid'
+              );
+              totalDueAfterSubmit = unpaidSalesAfterSubmit.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+              setSelectedStudentTotalDue(totalDueAfterSubmit);
+              setSelectedStudentUnpaidSales(unpaidSalesAfterSubmit);
+              toast.success("Additional dues payment processed successfully!");
+            } else {
+              toast.error(duesResponse.data.message || "Failed to process additional dues payment.");
+            }
+          }
+        }
 
         setSelectedItems([]);
         setPaidAmount("");
+        setAdditionalDuePayment("");
         setSubtotal(0);
         setDueAmount(0);
         setSearchResults([]);
-        setShowSuggestions(false); // Should already be false
+        setShowSuggestions(false);
 
         toast.success(response.data.message || "Sale created successfully!");
 
-        // Generate HTML receipt for the *new* sale
         const receiptData = {
-            ...newSale,
-            items: itemsForReceipt,
+          ...newSale,
+          items: itemsForReceipt,
         };
         generateReceiptHtml(receiptData, studentDetailsForReceipt);
-
       } else {
         toast.error(response.data.message || "Failed to create sale.");
       }
@@ -404,8 +489,83 @@ const Sales = () => {
     }
   };
 
+  // Handle Pay Dues
+  const handlePayDues = async () => {
+    if (!dueSaleNumber) {
+      toast.error("Please select a sale to pay dues for.");
+      return;
+    }
+    if (!duePaymentAmount && dueNewItems.length === 0) {
+      toast.error("Please enter a payment amount or add new items.");
+      return;
+    }
+    if (duePaymentAmount && parseFloat(duePaymentAmount) <= 0) {
+      toast.error("Payment amount must be greater than zero.");
+      return;
+    }
 
-  // --- Receipt HTML Generation --- (Keep as is)
+    const duesData = {
+      saleNumber: parseInt(dueSaleNumber),
+      paymentAmount: parseFloat(duePaymentAmount) || 0,
+      newItems: dueNewItems.map(i => ({
+        itemId: i.itemId,
+        quantity: i.quantity,
+      })),
+    };
+
+    try {
+      setIsSubmitting(true);
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+        duesData,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (response.data.success) {
+        const updatedSale = response.data.data.sale;
+        const updatedSales = sales.map(s =>
+          s.saleNumber === updatedSale.saleNumber ? updatedSale : s
+        );
+        setSales(updatedSales);
+        setDuesSales(prev => prev.map(s =>
+          s.saleNumber === updatedSale.saleNumber ? updatedSale : s
+        ).filter(s => s.paymentStatus !== 'paid'));
+
+        const studentId = selectedStudent?.studentId;
+        if (studentId) {
+          const unpaidSalesAfterPayment = updatedSales.filter(s =>
+            s.studentId === studentId &&
+            s.paymentStatus !== 'paid'
+          );
+          const totalDueAfterPayment = unpaidSalesAfterPayment.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+          setSelectedStudentTotalDue(totalDueAfterPayment);
+          setSelectedStudentUnpaidSales(unpaidSalesAfterPayment);
+        }
+
+        setDueSaleNumber("");
+        setDuePaymentAmount("");
+        setDueNewItems([]);
+        setDueSelectedItem("");
+
+        toast.success(response.data.message || "Dues paid successfully!");
+
+        const receiptData = response.data.receipt;
+        generateReceiptHtml(receiptData, selectedStudent);
+      } else {
+        toast.error(response.data.message || "Failed to process dues payment.");
+      }
+    } catch (error) {
+      console.error("Pay dues error:", error);
+      toast.error(error.response?.data?.message || "An error occurred while processing dues payment.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Receipt HTML Generation
   const generateReceiptHtml = (receiptData, student) => {
     if (!receiptData) return;
 
@@ -413,12 +573,20 @@ const Sales = () => {
       ? `${student.studentName} (${student.class} - ${student.section})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}]` : ''}`
       : `Student ID: ${receiptData.studentId}`;
 
+    const paymentHistory = receiptData.paymentHistory?.length > 0
+      ? receiptData.paymentHistory.map(p => `
+          <p style="margin: 2px 0; font-size: 12px;">
+            Paid ₹${p.amount.toFixed(2)} on ${new Date(p.date).toLocaleString()}
+          </p>
+        `).join("")
+      : '<p style="margin: 2px 0; font-size: 12px; color: #777;">No payments recorded.</p>';
+
     const receiptContent = `
       <div style="width: 320px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; background-color: #ffffff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         <h2 style="font-size: 16px; text-align: center; margin: 0 0 10px; font-weight: 600; color: #333;">INVOICE / RECEIPT</h2>
         <div style="margin-bottom: 8px;">
             <p style="margin: 2px 0;"><strong>Student:</strong> ${studentInfo}</p>
-            <p style="margin: 2px 0;"><strong>Sale ID:</strong> ${receiptData.saleId}</p>
+            <p style="margin: 2px 0;"><strong>Sale Number:</strong> ${receiptData.saleNumber}</p>
             <p style="margin: 2px 0;"><strong>Date:</strong> ${new Date(receiptData.date).toLocaleString()}</p>
         </div>
         <table style="width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;">
@@ -438,7 +606,7 @@ const Sales = () => {
                 <td style="padding: 5px 4px; word-break: break-word;">${item.itemName || 'N/A'}</td>
                 <td style="padding: 5px 4px; text-align: center;">${item.quantity}</td>
                 <td style="padding: 5px 4px; text-align: right;">₹${item.price?.toFixed(2) || '0.00'}</td>
-                <td style="padding: 5px 4px; text-align: right;">₹${(item.price * item.quantity).toFixed(2) || '0.00'}</td>
+                <td style="padding: 5px 4px; text-align: right;">₹${(item.total || item.price * item.quantity).toFixed(2) || '0.00'}</td>
               </tr>
             `
               )
@@ -451,7 +619,11 @@ const Sales = () => {
             <p style="margin: 5px 0; font-weight: bold; font-size: 14px;"><strong>Due:</strong> ₹${receiptData.dueAmount?.toFixed(2)}</p>
             <p style="margin: 3px 0; font-size: 13px;"><strong>Status:</strong> <span style="text-transform: capitalize; font-weight: 500;">${receiptData.paymentStatus}</span></p>
         </div>
-         <p style="font-size: 11px; text-align: center; margin-top: 15px; color: #777;">Thank you for your purchase!</p>
+        <div style="margin-top: 10px; border-top: 1px dashed #aaa; padding-top: 8px;">
+            <p style="margin: 2px 0; font-size: 13px; font-weight: 600;">Payment History:</p>
+            ${paymentHistory}
+        </div>
+        <p style="font-size: 11px; text-align: center; margin-top: 15px; color: #777;">Thank you for your purchase!</p>
       </div>
     `;
 
@@ -459,8 +631,7 @@ const Sales = () => {
     setShowReceiptModal(true);
   };
 
-
-  // --- Handle Print --- (Keep as is)
+  // Handle Print
   const handlePrint = () => {
     const contentToPrint = receiptModalContentRef.current;
     if (!contentToPrint) {
@@ -470,48 +641,40 @@ const Sales = () => {
 
     const printWindow = window.open('', '_blank', 'height=600,width=800');
     if (!printWindow) {
-        toast.error("Failed to open print window. Please check browser pop-up settings.");
-        return;
+      toast.error("Failed to open print window. Please check browser pop-up settings.");
+      return;
     }
 
-    // Write HTML structure and styles *without* the <title> tag in the head
     printWindow.document.write('<html><head>');
-    // Add print-specific styles, including @page for margins
     printWindow.document.write(`
         <style>
-            /* Apply base styles for printing */
             body {
-                margin: 0; /* Reset default body margin */
-                padding: 10mm; /* Add padding for content, adjust as needed */
+                margin: 0;
+                padding: 10mm;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                font-size: 12px; /* Optional: Adjust base print font size */
+                font-size: 12px;
                 line-height: 1.4;
-                width: 300px; /* Approx width of receipt */
+                width: 300px;
             }
-
-            /* Use @page rule to suggest minimal margins to the browser */
             @page {
-                size: auto; /* Let browser decide paper size */
-                margin: 5mm; /* Request small margins (e.g., 5mm) */
+                size: auto;
+                margin: 5mm;
             }
-
             @media print {
-               body > div { /* Target the main receipt div */
+               body > div {
                   margin: 0 !important;
                   padding: 0 !important;
                   border: none !important;
                   box-shadow: none !important;
-                  width: 100% !important; /* Use full available width */
+                  width: 100% !important;
                }
             }
-
-            /* Basic table/element styling for the receipt content itself */
             h2 {
-                font-size: 15px; /* Adjust for print */
+                font-size: 15px;
                 text-align: center;
                 margin: 0 0 10px 0;
                 font-weight: 600;
-                color: #000; /* Use black for print */
+                color: #000;
             }
             p {
                 margin: 3px 0;
@@ -521,76 +684,69 @@ const Sales = () => {
                 width: 100%;
                 border-collapse: collapse;
                 margin: 10px 0;
-                font-size: 11px; /* Adjust for print */
+                font-size: 11px;
                 color: #000;
             }
             th, td {
                 padding: 4px 3px;
-                border-bottom: 1px dotted #888; /* Use darker dotted line */
+                border-bottom: 1px dotted #888;
                 text-align: left;
-                word-break: break-word; /* Allow long item names to wrap */
+                word-break: break-word;
             }
             th {
-                border-top: 1px dashed #555; /* Use darker dashed line */
+                border-top: 1px dashed #555;
                 border-bottom: 1px dashed #555;
                 font-weight: 600;
-                background-color: #f0f0f0; /* Optional subtle header background */
+                background-color: #f0f0f0;
             }
-             /* Align specific columns */
-            th:nth-child(2), td:nth-child(2) { text-align: center; } /* Qty */
-            th:nth-child(3), td:nth-child(3), /* Price */
-            th:nth-child(4), td:nth-child(4) { text-align: right; } /* Total */
-
-            /* Styling for the totals section */
-            div[style*="text-align: right"] { /* Target totals div */
+            th:nth-child(2), td:nth-child(2) { text-align: center; }
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4) { text-align: right; }
+            div[style*="text-align: right"] {
                  margin-top: 12px;
                  text-align: right;
                  border-top: 1px dashed #555;
                  padding-top: 8px;
             }
-             div[style*="text-align: right"] p {
+            div[style*="text-align: right"] p {
                 margin: 2px 0;
-                font-size: 12px; /* Adjust totals font size */
-             }
-             div[style*="text-align: right"] p strong {
-                 font-weight: bold;
-             }
-
-             p[style*="text-align: center"] {
-                 font-size: 10px;
-                 margin-top: 15px;
-                 color: #555;
-             }
+                font-size: 12px;
+            }
+            div[style*="text-align: right"] p strong {
+                font-weight: bold;
+            }
+            p[style*="text-align: center"] {
+                font-size: 10px;
+                margin-top: 15px;
+                color: #555;
+            }
         </style>
     `);
     printWindow.document.write('</head><body>');
-    // Write only the inner HTML of the receipt content container
     printWindow.document.write(contentToPrint.innerHTML);
     printWindow.document.write('</body></html>');
 
-    printWindow.document.close(); // Crucial for some browsers
-    printWindow.focus(); // Focus the new window
+    printWindow.document.close();
+    printWindow.focus();
 
     setTimeout(() => {
-         try {
-            printWindow.print();
-            // Optionally close after print command is issued
-            // setTimeout(() => printWindow.close(), 1000);
-          } catch (e) {
-             console.error("Print error:", e);
-             toast.error("Could not initiate printing.");
-             printWindow.close(); // Close if print fails
-         }
-    }, 500); // 500ms delay, adjust if needed
-};
+      try {
+        printWindow.print();
+      } catch (e) {
+        console.error("Print error:", e);
+        toast.error("Could not initiate printing.");
+        printWindow.close();
+      }
+    }, 500);
+  };
 
-  // --- Print Existing Receipt --- (Keep as is)
-  const handlePrintReceipt = async (saleId) => {
+  // Print Existing Receipt
+  const handlePrintReceipt = async (saleNumber) => {
     try {
       setIsFetchingReceipt(true);
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+        `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleNumber}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -599,12 +755,11 @@ const Sales = () => {
 
       if (response.data.success && response.data.receipt) {
         const receiptDetails = response.data.receipt;
-        // Find student from local state for display purposes
         const student = students.find(s => s.studentId === receiptDetails.studentId);
         if (!student) {
-            toast.warn(`Student details for ID ${receiptDetails.studentId} not found locally. Receipt may show ID only.`);
+          toast.warn(`Student details for ID ${receiptDetails.studentId} not found locally. Receipt may show ID only.`);
         }
-        generateReceiptHtml(receiptDetails, student); // Pass student or null
+        generateReceiptHtml(receiptDetails, student);
         toast.success("Receipt preview ready.");
       } else {
         toast.warning(`Failed to fetch receipt details: ${response.data.message || 'Not found'}`);
@@ -613,55 +768,47 @@ const Sales = () => {
       console.error("Error in handlePrintReceipt:", error);
       toast.error(`Error fetching receipt: ${error.response?.data?.message || error.message}`);
     } finally {
-        setIsFetchingReceipt(false);
+      setIsFetchingReceipt(false);
     }
   };
 
-  // --- Render Receipt Modal --- (Keep as is)
+  // Render Receipt Modal
   const renderReceiptModal = () => (
     showReceiptModal && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
-        {/* Adjusted width, added overflow-y-auto */}
         <div className="bg-gray-100 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
-           {/* Modal Header */}
-           <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-white rounded-t-lg">
-                <h2 className="text-xl font-semibold text-gray-800">Receipt Preview</h2>
-                <button
-                    onClick={() => {
-                        setShowReceiptModal(false);
-                        setReceiptHtmlContent(""); // Clear HTML on close
-                    }}
-                    className="text-gray-400 hover:text-gray-600"
-                    aria-label="Close modal"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-           </div>
-
-          {/* Modal Body - Scrollable Area */}
-          {/* Centering the receipt content horizontally */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-white rounded-t-lg">
+            <h2 className="text-xl font-semibold text-gray-800">Receipt Preview</h2>
+            <button
+              onClick={() => {
+                setShowReceiptModal(false);
+                setReceiptHtmlContent("");
+              }}
+              className="text-gray-400 hover:text-gray-600"
+              aria-label="Close modal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
           <div className="p-4 md:p-6 flex-grow overflow-y-auto flex justify-center">
             {receiptHtmlContent ? (
-                // Container for the HTML content with ref - it will be centered by the parent flex
-                <div ref={receiptModalContentRef} dangerouslySetInnerHTML={{ __html: receiptHtmlContent }} />
+              <div ref={receiptModalContentRef} dangerouslySetInnerHTML={{ __html: receiptHtmlContent }} />
             ) : (
-                <div className="flex items-center justify-center h-full text-gray-500 py-10">Generating preview...</div>
+              <div className="flex items-center justify-center h-full text-gray-500 py-10">Generating preview...</div>
             )}
           </div>
-
-          {/* Modal Footer */}
           <div className="flex flex-wrap justify-end gap-3 p-4 border-t border-gray-300 bg-white rounded-b-lg">
             <button
               onClick={handlePrint}
               className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-150 text-sm font-medium shadow-sm disabled:opacity-60"
-              disabled={!receiptHtmlContent || isSubmitting} // Disable if submitting new sale too
+              disabled={!receiptHtmlContent || isSubmitting}
             >
               🖨️ Print
             </button>
             <button
               onClick={() => {
                 setShowReceiptModal(false);
-                setReceiptHtmlContent(""); // Clear HTML on close
+                setReceiptHtmlContent("");
               }}
               className="px-5 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-150 text-sm font-medium"
             >
@@ -673,7 +820,7 @@ const Sales = () => {
     )
   );
 
-  // --- Loading/Error States --- (Keep as is)
+  // Loading/Error States
   if (loading && !sales.length) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -690,307 +837,461 @@ const Sales = () => {
     );
   }
 
-  // --- Main Render --- (MODIFIED)
+  // Render Sales Table
+  const renderSalesTable = (salesData) => (
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale #</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Due</th>
+            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {salesData.length === 0 && !loading && (
+            <tr>
+              <td colSpan="8" className="px-4 py-6 text-center text-sm text-gray-500 italic">No sales records found.</td>
+            </tr>
+          )}
+          {salesData.map((s) => {
+            const student = students.find((st) => st.studentId === s.studentId);
+            const studentDisplay = student
+              ? `${student.studentName} (${student.class}-${student.section})`
+              : `ID: ${s.studentId}`;
+            return (
+              <tr key={s._id || s.saleNumber} className={`hover:bg-gray-50/80 transition-colors duration-150 ${s.paymentStatus !== 'paid' ? 'bg-red-50/40' : ''}`}>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{new Date(s.date).toLocaleDateString()}</td>
+                <td className="px-4 py-3 whitespace-normal text-sm text-gray-800 font-medium">{studentDisplay}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-[11px]">{s.saleNumber}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">₹{s.totalAmount.toFixed(2)}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-green-700 text-right">₹{s.paidAmount.toFixed(2)}</td>
+                <td className={`px-4 py-3 whitespace-nowrap text-sm text-right ${s.dueAmount > 0 ? 'text-red-700 font-semibold' : 'text-gray-500'}`}>₹{s.dueAmount.toFixed(2)}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-center">
+                  <span className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${
+                    s.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                    s.paymentStatus === 'pending' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {s.paymentStatus}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+                  <button
+                    onClick={() => handlePrintReceipt(s.saleNumber)}
+                    className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed p-1 rounded hover:bg-indigo-50 transition-colors flex items-center gap-1 mx-auto text-xs"
+                    disabled={isFetchingReceipt || isSubmitting}
+                    title="View & Print Receipt"
+                  >
+                    View / Print
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  // Main Render
   return (
     <div className="px-4 md:px-6 py-2">
-      {/* Form Section */}
-      <div className="mb-6 ">
+      <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Create New Sale</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            {/* Left Side: Student Search, Item Select, Totals, Submit */}
-            <div className="space-y-5">
-                {/* Student Search & Display */}
-                <div className="grid grid-cols-1 gap-4 items-start"> {/* Changed to single column for better layout with due */}
-                    <div className="relative" ref={searchContainerRef}>
-                        <ReactInput
-                            label="Student Search"
-                            name="studentSearch"
-                            value={searchTerm}
-                            // Use the modified handler
-                            onChange={handleSearchChange}
-                            placeholder="Name/Adm#/ID"
-                            required
-                        />
-                        {/* Suggestions dropdown */}
-                        {showSuggestions && (
-                            <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ">
-                                {searchResults.length > 0 ? (
-                                    searchResults.map(student => (
-                                        <div
-                                            key={student.studentId}
-                                            className="px-4 py-2 text-sm text-gray-800 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0"
-                                            onMouseDown={(e) => {
-                                                e.preventDefault();
-                                                handleStudentSelect(student);
-                                            }}
-                                        >
-                                            <span className="font-medium">{student.studentName}</span>
-                                            <span className="text-gray-600"> ({student.class}-{student.section})</span>
-                                            {student.admissionNumber && <span className="text-xs text-blue-600 ml-2">[Adm: {student.admissionNumber}]</span>}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="px-4 py-3 text-sm text-gray-500 italic">
-                                        No students found matching "{searchTerm}".
-                                    </div>
-                                )}
-                            </div>
-                         )}
-                    </div>
-
-                    {/* Selected Student Display & Previous Due */}
-                    <div className="space-y-2"> {/* Container for display and due */}
-                        <div className={`w-full px-3 py-1.5 rounded-md text-sm ${selectedStudentDisplay ? 'border border-green-400 bg-green-50 text-green-800' : 'border border-gray-300 bg-gray-50 text-gray-500 italic'}`}>
-                            {selectedStudentDisplay ? (
-                                <>
-                                <span className="font-medium">Selected:</span> {selectedStudentDisplay}
-                                </>
-                            ) : (
-                                'No student selected'
-                            )}
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 gap-4 items-start">
+              <div className="relative" ref={searchContainerRef}>
+                <ReactInput
+                  label="Student Search"
+                  name="studentSearch"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  placeholder="Name/Adm#/ID"
+                  required
+                />
+                {showSuggestions && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {searchResults.length > 0 ? (
+                      searchResults.map(student => (
+                        <div
+                          key={student.studentId}
+                          className="px-4 py-2 text-sm text-gray-800 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleStudentSelect(student);
+                          }}
+                        >
+                          <span className="font-medium">{student.studentName}</span>
+                          <span className="text-gray-600"> ({student.class}-{student.section})</span>
+                          {student.admissionNumber && <span className="text-xs text-blue-600 ml-2">[Adm: {student.admissionNumber}]</span>}
                         </div>
-
-                        {/* *** NEW: Previous Due Amount Display *** */}
-                        {selectedStudent && selectedStudentTotalDue > 0 && (
-                            <div className="p-3 border border-orange-400 bg-orange-50 rounded-md text-sm shadow-sm">
-                                <p className="font-semibold text-orange-800 mb-1">
-                                    <span className="font-bold text-red-600">(!)</span> Previous Outstanding Balance: <span className="font-bold text-red-600 text-base ml-1">₹{selectedStudentTotalDue.toFixed(2)}</span>
-                                </p>
-                                {/* Optional: Display details of unpaid sales */}
-                                {selectedStudentUnpaidSales.length > 0 && (
-                                    <div className="mt-2 pt-2 border-t border-orange-200 text-xs text-gray-700 max-h-24 overflow-y-auto">
-                                        <p className="font-medium mb-0.5 text-gray-600">Details:</p>
-                                        <ul className="list-disc list-inside space-y-0.5 pl-1">
-                                            {selectedStudentUnpaidSales.map(sale => (
-                                                <li key={sale._id || sale.saleId}>
-                                                    {new Date(sale.date).toLocaleDateString()} - Sale ID: <span className="font-mono text-[11px]">{sale.saleId}</span> - Due: <span className="font-semibold">₹{sale.dueAmount.toFixed(2)}</span> ({sale.paymentStatus})
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                         {selectedStudent && selectedStudentTotalDue <= 0 && (
-                              <div className="px-3 py-1 border border-green-300 bg-green-50/80 rounded-md text-sm text-green-700">
-                                  ✓ No previous outstanding balance found.
-                              </div>
-                         )}
-                    </div>
-                </div>
-
-                {/* Item Selection */}
-                <div className="flex items-start space-x-3">
-                    <div className="flex-grow">
-                         <ReactSelect
-                            label="Item"
-                            name="selectedItem"
-                            value={selectedItem}
-                            handleChange={(e) => setSelectedItem(e.target.value)}
-                            options={itemOptions}
-                        />
-                    </div>
-                    <button
-                    type="button"
-                    onClick={handleAddItem}
-                    className="px-4 py-1.5 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
-                    disabled={!selectedItem || isSubmitting}
-                    >
-                     Add Item
-                    </button>
-                </div>
-
-                {/* Totals and Payment (Current Sale) */}
-                <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-gray-200 pt-5">
-                     <div className="flex items-baseline space-x-2">
-                        <span className="text-lg font-semibold text-gray-700">Current Sale Total:</span>
-                        <span className="text-xl font-bold text-blue-800">₹{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <div className="w-full sm:w-32">
-                            <ReactInput
-                                label="Amount Paid (Current)"
-                                type="number"
-                                name="paidAmount"
-                                value={paidAmount}
-                                onChange={(e) => setPaidAmount(e.target.value)}
-                                placeholder="Paid Now"
-                                required={false} // Not strictly required to submit
-                            />
-                        </div>
-                        {subtotal > 0 && ( // Show current due only if there's a current subtotal
-                             <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-md text-sm ${dueAmount > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
-                                <span className={`font-medium ${dueAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>Due (Current Sale):</span>
-                                <span className={`font-bold ${dueAmount > 0 ? 'text-red-700' : 'text-green-700'}`}>₹{dueAmount.toFixed(2)}</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="text-right pt-3">
-                    <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className={`inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ${isSubmitting || !selectedStudent || selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    disabled={isSubmitting || !selectedStudent || selectedItems.length === 0}
-                    >
-                    {isSubmitting ? (
-                        <>
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Processing...
-                        </>
-                    ) : 'Create Sale & View Receipt'}
-                    </button>
-                </div>
-            </div>
-
-            {/* Right Side: Cart Items */}
-            <div className="border border-gray-200 rounded-lg bg-gray-50/70 flex flex-col min-h-[300px] max-h-[500px]"> {/* Added max-h */}
-                <h3 className="text-lg font-semibold p-3 border-b border-gray-200 text-gray-700 bg-white rounded-t-lg sticky top-0 z-10">Shopping Cart (Current Sale)</h3>
-                {selectedItems.length > 0 ? (
-                    <div className="overflow-y-auto flex-grow"> {/* Scroll within this div */}
-                        <table className="w-full text-sm text-left text-gray-600">
-                            {/* Keep thead sticky ONLY if parent has defined height and overflow */}
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10">
-                                <tr>
-                                    <th scope="col" className="px-4 py-2 font-medium">Item</th>
-                                    <th scope="col" className="px-4 py-2 text-right font-medium">Price</th>
-                                    <th scope="col" className="px-4 py-2 text-center font-medium w-32">Quantity</th>
-                                    <th scope="col" className="px-4 py-2 text-right font-medium">Total</th>
-                                    <th scope="col" className="px-1 py-2 text-center font-medium w-10"></th> {/* Action */}
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                            {selectedItems.map((item) => (
-                                <tr key={item.itemId} className="hover:bg-gray-50/80">
-                                    <td className="px-4 py-1.5 font-medium text-gray-900 whitespace-normal">{item.itemName}</td>
-                                    <td className="px-4 py-1.5 text-right text-gray-700">₹{item.price.toFixed(2)}</td>
-                                    <td className="px-4 py-1.5">
-                                        <div className="flex items-center justify-center space-x-1.5">
-                                            <button
-                                                onClick={() => handleDecreaseQuantity(item.itemId)}
-                                                className="p-0.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                                                disabled={item.quantity <= 1 || isSubmitting}
-                                                aria-label="Decrease quantity"
-                                            >-</button>
-                                            <input
-                                                type="number"
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(item.itemId, e.target.value)}
-                                                className="w-10 h-6 text-center border border-gray-300 rounded text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-                                                min="1"
-                                                disabled={isSubmitting}
-                                                aria-label={`Quantity for ${item.itemName}`}
-                                            />
-                                            <button
-                                                onClick={() => handleIncreaseQuantity(item.itemId)}
-                                                className="p-0.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                                                disabled={isSubmitting}
-                                                aria-label="Increase quantity"
-                                            >+</button>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-1.5 text-right font-semibold text-gray-800">₹{(item.price * item.quantity).toFixed(2)}</td>
-                                    <td className="px-1 py-1.5 text-center">
-                                        <button
-                                            onClick={() => handleRemoveItem(item.itemId)}
-                                            className="p-1 text-red-500 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed rounded-full hover:bg-red-100"
-                                            disabled={isSubmitting}
-                                            aria-label="Remove item"
-                                        >
-                                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                     <div className="flex-grow flex items-center justify-center">
-                        <div className="text-center text-gray-500 py-10 px-4 italic">
-                            Cart is empty. Select items above and click 'Add Item'.
-                        </div>
-                    </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-gray-500 italic">
+                        No students found matching "{searchTerm}".
+                      </div>
+                    )}
+                  </div>
                 )}
+              </div>
+              <div className="space-y-2">
+                <div className={`w-full px-3 py-2 rounded-md text-sm border ${selectedStudentDisplay ? 'border-green-400 bg-green-50 text-green-800' : 'border-gray-300 bg-gray-50 text-gray-500 italic'}`}>
+                  {selectedStudentDisplay ? (
+                    <>
+                      <span className="font-medium">Selected:</span> {selectedStudentDisplay}
+                    </>
+                  ) : (
+                    'No student selected'
+                  )}
+                </div>
+                {selectedStudent && selectedStudentTotalDue > 0 && (
+                  <div className="p-3 border border-orange-400 bg-orange-50 rounded-md text-sm shadow-sm">
+                    <p className="font-semibold text-orange-800 mb-1">
+                      <span className="font-bold text-red-600">(!)</span> Previous Outstanding Balance: <span className="font-bold text-red-600 text-base ml-1">₹{selectedStudentTotalDue.toFixed(2)}</span>
+                    </p>
+                    {selectedStudentUnpaidSales.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-orange-200 text-xs text-gray-700 max-h-24 overflow-y-auto">
+                        <p className="font-medium mb-0.5 text-gray-600">Details:</p>
+                        <ul className="list-disc list-inside space-y-0.5 pl-1">
+                          {selectedStudentUnpaidSales.map(sale => (
+                            <li key={sale._id || sale.saleNumber}>
+                              {new Date(sale.date).toLocaleDateString()} - Sale #: <span className="font-mono text-[11px]">{sale.saleNumber}</span> - Due: <span className="font-semibold">₹{sale.dueAmount.toFixed(2)}</span> ({sale.paymentStatus})
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {selectedStudent && selectedStudentTotalDue <= 0 && (
+                  <div className="px-3 py-2 border border-green-300 bg-green-50/80 rounded-md text-sm text-green-700">
+                    ✓ No previous outstanding balance found.
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* New Sale Section */}
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">New Sale Items</h3>
+              <div className="flex items-start space-x-3">
+                <div className="flex-grow">
+                  <ReactSelect
+                    label="Item"
+                    name="selectedItem"
+                    value={selectedItem}
+                    handleChange={(e) => setSelectedItem(e.target.value)}
+                    options={itemOptions}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
+                  disabled={!selectedItem || isSubmitting}
+                >
+                  Add Item
+                </button>
+              </div>
+              <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-gray-200 pt-5">
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-lg font-semibold text-gray-700">Current Sale Total:</span>
+                  <span className="text-xl font-bold text-blue-800">₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="w-full sm:w-32">
+                    <ReactInput
+                      label="Amount Paid"
+                      type="number"
+                      name="paidAmount"
+                      value={paidAmount}
+                      onChange={(e) => setPaidAmount(e.target.value)}
+                      placeholder="Paid Now"
+                      required={false}
+                    />
+                  </div>
+                  <div className="w-full sm:w-32">
+                    <ReactInput
+                      label="Pay Dues"
+                      type="number"
+                      name="additionalDuePayment"
+                      value={additionalDuePayment}
+                      onChange={(e) => setAdditionalDuePayment(e.target.value)}
+                      placeholder="Pay Dues"
+                      required={false}
+                    />
+                    {selectedStudentUnpaidSales.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Additional payment will be applied to the oldest unpaid sale.
+                      </p>
+                    )}
+                  </div>
+                  {subtotal > 0 && (
+                    <div className={`flex items-center space-x-1.5 px-3 py-2 rounded-md text-sm ${dueAmount > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+                      <span className={`font-medium ${dueAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>Due (Current Sale):</span>
+                      <span className={`font-bold ${dueAmount > 0 ? 'text-red-700' : 'text-green-700'}`}>₹{dueAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="text-right pt-3">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className={`inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ${isSubmitting || !selectedStudent || selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitting || !selectedStudent || selectedItems.length === 0}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : 'Create Sale & View Receipt'}
+                </button>
+              </div>
+            </div>
+
+            {/* Dues Payment Section */}
+            {selectedStudent && selectedStudentUnpaidSales.length > 0 && (
+              <div className="border-t border-gray-200 pt-4 mt-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Pay Previous Dues</h3>
+                <div className="space-y-4">
+                  <ReactSelect
+                    label="Sale to Pay Dues For"
+                    name="dueSaleNumber"
+                    value={dueSaleNumber}
+                    handleChange={(e) => setDueSaleNumber(e.target.value)}
+                    options={selectedStudentUnpaidSales.map(sale => ({
+                      value: sale.saleNumber,
+                      label: `Sale #${sale.saleNumber} - Due: ₹${sale.dueAmount.toFixed(2)} (${new Date(sale.date).toLocaleDateString()})`
+                    }))}
+                    required
+                  />
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-grow">
+                      <ReactSelect
+                        label="Add New Item (Optional)"
+                        name="dueSelectedItem"
+                        value={dueSelectedItem}
+                        handleChange={(e) => setDueSelectedItem(e.target.value)}
+                        options={itemOptions}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddDueItem}
+                      className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
+                      disabled={!dueSelectedItem || isSubmitting}
+                    >
+                      Add Item
+                    </button>
+                  </div>
+                  {dueNewItems.length > 0 && (
+                    <div className="border border-gray-200 rounded-md bg-white p-3">
+                      <h4 className="text-sm font-medium text-gray-600 mb-2">New Items for Dues Payment</h4>
+                      <table className="w-full text-sm text-left text-gray-600">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                          <tr>
+                            <th scope="col" className="px-4 py-2 font-medium">Item</th>
+                            <th scope="col" className="px-4 py-2 text-right font-medium">Price</th>
+                            <th scope="col" className="px-4 py-2 text-center font-medium w-32">Quantity</th>
+                            <th scope="col" className="px-4 py-2 text-right font-medium">Total</th>
+                            <th scope="col" className="px-1 py-2 text-center font-medium w-10"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {dueNewItems.map((item) => (
+                            <tr key={item.itemId} className="hover:bg-gray-50/80">
+                              <td className="px-4 py-1.5 font-medium text-gray-900 whitespace-normal">{item.itemName}</td>
+                              <td className="px-4 py-1.5 text-right text-gray-700">₹{item.price.toFixed(2)}</td>
+                              <td className="px-4 py-1.5">
+                                <div className="flex items-center justify-center space-x-1.5">
+                                  <button
+                                    onClick={() => handleDueDecreaseQuantity(item.itemId)}
+                                    className="p-0.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={item.quantity <= 1 || isSubmitting}
+                                    aria-label="Decrease quantity"
+                                  >-</button>
+                                  <input
+                                    type="number"
+                                    value={item.quantity}
+                                    onChange={(e) => handleDueQuantityChange(item.itemId, e.target.value)}
+                                    className="w-10 h-6 text-center border border-gray-300 rounded text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+                                    min="1"
+                                    disabled={isSubmitting}
+                                    aria-label={`Quantity for ${item.itemName}`}
+                                  />
+                                  <button
+                                    onClick={() => handleDueIncreaseQuantity(item.itemId)}
+                                    className="p-0.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isSubmitting}
+                                    aria-label="Increase quantity"
+                                  >+</button>
+                                </div>
+                              </td>
+                              <td className="px-4 py-1.5 text-right font-semibold text-gray-800">₹{(item.price * item.quantity).toFixed(2)}</td>
+                              <td className="px-1 py-1.5 text-center">
+                                <button
+                                  onClick={() => handleDueRemoveItem(item.itemId)}
+                                  className="p-1 text-red-500 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed rounded-full hover:bg-red-100"
+                                  disabled={isSubmitting}
+                                  aria-label="Remove item"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="w-full sm:w-32">
+                      <ReactInput
+                        label="Payment Amount"
+                        type="number"
+                        name="duePaymentAmount"
+                        value={duePaymentAmount}
+                        onChange={(e) => setDuePaymentAmount(e.target.value)}
+                        placeholder="Amount to Pay"
+                        required={dueNewItems.length === 0}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handlePayDues}
+                      className={`inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ${isSubmitting || !dueSaleNumber ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isSubmitting || !dueSaleNumber}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3 환경
+042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Processing...
+                        </>
+                      ) : 'Pay Dues & View Receipt'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="border border-gray-200 rounded-lg bg-gray-50/70 flex flex-col min-h-[300px] max-h-[500px]">
+            <h3 className="text-lg font-semibold p-3 border-b border-gray-200 text-gray-700 bg-white rounded-t-lg sticky top-0 z-10">Shopping Cart (Current Sale)</h3>
+            {selectedItems.length > 0 ? (
+              <div className="overflow-y-auto flex-grow">
+                <table className="w-full text-sm text-left text-gray-600">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10">
+                    <tr>
+                      <th scope="col" className="px-4 py-2 font-medium">Item</th>
+                      <th scope="col" className="px-4 py-2 text-right font-medium">Price</th>
+                      <th scope="col" className="px-4 py-2 text-center font-medium w-32">Quantity</th>
+                      <th scope="col" className="px-4 py-2 text-right font-medium">Total</th>
+                      <th scope="col" className="px-1 py-2 text-center font-medium w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {selectedItems.map((item) => (
+                      <tr key={item.itemId} className="hover:bg-gray-50/80">
+                        <td className="px-4 py-1.5 font-medium text-gray-900 whitespace-normal">{item.itemName}</td>
+                        <td className="px-4 py-1.5 text-right text-gray-700">₹{item.price.toFixed(2)}</td>
+                        <td className="px-4 py-1.5">
+                          <div className="flex items-center justify-center space-x-1.5">
+                            <button
+                              onClick={() => handleDecreaseQuantity(item.itemId)}
+                              className="p-0.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={item.quantity <= 1 || isSubmitting}
+                              aria-label="Decrease quantity"
+                            >-</button>
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) => handleQuantityChange(item.itemId, e.target.value)}
+                              className="w-10 h-6 text-center border border-gray-300 rounded text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+                              min="1"
+                              disabled={isSubmitting}
+                              aria-label={`Quantity for ${item.itemName}`}
+                            />
+                            <button
+                              onClick={() => handleIncreaseQuantity(item.itemId)}
+                              className="p-0.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={isSubmitting}
+                              aria-label="Increase quantity"
+                            >+</button>
+                          </div>
+                        </td>
+                        <td className="px-4 py-1.5 text-right font-semibold text-gray-800">₹{(item.price * item.quantity).toFixed(2)}</td>
+                        <td className="px-1 py-1.5 text-center">
+                          <button
+                            onClick={() => handleRemoveItem(item.itemId)}
+                            className="p-1 text-red-500 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed rounded-full hover:bg-red-100"
+                            disabled={isSubmitting}
+                            aria-label="Remove item"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex-grow flex items-center justify-center">
+                <div className="text-center text-gray-500 py-10 px-4 italic">
+                  Cart is empty. Select items above and click 'Add Item'.
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Sales History Section */}
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-md border border-gray-200">
-        <PageHeaderWithBreadcrumb/>
-         <h2 className="text-xl font-semibold text-gray-800 mb-4">Sales History</h2>
-         {/* Loading/Error messages for history */}
-         {loading && sales.length === 0 && <p className="text-center py-4 text-gray-500">Loading history...</p>}
-         {error && sales.length === 0 && <p className="text-center py-4 text-red-500">Error loading history: {error}</p>}
-         {/* Optional: Indicate background refresh/update status */}
-         {/* {loading && sales.length > 0 && <p className="text-sm text-gray-500 mb-2">Checking for updates...</p>}
-         {error && sales.length > 0 && <p className="text-sm text-red-500 mb-2">Error checking updates: {error}</p>} */}
-
-        <div className="overflow-x-auto">
-           <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
-             <thead className="bg-gray-50">
-               <tr>
-                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale ID</th>
-                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
-                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Due</th>
-                 <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                 <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-               </tr>
-             </thead>
-             <tbody className="bg-white divide-y divide-gray-200">
-                {sales.length === 0 && !loading && (
-                    <tr>
-                        <td colSpan="8" className="px-4 py-6 text-center text-sm text-gray-500 italic">No sales records found.</td>
-                    </tr>
-                )}
-              {sales.map((s) => {
-                 const student = students.find((st) => st.studentId === s.studentId);
-                 const studentDisplay = student
-                   ? `${student.studentName} (${student.class}-${student.section})`
-                   : `ID: ${s.studentId}`;
-                 return (
-                   <tr key={s._id || s.saleId} className={`hover:bg-gray-50/80 transition-colors duration-150 ${s.paymentStatus !== 'paid' ? 'bg-red-50/40' : ''}`}> {/* Highlight unpaid rows */}
-                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{new Date(s.date).toLocaleDateString()}</td>
-                     <td className="px-4 py-3 whitespace-normal text-sm text-gray-800 font-medium">{studentDisplay}</td>
-                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-[11px]">{s.saleId}</td> {/* Added Sale ID */}
-                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">₹{s.totalAmount.toFixed(2)}</td>
-                     <td className="px-4 py-3 whitespace-nowrap text-sm text-green-700 text-right">₹{s.paidAmount.toFixed(2)}</td>
-                     <td className={`px-4 py-3 whitespace-nowrap text-sm text-right ${s.dueAmount > 0 ? 'text-red-700 font-semibold' : 'text-gray-500'}`}>₹{s.dueAmount.toFixed(2)}</td>
-                     <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${
-                            s.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                            s.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                        }`}>
-                            {s.paymentStatus}
-                        </span>
-                     </td>
-                     <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
-                       <button
-                         onClick={() => handlePrintReceipt(s.saleId)}
-                         className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed p-1 rounded hover:bg-indigo-50 transition-colors flex items-center gap-1 mx-auto text-xs"
-                         disabled={isFetchingReceipt || isSubmitting}
-                         title="View & Print Receipt"
-                       >
-                         {/* Icon can be added back if desired */}
-                         View / Print
-                       </button>
-                     </td>
-                   </tr>
-                 );
-               })}
-             </tbody>
-           </table>
+        <PageHeaderWithBreadcrumb />
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Sales History</h2>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`px-4 py-2 text-sm font-medium rounded-md ${
+                activeTab === "all"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              All Sales
+            </button>
+            <button
+              onClick={() => setActiveTab("dues")}
+              className={`px-4 py-2 text-sm font-medium rounded-md ${
+                activeTab === "dues"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Dues Only
+            </button>
+          </div>
         </div>
+        {loading && sales.length === 0 && <p className="text-center py-4 text-gray-500">Loading history...</p>}
+        {error && sales.length === 0 && <p className="text-center py-4 text-red-500">Error loading history: {error}</p>}
+        {activeTab === "all" ? renderSalesTable(sales) : renderSalesTable(duesSales)}
       </div>
 
       {renderReceiptModal()}
@@ -999,6 +1300,1012 @@ const Sales = () => {
 };
 
 export default Sales;
+
+
+
+
+
+// import React, { useState, useEffect, useRef } from "react";
+// import axios from "axios";
+// import { toast } from "react-toastify";
+// import jsPDF from "jspdf"; // Keep import if needed later for dedicated download
+// import html2canvas from "html2canvas"; // Keep import if needed later
+// import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+
+// // --- Reusable Input Component --- (Keep as is)
+// const ReactInput = ({ label, value, onChange, placeholder, type = "text", name, required, maxLength, onFocus, onBlur }) => (
+//     <div className="relative">
+//       {/* Removed label element for cleaner look, placeholder acts as label */}
+//       <input
+//         id={name}
+//         name={name}
+//         type={type}
+//         value={value}
+//         onChange={onChange}
+//         placeholder={placeholder || label} // Use placeholder effectively
+//         required={required}
+//         maxLength={maxLength}
+//         onFocus={onFocus}
+//         onBlur={onBlur}
+//         className="w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer placeholder-transparent" // Added peer, placeholder-transparent
+//         autoComplete="off"
+//       />
+//        {/* Floating label effect */}
+//       <label
+//         htmlFor={name}
+//         className={`absolute left-3 -top-2 text-xs text-gray-500 bg-white px-1 transition-all
+//                    peer-placeholder-shown:top-1.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
+//                    peer-focus:-top-2 peer-focus:text-xs peer-focus:text-indigo-600
+//                    ${value ? '-top-2 text-xs' : ''} ${value ? 'text-indigo-600' : ''}
+//                    pointer-events-none`} // Added pointer-events-none
+//       >
+//         {label || placeholder} {required && '*'}
+//       </label>
+//     </div>
+//   );
+
+// // --- Reusable Select Component --- (Keep as is)
+// const ReactSelect = ({ label, value, handleChange, options, name, required }) => (
+//     <div className="relative">
+//       <select
+//         id={name}
+//         name={name}
+//         value={value}
+//         onChange={handleChange}
+//         required={required}
+//         className="w-full px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white appearance-none peer" // Added appearance-none peer
+//       >
+//         <option value="" disabled>{`Select ${label}`}</option>
+//         {options.map(option => (
+//           <option key={option.value} value={option.value}>
+//             {option.label}
+//           </option>
+//         ))}
+//       </select>
+//        {/* Floating label */}
+//        <label
+//         htmlFor={name}
+//         className={`absolute left-3 -top-2 text-xs text-gray-500 bg-white px-1 transition-all
+//                    ${value ? '-top-2 text-xs text-indigo-600' : 'top-1.5 text-sm text-gray-400'}
+//                    peer-focus:-top-2 peer-focus:text-xs peer-focus:text-indigo-600
+//                    pointer-events-none`}
+//       >
+//         {label} {required && '*'}
+//       </label>
+//       {/* Arrow Icon */}
+//       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+//         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.516 7.548c.436-.446 1.043-.481 1.576 0L10 10.405l2.908-2.857c.533-.481 1.141-.446 1.574 0 .436.445.408 1.197 0 1.615-.406.418-4.695 4.502-4.695 4.502a1.095 1.095 0 0 1-1.576 0S5.11 9.581 5.11 9.163c0-.418.08-.1.406-1.615z"/></svg>
+//       </div>
+//     </div>
+//   );
+
+
+// // --- Main Sales Component ---
+// const Sales = () => {
+//   // State variables
+//   const [students, setStudents] = useState([]);
+//   const [items, setItems] = useState([]);
+//   const [sales, setSales] = useState([]); // Holds all sales history
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchResults, setSearchResults] = useState([]);
+//   const [showSuggestions, setShowSuggestions] = useState(false);
+//   const [selectedStudent, setSelectedStudent] = useState(null);
+//   const [selectedStudentDisplay, setSelectedStudentDisplay] = useState("");
+//   const [selectedItem, setSelectedItem] = useState("");
+//   const [selectedItems, setSelectedItems] = useState([]); // Cart items
+//   const [subtotal, setSubtotal] = useState(0); // Current sale subtotal
+//   const [paidAmount, setPaidAmount] = useState(""); // Current sale paid amount
+//   const [dueAmount, setDueAmount] = useState(0); // Current sale due amount
+//   const [loading, setLoading] = useState(true);
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [isFetchingReceipt, setIsFetchingReceipt] = useState(false);
+//   const [error, setError] = useState(null);
+//   const [showReceiptModal, setShowReceiptModal] = useState(false);
+//   const [receiptHtmlContent, setReceiptHtmlContent] = useState("");
+
+//   // *** NEW: State for selected student's previous due amounts ***
+//   const [selectedStudentTotalDue, setSelectedStudentTotalDue] = useState(0);
+//   const [selectedStudentUnpaidSales, setSelectedStudentUnpaidSales] = useState([]);
+
+//   // Refs
+//   const receiptModalContentRef = useRef();
+//   const searchContainerRef = useRef();
+
+//   // --- Fetch Initial Data --- (Keep as is)
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         setLoading(true);
+//         setError(null);
+//         const token = localStorage.getItem("token");
+//         if (!token) {
+//             throw new Error("Authentication token not found.");
+//         }
+//         const headers = { Authorization: `Bearer ${token}` };
+
+//         const [studentResponse, itemResponse, salesResponse] =
+//           await Promise.all([
+//             axios.get(
+//               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+//               { withCredentials: true, headers }
+//             ),
+//             axios.get(
+//               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+//               { withCredentials: true, headers }
+//             ),
+//             axios.get(
+//               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+//               { withCredentials: true, headers }
+//             ),
+//           ]);
+
+//         if (studentResponse.data.success) {
+//           setStudents(studentResponse.data.students.data || []);
+//         } else {
+//           throw new Error(studentResponse.data.message || "Failed to fetch students");
+//         }
+//         if (itemResponse.data.success) {
+//           setItems(itemResponse.data.listOfAllItems || []);
+//         } else {
+//             throw new Error(itemResponse.data.message || "Failed to fetch items");
+//         }
+//         if (salesResponse.data.success) {
+//           // Ensure sales are sorted if needed, or sort later. Reverse is fine.
+//           setSales(salesResponse.data.sales?.reverse() || []);
+//         } else {
+//             throw new Error(salesResponse.data.message || "Failed to fetch sales");
+//         }
+
+//       } catch (error) {
+//         console.error("Fetch data error:", error);
+//         const errorMessage = error.response?.data?.message || error.message || "Failed to fetch data.";
+//         toast.error(errorMessage);
+//         setError(errorMessage);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchData();
+//   }, []);
+
+//   // --- Student Search Logic --- (Keep as is)
+//   useEffect(() => {
+//     if (searchTerm.trim() === "") {
+//       setSearchResults([]);
+//       setShowSuggestions(false);
+//       return;
+//     }
+//     const filtered = students.filter(s => {
+//         const term = searchTerm.toLowerCase();
+//         const nameMatch = s.studentName.toLowerCase().includes(term);
+//         const admissionMatch = s.admissionNumber ? String(s.admissionNumber).toLowerCase().includes(term) : false;
+//         const idMatch = s.studentId.toLowerCase().includes(term);
+//         return nameMatch || admissionMatch || idMatch;
+//     }).slice(0, 10);
+//     setSearchResults(filtered);
+//     setShowSuggestions(true);
+//   }, [searchTerm, students]);
+
+//   // --- Handle Clicking Outside Search Suggestions --- (Keep as is)
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+//         setShowSuggestions(false);
+//       }
+//     };
+//     if (showSuggestions) {
+//       document.addEventListener("mousedown", handleClickOutside);
+//     } else {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     }
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, [showSuggestions]);
+
+//   // --- Handle Student Selection (MODIFIED) ---
+//   const handleStudentSelect = (student) => {
+//     setSelectedStudent(student);
+//     const displayName = `${student.studentName} (${student.class} - ${student.section})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}]` : ''}`;
+//     setSelectedStudentDisplay(displayName);
+//     setSearchTerm(student.studentName); // Update search bar
+//     setShowSuggestions(false);
+//     setSearchResults([]);
+
+//     // *** NEW: Calculate and set previous due amount ***
+//     if (student && student.studentId && sales.length > 0) {
+//         const studentId = student.studentId;
+//         const unpaidSales = sales.filter(s =>
+//             s.studentId === studentId &&
+//             s.paymentStatus !== 'paid' // Find 'pending' or 'partial'
+//         );
+
+//         const totalDue = unpaidSales.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+
+//         setSelectedStudentTotalDue(totalDue);
+//         setSelectedStudentUnpaidSales(unpaidSales); // Store details for potential display
+//     } else {
+//         // Reset if no student or no sales data
+//         setSelectedStudentTotalDue(0);
+//         setSelectedStudentUnpaidSales([]);
+//     }
+//   };
+
+//     // --- Handle Search Input Change (MODIFIED) ---
+//     const handleSearchChange = (e) => {
+//         const newSearchTerm = e.target.value;
+//         setSearchTerm(newSearchTerm);
+//         if (newSearchTerm.trim() === "") {
+//             setSelectedStudent(null);
+//             setSelectedStudentDisplay("");
+//             // *** NEW: Reset due amount info when search is cleared ***
+//             setSelectedStudentTotalDue(0);
+//             setSelectedStudentUnpaidSales([]);
+//         }
+//     };
+
+//   // --- Item Handling (Add, Quantity, Remove) --- (Keep as is)
+//   const itemOptions = items.map(item => ({
+//     value: item.itemId,
+//     label: `${item.itemName} - ₹${item.price.toFixed(2)}`
+//   }));
+
+//   const handleAddItem = () => {
+//     if (!selectedItem) {
+//         toast.warn("Please select an item to add.");
+//         return;
+//     }
+//     const itemToAdd = items.find((i) => i.itemId === selectedItem);
+//     if (itemToAdd) {
+//         const existingItemIndex = selectedItems.findIndex(i => i.itemId === selectedItem);
+//         if (existingItemIndex > -1) {
+//             handleIncreaseQuantity(selectedItem);
+//         } else {
+//             setSelectedItems([...selectedItems, { ...itemToAdd, quantity: 1 }]);
+//         }
+//       setSelectedItem("");
+//     }
+//   };
+
+//   const handleQuantityChange = (itemId, quantityStr) => {
+//     const quantity = Math.max(1, parseInt(quantityStr) || 1);
+//     setSelectedItems(
+//       selectedItems.map((i) =>
+//         i.itemId === itemId ? { ...i, quantity: quantity } : i
+//       )
+//     );
+//   };
+
+//   const handleIncreaseQuantity = (itemId) => {
+//     setSelectedItems(
+//       selectedItems.map((i) =>
+//         i.itemId === itemId ? { ...i, quantity: i.quantity + 1 } : i
+//       )
+//     );
+//   };
+
+//   const handleDecreaseQuantity = (itemId) => {
+//     setSelectedItems(
+//       selectedItems.map((i) =>
+//         i.itemId === itemId && i.quantity > 1
+//           ? { ...i, quantity: i.quantity - 1 }
+//           : i
+//       ).filter(i => !(i.itemId === itemId && i.quantity <= 1)) // Remove if quantity would be 0
+//     );
+//   };
+
+//   const handleRemoveItem = (itemId) => {
+//     setSelectedItems(selectedItems.filter((i) => i.itemId !== itemId));
+//   };
+
+//   // --- Update Subtotal and Due Amount (Current Sale) --- (Keep as is)
+//   useEffect(() => {
+//     const calculatedSubtotal = selectedItems.reduce(
+//       (sum, item) => sum + item.price * item.quantity,
+//       0
+//     );
+//     setSubtotal(calculatedSubtotal);
+//     const paid = parseFloat(paidAmount) || 0;
+//     // Ensure due amount is never negative for the *current* sale calculation
+//     setDueAmount(Math.max(0, calculatedSubtotal - paid));
+//   }, [selectedItems, paidAmount]);
+
+//   // --- Handle Submit --- (Keep as is, logic doesn't change)
+//   const handleSubmit = async () => {
+//     if (!selectedStudent || !selectedStudent.studentId) {
+//         toast.error("Please search and select a student.");
+//         return;
+//     }
+//     if (selectedItems.length === 0) {
+//         toast.error("Please add items to the sale.");
+//         return;
+//     }
+//     // Suggestion: Warn if there's a previous due amount?
+//     if (selectedStudentTotalDue > 0) {
+//         toast.info(`Note: This student has a previous due balance of ₹${selectedStudentTotalDue.toFixed(2)}.`);
+//     }
+
+//     const saleData = {
+//       studentId: selectedStudent.studentId,
+//       items: selectedItems.map((i) => ({
+//         itemId: i.itemId,
+//         quantity: i.quantity,
+//         price: i.price
+//       })),
+//       totalAmount: subtotal,
+//       paidAmount: parseFloat(paidAmount) || 0,
+//       dueAmount: dueAmount, // Current sale due
+//       paymentStatus: (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : ((parseFloat(paidAmount) || 0) > 0 ? "partial" : "pending"),
+//     };
+
+//     try {
+//       setIsSubmitting(true);
+//       const token = localStorage.getItem("token");
+//       const response = await axios.post(
+//         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+//         saleData,
+//         {
+//           withCredentials: true,
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+//       if (response.data.success) {
+//         const newSale = response.data.data.sale;
+//         // Keep details for receipt
+//         const studentDetailsForReceipt = { ...selectedStudent };
+//         const itemsForReceipt = response.data.data.receiptItems || selectedItems.map(item => ({
+//             itemName: item.itemName,
+//             quantity: item.quantity,
+//             price: item.price,
+//             total: item.price * item.quantity
+//         }));
+
+//         // Add new sale to the beginning of the sales list
+//         const updatedSales = [newSale, ...sales];
+//         setSales(updatedSales);
+
+//         // *** IMPORTANT: Re-calculate previous due amount with the updated sales list ***
+//         const studentId = selectedStudent.studentId;
+//         const unpaidSalesAfterSubmit = updatedSales.filter(s =>
+//             s.studentId === studentId &&
+//             s.paymentStatus !== 'paid'
+//         );
+//         const totalDueAfterSubmit = unpaidSalesAfterSubmit.reduce((sum, sale) => sum + (sale.dueAmount || 0), 0);
+//         setSelectedStudentTotalDue(totalDueAfterSubmit);
+//         setSelectedStudentUnpaidSales(unpaidSalesAfterSubmit);
+
+
+//         // Clear form *after* recalculating due
+//         // setSearchTerm(student.studentName); // Keep student name for context, maybe? Or clear? User choice.
+//         // Resetting student might be better UX if they want to clear everything:
+//         // setSearchTerm("");
+//         // setSelectedStudent(null);
+//         // setSelectedStudentDisplay("");
+//         // setSelectedStudentTotalDue(0); // Reset if clearing student
+//         // setSelectedStudentUnpaidSales([]);
+
+//         setSelectedItems([]);
+//         setPaidAmount("");
+//         setSubtotal(0);
+//         setDueAmount(0);
+//         setSearchResults([]);
+//         setShowSuggestions(false); // Should already be false
+
+//         toast.success(response.data.message || "Sale created successfully!");
+
+//         // Generate HTML receipt for the *new* sale
+//         const receiptData = {
+//             ...newSale,
+//             items: itemsForReceipt,
+//         };
+//         generateReceiptHtml(receiptData, studentDetailsForReceipt);
+
+//       } else {
+//         toast.error(response.data.message || "Failed to create sale.");
+//       }
+//     } catch (error) {
+//       console.error("Submit sale error:", error);
+//       toast.error(error.response?.data?.message || "An error occurred while creating the sale.");
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+
+//   // --- Receipt HTML Generation --- (Keep as is)
+//   const generateReceiptHtml = (receiptData, student) => {
+//     if (!receiptData) return;
+
+//     const studentInfo = student
+//       ? `${student.studentName} (${student.class} - ${student.section})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}]` : ''}`
+//       : `Student ID: ${receiptData.studentId}`;
+
+//     const receiptContent = `
+//       <div style="width: 320px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; background-color: #ffffff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+//         <h2 style="font-size: 16px; text-align: center; margin: 0 0 10px; font-weight: 600; color: #333;">INVOICE / RECEIPT</h2>
+//         <div style="margin-bottom: 8px;">
+//             <p style="margin: 2px 0;"><strong>Student:</strong> ${studentInfo}</p>
+//             <p style="margin: 2px 0;"><strong>Sale ID:</strong> ${receiptData.saleId}</p>
+//             <p style="margin: 2px 0;"><strong>Date:</strong> ${new Date(receiptData.date).toLocaleString()}</p>
+//         </div>
+//         <table style="width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px;">
+//           <thead>
+//             <tr style="border-top: 1px dashed #aaa; border-bottom: 1px dashed #aaa;">
+//               <th style="padding: 6px 4px; text-align: left; font-weight: 600;">Item</th>
+//               <th style="padding: 6px 4px; text-align: center; font-weight: 600;">Qty</th>
+//               <th style="padding: 6px 4px; text-align: right; font-weight: 600;">Price</th>
+//               <th style="padding: 6px 4px; text-align: right; font-weight: 600;">Total</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             ${(receiptData.items || [])
+//               .map(
+//                 (item) => `
+//               <tr style="border-bottom: 1px dotted #ccc;">
+//                 <td style="padding: 5px 4px; word-break: break-word;">${item.itemName || 'N/A'}</td>
+//                 <td style="padding: 5px 4px; text-align: center;">${item.quantity}</td>
+//                 <td style="padding: 5px 4px; text-align: right;">₹${item.price?.toFixed(2) || '0.00'}</td>
+//                 <td style="padding: 5px 4px; text-align: right;">₹${(item.price * item.quantity).toFixed(2) || '0.00'}</td>
+//               </tr>
+//             `
+//               )
+//               .join("")}
+//           </tbody>
+//         </table>
+//         <div style="margin-top: 12px; text-align: right; border-top: 1px dashed #aaa; padding-top: 8px;">
+//             <p style="margin: 3px 0; font-size: 13px;"><strong>Subtotal:</strong> ₹${receiptData.totalAmount?.toFixed(2)}</p>
+//             <p style="margin: 3px 0; font-size: 13px;"><strong>Paid:</strong> ₹${receiptData.paidAmount?.toFixed(2)}</p>
+//             <p style="margin: 5px 0; font-weight: bold; font-size: 14px;"><strong>Due:</strong> ₹${receiptData.dueAmount?.toFixed(2)}</p>
+//             <p style="margin: 3px 0; font-size: 13px;"><strong>Status:</strong> <span style="text-transform: capitalize; font-weight: 500;">${receiptData.paymentStatus}</span></p>
+//         </div>
+//          <p style="font-size: 11px; text-align: center; margin-top: 15px; color: #777;">Thank you for your purchase!</p>
+//       </div>
+//     `;
+
+//     setReceiptHtmlContent(receiptContent);
+//     setShowReceiptModal(true);
+//   };
+
+
+//   // --- Handle Print --- (Keep as is)
+//   const handlePrint = () => {
+//     const contentToPrint = receiptModalContentRef.current;
+//     if (!contentToPrint) {
+//       toast.error("Receipt content not found for printing.");
+//       return;
+//     }
+
+//     const printWindow = window.open('', '_blank', 'height=600,width=800');
+//     if (!printWindow) {
+//         toast.error("Failed to open print window. Please check browser pop-up settings.");
+//         return;
+//     }
+
+//     // Write HTML structure and styles *without* the <title> tag in the head
+//     printWindow.document.write('<html><head>');
+//     // Add print-specific styles, including @page for margins
+//     printWindow.document.write(`
+//         <style>
+//             /* Apply base styles for printing */
+//             body {
+//                 margin: 0; /* Reset default body margin */
+//                 padding: 10mm; /* Add padding for content, adjust as needed */
+//                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+//                 font-size: 12px; /* Optional: Adjust base print font size */
+//                 line-height: 1.4;
+//                 width: 300px; /* Approx width of receipt */
+//             }
+
+//             /* Use @page rule to suggest minimal margins to the browser */
+//             @page {
+//                 size: auto; /* Let browser decide paper size */
+//                 margin: 5mm; /* Request small margins (e.g., 5mm) */
+//             }
+
+//             @media print {
+//                body > div { /* Target the main receipt div */
+//                   margin: 0 !important;
+//                   padding: 0 !important;
+//                   border: none !important;
+//                   box-shadow: none !important;
+//                   width: 100% !important; /* Use full available width */
+//                }
+//             }
+
+//             /* Basic table/element styling for the receipt content itself */
+//             h2 {
+//                 font-size: 15px; /* Adjust for print */
+//                 text-align: center;
+//                 margin: 0 0 10px 0;
+//                 font-weight: 600;
+//                 color: #000; /* Use black for print */
+//             }
+//             p {
+//                 margin: 3px 0;
+//                 color: #000;
+//             }
+//             table {
+//                 width: 100%;
+//                 border-collapse: collapse;
+//                 margin: 10px 0;
+//                 font-size: 11px; /* Adjust for print */
+//                 color: #000;
+//             }
+//             th, td {
+//                 padding: 4px 3px;
+//                 border-bottom: 1px dotted #888; /* Use darker dotted line */
+//                 text-align: left;
+//                 word-break: break-word; /* Allow long item names to wrap */
+//             }
+//             th {
+//                 border-top: 1px dashed #555; /* Use darker dashed line */
+//                 border-bottom: 1px dashed #555;
+//                 font-weight: 600;
+//                 background-color: #f0f0f0; /* Optional subtle header background */
+//             }
+//              /* Align specific columns */
+//             th:nth-child(2), td:nth-child(2) { text-align: center; } /* Qty */
+//             th:nth-child(3), td:nth-child(3), /* Price */
+//             th:nth-child(4), td:nth-child(4) { text-align: right; } /* Total */
+
+//             /* Styling for the totals section */
+//             div[style*="text-align: right"] { /* Target totals div */
+//                  margin-top: 12px;
+//                  text-align: right;
+//                  border-top: 1px dashed #555;
+//                  padding-top: 8px;
+//             }
+//              div[style*="text-align: right"] p {
+//                 margin: 2px 0;
+//                 font-size: 12px; /* Adjust totals font size */
+//              }
+//              div[style*="text-align: right"] p strong {
+//                  font-weight: bold;
+//              }
+
+//              p[style*="text-align: center"] {
+//                  font-size: 10px;
+//                  margin-top: 15px;
+//                  color: #555;
+//              }
+//         </style>
+//     `);
+//     printWindow.document.write('</head><body>');
+//     // Write only the inner HTML of the receipt content container
+//     printWindow.document.write(contentToPrint.innerHTML);
+//     printWindow.document.write('</body></html>');
+
+//     printWindow.document.close(); // Crucial for some browsers
+//     printWindow.focus(); // Focus the new window
+
+//     setTimeout(() => {
+//          try {
+//             printWindow.print();
+//             // Optionally close after print command is issued
+//             // setTimeout(() => printWindow.close(), 1000);
+//           } catch (e) {
+//              console.error("Print error:", e);
+//              toast.error("Could not initiate printing.");
+//              printWindow.close(); // Close if print fails
+//          }
+//     }, 500); // 500ms delay, adjust if needed
+// };
+
+//   // --- Print Existing Receipt --- (Keep as is)
+//   const handlePrintReceipt = async (saleId) => {
+//     try {
+//       setIsFetchingReceipt(true);
+//       const token = localStorage.getItem("token");
+//       const response = await axios.get(
+//         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+//         {
+//           withCredentials: true,
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+
+//       if (response.data.success && response.data.receipt) {
+//         const receiptDetails = response.data.receipt;
+//         // Find student from local state for display purposes
+//         const student = students.find(s => s.studentId === receiptDetails.studentId);
+//         if (!student) {
+//             toast.warn(`Student details for ID ${receiptDetails.studentId} not found locally. Receipt may show ID only.`);
+//         }
+//         generateReceiptHtml(receiptDetails, student); // Pass student or null
+//         toast.success("Receipt preview ready.");
+//       } else {
+//         toast.warning(`Failed to fetch receipt details: ${response.data.message || 'Not found'}`);
+//       }
+//     } catch (error) {
+//       console.error("Error in handlePrintReceipt:", error);
+//       toast.error(`Error fetching receipt: ${error.response?.data?.message || error.message}`);
+//     } finally {
+//         setIsFetchingReceipt(false);
+//     }
+//   };
+
+//   // --- Render Receipt Modal --- (Keep as is)
+//   const renderReceiptModal = () => (
+//     showReceiptModal && (
+//       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
+//         {/* Adjusted width, added overflow-y-auto */}
+//         <div className="bg-gray-100 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+//            {/* Modal Header */}
+//            <div className="flex justify-between items-center p-4 border-b border-gray-300 bg-white rounded-t-lg">
+//                 <h2 className="text-xl font-semibold text-gray-800">Receipt Preview</h2>
+//                 <button
+//                     onClick={() => {
+//                         setShowReceiptModal(false);
+//                         setReceiptHtmlContent(""); // Clear HTML on close
+//                     }}
+//                     className="text-gray-400 hover:text-gray-600"
+//                     aria-label="Close modal"
+//                 >
+//                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+//                 </button>
+//            </div>
+
+//           {/* Modal Body - Scrollable Area */}
+//           {/* Centering the receipt content horizontally */}
+//           <div className="p-4 md:p-6 flex-grow overflow-y-auto flex justify-center">
+//             {receiptHtmlContent ? (
+//                 // Container for the HTML content with ref - it will be centered by the parent flex
+//                 <div ref={receiptModalContentRef} dangerouslySetInnerHTML={{ __html: receiptHtmlContent }} />
+//             ) : (
+//                 <div className="flex items-center justify-center h-full text-gray-500 py-10">Generating preview...</div>
+//             )}
+//           </div>
+
+//           {/* Modal Footer */}
+//           <div className="flex flex-wrap justify-end gap-3 p-4 border-t border-gray-300 bg-white rounded-b-lg">
+//             <button
+//               onClick={handlePrint}
+//               className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-150 text-sm font-medium shadow-sm disabled:opacity-60"
+//               disabled={!receiptHtmlContent || isSubmitting} // Disable if submitting new sale too
+//             >
+//               🖨️ Print
+//             </button>
+//             <button
+//               onClick={() => {
+//                 setShowReceiptModal(false);
+//                 setReceiptHtmlContent(""); // Clear HTML on close
+//               }}
+//               className="px-5 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-150 text-sm font-medium"
+//             >
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   );
+
+//   // --- Loading/Error States --- (Keep as is)
+//   if (loading && !sales.length) {
+//     return (
+//       <div className="flex justify-center items-center h-64">
+//         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+//       </div>
+//     );
+//   }
+
+//   if (error && !sales.length) {
+//     return (
+//       <div className="p-4 text-center text-red-600 bg-red-100 border border-red-400 rounded">
+//         Error: {error}
+//       </div>
+//     );
+//   }
+
+//   // --- Main Render --- (MODIFIED)
+//   return (
+//     <div className="px-4 md:px-6 py-2">
+//       {/* Form Section */}
+//       <div className="mb-6 ">
+//         <h1 className="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Create New Sale</h1>
+//         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+//             {/* Left Side: Student Search, Item Select, Totals, Submit */}
+//             <div className="space-y-5">
+//                 {/* Student Search & Display */}
+//                 <div className="grid grid-cols-1 gap-4 items-start"> {/* Changed to single column for better layout with due */}
+//                     <div className="relative" ref={searchContainerRef}>
+//                         <ReactInput
+//                             label="Student Search"
+//                             name="studentSearch"
+//                             value={searchTerm}
+//                             // Use the modified handler
+//                             onChange={handleSearchChange}
+//                             placeholder="Name/Adm#/ID"
+//                             required
+//                         />
+//                         {/* Suggestions dropdown */}
+//                         {showSuggestions && (
+//                             <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto ">
+//                                 {searchResults.length > 0 ? (
+//                                     searchResults.map(student => (
+//                                         <div
+//                                             key={student.studentId}
+//                                             className="px-4 py-2 text-sm text-gray-800 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0"
+//                                             onMouseDown={(e) => {
+//                                                 e.preventDefault();
+//                                                 handleStudentSelect(student);
+//                                             }}
+//                                         >
+//                                             <span className="font-medium">{student.studentName}</span>
+//                                             <span className="text-gray-600"> ({student.class}-{student.section})</span>
+//                                             {student.admissionNumber && <span className="text-xs text-blue-600 ml-2">[Adm: {student.admissionNumber}]</span>}
+//                                         </div>
+//                                     ))
+//                                 ) : (
+//                                     <div className="px-4 py-3 text-sm text-gray-500 italic">
+//                                         No students found matching "{searchTerm}".
+//                                     </div>
+//                                 )}
+//                             </div>
+//                          )}
+//                     </div>
+
+//                     {/* Selected Student Display & Previous Due */}
+//                     <div className="space-y-2"> {/* Container for display and due */}
+//                         <div className={`w-full px-3 py-1.5 rounded-md text-sm ${selectedStudentDisplay ? 'border border-green-400 bg-green-50 text-green-800' : 'border border-gray-300 bg-gray-50 text-gray-500 italic'}`}>
+//                             {selectedStudentDisplay ? (
+//                                 <>
+//                                 <span className="font-medium">Selected:</span> {selectedStudentDisplay}
+//                                 </>
+//                             ) : (
+//                                 'No student selected'
+//                             )}
+//                         </div>
+
+//                         {/* *** NEW: Previous Due Amount Display *** */}
+//                         {selectedStudent && selectedStudentTotalDue > 0 && (
+//                             <div className="p-3 border border-orange-400 bg-orange-50 rounded-md text-sm shadow-sm">
+//                                 <p className="font-semibold text-orange-800 mb-1">
+//                                     <span className="font-bold text-red-600">(!)</span> Previous Outstanding Balance: <span className="font-bold text-red-600 text-base ml-1">₹{selectedStudentTotalDue.toFixed(2)}</span>
+//                                 </p>
+//                                 {/* Optional: Display details of unpaid sales */}
+//                                 {selectedStudentUnpaidSales.length > 0 && (
+//                                     <div className="mt-2 pt-2 border-t border-orange-200 text-xs text-gray-700 max-h-24 overflow-y-auto">
+//                                         <p className="font-medium mb-0.5 text-gray-600">Details:</p>
+//                                         <ul className="list-disc list-inside space-y-0.5 pl-1">
+//                                             {selectedStudentUnpaidSales.map(sale => (
+//                                                 <li key={sale._id || sale.saleId}>
+//                                                     {new Date(sale.date).toLocaleDateString()} - Sale ID: <span className="font-mono text-[11px]">{sale.saleId}</span> - Due: <span className="font-semibold">₹{sale.dueAmount.toFixed(2)}</span> ({sale.paymentStatus})
+//                                                 </li>
+//                                             ))}
+//                                         </ul>
+//                                     </div>
+//                                 )}
+//                             </div>
+//                         )}
+//                          {selectedStudent && selectedStudentTotalDue <= 0 && (
+//                               <div className="px-3 py-1 border border-green-300 bg-green-50/80 rounded-md text-sm text-green-700">
+//                                   ✓ No previous outstanding balance found.
+//                               </div>
+//                          )}
+//                     </div>
+//                 </div>
+
+//                 {/* Item Selection */}
+//                 <div className="flex items-start space-x-3">
+//                     <div className="flex-grow">
+//                          <ReactSelect
+//                             label="Item"
+//                             name="selectedItem"
+//                             value={selectedItem}
+//                             handleChange={(e) => setSelectedItem(e.target.value)}
+//                             options={itemOptions}
+//                         />
+//                     </div>
+//                     <button
+//                     type="button"
+//                     onClick={handleAddItem}
+//                     className="px-4 py-1.5 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
+//                     disabled={!selectedItem || isSubmitting}
+//                     >
+//                      Add Item
+//                     </button>
+//                 </div>
+
+//                 {/* Totals and Payment (Current Sale) */}
+//                 <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-gray-200 pt-5">
+//                      <div className="flex items-baseline space-x-2">
+//                         <span className="text-lg font-semibold text-gray-700">Current Sale Total:</span>
+//                         <span className="text-xl font-bold text-blue-800">₹{subtotal.toFixed(2)}</span>
+//                     </div>
+//                     <div className="flex items-center gap-3 flex-wrap">
+//                         <div className="w-full sm:w-32">
+//                             <ReactInput
+//                                 label="Amount Paid (Current)"
+//                                 type="number"
+//                                 name="paidAmount"
+//                                 value={paidAmount}
+//                                 onChange={(e) => setPaidAmount(e.target.value)}
+//                                 placeholder="Paid Now"
+//                                 required={false} // Not strictly required to submit
+//                             />
+//                         </div>
+//                         {subtotal > 0 && ( // Show current due only if there's a current subtotal
+//                              <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-md text-sm ${dueAmount > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+//                                 <span className={`font-medium ${dueAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>Due (Current Sale):</span>
+//                                 <span className={`font-bold ${dueAmount > 0 ? 'text-red-700' : 'text-green-700'}`}>₹{dueAmount.toFixed(2)}</span>
+//                             </div>
+//                         )}
+//                     </div>
+//                 </div>
+
+//                 {/* Submit Button */}
+//                 <div className="text-right pt-3">
+//                     <button
+//                     type="button"
+//                     onClick={handleSubmit}
+//                     className={`inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ${isSubmitting || !selectedStudent || selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+//                     disabled={isSubmitting || !selectedStudent || selectedItems.length === 0}
+//                     >
+//                     {isSubmitting ? (
+//                         <>
+//                             <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+//                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+//                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+//                             </svg>
+//                             Processing...
+//                         </>
+//                     ) : 'Create Sale & View Receipt'}
+//                     </button>
+//                 </div>
+//             </div>
+
+//             {/* Right Side: Cart Items */}
+//             <div className="border border-gray-200 rounded-lg bg-gray-50/70 flex flex-col min-h-[300px] max-h-[500px]"> {/* Added max-h */}
+//                 <h3 className="text-lg font-semibold p-3 border-b border-gray-200 text-gray-700 bg-white rounded-t-lg sticky top-0 z-10">Shopping Cart (Current Sale)</h3>
+//                 {selectedItems.length > 0 ? (
+//                     <div className="overflow-y-auto flex-grow"> {/* Scroll within this div */}
+//                         <table className="w-full text-sm text-left text-gray-600">
+//                             {/* Keep thead sticky ONLY if parent has defined height and overflow */}
+//                             <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10">
+//                                 <tr>
+//                                     <th scope="col" className="px-4 py-2 font-medium">Item</th>
+//                                     <th scope="col" className="px-4 py-2 text-right font-medium">Price</th>
+//                                     <th scope="col" className="px-4 py-2 text-center font-medium w-32">Quantity</th>
+//                                     <th scope="col" className="px-4 py-2 text-right font-medium">Total</th>
+//                                     <th scope="col" className="px-1 py-2 text-center font-medium w-10"></th> {/* Action */}
+//                                 </tr>
+//                             </thead>
+//                             <tbody className="bg-white divide-y divide-gray-200">
+//                             {selectedItems.map((item) => (
+//                                 <tr key={item.itemId} className="hover:bg-gray-50/80">
+//                                     <td className="px-4 py-1.5 font-medium text-gray-900 whitespace-normal">{item.itemName}</td>
+//                                     <td className="px-4 py-1.5 text-right text-gray-700">₹{item.price.toFixed(2)}</td>
+//                                     <td className="px-4 py-1.5">
+//                                         <div className="flex items-center justify-center space-x-1.5">
+//                                             <button
+//                                                 onClick={() => handleDecreaseQuantity(item.itemId)}
+//                                                 className="p-0.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+//                                                 disabled={item.quantity <= 1 || isSubmitting}
+//                                                 aria-label="Decrease quantity"
+//                                             >-</button>
+//                                             <input
+//                                                 type="number"
+//                                                 value={item.quantity}
+//                                                 onChange={(e) => handleQuantityChange(item.itemId, e.target.value)}
+//                                                 className="w-10 h-6 text-center border border-gray-300 rounded text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+//                                                 min="1"
+//                                                 disabled={isSubmitting}
+//                                                 aria-label={`Quantity for ${item.itemName}`}
+//                                             />
+//                                             <button
+//                                                 onClick={() => handleIncreaseQuantity(item.itemId)}
+//                                                 className="p-0.5 rounded-full bg-green-100 text-green-600 hover:bg-green-200 w-5 h-5 flex items-center justify-center text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+//                                                 disabled={isSubmitting}
+//                                                 aria-label="Increase quantity"
+//                                             >+</button>
+//                                         </div>
+//                                     </td>
+//                                     <td className="px-4 py-1.5 text-right font-semibold text-gray-800">₹{(item.price * item.quantity).toFixed(2)}</td>
+//                                     <td className="px-1 py-1.5 text-center">
+//                                         <button
+//                                             onClick={() => handleRemoveItem(item.itemId)}
+//                                             className="p-1 text-red-500 hover:text-red-700 disabled:text-gray-400 disabled:cursor-not-allowed rounded-full hover:bg-red-100"
+//                                             disabled={isSubmitting}
+//                                             aria-label="Remove item"
+//                                         >
+//                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
+//                                         </button>
+//                                     </td>
+//                                 </tr>
+//                             ))}
+//                             </tbody>
+//                         </table>
+//                     </div>
+//                 ) : (
+//                      <div className="flex-grow flex items-center justify-center">
+//                         <div className="text-center text-gray-500 py-10 px-4 italic">
+//                             Cart is empty. Select items above and click 'Add Item'.
+//                         </div>
+//                     </div>
+//                 )}
+//             </div>
+//         </div>
+//       </div>
+
+//       {/* Sales History Section */}
+//       <div className="bg-white p-4 md:p-6 rounded-lg shadow-md border border-gray-200">
+//         <PageHeaderWithBreadcrumb/>
+//          <h2 className="text-xl font-semibold text-gray-800 mb-4">Sales History</h2>
+//          {/* Loading/Error messages for history */}
+//          {loading && sales.length === 0 && <p className="text-center py-4 text-gray-500">Loading history...</p>}
+//          {error && sales.length === 0 && <p className="text-center py-4 text-red-500">Error loading history: {error}</p>}
+//          {/* Optional: Indicate background refresh/update status */}
+//          {/* {loading && sales.length > 0 && <p className="text-sm text-gray-500 mb-2">Checking for updates...</p>}
+//          {error && sales.length > 0 && <p className="text-sm text-red-500 mb-2">Error checking updates: {error}</p>} */}
+
+//         <div className="overflow-x-auto">
+//            <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
+//              <thead className="bg-gray-50">
+//                <tr>
+//                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+//                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+//                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale ID</th>
+//                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+//                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
+//                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Due</th>
+//                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+//                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+//                </tr>
+//              </thead>
+//              <tbody className="bg-white divide-y divide-gray-200">
+//                 {sales.length === 0 && !loading && (
+//                     <tr>
+//                         <td colSpan="8" className="px-4 py-6 text-center text-sm text-gray-500 italic">No sales records found.</td>
+//                     </tr>
+//                 )}
+//               {sales.map((s) => {
+//                  const student = students.find((st) => st.studentId === s.studentId);
+//                  const studentDisplay = student
+//                    ? `${student.studentName} (${student.class}-${student.section})`
+//                    : `ID: ${s.studentId}`;
+//                  return (
+//                    <tr key={s._id || s.saleId} className={`hover:bg-gray-50/80 transition-colors duration-150 ${s.paymentStatus !== 'paid' ? 'bg-red-50/40' : ''}`}> {/* Highlight unpaid rows */}
+//                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{new Date(s.date).toLocaleDateString()}</td>
+//                      <td className="px-4 py-3 whitespace-normal text-sm text-gray-800 font-medium">{studentDisplay}</td>
+//                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-[11px]">{s.saleId}</td> {/* Added Sale ID */}
+//                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">₹{s.totalAmount.toFixed(2)}</td>
+//                      <td className="px-4 py-3 whitespace-nowrap text-sm text-green-700 text-right">₹{s.paidAmount.toFixed(2)}</td>
+//                      <td className={`px-4 py-3 whitespace-nowrap text-sm text-right ${s.dueAmount > 0 ? 'text-red-700 font-semibold' : 'text-gray-500'}`}>₹{s.dueAmount.toFixed(2)}</td>
+//                      <td className="px-4 py-3 whitespace-nowrap text-center">
+//                         <span className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${
+//                             s.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+//                             s.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-800' :
+//                             'bg-red-100 text-red-800'
+//                         }`}>
+//                             {s.paymentStatus}
+//                         </span>
+//                      </td>
+//                      <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+//                        <button
+//                          onClick={() => handlePrintReceipt(s.saleId)}
+//                          className="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed p-1 rounded hover:bg-indigo-50 transition-colors flex items-center gap-1 mx-auto text-xs"
+//                          disabled={isFetchingReceipt || isSubmitting}
+//                          title="View & Print Receipt"
+//                        >
+//                          {/* Icon can be added back if desired */}
+//                          View / Print
+//                        </button>
+//                      </td>
+//                    </tr>
+//                  );
+//                })}
+//              </tbody>
+//            </table>
+//         </div>
+//       </div>
+
+//       {renderReceiptModal()}
+//     </div>
+//   );
+// };
+
+// export default Sales;
 
 
 

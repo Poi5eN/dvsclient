@@ -266,7 +266,7 @@ function App() {
               <Route path="income" element={<Income />} />
               <Route path="expenditure" element={<Expenditure />} />
               <Route path="stocks" element={<Stocks />} />
-              <Route path="stocks/editstock/:_id" element={<EditStocks />} />
+              <Route path="stocks/editstock/:itemId" element={<EditStocks />} />
               <Route path="sales" element={<Sales />} />
               {/* <Route path="records" element={<InventoryDashboard />} /> New Route */}
               <Route path="books" element={<AllBooks />} />

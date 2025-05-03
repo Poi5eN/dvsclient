@@ -6,23 +6,35 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Box, Typography, Stack, TextField, Button, Card, CardContent } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { motion } from "framer-motion";
-import theme from "../../theme"; // Adjust path as needed
+import theme from "../../theme";
 import { ThemeProvider } from "@mui/material/styles";
 
 const EditStocks = () => {
   const authToken = localStorage.getItem("token");
   const navigate = useNavigate();
-  const { _id } = useParams();
-  const [formData, setFormData] = useState({ itemName: "", category: "", quantity: "", price: "", icon: "", color: "" });
+  const { itemId } = useParams(); // ✅ changed from `_id` to `itemId`
+
+  const [formData, setFormData] = useState({
+    itemName: "",
+    category: "",
+    quantity: "",
+    price: "",
+    icon: "",
+    color: "",
+  });
 
   useEffect(() => {
     axios
-      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/items?_id=${_id}`, {
+      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/items?itemId=${itemId}`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },
       })
       .then((response) => {
-        const item = response.data.items[0];
+        const item = response.data.listOfAllItems[0];
+        if (!item) {
+          toast.error("Item not found.");
+          return navigate("/admin/stocks");
+        }
         setFormData({
           itemName: item.itemName,
           category: item.category,
@@ -33,7 +45,7 @@ const EditStocks = () => {
         });
       })
       .catch((error) => toast.error("Failed to fetch item."));
-  }, [_id]);
+  }, [itemId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,14 +54,20 @@ const EditStocks = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/items/${_id}`, formData, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await axios.put(
+        `https://dvsserver.onrender.com/api/v1/adminRoute/items/${itemId}`, // ✅ update using itemId
+        formData,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
       if (response.data.success) {
-        navigate("/admin/stocks");
         toast.success("Item updated");
-      } else toast.error(response.data.message);
+        navigate("/admin/stocks");
+      } else {
+        toast.error(response.data.message);
+      }
     } catch (error) {
       toast.error("Failed to update item.");
     }
@@ -59,7 +77,13 @@ const EditStocks = () => {
     <ThemeProvider theme={theme}>
       <Box mt={4} maxWidth={900} mx="auto" p={2}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <Card sx={{ p: 4, background: "linear-gradient(45deg, #fff 0%, #f1f2f6 100%)", borderLeft: `4px solid ${theme.palette.accent.main}` }}>
+          <Card
+            sx={{
+              p: 4,
+              background: "linear-gradient(45deg, #fff 0%, #f1f2f6 100%)",
+              borderLeft: `4px solid ${theme.palette.accent.main}`,
+            }}
+          >
             <CardContent>
               <Typography variant="h4" gutterBottom sx={{ color: theme.palette.primary.main }}>
                 Edit Stock <EditIcon sx={{ verticalAlign: "middle", color: theme.palette.accent.main }} />
