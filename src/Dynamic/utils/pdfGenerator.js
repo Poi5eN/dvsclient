@@ -72,9 +72,12 @@ const generatePdf = (
     let startY = 20;
     let grandTotalPaid = 0;
     let grandTotalDues = 0;
+console.log("data",data)
+console.log("dataArray",dataArray)
 
     // Iterate over each student in the unified receipt
-    (data.students || []).forEach((student, index) => {
+    (dataArray || []).forEach((student, index) => {
+    // (data.students || []).forEach((student, index) => {
       doc.setFontSize(12);
       doc.text(
         `Student ${index + 1}: ${student.studentName} (Adm: ${
@@ -100,14 +103,14 @@ const generatePdf = (
         styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
         head: [["Name", "Month", "Amount", "Dues", "Status"]],
         body: [
-          ...(student.regularFees || []).map((fee) => [
+          ...(dataArray.regularFees || []).map((fee) => [
             "Class Fee",
             fee.month,
             parseAndFormat(fee.paidAmount),
             parseAndFormat(fee.dueAmount),
             fee.status,
           ]),
-          ...(student.additionalFees || []).map((fee) => [
+          ...(dataArray.additionalFees || []).map((fee) => [
             fee.name,
             fee.month,
             parseAndFormat(fee.paidAmount),
@@ -115,6 +118,22 @@ const generatePdf = (
             fee.status,
           ]),
         ],
+        // body: [
+        //   ...(student.regularFees || []).map((fee) => [
+        //     "Class Fee",
+        //     fee.month,
+        //     parseAndFormat(fee.paidAmount),
+        //     parseAndFormat(fee.dueAmount),
+        //     fee.status,
+        //   ]),
+        //   ...(student.additionalFees || []).map((fee) => [
+        //     fee.name,
+        //     fee.month,
+        //     parseAndFormat(fee.paidAmount),
+        //     parseAndFormat(fee.dueAmount),
+        //     fee.status,
+        //   ]),
+        // ],
         didParseCell: function (hookData) {
           const numericKeys = ["Amount", "Dues"];
           if (numericKeys.includes(hookData.column.raw)) {

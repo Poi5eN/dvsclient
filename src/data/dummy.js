@@ -134,14 +134,20 @@ export const links = [
 //     link: 'exam-system',
 
 // },
-  {
-      name: 'Account',
-      icon: <MdAccountBalanceWallet />,
-      children: [
-          { name: 'Income', link: 'income',   icon: <MdAccountBalanceWallet />, },
-          { name: 'Expenditure', link: 'expenditure',   icon: <MdAccountBalanceWallet />, },
-      ],
-  },
+{
+  name: 'Account',
+  icon: <MdAccountBalanceWallet />,
+  link: 'account',
+
+},
+  // {
+  //     name: 'Account',
+  //     icon: <MdAccountBalanceWallet />,
+  //     children: [
+  //         { name: 'Income', link: 'income',   icon: <MdAccountBalanceWallet />, },
+  //         { name: 'Expenditure', link: 'expenditure',   icon: <MdAccountBalanceWallet />, },
+  //     ],
+  // },
   {
       name: 'Inventory',
       icon: <BiSolidStoreAlt />,
@@ -162,14 +168,14 @@ export const links = [
   },
 
   
-  {
-      name: 'Employee',
-      icon: <MdWork />,
-      children: [
-          { name: 'Staff', link: 'staff' },
-          { name: 'Wages', link: 'wages' },
-      ],
-  },
+  // {
+  //     name: 'Employee',
+  //     icon: <MdWork />,
+  //     children: [
+  //         { name: 'Staff', link: 'staff' },
+  //         { name: 'Wages', link: 'wages' },
+  //     ],
+  // },
   {
       name: 'Exam System',
       icon: <ImBookmarks />,

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const BulkFeesSet = () => {
   const [mode, setMode] = useState("create");
@@ -111,11 +113,13 @@ const BulkFeesSet = () => {
   };
 
   return (
-    <div className=" px-8">
-      <div className=" mx-auto bg-white ">
-        <h1 className="text-xl font-extrabold text-indigo-700 mb-2 text-center">
+    <div className="">
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Bulk Fees Setup "/>
+                     <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
+      {/* <div className=" mx-auto bg-white "> */}
+        {/* <h1 className="text-xl font-extrabold text-indigo-700 mb-2 text-center">
           Bulk Fees Setup 
-        </h1>
+        </h1> */}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <select

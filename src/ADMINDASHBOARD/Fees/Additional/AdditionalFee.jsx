@@ -268,7 +268,7 @@ function AdditionalFee() {
   return (
     <div className=""> {/* Added padding */}
      <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.student} title="Additional Fee"/>
-      <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-col md:flex-row  items-center mb-4 gap-4">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-col md:flex-row  items-center gap-4">
         
         <Button
                name="Set Additional Fee"
@@ -343,8 +343,6 @@ function AdditionalFee() {
           </div>
         </div>
       </Modal>
-
-      {/* Table Displaying Filtered Data */}
       <Table tHead={THEAD} tBody={tBody} />
       {filteredAdditionFee.length === 0 && !setIsLoader && ( // Show message if table is empty and not loading
          <p className="text-center text-gray-500 mt-4">No additional fees found{selectedClass ? ` for class ${selectedClass}` : ''}.</p>

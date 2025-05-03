@@ -9,6 +9,8 @@ import { ActiveStudents, AdminGetAllClasses, getIDcarddesign } from "../../Netwo
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect"; // Adjust path if needed
 import { toast } from "react-toastify";
 import moment from "moment";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 // --- Constants ---
 const CARD_WIDTH_MM = 54;
@@ -390,14 +392,9 @@ const IdCard = () => {
                     pairDiv.appendChild(backDiv);
                     itemElement = pairDiv;
                 }
-
-                // --- Page Break Logic ---
-                // Add CSS to force a page break after every N items, except the very last item
                 if ((index + 1) % ITEMS_PER_PRINT_PAGE === 0 && index < studentsToPrint.length - 1) {
                     itemElement.style.pageBreakAfter = 'always';
                 }
-                // --- End Page Break Logic ---
-
                 printContainer.appendChild(itemElement); // Add the student's card/pair to the print container
             });
 
@@ -508,20 +505,22 @@ const IdCard = () => {
     // --- JSX ---
     return (
         <>
-        <h2 className="py-1">
+         <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="ID Cards"/>
+     
+            {/* <h2 className="py-1">
         Generate Student ID Cards
-        </h2>
+        </h2> */}
             <Box ref={componentRef} sx={{ padding: 2, backgroundColor: '#fff', borderRadius: 1, boxShadow: 1 }}>
-                {/* Page Title */}
-                {/* <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-                    Generate Student ID Cards
-                </Typography> */}
-
-                {/* Filter Controls Area */}
-                <Box className="no-print" sx={{ borderBottom: '1px solid #eee', pb: 2, mb: 2 }}>
-                    <Grid container spacing={2} alignItems="center">
+   
+                {/* <Box className="no-print" sx={{ borderBottom: '1px solid #eee', pb: 2, mb: 2 }}>
+                    <Grid container spacing={2} alignItems="center"> */}
                         {/* Class Filter */}
-                        <Grid item xs={12} sm={6} md={3} lg={2}>
+                        {/* <Grid item xs={12} sm={6} md={3} lg={2}> */}
+                        <div
+       className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2"
+        >
+
+      
                             <ReactSelect
                                 name="class"
                                 value={selectedClass}
@@ -531,9 +530,6 @@ const IdCard = () => {
                                 placeholder="Select Class"
                                 isDisabled={isLoadingData} // Disable while loading initial data
                             />
-                        </Grid>
-                        {/* Section Filter */}
-                        <Grid item xs={12} sm={6} md={3} lg={2}>
                             <ReactSelect
                                 name="section"
                                 value={selectedSection}
@@ -544,10 +540,8 @@ const IdCard = () => {
                                 disabled={!selectedClass || sectionOptions.length === 0 || isLoadingData}
                                 placeholder="Select Section"
                             />
-                        </Grid>
-                        {/* Name/Adm No Filter */}
-                        <Grid item xs={12} sm={6} md={3} lg={3}>
-                            <TextField
+                             
+                             <TextField
                                 fullWidth
                                 id="filter-name"
                                 label="Filter by Name / Adm. No."
@@ -557,9 +551,8 @@ const IdCard = () => {
                                 size="small" // Match height of ReactSelect if needed
                                 disabled={isLoadingData}
                             />
-                        </Grid>
-                        {/* Print Mode Selector */}
-                        <Grid item xs={6} sm={3} md={3} lg={2}>
+
+
                             <FormControl fullWidth size="small" disabled={isLoadingData}>
                                 <InputLabel id="print-mode-select-label">Print Sides</InputLabel>
                                 <Select
@@ -574,9 +567,6 @@ const IdCard = () => {
                                     <MenuItem value={'back'}>Back Only</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>
-                        {/* Print Button */}
-                        <Grid item xs={6} sm={3} md={12} lg={3}> {/* Spans full width on medium */}
                             <Button
                                 fullWidth
                                 variant="contained"
@@ -588,11 +578,8 @@ const IdCard = () => {
                             >
                                 {isLoader ? "Preparing..." : `Print Selected (${selectedStudentIds.size})`}
                             </Button>
-                        </Grid>
-                    </Grid>
-                </Box>
-
-                {/* Select All / Loading Indicator / Info Message Area */}
+                              </div>
+                       
                 <Box className="no-print" sx={{ mb: 2, minHeight: '40px', display: 'flex', alignItems: 'center' }}>
                     {/* Show Select All only when not loading and there are filter results */}
                     {!isLoadingData && filteredStudentData.length > 0 && (
@@ -711,6 +698,7 @@ const IdCard = () => {
                     </Box>
                 </div>
             </Box>
+            {/* </div> */}
         </>
     );
 };

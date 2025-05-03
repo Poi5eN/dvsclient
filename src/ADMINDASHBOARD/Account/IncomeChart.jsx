@@ -19,6 +19,7 @@ const IncomeChart = () => {
       })
       .then((response) => {
         if (Array.isArray(response.data.listOfAllItems)) {
+          console.log("response.data.listOfAllItems",response.data.listOfAllItems)
           const aggregatedSellAmounts = {};
 
           response.data.listOfAllItems.forEach((item) => {

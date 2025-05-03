@@ -9,6 +9,8 @@ import { useStateContext } from "../../contexts/ContextProvider";
 import Table from "../../Dynamic/Table";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import Button from "../../Dynamic/utils/Button";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 
 function LateFine() {
@@ -171,22 +173,20 @@ function LateFine() {
 
   return (
     <div className="mx-auto">
-      {/* <h1 className="text-xl font-bold  uppercase text-center" style={{ color: currentColor }}>
-        Late Fine Fee
-      </h1> */}
-      {/* <div className="mb-1"> */}
+     <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Set Late Fine"/>
+           <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex gap-2">
+     
         <Button
         name="Set Late Fine"
-          // variant="contained"
-          // style={{ backgroundColor: currentColor }}
+          
           onClick={() => {
               setModalOpen(true);
           }}
         >
-          {/* Create Fee */}
+       
         </Button>
-      {/* </div> */}
-
+      
+</div>
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Late Fine"}>
         <div className="p-4 space-y-4 bg-gray-50">
           <div className="grid gap-2 md:grid-cols-1">

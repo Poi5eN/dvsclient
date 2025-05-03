@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ActiveStudents, getStudentFeeInfo } from '../../Network/AdminApi'; // Adjust path if necessary
 import { toast } from 'react-toastify';
 import { FaSpinner } from 'react-icons/fa'; // Optional: for a nicer loader icon
+import PageHeaderWithBreadcrumb from '../../Dynamic/PageHeaderWithBreadcrumb';
+import BreadcrumbList from '../../Dynamic/BreadcrumbList';
 
 const StudentFeeHistory = () => {
     const session = JSON.parse(localStorage.getItem("session")); // Be cautious with direct localStorage access in SSR frameworks
@@ -104,14 +106,16 @@ const StudentFeeHistory = () => {
      };
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 bg-gray-50 min-h-screen">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Student Fee History</h2>
+        <div className="">
+               <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Student Fee History"/>
+               <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
+            {/* <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Student Fee History</h2> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {/* Column 1: Student Search and List */}
                 <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow">
-                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Search Active Students</h3>
+                    {/* <h3 className="text-lg font-semibold text-gray-700 mb-4">Search Active Students</h3> */}
                     <input
                         type="text"
                         value={searchQuery}
@@ -228,6 +232,7 @@ const StudentFeeHistory = () => {
                         </div>
                     )}
                 </div>
+            </div>
             </div>
         </div>
     );

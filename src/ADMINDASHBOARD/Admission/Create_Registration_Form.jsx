@@ -346,11 +346,8 @@ studentCountry: payload.country ||"",
     className=""
     >
       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="New Admission"/>
-      {/* <Breadcrumbs BreadItem={BreadItem} /> */}
       <div
-       className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2"
-      //  className="flex flex-wrap md:flex-row gap-1"
-      >
+       className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2">
         <Button name="New Admission" onClick={toggleModal} />
         <BulkAdmission setRefreshRegistrations={setRefreshRegistrations} />
         <ReactSelect

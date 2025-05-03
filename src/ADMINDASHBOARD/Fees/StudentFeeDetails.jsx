@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 import { format, parseISO } from 'date-fns';
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const StudentFeeDetails = ({ modalData }) => {
   const [fees, setFees] = useState(null);
@@ -34,8 +36,10 @@ const StudentFeeDetails = ({ modalData }) => {
   }
 
   return (
-    <div className="space-y-4"> {/* Vertical spacing between cards */}
-      {fees.feeHistory && fees.feeHistory.map((item) => (
+    <div className="space-y-4"> 
+    <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Fee History"/>
+     <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
+     {fees.feeHistory && fees.feeHistory.map((item) => (
         <div key={item.feeReceiptNumber} className="bg-white rounded-lg shadow-md p-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold">Receipt #{item.feeReceiptNumber}</h3>
@@ -85,6 +89,7 @@ const StudentFeeDetails = ({ modalData }) => {
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 };

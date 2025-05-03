@@ -4,6 +4,8 @@ import { ReactInput } from "../Dynamic/ReactInput/ReactInput";
 import { useStateContext } from "../contexts/ContextProvider";
 import { updateAdmin,getAdminInfo } from "../Network/AdminApi";
 import { toast } from "react-toastify";
+import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../Dynamic/BreadcrumbList";
 
 function AdminUser() {
   const { setIsLoader } = useStateContext();
@@ -18,12 +20,15 @@ const user=JSON.parse(localStorage.getItem("user"))
     schoolName: "",
     address: "",
     logoImage: null,
+    AdminPhoto: null,
+    Sign: null,
     feeMessage: "",
     admissionMessage: "",
     registrationMessage: "",
     state: "",
     city: "",
     pincode: "",
+    SchoolCode:"",
   });
 
   const getAdminData=async()=>{
@@ -147,11 +152,12 @@ if(props==="Update"){
 }
   }
   return (
-    <div className="px-2 h-[86.5vh]">
-      <h1 className="text-xl text-center">Admin Details</h1>
+    <div className="">
+      <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Admin Details"/>
+      {/* <h1 className="text-xl text-center">Admin Details</h1> */}
      
       <div
-        className="p-3">
+        className="bg-white p-2 rounded-lg shadow border border-gray-200 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 ">
         {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1  rounded-md">
           {[
             
@@ -200,7 +206,7 @@ if(props==="Update"){
             />
           )}
         </div> */}
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 rounded-md">
+        {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 rounded-md"> */}
   <ReactInput
     type="text"
     name="name"
@@ -208,6 +214,15 @@ if(props==="Update"){
     label="Name"
     onChange={handleChange}
     value={values.name}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="SchoolCode"
+    required={false}
+    label="School Code"
+    onChange={handleChange}
+    value={values.SchoolCode}
     disabled={isEdit}
   />
   <ReactInput
@@ -339,7 +354,7 @@ if(props==="Update"){
     type="file"
     name="logoImage"
     accept="image/*"
-    label="Logo Image"
+    label="Shooo logo"
     onChange={handleImageChange}
   />
   {values.logoImage && (
@@ -349,7 +364,35 @@ if(props==="Update"){
       className="w-10 h-10 object-cover rounded-md"
     />
   )}
-</div>
+  <ReactInput
+    type="file"
+    name="AdminPhoto"
+    accept="image/*"
+    label="Admin Photo"
+    onChange={handleImageChange}
+  />
+  {values.AdminPhoto && (
+    <img
+      src={user?.AdminPhoto?.url}
+      alt="Logo Preview"
+      className="w-10 h-10 object-cover rounded-md"
+    />
+  )}
+  <ReactInput
+    type="file"
+    name="Sign"
+    accept="image/*"
+    label="Principal Sign"
+    onChange={handleImageChange}
+  />
+  {values.Sign && (
+    <img
+      src={user?.Sign?.url}
+      alt="Logo Preview"
+      className="w-10 h-10 object-cover rounded-md"
+    />
+  )}
+{/* </div> */}
 
 
         <div className="mt-4 flex justify-center gap-2">
