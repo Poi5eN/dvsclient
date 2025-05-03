@@ -11,6 +11,9 @@ import { ActiveStudents, AdminGetAllClasses, examresult, Allexamresult } from ".
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import logo from "../../ShikshMitraWebsite/assets/school logo.jpg";
 import sign from "../../ShikshMitraWebsite/assets/sign.png";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import Button from "../../Dynamic/utils/Button";
 const ReportCard = () => {
   const { setIsLoader, currentColor } = useStateContext();
   const [getClass, setGetClass] = useState([]);
@@ -23,7 +26,8 @@ const ReportCard = () => {
   const [dataToReport, setDataToReport] = useState({});
   const componentPDF = useRef();
   const user = JSON.parse(localStorage.getItem("user"));
-
+  const session = JSON.parse(localStorage.getItem("session"));
+console.log("user",user)
   const generatePDF = useReactToPrint({
     content: () => componentPDF.current,
     documentTitle: `${
@@ -62,7 +66,7 @@ const ReportCard = () => {
   const allStudent = useCallback(async () => {
     setIsLoader(true);
     try {
-      const response = await ActiveStudents();
+      const response = await ActiveStudents(session);
       if (response?.students?.data) {
         const filterStudent = response?.students?.data?.filter(
           (val) => val.class === selectedClass && val.section === selectedSection
@@ -203,24 +207,24 @@ const ReportCard = () => {
 
        >
         <span className="absolute top-0 font-semibold left-1/2 text-blue-800">RECOGNISED</span>
-        <span className="absolute top-0 font-semibold right-3 text-blue-800">School Code : 22751</span>
+        <span className="absolute top-0 font-semibold right-3 text-blue-800">School Code : #####</span>
          <div className="flex gap-10">
             <div className="text-center mb-2 h-28 w-28 object-contain">
             {/* <div className="text-center mb-4 h-24 w-24 object-contain"> */}
               <img
               className="scale-100"
-                src={logo || "https://logowik.com/content/uploads/images/cbse-central-board-of-secondary-education-colored7663.jpg"}
+                src={user?.logoImage?.url || "https://logowik.com/content/uploads/images/cbse-central-board-of-secondary-education-colored7663.jpg"}
                 alt=""
               />
             </div>
             <div className="text-center mb-4">
-              <h2 className="text-[40px] font-extrabold text-red-800 uppercase font-serif">Tagore Convent School</h2>
+              <h2 className="text-[40px] font-extrabold text-red-800 uppercase font-serif">{user?.schoolName}</h2>
               <p className="text-base font-semibold">{user?.address}</p>
-          <p className="text-lg font-semibold  text-blue-800">MOB : +918860686739</p>
+          <p className="text-lg font-semibold  text-blue-800">MOB : {user?.contact}</p>
 
               <span className="text-lg font-semibold bg-[#a52a2a] px-2 py-1 text-white">PROGRESS REPORT CARD</span>
-             
-              <p className="text-[18px] font-semibold  text-blue-800"> SESSION 2024-2025</p>
+     
+              <p className="text-[18px] font-semibold  text-blue-800"> SESSION {session}</p>
             </div>
           </div>
 
@@ -399,16 +403,10 @@ const ReportCard = () => {
 
   return (
     <>
-      <div className="mb-4 mx-auto ">
-        <div
-          className="rounded-tl-lg rounded-tr-lg border flex justify-between text-white py-2 px-2"
-          style={{ background: `linear-gradient(to bottom, ${currentColor}, #8d8b8b)` }}
-        >
-          <p className="text-lg">Report Card</p>
-          <MdDownload onClick={generatePDF} className="text-2xl cursor-pointer" />
-        </div>
-        <div className="w-full flex flex-col sm:flex-row gap-2 p-4">
-          <ReactSelect
+     <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Report Card"/>
+      <div className=" ">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap sm:flex-row gap-2 ">
+      <ReactSelect
             required={true}
             name="studentClass"
             value={selectedClass}
@@ -439,7 +437,11 @@ const ReportCard = () => {
             </select>
           </div>
          
+        <Button onClick={generatePDF} Icon={  <MdDownload  />} name="print" color="green" >
+
+        </Button>
         </div>
+ 
        <div ref={componentPDF}>
          {isAllStudentsSelected ? (
            Array.isArray(dataToReport) ? (

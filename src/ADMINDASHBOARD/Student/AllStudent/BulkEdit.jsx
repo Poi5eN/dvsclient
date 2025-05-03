@@ -1,3 +1,654 @@
+// import React, { useCallback, useEffect, useState } from 'react';
+// import {
+//     ActiveStudents,
+//     AdminGetAllClasses,
+//     editBulkstudentparent, // Use your actual API function
+
+// } from '../../../Network/AdminApi';
+// import Table from '../../../Dynamic/Table';
+// import Button from '../../../Dynamic/utils/Button';
+// import { toast } from 'react-toastify';
+// import { useStateContext } from '../../../contexts/ContextProvider';
+// import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
+// import moment from 'moment';
+// import DatePicker from '../../../Dynamic/DatePicker/DatePicker'; // Keep if needed for DOB
+
+// const BulkEdit = () => {
+//     const session = JSON.parse(localStorage.getItem("session"))
+//     const { currentColor, setIsLoader } = useStateContext();
+//     const [filteredStudents, setFilteredStudents] = useState([]);
+//     const [studentDetails, setStudentDetails] = useState([]); // Holds all fetched students
+//     const [selectedStudentIds, setSelectedStudentIds] = useState([]); // Stores only IDs of selected students
+//     const [selectAll, setSelectAll] = useState(false);
+//     const [getClass, setGetClass] = useState([]);
+//     const [edit, setEdit] = useState(false); // Controls edit mode
+//     const [availableSections, setAvailableSections] = useState([]);
+//     const [editFormData, setEditFormData] = useState({}); // Stores changes: { studentId: { field: value, ... } }
+
+//     const [filterValues, setFilterValues] = useState({
+//         class: "",
+//         section: "",
+//     });
+
+//     // --- Gender Options ---
+//     const genderOptions = [
+//         { value: 'Male', label: 'Male' },
+//         { value: 'Female', label: 'Female' },
+//         { value: 'Other', label: 'Other' },
+//     ];
+
+//     // Fetch all active students
+//     const fetchStudentData = useCallback(async (cls = filterValues.class, sec = filterValues.section) => {
+//         setIsLoader(true);
+//         try {
+//             const response = await ActiveStudents(session);
+//             if (response?.success && response?.students?.data) {
+//                 // Ensure studentId is present and consistent
+//                 const students = response.students.data.map(s => ({
+//                     ...s,
+//                     id: s.studentId, // Ensure 'id' for Table component if needed
+//                     studentId: s.studentId // Explicitly keep studentId
+//                 })).reverse();
+//                 setStudentDetails(students);
+//                 filterStudents(cls, sec, students); // Filter locally
+//                 console.log("Active students fetched:", students);
+//             } else {
+//                 toast.error("Could not fetch students or no students found.");
+//                 setStudentDetails([]);
+//                 setFilteredStudents([]);
+//             }
+//         } catch (error) {
+//             console.error('Error fetching active students:', error);
+//             toast.error('Error fetching active students.');
+//             setStudentDetails([]);
+//             setFilteredStudents([]);
+//         } finally {
+//             setIsLoader(false);
+//         }
+//     }, [setIsLoader, filterValues.class, filterValues.section]); // Keep dependencies
+
+//     // Fetch all classes
+//     const fetchAllClasses = useCallback(async () => {
+//         try {
+//             const response = await AdminGetAllClasses();
+//             if (response?.success) {
+//                 setGetClass(response.classes || []);
+//             } else {
+//                 toast.error("Error: Could not fetch classes.");
+//             }
+//         } catch (error) {
+//             toast.error("Error fetching classes");
+//             console.error("Error fetching classes:", error);
+//         }
+//     }, []); // Removed setIsLoader dependency as it's not strictly needed here
+
+//     useEffect(() => {
+//         fetchStudentData();
+//         fetchAllClasses();
+//     }, []); // Run only on mount
+
+//     // Filter students based on class and section
+//     const filterStudents = (cls, sec, studentsToFilter = studentDetails) => {
+//         console.log("Filtering with:", cls, sec);
+//         let filtered = studentsToFilter;
+//         if (cls) {
+//             filtered = filtered.filter((student) => student.class === cls);
+//         }
+//         if (sec) {
+//             filtered = filtered.filter((student) => student.section === sec);
+//         }
+
+//         setFilteredStudents(filtered);
+
+//         if (filterValues.class !== cls || filterValues.section !== sec) {
+//              setSelectedStudentIds([]);
+//              setSelectAll(false);
+//              setEditFormData({});
+//              setEdit(false);
+//         }
+//     };
+
+//     // Handle class/section filter changes
+//     const handleFilterChange = (e) => {
+//         const { name, value } = e.target;
+//         let newFilterValues = { ...filterValues, [name]: value };
+//         let targetClass = newFilterValues.class;
+//         let targetSection = newFilterValues.section;
+
+//         if (name === "class") {
+//             const classObj = getClass.find((cls) => cls.className === value);
+//             const sections = classObj?.sections || [];
+//             setAvailableSections(sections);
+//             if (value && !sections.includes(filterValues.section)) {
+//                 targetSection = "";
+//                 newFilterValues.section = "";
+//             }
+//              // If class is cleared, clear sections too
+//              if (!value) {
+//                 targetSection = "";
+//                 newFilterValues.section = "";
+//                 setAvailableSections([]);
+//              }
+//         }
+
+//         setFilterValues(newFilterValues);
+//         filterStudents(targetClass, targetSection);
+//     };
+
+//     // Handle Select All checkbox
+//     const handleSelectAllChange = () => {
+//         const newSelectAll = !selectAll;
+//         setSelectAll(newSelectAll);
+//         setSelectedStudentIds(newSelectAll ? filteredStudents.map(s => s.studentId) : []);
+//         if (!newSelectAll) {
+//              setEditFormData({});
+//         }
+//     };
+
+//     // Handle individual row checkbox change
+//     const handleCheckboxChange = (studentId) => {
+//         setSelectedStudentIds(prev => {
+//             const isCurrentlySelected = prev.includes(studentId);
+//             if (isCurrentlySelected) {
+//                 return prev.filter(id => id !== studentId);
+//             } else {
+//                 return [...prev, studentId];
+//             }
+//         });
+//         // Adjust SelectAll state
+//         if (selectedStudentIds.includes(studentId)) {
+//             setSelectAll(false);
+//         } else {
+//             // Check if adding this one makes all selected
+//             if (selectedStudentIds.length + 1 === filteredStudents.length && filteredStudents.length > 0) {
+//                  setSelectAll(true);
+//             }
+//         }
+//     };
+
+
+//     // Enter edit mode
+//     const handleEditClick = () => {
+//         if (selectedStudentIds.length === 0) {
+//             toast.warn("Please select at least one student to edit.");
+//             return;
+//         }
+//         const initialEditData = {};
+//         selectedStudentIds.forEach(id => {
+//             const student = studentDetails.find(s => s.studentId === id);
+//             if (student) {
+//                 // Pre-populate edit form data with original values for selected students
+//                 initialEditData[id] = {
+//                     admissionNumber: student.admissionNumber,
+//                     studentName: student.studentName,
+//                     fatherName: student.fatherName,
+//                     motherName: student.motherName, // Add other editable fields
+//                     rollNo: student.rollNo,
+//                     email: student.email,
+//                     dateOfBirth: student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : "", // Format for date input
+//                     gender: student.gender,
+//                     contact: student.contact,
+//                     address: student.address || "",
+//                     section: student.section, // Make section editable if needed
+//                     // Add other fields as needed
+//                 };
+//             }
+//         });
+//         setEditFormData(initialEditData);
+//         setEdit(true);
+//         // It might be less confusing to disable selectAll checkbox in edit mode
+//         // setSelectAll(false); // Optional: Reset selectAll when entering edit mode
+//     };
+
+//     // Handle changes in *individual* input fields during edit mode
+//     const handleFieldChange = (studentId, fieldName, value) => {
+//         setEditFormData(prev => ({
+//             ...prev,
+//             [studentId]: {
+//                 ...(prev[studentId] || {}), // Ensure studentId entry exists
+//                 [fieldName]: value
+//             }
+//         }));
+//     };
+
+//     // --- Handler for the GLOBAL Gender Dropdown ---
+//     const handleGlobalGenderChange = (selectedOption) => {
+//         const newGender = selectedOption ? selectedOption.value : null; // Get the value ('Male', 'Female', etc.)
+//         if (!newGender) return; // Do nothing if cleared or invalid
+
+//         // Update editFormData for all selected students
+//         setEditFormData(prevData => {
+//             const newData = { ...prevData };
+//             selectedStudentIds.forEach(id => {
+//                 newData[id] = {
+//                     ...(newData[id] || {}), // Preserve other edits for this student
+//                     gender: newGender // Set the new gender
+//                 };
+//             });
+//             return newData;
+//         });
+//         toast.info(`Set gender to ${newGender} for ${selectedStudentIds.length} selected students.`);
+//     };
+
+//     // Save changes
+//     const handleSave = async () => {
+//         if (selectedStudentIds.length === 0) {
+//             toast.warn("No students selected to save.");
+//             return;
+//         }
+
+//         const updatesPayload = selectedStudentIds
+//             .map(studentId => {
+//                 const originalStudent = studentDetails.find(s => s.studentId === studentId);
+//                 const editedStudentData = editFormData[studentId];
+
+//                 if (!editedStudentData || !originalStudent) {
+//                     console.warn(`Skipping student ID ${studentId}: No edit data or original student found.`);
+//                     return null;
+//                 }
+
+//                 const changedFields = {};
+//                 let hasChanged = false;
+//                 // Compare all keys present in editFormData for the student
+//                 for (const key in editedStudentData) {
+//                     // Normalize undefined/null/empty string for comparison, convert dates if necessary
+//                     let originalValue = originalStudent[key];
+//                     let editedValue = editedStudentData[key];
+
+//                      // Special handling for dates if needed (compare ISO strings or timestamps)
+//                      if (key === 'dateOfBirth') {
+//                         const originalDate = originalValue ? moment(originalValue).format('YYYY-MM-DD') : '';
+//                         const editedDate = editedValue ? moment(editedValue).format('YYYY-MM-DD') : '';
+//                          if (editedDate !== originalDate) {
+//                              changedFields[key] = editedValue ? new Date(editedValue).toISOString() : null; // Send ISO format or null
+//                              hasChanged = true;
+//                          }
+//                      }
+//                      // General comparison for other fields
+//                      else if (String(editedValue ?? '') !== String(originalValue ?? '')) {
+//                         changedFields[key] = editedValue;
+//                         hasChanged = true;
+//                     }
+//                 }
+
+//                 if (hasChanged) {
+//                     return {
+//                         studentId: studentId,
+//                         fields: changedFields
+//                     };
+//                 } else {
+//                     return null;
+//                 }
+//             })
+//             .filter(update => update !== null);
+
+
+//         if (updatesPayload.length === 0) {
+//             toast.info("No changes detected for the selected students.");
+//             setEdit(false);
+//             setEditFormData({});
+//             // Optionally reset selection
+//             // setSelectedStudentIds([]);
+//             // setSelectAll(false);
+//             return;
+//         }
+
+//         const finalPayload = { updates: updatesPayload };
+//         console.log("Sending Payload:", JSON.stringify(finalPayload, null, 2));
+
+//         setIsLoader(true);
+//         try {
+//             const response = await editBulkstudentparent(finalPayload);
+
+//             if (response?.success) {
+//                 toast.success(response?.message || "Students updated successfully!");
+//                 setEdit(false);
+//                 setSelectedStudentIds([]);
+//                 setSelectAll(false);
+//                 setEditFormData({});
+//                 await fetchStudentData(filterValues.class, filterValues.section); // Refetch
+//             } else {
+//                 let errorMessage = "Failed to update students.";
+//                 if (response?.message) errorMessage = response.message;
+//                 else if (response?.error) errorMessage = typeof response.error === 'string' ? response.error : JSON.stringify(response.error);
+//                 toast.error(errorMessage);
+//                 console.error("API Error Response:", response);
+//             }
+//         } catch (error) {
+//             console.error("Error updating students:", error);
+//             toast.error(`An error occurred while saving changes: ${error.message || 'Unknown error'}`);
+//         } finally {
+//             setIsLoader(false);
+//         }
+//     };
+
+//     // Cancel editing
+//     const handleCancel = () => {
+//         setEdit(false);
+//         setEditFormData({}); // Clear pending edits
+//         // Optionally reset selection
+//         // setSelectedStudentIds([]);
+//         // setSelectAll(false);
+//         toast.info("Edit cancelled.");
+//     };
+
+
+//     // Options for ReactSelect (Classes & Sections)
+//     const dynamicOptions = getClass.map(cls => ({
+//         label: cls.className,
+//         value: cls.className
+//     }));
+
+//     const dynamicSection = availableSections.map(item => ({
+//         label: item,
+//         value: item
+//     }));
+
+//     // Define Table Headers
+//     const THEAD = [
+//         { id: 'select', label: !edit ? <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} disabled={filteredStudents.length === 0} /> : 'Sel' }, // 'Sel' indicates selection status in edit mode
+//         { id: 'SN', label: '#' },
+//         { id: 'admissionNo', label: 'Adm No' },
+//         { id: 'name', label: 'Name' },
+//         { id: 'fatherName', label: "Father" },
+//         { id: 'motherName', label: "Mother" },
+//         { id: 'rollNo', label: "Roll" },
+//         { id: 'email', label: "Email" },
+//         { id: 'dateOfBirth', label: "DOB" },
+//         { id: 'gender', label: "Gender" }, // Keep header
+//         { id: 'contact', label: "Contact" },
+//         { id: 'class', label: 'Class' },
+//         { id: 'section', label: 'Sec' },
+//         { id: "address", label: "Address" },
+//     ];
+
+//     // Generate Table Body Data
+//     const tBody = filteredStudents?.map((student, index) => {
+//         const isSelected = selectedStudentIds.includes(student.studentId);
+//         // Row is editable only if edit mode is on AND this student is selected
+//         const canEditRow = edit && isSelected;
+//         const currentEditData = editFormData[student.studentId] || {}; // Get edits for this student or empty obj
+
+//         return {
+//             id: student.studentId, // Key for React
+//             select: (
+//                 // Show selection status in edit mode, checkbox otherwise
+//                 edit ? (isSelected ? '✔️' : '❌') : (
+//                     <input
+//                         type="checkbox"
+//                         checked={isSelected}
+//                         onChange={() => handleCheckboxChange(student.studentId)}
+//                     />
+//                 )
+//             ),
+//             SN: index + 1,
+//             admissionNo: canEditRow ? (
+//                 <input
+//                     type="text"
+//                     className="border p-1 w-[70px] bg-gray-200 dark:bg-gray-600 rounded text-xs" // Slightly different bg for edit
+//                     value={currentEditData.admissionNumber ?? ''} // Use ?? '' to handle null/undefined from initial load
+//                     onChange={(e) => handleFieldChange(student.studentId, 'admissionNumber', e.target.value)}
+//                 />
+//             ) : (
+//                 student.admissionNumber
+//             ),
+//             name: canEditRow ? (
+//                 <input
+//                     type="text"
+//                     className="border p-1 w-[100px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.studentName ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'studentName', e.target.value)}
+//                 />
+//             ) : (
+//                 student.studentName
+//             ),
+//             fatherName: canEditRow ? (
+//                 <input
+//                     type="text"
+//                     className="border p-1 w-[100px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.fatherName ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'fatherName', e.target.value)}
+//                 />
+//             ) : (
+//                 student.fatherName
+//             ),
+//             motherName: canEditRow ? (
+//                 <input
+//                     type="text"
+//                     className="border p-1 w-[100px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.motherName ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'motherName', e.target.value)}
+//                 />
+//             ) : (
+//                 student.motherName
+//             ),
+//             rollNo: canEditRow ? (
+//                 <input
+//                     type="text" // Keep as text even if numbers expected, easier validation later if needed
+//                     className="border p-1 w-[50px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.rollNo ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'rollNo', e.target.value)}
+//                 />
+//             ) : (
+//                 student.rollNo
+//             ),
+//             email: canEditRow ? (
+//                 <input
+//                     type="email" // Use email type for basic browser validation
+//                     className="border p-1 min-w-[150px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.email ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'email', e.target.value)}
+//                 />
+//             ) : (
+//                 student.email
+//             ),
+//             dateOfBirth: canEditRow ? (
+//                  <input
+//                     type="date" // Use standard date input
+//                     className="border p-1 w-[130px] bg-gray-200 dark:bg-gray-600 rounded text-xs custom-calendar" // Added custom-calendar class if needed
+//                     value={currentEditData.dateOfBirth ?? ''} // Value should be 'YYYY-MM-DD'
+//                     onChange={(e) => handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)}
+//                  />
+//                 // Or keep DatePicker if you prefer its styling/features
+//                 // <DatePicker
+//                 //     className="custom-calendar border p-1 w-[130px] bg-gray-200 dark:bg-gray-600 rounded text-xs" // Apply styling classes
+//                 //     placeholder=""
+//                 //     name="dateOfBirth"
+//                 //     id={`dob-${student.studentId}`} // Unique ID
+//                 //     value={currentEditData.dateOfBirth ? new Date(currentEditData.dateOfBirth) : null}
+//                 //     handleChange={(date) => handleFieldChange(student.studentId, 'dateOfBirth', date ? date.toISOString().split('T')[0] : '')} // Pass YYYY-MM-DD string
+//                 //     dateFormat="yyyy-MM-dd" // Set display/parse format if DatePicker supports it
+//                 // />
+//             ) : (
+//                 student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : "N/A"
+//             ),
+//             // --- GENDER: Updated to show input field or dropdown in edit mode ---
+//             gender: canEditRow ? (
+//                 <ReactSelect
+//                     name={`gender-${student.studentId}`}
+//                     value={genderOptions.find(opt => opt.value === (currentEditData.gender || student.gender)) || null}
+//                     handleChange={(selectedOption) => handleFieldChange(student.studentId, 'gender', selectedOption ? selectedOption.value : '')}
+//                     dynamicOptions={genderOptions}
+//                     placeholder="Gender"
+//                     className="w-[100px]"
+//                     styles={{
+//                         control: (provided) => ({
+//                             ...provided,
+//                             minHeight: '30px',
+//                             height: '30px'
+//                         }),
+//                         valueContainer: (provided) => ({
+//                             ...provided,
+//                             height: '30px',
+//                             padding: '0 6px'
+//                         }),
+//                         input: (provided) => ({
+//                             ...provided,
+//                             margin: '0px',
+//                         }),
+//                         indicatorsContainer: (provided) => ({
+//                             ...provided,
+//                             height: '30px',
+//                         }),
+//                     }}
+//                 />
+//             ) : (
+//                (student.gender || "N/A")
+//             ),
+//             contact: canEditRow ? (
+//                 <input
+//                     type="text" // Use text, handle potential non-numeric chars if needed
+//                     className="border p-1 w-[100px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.contact ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'contact', e.target.value)}
+//                 />
+//             ) : (
+//                (student.contact || "N/A")
+//             ),
+//             class: `${student.class}`, // Not editable in this view
+//             section: canEditRow ? ( // Allow editing section if desired
+//                 <input
+//                     type="text"
+//                     className="border p-1 w-[50px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.section ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'section', e.target.value)}
+//                 />
+//             ) : (
+//                 student.section || 'N/A'
+//             ),
+//             address: canEditRow ? (
+//                 <input
+//                     type="text"
+//                     className="border p-1 min-w-[150px] bg-gray-200 dark:bg-gray-600 rounded text-xs"
+//                     value={currentEditData.address ?? ''}
+//                     onChange={(e) => handleFieldChange(student.studentId, 'address', e.target.value)}
+//                 />
+//             ) : (
+//                 student.address || 'N/A'
+//             ),
+//         };
+//     });
+
+
+//     return (
+//         <div className="m-2 p-4 bg-white dark:bg-secondary-dark-bg rounded-xl shadow-md">
+//            <h1 className="text-xl font-semibold dark:text-gray-200 mb-4" style={{ color: currentColor }}>Bulk Student Editor</h1>
+
+//             {/* Filters and Action Buttons Container */}
+//             <div className="flex flex-wrap items-end gap-4 mb-4">
+//                 {/* Filters */}
+//                 <div className="flex-shrink-0 w-full sm:w-auto">
+//                      <ReactSelect
+//                         name="class"
+//                         label="Filter by Class"
+//                         // Ensure value is handled correctly for ReactSelect (needs object or primitive)
+//                         value={dynamicOptions.find(opt => opt.value === filterValues.class) || null}
+//                         handleChange={(selectedOption) => handleFilterChange({ target: { name: 'class', value: selectedOption ? selectedOption.value : '' } })}
+//                         dynamicOptions={dynamicOptions} // Pass options prop
+//                         placeholder="Select Class"
+//                         isDisabled={edit}
+//                         className="min-w-[180px]" // Add class for width control
+//                      />
+//                  </div>
+//                  <div className="flex-shrink-0 w-full sm:w-auto">
+//                     <ReactSelect
+//                         name="section"
+//                         label="Filter by Section"
+//                         // Ensure value is handled correctly for ReactSelect
+//                         value={dynamicSection.find(opt => opt.value === filterValues.section) || null}
+//                         handleChange={(selectedOption) => handleFilterChange({ target: { name: 'section', value: selectedOption ? selectedOption.value : '' } })}
+//                         dynamicOptions={dynamicSection} // Pass options prop
+//                         isDisabled={!filterValues.class || edit}
+//                         placeholder="Select Section"
+//                         className="min-w-[150px]" // Add class for width control
+//                     />
+//                  </div>
+
+//                  {/* Action Buttons / Edit Controls */}
+//                  <div className="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+//                     {!edit ? (
+//                          <Button
+//                             name="Edit Selected"
+//                             onClick={handleEditClick}
+//                             // color="white" // Text color white
+//                             color={currentColor} // Background color from context
+//                             borderRadius="10px"
+//                             disabled={selectedStudentIds.length === 0}
+//                             title={selectedStudentIds.length === 0 ? "Select students first" : "Edit selected rows"}
+//                             customClass="px-4 py-2 text-sm" // Adjust padding/text size
+//                          />
+//                     ) : (
+//                         <>
+//                              {/* --- Global Gender Editor --- */}
+//                              <div className="flex-shrink-0 w-full sm:w-auto">
+//                                 <ReactSelect
+//                                     name="globalGender"
+//                                     label="Set Gender (All Selected)"
+//                                     // Value doesn't need to be tied to state, we just need onChange
+//                                     dynamicOptions={genderOptions}
+//                                     handleChange={handleGlobalGenderChange} // Use the new handler
+//                                     placeholder="Change Gender..."
+//                                     isClearable={true} // Allow clearing selection
+//                                     className="min-w-[180px]" // Width control
+//                                 />
+//                             </div>
+
+//                             <Button
+//                                 name="Save Changes"
+//                                 // color="white" // Text color white
+//                                 color="green" // Background color green
+//                                 borderRadius="10px"
+//                                 onClick={handleSave}
+//                                 customClass="px-4 py-2 text-sm"
+//                              />
+//                             <Button
+//                                 name="Cancel"
+//                                 // color="white" // Text color white
+//                                 color="gray" // Background color gray
+//                                 borderRadius="10px"
+//                                 onClick={handleCancel}
+//                                 customClass="px-4 py-2 text-sm"
+//                             />
+//                         </>
+//                     )}
+//                  </div>
+//             </div>
+
+//              <div className="overflow-x-auto relative shadow-md sm:rounded-lg border border-gray-200 dark:border-gray-700">
+//                  <Table
+//                      tHead={THEAD}
+//                      tBody={tBody}
+//                      isSearch={false} // Keep internal search off if using external filters
+//                  />
+//             </div>
+
+//             {/* Footer Messages */}
+//              <div className="text-center mt-4 text-sm">
+//                  {filteredStudents.length === 0 && !edit && (
+//                      <p className="text-gray-500 dark:text-gray-400">No students match the current filter, or data is loading.</p>
+//                  )}
+//                  {filteredStudents.length > 0 && selectedStudentIds.length === 0 && !edit && (
+//                      <p className="text-gray-500 dark:text-gray-400">Select students using the checkboxes to enable editing.</p>
+//                  )}
+//                  {edit && selectedStudentIds.length > 0 && (
+//                      <p className="text-blue-600 dark:text-blue-400">
+//                          Edit mode active for {selectedStudentIds.length} student(s). Modify details below or use global controls, then Save or Cancel.
+//                      </p>
+//                  )}
+//                   {edit && selectedStudentIds.length === 0 && (
+//                      <p className="text-orange-600 dark:text-orange-400">
+//                          Edit mode active, but no students are currently selected. Select students first (Cancel edit mode to enable selection).
+//                      </p>
+//                  )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default BulkEdit;
+
+
+
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActiveStudents,
@@ -12,6 +663,8 @@ import { useStateContext } from '../../../contexts/ContextProvider';
 import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
 import moment from 'moment';
 import DatePicker from '../../../Dynamic/DatePicker/DatePicker';
+import PageHeaderWithBreadcrumb from '../../../Dynamic/PageHeaderWithBreadcrumb';
+import BreadcrumbList from '../../../Dynamic/BreadcrumbList';
 
 const BulkEdit = () => {
     const session=JSON.parse(localStorage.getItem("session"))
@@ -322,15 +975,12 @@ const BulkEdit = () => {
         { id: 'rollNo', label: "Roll" },
         { id: 'email', label: "Email" },
         { id: 'dateOfBirth', label: "DOB" },
+       
         { id: 'contact', label: "Contact" },
         { id: 'class', label: 'Class' },
         { id: 'section', label: 'Sec' },
         { id: "address", label: "Address" },
-        // Add other headers matching fields in handleEditClick and handleFieldChange
-        // { id: "email", label: "Email" },
-        // { id: "dateOfBirth", label: "DOB" },
-        // { id: "motherName", label: "Mother's Name" },
-        // { id: "mobileNumber", label: "Mobile" },
+       
     ];
 
     // Generate Table Body Data - CORRECTED CHECKBOX ONCHANGE
@@ -338,7 +988,7 @@ const BulkEdit = () => {
         const isSelected = selectedStudentIds.includes(student.studentId);
         const canEdit = edit && isSelected;
         const currentEditData = editFormData[student.studentId] || {};
-console.log("first",student)
+        { console.log("abc",currentEditData)}
         return {
             id: student.studentId, // Key for React
             select: (
@@ -426,36 +1076,21 @@ console.log("first",student)
                                                   ? new Date(student.dateOfBirth)
                                                   : null
                                               }
-                                            // value={
-                                            //     currentEditData.dateOfBirth ??
-                                            //     (student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '')
-                                            // }
+                                           
                                             handleChange={(e) =>handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)}
-                                            // showaTime 
+                                           
                                             hourFormat="12"
                                         />
-                // <input
-                //     type="date"
-                //     className="border p-1 w-[120px] bg-gray-300 dark:bg-gray-700 rounded"
-                //     value={
-                //         currentEditData.dateOfBirth ??
-                //         (student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '')
-                //     }
-                //     onChange={(e) =>
-                //         handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)
-                //     }
-                // />
             ) : (
                 moment(student.dateOfBirth).format("DD-MM-YYYY")
             ),
+           
+           
             contact: canEdit ? (
                 <input
                     type="number"
                     className="border p-1 w-[120px] bg-gray-300 dark:bg-gray-700 rounded"
-                    // value={
-                    //     currentEditData.contact ??
-                    //     (student.contact ? moment(student.contact).format("YYYY-MM-DD") : '')
-                    // }
+                   
                     value={currentEditData.contact ?? student.contact ?? ''}
                     onChange={(e) =>
                         handleFieldChange(student.studentId, 'contact', e.target.value)
@@ -486,22 +1121,16 @@ console.log("first",student)
                 />
             ) : (
                 student.address || 'N/A'
-            ),
-             // Add other editable fields here, matching THEAD and handleEditClick
-            // email: canEdit ? ( <input type="email" ... value={currentEditData.email ?? student.email ?? ''} onChange={(e) => handleFieldChange(student.studentId, 'email', e.target.value)} /> ) : ( student.email || 'N/A' ),
-            // dateOfBirth: canEdit ? ( <input type="date" ... value={currentEditData.dateOfBirth ?? (student.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : '')} onChange={(e) => handleFieldChange(student.studentId, 'dateOfBirth', e.target.value)} /> ) : ( student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString() : 'N/A' ),
-            // motherName: canEdit ? ( <input type="text" ... value={currentEditData.motherName ?? student.motherName ?? ''} onChange={(e) => handleFieldChange(student.studentId, 'motherName', e.target.value)} /> ) : ( student.motherName || 'N/A' ),
-            // mobileNumber: canEdit ? ( <input type="tel" ... value={currentEditData.mobileNumber ?? student.mobileNumber ?? ''} onChange={(e) => handleFieldChange(student.studentId, 'mobileNumber', e.target.value)} /> ) : ( student.mobileNumber || 'N/A' ),
-        };
+            ),};
     });
 
 
     return (
-        <div className="m-2 p-2  bg-white dark:bg-secondary-dark-bg rounded-3xl">
-           <h1 className="text-2xl font-semibold dark:text-gray-200" style={{ color: currentColor }}>Bulk Student Editor</h1>
-            <div className="flex flex-wrap gap-4 ">
-                {/* Filters */}
-                {/* <div className="flex-1 "> */}
+        <div className="">
+             <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Bulk Student Editor"/>
+           {/* <h1 className="text-2xl font-semibold dark:text-gray-200" style={{ color: currentColor }}>Bulk Student Editor</h1> */}
+            <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap gap-4 ">
+              
                     <ReactSelect
                         name="class"
                         label="Filter by Class"
@@ -511,8 +1140,7 @@ console.log("first",student)
                         placeholder="Select Class"
                          isDisabled={edit}
                     />
-                {/* </div>
-                 <div className="flex-1 min-w-[150px]"> */}
+               
                     <ReactSelect
                         name="section"
                         label="Filter by Section"
@@ -522,10 +1150,7 @@ console.log("first",student)
                          isDisabled={!filterValues.class || edit}
                         placeholder="Select Section"
                     />
-                {/* </div> */}
-
-                {/* Action Buttons - CORRECTED COLORS */}
-                 {/* <div className="flex gap-2 items-center flex-wrap"> */}
+                
                     {!edit ? (
                          <Button
                             name="Edit Selected"
@@ -553,10 +1178,9 @@ console.log("first",student)
                             />
                         </>
                     )}
-                 {/* </div> */}
+               
             </div>
 
-            {/* Table */}
              <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
                  <Table
                      tHead={THEAD}
@@ -578,676 +1202,3 @@ console.log("first",student)
 };
 
 export default BulkEdit;
-
-// import React, { useCallback, useEffect, useState } from 'react';
-// import {
-//     ActiveStudents,
-//     AdminGetAllClasses,
-//     editBulkstudentparent,
-
-// } from '../../../Network/AdminApi'; // Assuming ActiveStudents returns necessary fields like address, admissionNumber etc.
-// import Table from '../../../Dynamic/Table';
-// import Button from '../../../Dynamic/utils/Button';
-// import { toast } from 'react-toastify';
-// import { useStateContext } from '../../../contexts/ContextProvider';
-// import { ReactSelect } from '../../../Dynamic/ReactSelect/ReactSelect';
-// const BulkEdit = () => {
-//     const { currentColor, setIsLoader } = useStateContext();
-//     const [filteredStudents, setFilteredStudents] = useState([]);
-//     const [studentDetails, setStudentDetails] = useState([]); // Holds all fetched students
-//     const [selectedStudentIds, setSelectedStudentIds] = useState([]); // Stores only IDs of selected students
-//     const [selectAll, setSelectAll] = useState(false);
-//     const [getClass, setGetClass] = useState([]);
-//     const [edit, setEdit] = useState(false); // Controls edit mode
-//     const [availableSections, setAvailableSections] = useState([]);
-//     const [editFormData, setEditFormData] = useState({}); // Stores changes: { studentId: { field: value, ... } }
-
-//     const [filterValues, setFilterValues] = useState({
-//         class: "",
-//         section: "",
-//     });
-
-//     // Fetch all active students
-//     const fetchStudentData = useCallback(async () => {
-//         setIsLoader(true);
-//         try {
-//             const response = await ActiveStudents(); // Make sure this API returns all needed fields
-//             if (response?.success && response?.students?.data) {
-//                 const students = response.students.data.map(s => ({ ...s, id: s.studentId })).reverse(); // Add 'id' if needed by Table, ensure studentId exists
-//                 setStudentDetails(students);
-//                 // Apply initial filter if values are set, otherwise show all
-//                 filterStudents(filterValues.class, filterValues.section, students);
-//                 console.log("Active students fetched:", students);
-//             } else {
-//                 toast.error("Could not fetch students or no students found.");
-//                 setStudentDetails([]);
-//                 setFilteredStudents([]);
-//             }
-//         } catch (error) {
-//             console.error('Error fetching active students:', error);
-//             toast.error('Error fetching active students.');
-//             setStudentDetails([]);
-//             setFilteredStudents([]);
-//         } finally {
-//             setIsLoader(false);
-//         }
-//     }, [setIsLoader, filterValues.class, filterValues.section]); // Add filterValues dependency if filtering should happen on fetch
-
-//     // Fetch all classes
-//     const fetchAllClasses = useCallback(async () => {
-//         setIsLoader(true);
-//         try {
-//             const response = await AdminGetAllClasses();
-//             if (response?.success) {
-//                 setGetClass(response.classes || []);
-//             } else {
-//                 toast.error("Error: Could not fetch classes.");
-//             }
-//         } catch (error) {
-//             toast.error("Error fetching classes");
-//             console.error("Error fetching classes:", error);
-//         } finally {
-//             setIsLoader(false); // Ensure loader stops even on error
-//         }
-//     }, [setIsLoader]);
-
-//     useEffect(() => {
-//         fetchStudentData();
-//         fetchAllClasses();
-//     }, []); // Fetch on initial mount
-
-//     // Filter students based on class and section
-//     const filterStudents = (cls, sec, studentsToFilter = studentDetails) => {
-//         if (!cls && !sec) {
-//             setFilteredStudents(studentsToFilter); // Show all if no filters
-//             return;
-//         }
-//         const filtered = studentsToFilter.filter((student) => {
-//             const matchClass = cls ? student.class === cls : true;
-//             const matchSection = sec ? student.section === sec : true;
-//             return matchClass && matchSection;
-//         });
-//         setFilteredStudents(filtered);
-//         // Reset selection when filter changes
-//         setSelectedStudentIds([]);
-//         setSelectAll(false);
-//         setEditFormData({}); // Clear any pending edits if filter changes
-//         setEdit(false); // Exit edit mode if filter changes
-//     };
-
-//     // Handle class/section filter changes
-//     const handleFilterChange = (e) => {
-//         const { name, value } = e.target; // Assuming ReactSelect passes event-like structure or adapt if needed
-//         const newFilterValues = {
-//             ...filterValues,
-//             [name]: value
-//         };
-//         setFilterValues(newFilterValues);
-
-//         if (name === "class") {
-//             const classObj = getClass.find((cls) => cls.className === value);
-//             setAvailableSections(classObj?.sections || []);
-//             // Reset section if class changes and selected section is not valid
-//             if (value && classObj && !classObj.sections.includes(filterValues.section)) {
-//                newFilterValues.section = ""; // Reset section if it's not in the new class
-//                setFilterValues(prev => ({ ...prev, section: "" })); // Update state immediately
-//             }
-//             filterStudents(value, newFilterValues.section); // Use updated section value
-//         } else if (name === "section") {
-//             filterStudents(filterValues.class, value);
-//         }
-//     };
-
-//     // Handle Select All checkbox
-//     const handleSelectAllChange = () => {
-//         const newSelectAll = !selectAll;
-//         setSelectAll(newSelectAll);
-//         setSelectedStudentIds(newSelectAll ? filteredStudents.map(s => s.studentId) : []);
-//         if (!newSelectAll) {
-//             // Optionally clear edit form data if deselecting all
-//              setEditFormData({});
-//         }
-//     };
-
-//     // Handle individual row checkbox change
-//     const handleCheckboxChange = (studentId) => {
-//         setSelectedStudentIds(prev =>
-//             prev.includes(studentId)
-//                 ? prev.filter(id => id !== studentId)
-//                 : [...prev, studentId]
-//         );
-//         // Uncheck "Select All" if any individual box is unchecked
-//         if (selectedStudentIds.includes(studentId)) {
-//              setSelectAll(false);
-//         }
-     
-//     };
-
-//     // Enter edit mode
-//     const handleEditClick = () => {
-//         if (selectedStudentIds.length === 0) {
-//             toast.warn("Please select at least one student to edit.");
-//             return;
-//         }
-//         // Pre-populate editFormData with current data for selected students
-//         const initialEditData = {};
-//         selectedStudentIds.forEach(id => {
-//             const student = studentDetails.find(s => s.studentId === id); // Find from original details
-//             if (student) {
-//                 // Add only the fields you want to be editable
-//                 initialEditData[id] = {
-//                     admissionNumber: student.admissionNumber,
-//                     studentName: student.studentName,
-//                     fatherName: student.fatherName,
-//                     address: student.address || "", // Ensure address exists or default to empty string
-//                     // Add other editable fields here...
-//                     // Example: mobileNumber: student.mobileNumber || ""
-//                 };
-//             }
-//         });
-//         setEditFormData(initialEditData);
-//         setEdit(true);
-//         setSelectAll(false); // Disable select all in edit mode for clarity
-//     };
-
-//     // Handle changes in input fields during edit mode
-//     const handleFieldChange = (studentId, fieldName, value) => {
-//         setEditFormData(prev => ({
-//             ...prev,
-//             [studentId]: {
-//                 ...(prev[studentId] || {}), // Keep existing edits for this student
-//                 [fieldName]: value
-//             }
-//         }));
-//     };
-
-//     // Save changes
-//     console.log("selectedStudentIds",selectedStudentIds)
-//     const handleSave = async () => {
-//         if (selectedStudentIds.length === 0) {
-//             toast.warn("No students selected.");
-//             return;
-//         }
-
-//         const payload={
-//             updates:  selectedStudentIds.map((val,ind)=>({
-//                 studentId:val?.studentId,
-//                 "fields": {
-//                         "studentName": "vicky kumar",
-//                         "class": "II",
-//                         "section": "A",
-//                         "admissionNumber": "1234",
-//                         "email": "vickykumar8826110175@gmail.com",
-//                         "dateOfBirth": "1989-08-27T00:00:00.000Z",
-//                         "motherName": "mrs nn"
-//                     }
-//             }))
-//         }
-
-
-//         if (payload.length === 0) {
-//             toast.info("No changes detected for the selected students.");
-//             setEdit(false); // Still exit edit mode
-//             setEditFormData({});
-//             return;
-//         }
-
-//         setIsLoader(true);
-//         try {
-//             // **** Replace with your actual bulk update API call ****
-//             const response = await editBulkstudentparent(payload);
-
-//             if (response?.success) {
-//                 toast.success(response?.message || "Students updated successfully!");
-//                 setEdit(false);
-//                 setSelectedStudentIds([]); // Clear selection after successful save
-//                 setSelectAll(false);
-//                 setEditFormData({});
-//                 await fetchStudentData(); // Refetch data to show updated values
-//             } else {
-//                 toast.error(response?.message || "Failed to update students.");
-//             }
-//         } catch (error) {
-//             console.error("Error updating students:", error);
-//             toast.error("An error occurred while saving changes.");
-//         } finally {
-//             setIsLoader(false);
-//         }
-//     };
-
-//     // Cancel editing
-//     const handleCancel = () => {
-//         setEdit(false);
-    
-//         toast.info("Edit cancelled.");
-//     };
-
-
-//     // Options for ReactSelect
-//     const dynamicOptions = getClass.map(cls => ({
-//         label: cls.className,
-//         value: cls.className
-//     }));
-
-//     const dynamicSection = availableSections.map(item => ({
-//         label: item,
-//         value: item
-//     }));
-
-//     // Define Table Headers
-//     const THEAD = [
-//         // Conditionally render Select All checkbox only when not editing
-//         { id: 'select', label: !edit ? <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} /> : 'Select' },
-//         { id: 'SN', label: 'S No.' },
-//         { id: 'admissionNo', label: 'Adm No' },
-//         { id: 'name', label: 'Name' },
-//         { id: 'fatherName', label: "Father's Name" },
-//         { id: 'class', label: 'Class' },
-//         { id: 'section', label: 'Section' },
-//         { id: "address", label: "Address" },
-//         // Add other headers for fields you fetch and might want to edit
-//         // { id: "mobileNumber", label: "Mobile" },
-//     ];
-
-//     // Generate Table Body Data
-//     const tBody = filteredStudents?.map((student, index) => {
-//         const isSelected = selectedStudentIds.includes(student.studentId);
-//         const canEdit = edit && isSelected;
-//         const currentEditData = editFormData[student.studentId] || {}; // Get edited data or empty object
-
-//         return {
-//             id: student.studentId, // Ensure each row has a unique id for React/Table component
-//             select: (
-//                 <input
-//                     type="checkbox"
-//                     checked={isSelected}
-//                     onChange={() => handleCheckboxChange(student)}
-//                     disabled={edit} // Disable checkbox while in edit mode
-//                 />
-//             ),
-//             SN: index + 1,
-//             admissionNo: canEdit ? (
-//                 <input
-//                     type="text"
-//                     className="border p-1 w-full bg-white dark:bg-gray-700" // Added background for visibility
-//                     value={currentEditData.admissionNumber ?? student.admissionNumber} // Use edited value or fallback to original
-//                     onChange={(e) => handleFieldChange(student.studentId, 'admissionNumber', e.target.value)}
-//                 />
-//             ) : (
-//                 student.admissionNumber
-//             ),
-//             name: canEdit ? (
-//                 <input
-//                     type="text"
-//                     className="border p-1 w-full bg-white dark:bg-gray-700"
-//                     value={currentEditData.studentName ?? student.studentName}
-//                     onChange={(e) => handleFieldChange(student.studentId, 'studentName', e.target.value)}
-//                 />
-//             ) : (
-//                 student.studentName
-//             ),
-//             fatherName: canEdit ? (
-//                 <input
-//                     type="text"
-//                     className="border p-1 w-full bg-white dark:bg-gray-700"
-//                     value={currentEditData.fatherName ?? student.fatherName}
-//                     onChange={(e) => handleFieldChange(student.studentId, 'fatherName', e.target.value)}
-//                 />
-//             ) : (
-//                 student.fatherName
-//             ),
-//             class: student.class, // Not editable
-//             section: student.section, // Not editable
-//             address: canEdit ? (
-//                 <input
-//                     type="text"
-//                     className="border p-1 w-full bg-white dark:bg-gray-700"
-//                     value={currentEditData.address ?? (student.address || '')} // Use edited value or fallback
-//                     onChange={(e) => handleFieldChange(student.studentId, 'address', e.target.value)}
-//                 />
-//             ) : (
-//                 student.address || 'N/A' // Display N/A if address is null/undefined
-//             ),
-//             // Add other fields similarly...
-//             // mobileNumber: canEdit ? (
-//             //     <input ... />
-//             // ) : (
-//             //     student.mobileNumber || 'N/A'
-//             // ),
-//         };
-//     });
-
-
-//     return (
-//         <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white dark:bg-secondary-dark-bg rounded-3xl">
-//            <h1 className="text-2xl font-semibold mb-6 dark:text-gray-200" style={{ color: currentColor }}>Bulk Student Editor</h1>
-//             <div className="flex flex-wrap gap-4 mb-6 items-end">
-//                 {/* Filters */}
-//                 <div className="flex-1 min-w-[150px]">
-//                     <ReactSelect
-//                         name="class"
-//                         label="Filter by Class"
-//                         value={filterValues.class}
-//                         handleChange={handleFilterChange} // Pass the correct handler
-//                         dynamicOptions={dynamicOptions}
-//                         placeholder="Select Class"
-//                          isDisabled={edit} // Disable filters when editing
-//                     />
-//                 </div>
-//                  <div className="flex-1 min-w-[150px]">
-//                     <ReactSelect
-//                         name="section"
-//                         label="Filter by Section"
-//                         value={filterValues.section}
-//                         handleChange={handleFilterChange} // Pass the correct handler
-//                         dynamicOptions={dynamicSection}
-//                          isDisabled={!filterValues.class || edit} // Disable if no class selected or if editing
-//                         placeholder="Select Section"
-//                     />
-//                 </div>
-
-//                 {/* Action Buttons */}
-//                  <div className="flex gap-2 items-center flex-wrap">
-//                     {!edit ? (
-//                          <Button
-//                             name="Edit Selected"
-//                             onClick={handleEditClick}
-//                             color={currentColor}
-//                             bgColor={currentColor}
-//                             borderRadius="10px"
-//                             disabled={selectedStudentIds.length === 0} // Disable if no students selected
-//                          />
-//                     ) : (
-//                         <>
-//                             <Button
-//                                 name="Save Changes"
-//                                 color="green"
-//                                 bgColor="green" // Use a distinct color for save
-//                                 borderRadius="10px"
-//                                 onClick={handleSave}
-//                              />
-//                             <Button
-//                                 name="Cancel"
-//                                 color="gray"
-//                                 bgColor="gray" // Use gray or red for cancel
-//                                 borderRadius="10px"
-//                                 onClick={handleCancel}
-//                             />
-//                         </>
-//                     )}
-//                  </div>
-//             </div>
-
-//             {/* Table */}
-//              <div className="overflow-x-auto">
-//                  <Table
-//                      tHead={THEAD}
-//                      tBody={tBody}
-//                      isSearch={false} // Disable default table search if needed
-//                  />
-//             </div>
-//              {filteredStudents.length === 0 && !edit && (
-//                  <p className="text-center mt-4 dark:text-gray-400">No students match the current filter.</p>
-//              )}
-//         </div>
-//     );
-// };
-
-// export default BulkEdit;
-
-
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import { toast } from "react-toastify";
-
-// import Table from "../../../Dynamic/Table";
-// import Button from "../../../Dynamic/utils/Button";
-// import { AdminGetAllClasses, feesaddPastDues, getAllStudents, PastDues } from "../../../Network/AdminApi";
-
-// import { useStateContext } from "../../../contexts/ContextProvider";
-// import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
-
-// function BulkEdit() {
-//   const session =JSON.parse(localStorage.getItem("session"))
-// const {  setIsLoader} = useStateContext();
-//   const [addDues, setAddDues] = useState(false);
-//   const [submittedData, setSubmittedData] = useState([]);
-//   const [selectedRows, setSelectedRows] = useState([]); // Now an array of objects
-//   const [allSelect, setAllSelect] = useState(false);
-//   const [selectedClass, setSelectedClass] = useState("All");
-//   const [getClass, setGetClass] = useState([]);
-//   const [selectedStatus, setSelectedStatus] = useState("All");
-//     const [selectedSection, setSelectedSection] = useState(null); // Store selected section object { value: string, label: string } | null
-//     const [availableSections, setAvailableSections] = useState([]);
-//    const getAllStudent = async () => {
-//       setIsLoader(true)
-//       try {
-//         const response = await getAllStudents();
-//         if (response?.success) {
-//           setIsLoader(false)
-//           setSubmittedData(response?.students?.data);
-          
-//           // setSubmittedData(filterApproved);
-//           // setFilteredData(filterApproved);
-//         } else {
-//           toast.error(response?.message);
-//         }
-//       } catch (error) {
-//         console.log("error", error);
-//       }
-//     };
-
-//     useEffect(()=>{
-//       getAllStudent()
-//       getAllClass()
-//     },[])
-//       const getAllClass = async () => {
-//         setIsLoader(true)
-//         try {
-    
-//           const response = await AdminGetAllClasses()
-//           if (response?.success) {
-//             setIsLoader(false)
-//             let classes = response.classes;
-           
-//             setGetClass(classes.sort((a, b) => a - b));
-//           }
-//         } catch (error) {
-//           console.log("error")
-//         }
-//       }
-    
-//   const handleClassChange = (event) => {
-//     setSelectedClass(event.target.value);
-//   };
-//   const handleSectionChange = (e) => {
-//     setSelectedSection(e.target.value); // Update the selectedSection state
-//   };
-//   const handleStatusChange = (status) => {
-//     setSelectedStatus(status);
-//   };
-
-//   const filteredData = submittedData?.filter((item) => {
-//     if (selectedClass === "All") {
-//       if (selectedStatus === "All") {
-//         return true;
-//       } else {
-//         return item.feeStatus === selectedStatus;
-//       }
-//     } else {
-//       if (selectedStatus === "All") {
-//         return item.class === selectedClass;
-//       } else {
-//         return item.class === selectedClass && item.feeStatus === selectedStatus;
-//       }
-//     }
-//   });
-
-//   const handleRowSelect = (row) => {
-//     setSelectedRows((prevSelectedRows) => {
-//       const isSelected = prevSelectedRows.some(
-//         (item) => item.admissionNumber === row.admissionNumber
-//       );
-
-//       if (isSelected) {
-//         return prevSelectedRows?.filter((item) => item.admissionNumber !== row.admissionNumber);
-//       } else {
-//         return [...prevSelectedRows, row];
-//       }
-//     });
-//   };
-
-//   const handleAllSelect = () => {
-//     if (allSelect) {
-//       setSelectedRows([]); // Deselect all
-//     } else {
-//       setSelectedRows(filteredData); // Select all filtered rows
-//     }
-//     setAllSelect(!allSelect);
-//   };
-
-//   const handleTotalDuesChange = (e, admissionNumber) => {
-//     const newAmount = e.target.value;
-
-//     setSelectedRows((prevSelectedRows) =>
-//       prevSelectedRows.map((row) =>
-//         row.admissionNumber === admissionNumber ? { ...row, totalDues: newAmount } : row
-//       )
-//     );
-//   };
-
-//   const tHead = [
-//     {
-//       id: "select",
-//       label: (
-//         <input type="checkbox" onChange={handleAllSelect} checked={allSelect} />
-//       ),
-//     },
-//     { id: "admissionNo", label: "Admission No" },
-//     { id: "name", label: "Name" },
-//     { id: "fatherName", label: "Father Name" },
-//     { id: "class", label: "Class" },
-//     { id: "totalDues", label: "Total Dues" },
-//   ];
-
-//   const tBody = filteredData?.map((val) => ({
-//     select: (
-//       <input
-//         type="checkbox"
-//         checked={selectedRows.some((row) => row.admissionNumber === val.admissionNumber)}
-//         onChange={() => handleRowSelect(val)}
-//       />
-//     ),
-//     admissionNo: val.admissionNumber,
-//     name: val.studentName,
-//     fatherName: val.fatherName,
-//     class: val.class,
-//     totalDues: addDues ? (
-//       <input
-//       type="number"
-//         className="border-none outline "
-//         value={
-//           selectedRows.find((row) => row.admissionNumber === val.admissionNumber)?.totalDues || ""
-//         }
-//         onChange={(e) => handleTotalDuesChange(e, val.admissionNumber)}
-//       />
-//     ) : (
-//       val.totalDues
-//     ),
-//   }));
-
-//   const handleAddFee = async () => {
-//     setAddDues(true);
-
-   
-//   };
-
-//   const dynamicOptions = getClass.map((cls) => ({
-//     label: cls.className,
-//     value: cls.className,
-//   }));
-//   const DynamicSection = availableSections?.map((item) => ({
-//     label: item,
-//     value: item,
-//   }));
-//   const handleSave = async() => {
-//     if (selectedRows.length === 0) {
-//       toast.warn("No students selected.");
-//       return;
-//     }
-//     setIsLoader(true)
-//     const payload = {
-//       students: selectedRows.map((val) => ({
-//         studentId: val?.studentId,
-//         pastDuesAmount: Number(val?.totalDues),
-//         session: session,
-//       })),
-//     };
-//     try {
-//       const response = await PastDues(payload);
-//       if (response?.success) {
-//         setIsLoader(false)
-//         toast.success(response?.message);
-       
-//         setSelectedRows([]);
-//         setAllSelect(false);
-//         setAddDues(false);
-//       }
-//       else{
-//         setIsLoader(false)
-//         toast.error(response?.message);
-//       }
-//     } catch (error) {
-//       console.log("Error", error);
-//       setIsLoader(false)
-//     }
- 
-//   };
-
-//   return (
-//     <div className="relative p-2">
-//       <div className="flex gap-2">
-//          <ReactSelect
-//                     name="studentClass"
-//                     value={selectedClass}
-//                     handleChange={handleClassChange}
-//                     label="Select a Class"
-//                     dynamicOptions={dynamicOptions}
-//                   />
-//                   <ReactSelect
-//                     name="studentSection"
-//                     value={selectedSection} // Use selectedSection state
-//                     handleChange={handleSectionChange} // Use the handleSectionChange function
-//                     label="Select a Section"
-//                     dynamicOptions={DynamicSection}
-//                   />
-//       <select
-//             name="studentClass"
-//             className=" border-1 border-black outline-none py-[1px] bg-inherit text-sm h-7"
-//             value={selectedClass}
-//             onChange={handleClassChange}
-//           >
-//             <option value="All">All Classes</option>
-//             {getClass?.map((cls, index) => (
-//               <option key={index} value={cls.className}>
-//                 {cls?.className}
-//               </option>
-//             ))}
-//           </select>
-//         <Button name="Add Dues Fees" onClick={handleAddFee} />
-//         {addDues && (
-//           <div className="flex gap-3">
-//             <Button name="Save" color="green" onClick={handleSave} />
-//             <Button name="Cancel" color="gray" onClick={() => setAddDues(false)} />
-//           </div>
-//         )}
-//       </div>
-//         <Table tHead={tHead} tBody={tBody} />
-   
-//     </div>
-//   );
-// }
-
-// export default BulkEdit;
-

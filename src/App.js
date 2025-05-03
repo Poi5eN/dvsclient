@@ -263,7 +263,7 @@ function App() {
               <Route path="promotion" element={<Promotion />} />
               <Route path="allparents" element={<CreateParents />} />
               <Route path="feestatus" element={<FeeStatus />} />
-              <Route path="income" element={<Income />} />
+              <Route path="account" element={<Income />} />
               <Route path="expenditure" element={<Expenditure />} />
               <Route path="stocks" element={<Stocks />} />
               <Route path="stocks/editstock/:itemId" element={<EditStocks />} />

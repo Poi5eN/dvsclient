@@ -14,6 +14,8 @@ import moment from "moment";
 import { FeeReceipt } from "../../Dynamic/utils/Message";
 import generatePdf from "../../Dynamic/utils/pdfGenerator";
 import axios from "axios";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const Table = ({ reLoad }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -291,10 +293,18 @@ const Table = ({ reLoad }) => {
 
   // Download report as PDF
   const handleDownloadPdf = () => {
-    const data = activeTab === "single" ? feeDetails : unifiedFeeDetails;
+    const feedata = filteredFeeHistory.map((val) => ({
+      ...val,
+      month: val.regularFees.map((item) => item.month),
+      feeStatus: val.regularFees.map((item) => item.status)
+    }));
+    
+    
+
+    const data = activeTab === "single" ? feedata : filteredUnifiedFeeHistory;
     const columns = [
       {
-        header: "Rcpt No.",
+        header: "Rcpt.No.",
         dataKey:
           activeTab === "single" ? "feeReceiptNumber" : "unifiedReceiptNumber",
       },
@@ -668,9 +678,11 @@ console.log("totalPages",totalPages)
   // );
 
   return (
-    <div className="px-4">
+    <div className="">
+        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Fee History"/>
       {/* Tabs for Single and Unified Receipts */}
-      <div className="mb-4">
+     <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
+     <div className="mb-4">
         <div className="flex border-b border-gray-200">
           <button
             className={`px-4 py-2 font-medium ${
@@ -738,9 +750,10 @@ console.log("totalPages",totalPages)
           />
         </div>
       </div>
+     </div>
 
       {/* Payment Summary Section */}
-      <div className="mb-4 rounded-lg">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
         <h3 className="text-sm font-semibold mb-2">Payment Summary</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
           <div>

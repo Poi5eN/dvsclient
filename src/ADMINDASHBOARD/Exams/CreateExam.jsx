@@ -16,6 +16,8 @@ import { AdminGetAllClasses, createExam } from "../../Network/AdminApi";
 import { toast } from "react-toastify"; // Import toast
 import ViewExam from "./AllExams/ViewExam";
 import { useStateContext } from "../../contexts/ContextProvider";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const CreateExam = () => {
   
@@ -213,11 +215,12 @@ const CreateExam = () => {
   };
 
   return (
-    <div className="p-6" >
-      <div>
-        <Typography variant="h4" gutterBottom>
-          Create Exam
-        </Typography>
+    <div className="" >
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title=" Create Exam"/>
+       <div
+       className="bg-white p-2 rounded-lg shadow border border-gray-200">
+      
+       
         <form onSubmit={handleSubmit}>
           <div className="flex  flex-wrap gap-2 gap-y-3">
             <ReactInput
