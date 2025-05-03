@@ -21,6 +21,8 @@ import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import Breadcrumbs from "../../components/Breadcrumbs ";
 import AdmissionForm from "../../ShikshMitraWebsite/component/LoginPage/AdmissionForm";
 import DatePicker from "../../Dynamic/DatePicker/DatePicker";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 function Create_Registration_Form() {
   const [refreshRegistrations,setRefreshRegistrations]=useState(false)
@@ -108,26 +110,7 @@ const newAdmission=async()=>{
     }
     setIsLoader(true)
     e.preventDefault();
-    // const payloadData = {
-    //   studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
-    //   studentEmail: studentEmail,
-    //   studentPassword: payload.studentContact,
-    //   studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("DD MMMM YYYY") : "",
-    //   studentGender: payload.studentGender ||"",
-    //   studentJoiningDate: moment(Date.now()).format("DD MMMM YYYY") ||"",
-    //   studentAddress: payload.studentAddress.charAt(0).toUpperCase() + payload.studentAddress.slice(1) ||"",
-    //   studentContact: payload.studentContact ||"",
-    //   studentClass: selectedClass ||"",
-    //   studentSection: selectedSection ||"", // Use the selectedSection state
-    //   fatherName:  payload.fatherName.charAt(0).toUpperCase() + payload.fatherName.slice(1) ||"",
-    //   motherName:  payload.motherName.charAt(0).toUpperCase() + payload.motherName.slice(1) ||"",
-    //   parentEmail: parentEmail ||"",
-    //   parentPassword: payload.studentContact ||"",
-    //   parentContact: payload.studentContact ||"",
-    //   admissionNumber: "" ||"",
-    //   parentAdmissionNumber: payload?.parentAdmissionNumber ||"",
-    //   studentImage: payload.studentImage ||"",
-    // };
+   
     const payloadData = {
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: studentEmail,
@@ -357,13 +340,17 @@ studentCountry: payload.country ||"",
     }
   ]
 
-
+// console.log("BreadcrumbList.admission",BreadcrumbList.admission)
   return (
     <div 
     className=""
     >
+      <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="New Admission"/>
       {/* <Breadcrumbs BreadItem={BreadItem} /> */}
-      <div className="flex flex-wrap md:flex-row gap-1">
+      <div
+       className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2"
+      //  className="flex flex-wrap md:flex-row gap-1"
+      >
         <Button name="New Admission" onClick={toggleModal} />
         <BulkAdmission setRefreshRegistrations={setRefreshRegistrations} />
         <ReactSelect
@@ -649,7 +636,7 @@ studentCountry: payload.country ||"",
 
       {filteredData?.length > 0 ? (
       <div className="mt-1">
-          <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Admission" />
+          <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" />
         </div>
       ) : (
         <NoDataFound />

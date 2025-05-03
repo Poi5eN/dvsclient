@@ -23,6 +23,8 @@ import {
 import { toast } from "react-toastify";
 import EditStudent from "./EditStudent.jsx";
 import StudentDetails from "./StudentDetails.jsx";
+import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb.jsx";
+import BreadcrumbList from "../../../Dynamic/BreadcrumbList.jsx";
 
 function CreateStudent() {
   const session=JSON.parse(localStorage.getItem("session"))
@@ -255,8 +257,9 @@ function CreateStudent() {
 
   if (!isEditing && !studentToView) {
     return (
-      <div className="mt-2">
-        <div className="flex flex-wrap items-center gap-1  bg-white rounded  ">
+      <div className="">
+         <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.student} title="Students"/>
+        <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap items-center gap-1   ">
           <ReactSelect
             name="studentClass"
             value={selectedClass}

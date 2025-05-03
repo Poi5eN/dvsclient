@@ -1064,5 +1064,19 @@ export const dynamicIDCArd = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const duesandsales = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.duesandsales}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 // inventory end 

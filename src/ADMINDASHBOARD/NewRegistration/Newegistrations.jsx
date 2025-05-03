@@ -18,6 +18,8 @@ import Table from "../../Dynamic/Table.jsx";
 import Breadcrumbs from "../../components/Breadcrumbs .jsx";
 import moment from "moment";
 import { handleShareRegistration } from "../../Dynamic/utils/Message.jsx";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb.jsx";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList.jsx";
 const uploadPDF = async (pdfBlob) => {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -392,10 +394,10 @@ const Newegistrations = () => {
       ]
     return (
         <div className="">
-              
+               <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.reg} title="Registration Details"/>
             {/* <Breadcrumbs BreadItem={BreadItem} />
              */}
-            <div className="flex gap-1 md:flex-row ">
+            <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex gap-1 md:flex-row ">
                 <div className="mb-1 md:mb-0">
                     <RegForm setReload={setReload} reload={reload} />
                 </div>

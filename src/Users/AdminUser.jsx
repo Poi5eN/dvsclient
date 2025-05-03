@@ -31,7 +31,7 @@ const user=JSON.parse(localStorage.getItem("user"))
       const response=await getAdminInfo()
       if(response?.success){
         const user=response?.admin
-        console.log("response",response)
+       
         setValues((preV)=>(
           {
             ...preV,
@@ -55,9 +55,7 @@ const user=JSON.parse(localStorage.getItem("user"))
       console.log("error",error)
     }
   }
-  useEffect(()=>{
-    // getAdminData()
-  },[])
+
   useEffect(()=>{
 if(user){
   setValues((preV)=>(
@@ -154,7 +152,7 @@ if(props==="Update"){
      
       <div
         className="p-3">
-        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 px-1  rounded-md">
+        {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1  rounded-md">
           {[
             
             { name: "name", label: "Name" ,  disable: isEdit ? true : false },
@@ -164,6 +162,7 @@ if(props==="Update"){
             { name: "currentpassword", label: "Current Password"  , disable: isEdit ? true : false },
             { name: "newpassword", label: "New Password"  , disable: isEdit ? true : false },
             { name: "contact", label: "Contact"  , disable: isEdit ? true : false },
+            { name: "alternateNo.", label: "Alt Number."  , disable: isEdit ? true : false },
             { name: "schoolName", label: "School Name"  , disable: isEdit ? true : false },
             { name: "address", label: "Address"  , disable: isEdit ? true : false },
             { name: "feeMessage", label: "Fee Message"  , disable: isEdit ? true : false },
@@ -200,7 +199,158 @@ if(props==="Update"){
               className="w-10 h-10 object-cover rounded-md"
             />
           )}
-        </div>
+        </div> */}
+        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 rounded-md">
+  <ReactInput
+    type="text"
+    name="name"
+    required={false}
+    label="Name"
+    onChange={handleChange}
+    value={values.name}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="email"
+    required={false}
+    label="Email"
+    onChange={handleChange}
+    value={values.email}
+    disabled={isEdit}
+  />
+
+{!isEdit &&
+
+(<>
+  <ReactInput
+  type="text"
+  name="currentpassword"
+  required={false}
+  label="Current Password"
+  onChange={handleChange}
+  value={values.currentpassword}
+  disabled={isEdit}
+/>
+<ReactInput
+  type="text"
+  name="newpassword"
+  required={false}
+  label="New Password"
+  onChange={handleChange}
+  value={values.newpassword}
+  disabled={isEdit}
+/>
+</>
+)}
+ 
+  <ReactInput
+    type="text"
+    name="contact"
+    required={false}
+    label="Contact"
+    onChange={handleChange}
+    value={values.contact}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="alternateNo."
+    required={false}
+    label="Alt Number"
+    onChange={handleChange}
+    value={values["alternateNo."]}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="schoolName"
+    required={false}
+    label="School Name"
+    onChange={handleChange}
+    value={values.schoolName}
+    disabled={isEdit}
+  />
+  
+  <ReactInput
+    type="text"
+    name="feeMessage"
+    required={false}
+    label="Fee Message"
+    onChange={handleChange}
+    value={values.feeMessage}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="admissionMessage"
+    required={false}
+    label="Admission Message"
+    onChange={handleChange}
+    value={values.admissionMessage}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="registrationMessage"
+    required={false}
+    label="Registration Message"
+    onChange={handleChange}
+    value={values.registrationMessage}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="address"
+    required={false}
+    label="Address"
+    onChange={handleChange}
+    value={values.address}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="state"
+    required={false}
+    label="State"
+    onChange={handleChange}
+    value={values.state}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="city"
+    required={false}
+    label="City"
+    onChange={handleChange}
+    value={values.city}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="text"
+    name="pincode"
+    required={false}
+    label="Pincode"
+    onChange={handleChange}
+    value={values.pincode}
+    disabled={isEdit}
+  />
+  <ReactInput
+    type="file"
+    name="logoImage"
+    accept="image/*"
+    label="Logo Image"
+    onChange={handleImageChange}
+  />
+  {values.logoImage && (
+    <img
+      src={user?.logoImage?.url}
+      alt="Logo Preview"
+      className="w-10 h-10 object-cover rounded-md"
+    />
+  )}
+</div>
+
 
         <div className="mt-4 flex justify-center gap-2">
           <Button name={isEdit?"Edit":"Update"}

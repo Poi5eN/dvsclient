@@ -522,6 +522,31 @@ export const Thirdpartylinks = [
 
 export const themeColors = [
   {
+    name: "",
+    color: "#0fa3b1",
+    // color: "#1A97F5",
+  },
+  {
+    name: "",
+    color: "#1c2541",
+    // color: "#1A97F5",
+  },
+  {
+    name: "",
+    color: "#fb6f92",
+    // color: "#1A97F5",
+  },
+  {
+    name: "",
+    color: "#2E765E",
+    // color: "#1A97F5",
+  },
+  {
+    name: "",
+    color: "#6c42bf",
+    // color: "#1A97F5",
+  },
+  {
     name: "blue-theme",
     color: "#01579b",
     // color: "#1A97F5",

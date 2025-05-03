@@ -82,25 +82,28 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
   return (
     // --- Outer Container ---
     // Adds padding and centers the content if the screen is wide enough.
-    <div className="px-2  w-full  mx-auto"
+    <div className="w-full  mx-auto"
    
     >
       {/* --- Card Container --- */}
       {/* White background, shadow, rounded corners for a card-like appearance. */}
       <div className="bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700"
-       style={{borderTop:`4px solid ${currentColor}`}}>
+       style={{borderTop:`3px solid ${currentColor}`}}>
 
         {/* --- Card Header (Title & Search) --- */}
         <header className="px-5 py-1 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h2 className="font-semibold text-slate-800 dark:text-slate-100 text-lg uppercase"
+          <h2 className="font-semibold text-slate-800 dark:text-slate-100 text-sm uppercase"
           style={{color:currentColor}}
+         
           >
-         <Link to="/" className="text-xl" >🏠</Link> {title}
+            
+         {/* <Link to="/" className="text-xl" >🏠</Link>  */}
+         {title}
           </h2>
           {isSearch && (
             <div className="relative w-full sm:w-64">
               {/* Position search icon inside the input */}
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ">
                 <SearchIcon />
               </div>
               {/* Using a standard input for easier styling demonstration */}
@@ -112,11 +115,11 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
                 className="
                   block w-full pl-9 pr-3 py-1
                   text-sm text-slate-700 dark:text-slate-300
-                  bg-white dark:bg-slate-700
+                  bg-gray-200 dark:bg-slate-700
                   border border-slate-300 dark:border-slate-600
                   rounded-md shadow-sm
-                  placeholder-slate-400 dark:placeholder-slate-500
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 dark:focus:border-indigo-600
+                  placeholder-slate-400 dark:placeholder-slate-500 outline-none border-none
+                  focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 dark:focus:border-indigo-600
                 "
               />
                {/* If your ReactInput component accepts className and applies it correctly, you can use it:

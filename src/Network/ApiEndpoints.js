@@ -7,7 +7,7 @@ export const apiUrls = {
    // getIDcarddesign:"adminRoute/design?type=idCard",
    getIDcarddesign:"adminRoute/design?type=idCard&isDefault=true",
    
-   updateAdmin:"adminRoute/updateAdmin",
+   updateAdmin:"adminRoute/admin ",
    getAdminInfo:"adminRoute/getAdminInfo",
    classData:"adminRoute/class",
    getStudentAndParent:"adminRoute/getStudentAndParent",
@@ -129,6 +129,9 @@ export const apiUrls = {
    
    
    
+      // inventry start \
+      
+      duesandsales:"adminRoute/duesandsales",
    
    
    
