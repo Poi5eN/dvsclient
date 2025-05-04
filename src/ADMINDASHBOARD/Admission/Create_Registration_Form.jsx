@@ -38,6 +38,8 @@ function Create_Registration_Form() {
   const [availableSections, setAvailableSections] = useState([]);
   const [filterClass, setFilterClass] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [isParent, setIsParent] = useState(false);
+  const [responseDetails, setResponsedetails] = useState(false);
   const [selectStudent, setSelectStudent] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMoreDetails, setIsMoreDetails] = useState(false);
@@ -166,8 +168,14 @@ function Create_Registration_Form() {
         setSelectedClass("");
         setSelectedSection("");
       } else {
+        if(response?.parent){
+          setIsParent(true)
+
+        }
+        setResponsedetails(response?.parent)
         toast.error(response?.message);
         setIsLoader(false);
+
       }
     } catch (error) {
       console.log("error", error);
@@ -532,7 +540,7 @@ function Create_Registration_Form() {
                 type="text"
                 name="parentAdmissionNumber"
                 required={true}
-                label="Parent Admission Number"
+                label="Admission Number"
                 onChange={handleChange}
                 value={payload.parentAdmissionNumber}
               />
@@ -543,6 +551,24 @@ function Create_Registration_Form() {
             <Button name="Cancel" color="gray" loading={loading} width="full" onClick={toggleModal} />
           </div>
         </div>
+      </Modal>
+   
+      <Modal isOpen={isParent} setIsOpen={setIsParent} title={"Create"} maxWidth="500px">
+<div className="px-5">
+<h1>Parent already exists</h1>
+<p>
+  <span>Parent Adm No.</span>
+  <span>{responseDetails?.admissionNumber}</span>
+</p>
+<p>
+  <span>father Name : </span>
+  <span>{responseDetails?.fatherName}</span>
+</p>
+<p>
+  <span>Contact No : </span>
+  <span>{responseDetails?.contact}</span>
+</p>
+</div>
       </Modal>
 
       <div style={{ display: "none" }}>

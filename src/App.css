@@ -446,7 +446,7 @@ width: 270px;
   }
   svg.p-icon {
  
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 /* custom.css */
