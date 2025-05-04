@@ -539,41 +539,46 @@ const CreateFees = () => {
 
         // Prepare one-time fee options (for dropdown, including unpaid one-time fees from feeStructure)
         const oneTimeFeeOptions = additionalFeesStructure
-          .filter(
-            (fee) => fee.feeType === "One Time" && fee.frequency === "one-time"
-          )
-          .filter((fee) => {
-            // Check if fee is paid in feeHistory
-            const isPaidInHistory = feeHistory.some((history) =>
-              history.additionalFees.some(
-                (af) =>
-                  af.name === fee.name &&
-                  af.status === "Paid" &&
-                  af.dueAmount === 0
-              )
-            );
-            // Check if fee is paid in monthlyDues
-            const isPaidInDues = monthlyDues.additionalDues.some(
-              (d) =>
-                d.name === fee.name && d.status === "Paid" && d.dueAmount === 0
-            );
-            // Include fee if not fully paid
-            return !isPaidInHistory && !isPaidInDues;
-          })
-          .map((fee) => {
-            const dueFee = oneTimeAdditionalDues.find(
-              (d) => d.name === fee.name
-            );
-            const dueAmount = dueFee ? dueFee.dueAmount : fee.amount;
-            return {
-              label: `${fee.name} (Due: ₹${dueAmount.toFixed(2)})`,
-              name: fee.name,
-              code: fee.name,
-              dueAmount,
-              type: fee.feeType,
-              frequency: fee.frequency,
-            };
-          });
+  .filter(
+    (fee) => fee.feeType === "One Time" && fee.frequency === "one-time"
+  )
+  .filter((fee) => {
+    // Check if fee is paid in feeHistory
+    const isPaidInHistory = feeHistory.some((history) =>
+      history.additionalFees.some(
+        (af) =>
+          af.name === fee.name &&
+          af.status === "Paid" &&
+          af.dueAmount === 0
+      )
+    );
+    // Check if fee is paid in monthlyDues
+    const isPaidInDues = monthlyDues.additionalDues.some(
+      (d) =>
+        d.name === fee.name && d.status === "Paid" && d.dueAmount === 0
+    );
+    // Check if fee is exempt in monthlyDues
+    const isExemptInDues = monthlyDues.additionalDues.some(
+      (d) =>
+        d.name === fee.name && d.status === "Exempt" && d.dueAmount === 0
+    );
+    // Include fee if not fully paid or exempt
+    return !isPaidInHistory && !isPaidInDues && !isExemptInDues;
+  })
+  .map((fee) => {
+    const dueFee = oneTimeAdditionalDues.find(
+      (d) => d.name === fee.name
+    );
+    const dueAmount = dueFee ? dueFee.dueAmount : fee.amount;
+    return {
+      label: `${fee.name} (Due: ₹${dueAmount.toFixed(2)})`,
+      name: fee.name,
+      code: fee.name,
+      dueAmount,
+      type: fee.feeType,
+      frequency: fee.frequency,
+    };
+  });
 
         const childFormData = {
           admissionNumber: child.admissionNumber,

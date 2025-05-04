@@ -5,7 +5,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 
 // Assume HomeIcon is defined as above
 
-const PageHeaderWithBreadcrumb = ({breadcrumbItems = [],  title = "Patient Issue Management" }) => {
+const PageHeaderWithBreadcrumb = ({breadcrumbItems = [],  title = "Inventory Management" }) => {
    const {  setIsLoader,currentColor } = useStateContext();
 
   const lighterCol = LightenColor(currentColor, 0.9); // 30% lighter
