@@ -191,7 +191,7 @@ function Create_Registration_Form() {
     *Admission No:* \`${val?.student?.admissionNumber}\`
     *Name:* \`${val?.student?.studentName}\`
     *Class:* \`${val?.student?.class}\`
-    *Father Name:* \`${val.fatherName}\`
+    *Father Name:* \`${val?.student?.fatherName}\`
     ------------------------------------
                 *Thank you!* 🙏
    Welcome To Our Family ${user?.schoolName}
