@@ -252,7 +252,8 @@ const Topbar = () => {
             to={item.link ? item.link : `/${item.route}`.replace('//', '/')}
             onClick={closeMenus}
             style={({ isActive }) => ({
-              color: isActive ? currentColor : (currentColor || '#333'),
+              color: isActive ? "white" : currentColor,
+              backgroundColor: isActive ? currentColor :  '',
             })}
             className={({ isActive }) =>
               `${isActive ? activeLinkClass : normalLinkClass}`

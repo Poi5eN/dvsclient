@@ -102,22 +102,22 @@ console.log("dataArray",dataArray)
         alternateRowStyles: { fillColor: [236, 240, 241] },
         styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
         head: [["Name", "Month", "Amount", "Dues", "Status"]],
-        body: [
-          ...(dataArray.regularFees || []).map((fee) => [
-            "Class Fee",
-            fee.month,
-            parseAndFormat(fee.paidAmount),
-            parseAndFormat(fee.dueAmount),
-            fee.status,
-          ]),
-          ...(dataArray.additionalFees || []).map((fee) => [
-            fee.name,
-            fee.month,
-            parseAndFormat(fee.paidAmount),
-            parseAndFormat(fee.dueAmount),
-            fee.status,
-          ]),
-        ],
+        // body: [
+        //   ...(dataArray.regularFees || []).map((fee) => [
+        //     "Class Fee",
+        //     fee.month,
+        //     parseAndFormat(fee.paidAmount),
+        //     parseAndFormat(fee.dueAmount),
+        //     fee.status,
+        //   ]),
+        //   ...(dataArray.additionalFees || []).map((fee) => [
+        //     fee.name,
+        //     fee.month,
+        //     parseAndFormat(fee.paidAmount),
+        //     parseAndFormat(fee.dueAmount),
+        //     fee.status,
+        //   ]),
+        // ],
         // body: [
         //   ...(student.regularFees || []).map((fee) => [
         //     "Class Fee",
@@ -247,9 +247,42 @@ console.log("dataArray",dataArray)
       styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
       columns,
       body: dataArray,
+      // didParseCell: function (hookData) {
+      //   // Date Formatting
+      //   if (hookData.column.dataKey === "date" && hookData.cell.raw) {
+      //     try {
+      //       const formattedDate = new Date(
+      //         hookData.cell.raw
+      //       ).toLocaleDateString("en-IN", {
+      //         day: "2-digit",
+      //         month: "2-digit",
+      //         year: "numeric",
+      //       });
+      //       hookData.cell.text = [formattedDate];
+      //     } catch (e) {
+      //       hookData.cell.text = [String(hookData.cell.raw)];
+      //     }
+      //   }
+      //   // Number Formatting
+      //   const numericKeys = ["totalAmountPaid", "totalDues", "totalFeeAmount"];
+      //   if (numericKeys.includes(hookData.column.dataKey)) {
+      //     const numValue = parseFloat(hookData.cell.raw);
+      //     if (typeof hookData.cell.raw === "number" || !isNaN(numValue)) {
+      //       hookData.cell.text = [
+      //         (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
+      //           minimumFractionDigits: 2,
+      //           maximumFractionDigits: 2,
+      //         }),
+      //       ];
+      //     } else {
+      //       hookData.cell.text = [String(hookData.cell.raw)];
+      //     }
+      //   }
+      // },
       didParseCell: function (hookData) {
-        // Date Formatting
-        if (hookData.column.dataKey === "date" && hookData.cell.raw) {
+        // --- Date Formatting ---
+        // Check if it's a BODY cell AND the correct column AND has content
+        if (hookData.cell.section === 'body' && hookData.column.dataKey === "date" && hookData.cell.raw) {
           try {
             const formattedDate = new Date(
               hookData.cell.raw
@@ -258,26 +291,38 @@ console.log("dataArray",dataArray)
               month: "2-digit",
               year: "numeric",
             });
-            hookData.cell.text = [formattedDate];
+            // Assign the formatted string directly. AutoTable expects a string or array of strings/numbers.
+            hookData.cell.text = formattedDate;
           } catch (e) {
-            hookData.cell.text = [String(hookData.cell.raw)];
+            // Fallback for body cells if date parsing fails
+            hookData.cell.text = String(hookData.cell.raw);
           }
         }
-        // Number Formatting
+      
+        // --- Number Formatting ---
         const numericKeys = ["totalAmountPaid", "totalDues", "totalFeeAmount"];
-        if (numericKeys.includes(hookData.column.dataKey)) {
+        // Check if it's a BODY cell AND one of the numeric columns
+        if (hookData.cell.section === 'body' && numericKeys.includes(hookData.column.dataKey)) {
+          // Attempt to parse, even if it's already a number, to handle potential string numbers
           const numValue = parseFloat(hookData.cell.raw);
+      
+          // Check if the original was a number OR if parsing resulted in a valid number
           if (typeof hookData.cell.raw === "number" || !isNaN(numValue)) {
-            hookData.cell.text = [
-              (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }),
-            ];
+            // Format the valid number (or 0 if parsing failed but original wasn't a number)
+            hookData.cell.text = (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
           } else {
-            hookData.cell.text = [String(hookData.cell.raw)];
+            // Fallback for body cells if it's not a number and couldn't be parsed
+            hookData.cell.text = String(hookData.cell.raw);
           }
         }
+      
+        // If it's a header cell ('head') or footer cell ('foot'), or a body cell
+        // in a column that doesn't match the conditions above,
+        // hookData.cell.text will retain its original value (e.g., the header string "Date"),
+        // which is the desired behavior.
       },
       didDrawPage: function (hookData) {
         let pageNumber = doc.internal.getNumberOfPages();

@@ -83,16 +83,16 @@ export const FeeResponse = async (fee) => {
   -------------------------------------------
        ✨ *Fee Receipt* ✨
   -------------------------------------------
-  *Admission No:* \`${fee.admissionNumber?fee.admissionNumber:""}\`
+  *Admission No:* \`${fee.studentAdmissionNumber?fee.studentAdmissionNumber:""}\`
   *Name:* \`${fee.studentName}\`
-  *Class:* \`${fee.studentClass}\`
-  *Contact:* \`${fee.parentContact}\`
+  *Class:* \`${fee?.feeReceipt?.studentClass}\`
+  *Contact:* \`${fee?.feeReceipt?.parentContact}\`
   *Receipt No:* \`${fee.feeReceiptNumber}\`
 
-  *Total Amount Paid:* \`₹${fee.totalAmountPaid}\`
-  *Month:* \`${fee?.feeStatus?.feeHistory[0]?.regularFees?.month}\`
-  *Dues:* \`₹${fee?.feeStatus?.dues}\`
-  *Remarks:* _${fee?.feeStatus?.feeHistory[0]?.paymentMessage|| 'N/A'}_
+  *Total Amount Paid:* \`₹${fee?.feeReceipt?.totalAmountPaid}\`
+  *Month:* \`${fee?.feeReceipt?.regularFees?.map((val)=>val?.month)}\`
+  *Dues:* \`₹${fee?.feeReceipt?.dues}\`
+  *Remarks:* _${fee?.feeReceipt?.paymentMessage|| 'N/A'}_
   -------------------------------------------
              *Thank you!* 🙏
          Welcome To Our Family

@@ -292,54 +292,58 @@ const Table = ({ reLoad }) => {
     activeTab === "single" ? singleTotals.other : unifiedTotals.other;
 
   // Download report as PDF
-  const handleDownloadPdf = () => {
-    const feedata = filteredFeeHistory.map((val) => ({
-      ...val,
-      month: val.regularFees.map((item) => item.month),
-      feeStatus: val.regularFees.map((item) => item.status)
-    }));
-    
-    
+    const handleDownloadPdf = () => {
+      const feedata = filteredFeeHistory.map((val) => ({
+        ...val,
+        month: val.regularFees.map((item) => item.month).join('\n'),
+        // Map to get the status values, then join them with newline characters
+        feeStatus: val.regularFees.map((item) => item.status).join('\n')
+        // month: val.regularFees.map((item) => item.month),
+        // feeStatus: val.regularFees.map((item) => item.status)
+      }));
+      
+      
 
-    const data = activeTab === "single" ? feedata : filteredUnifiedFeeHistory;
-    const columns = [
-      {
-        header: "Rcpt.No.",
-        dataKey:
-          activeTab === "single" ? "feeReceiptNumber" : "unifiedReceiptNumber",
-      },
-      { header: "Date", dataKey: "date" },
-      { header: "Admission No.", dataKey: "admissionNumber" },
-      { header: "Student", dataKey: "studentName" },
-      {
-        header: "Parent Name",
-        dataKey: activeTab === "single" ? "fatherName" : "parentName",
-      },
-      { header: "Class", dataKey: "studentClass" },
-      { header: "Mode", dataKey: "paymentMode" },
-      { header: "TID", dataKey: "transactionId" },
-      { header: "Month", dataKey: "month" },
-      { header: "Fee Amount", dataKey: "totalFeeAmount" },
-      { header: "Dues", dataKey: "totalDues" },
-      { header: "Paid", dataKey: "totalAmountPaid" },
-      { header: "Status", dataKey: "feeStatus" },
-    ];
-    generatePdf(
-      data,
-      columns,
-      overallTotalPaid(
-        activeTab === "single" ? filteredFeeHistory : filteredUnifiedFeeHistory
-      ),
-      overallTotalDuesSum(
-        activeTab === "single" ? filteredFeeHistory : filteredUnifiedFeeHistory
-      ),
-      cashPayment,
-      onlinePayment,
-      chequePayment,
-      cardPayment,
-      activeTab === "single" ? "single-report.pdf" : "unified-report.pdf"
-    );
-  };
+      const data = activeTab === "single" ? feedata : filteredUnifiedFeeHistory;
+      const columns = [
+        {
+          header: "Rcpt.No.",
+          dataKey:
+            activeTab === "single" ? "feeReceiptNumber" : "unifiedReceiptNumber",
+        },
+        { header: "Date", dataKey: "date" },
+        { header: "Admission No.", dataKey: "admissionNumber" },
+        { header: "Student", dataKey: "studentName" },
+        {
+          header: "Parent Name",
+          dataKey: activeTab === "single" ? "fatherName" : "parentName",
+        },
+        { header: "Class", dataKey: "studentClass" },
+        { header: "Mode", dataKey: "paymentMode" },
+        { header: "TID", dataKey: "transactionId" },
+        { header: "Month", dataKey: "month" },
+        { header: "Fee Amount", dataKey: "totalFeeAmount" },
+       
+        { header: "Paid", dataKey: "totalAmountPaid" },
+        { header: "Dues", dataKey: "totalDues" },
+        { header: "Status", dataKey: "feeStatus" },
+      ];
+      generatePdf(
+        data,
+        columns,
+        overallTotalPaid(
+          activeTab === "single" ? filteredFeeHistory : filteredUnifiedFeeHistory
+        ),
+        overallTotalDuesSum(
+          activeTab === "single" ? filteredFeeHistory : filteredUnifiedFeeHistory
+        ),
+        cashPayment,
+        onlinePayment,
+        chequePayment,
+        cardPayment,
+        activeTab === "single" ? "single-report.pdf" : "unified-report.pdf"
+      );
+    };
 
   // Render table for single or unified receipts
   const renderTable = (data, isUnified = false) => (
@@ -449,122 +453,7 @@ const Table = ({ reLoad }) => {
                     ? fees.unifiedReceiptNumber
                     : fees.feeReceiptNumber}
                 </td>
-                {/* <td className="px-2">
-                  <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-1 overflow-x-auto">
-                    <div className="inline-block min-w-full rounded-lg overflow-hidden">
-                      {fees.regularFees?.length > 0 ||
-                      fees.additionalFees?.length > 0 ? (
-                        <table className="min-w-full leading-normal">
-                          <thead>
-                            <tr>
-                              <th className="p-1 border-b-2 border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Name
-                              </th>
-                              <th className="p-1 border-b-2 border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Month
-                              </th>
-                              <th className="p-1 border-b-2 border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Amount
-                              </th>
-                              <th className="p-1 border-b-2 border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Dues
-                              </th>
-                              <th className="p-1 border-b-2 border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Status
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {fees.regularFees?.map((addFee, i) => (
-                              <tr key={`reg-${index}-${i}`}>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    Class Fee
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.month || "N/A"}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.paidAmount || 0}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.dueAmount || 0}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                    <span
-                                      aria-hidden
-                                      className="absolute inset-0 opacity-50 rounded-full"
-                                    ></span>
-                                    <span
-                                      className={`${
-                                        addFee.status === "Paid"
-                                          ? "text-green-600"
-                                          : "text-red-600"
-                                      }`}
-                                    >
-                                      {addFee.status || "Unknown"}
-                                    </span>
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                            {fees.additionalFees?.map((addFee, i) => (
-                              <tr key={`add-${index}-${i}`}>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.name || "N/A"}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                 
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.paidAmount || 0}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <p className="text-gray-900 whitespace-no-wrap">
-                                    {addFee.dueAmount || 0}
-                                  </p>
-                                </td>
-                                <td className="px-1 border-b border-gray-200 bg-white text-sm">
-                                  <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                    <span
-                                      aria-hidden
-                                      className="absolute inset-0 opacity-50 rounded-full"
-                                    ></span>
-                                    <span
-                                      className={`${
-                                        addFee.status === "Paid"
-                                          ? "text-green-600"
-                                          : "text-red-600"
-                                      }`}
-                                    >
-                                      {addFee.status || "Unknown"}
-                                    </span>
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        <h1 className="text-center text-gray-600">
-                          No Fee Details
-                        </h1>
-                      )}
-                    </div>
-                  </div>
-                </td> */}
+                
                 <td className="px-2 py-4">
                   {fees.date
                     ? format(parseISO(fees.date), "dd/MM/yyyy")
@@ -647,39 +536,7 @@ const Table = ({ reLoad }) => {
       : filteredUnifiedFeeHistory.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 console.log("totalPages",totalPages)
-  // const renderPagination = () => (
-  //   <div className="flex justify-center mt-4">
-  //     <button
-  //       onClick={() => handlePageChange(currentPage - 1)}
-  //       disabled={currentPage === 1}
-  //       className="px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-  //     >
-  //       Previous
-  //     </button>
-  //     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-  //       <button
-  //         key={page}
-         
-  //         onClick={() => handlePageChange(page)}
-  //         className={`px-3 py-1 mx-1 rounded ${
-  //           currentPage === page
-  //             ? "bg-blue-500 text-white"
-  //             : "bg-gray-200 hover:bg-gray-300"
-  //         }`}
-  //       > {console.log("page",page)}
-  //         {page}
-  //       </button>
-  //     ))}
-  //     <button
-  //       onClick={() => handlePageChange(currentPage + 1)}
-  //       disabled={currentPage === totalPages}
-  //       className="px-3 py-1 mx-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-  //     >
-  //       Next
-  //     </button>
-  //   </div>
-  // );
-
+ 
   return (
     <div className="">
         <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Fee History"/>

@@ -50,7 +50,7 @@ function Create_Registration_Form() {
     studentContact: "",
     studentAddress: "",
     guardian_name: "",
-    studentDateOfBirth: "",
+    studentDateOfBirth: "01-01-2000",
     studentGender: "",
     studentClass: "",
     studentSection: "",
@@ -191,7 +191,7 @@ function Create_Registration_Form() {
     *Admission No:* \`${val?.student?.admissionNumber}\`
     *Name:* \`${val?.student?.studentName}\`
     *Class:* \`${val?.student?.class}\`
-    *Father Name:* \`${val.fatherName}\`
+    *Father Name:* \`${val?.student?.fatherName}\`
     ------------------------------------
                 *Thank you!* 🙏
    Welcome To Our Family ${user?.schoolName}
@@ -365,7 +365,7 @@ function Create_Registration_Form() {
               value={payload.studentFullName}
             />
             <ReactInput
-              type="number"
+              type="phone"
               maxLength="10"
               name="studentContact"
               required={true}
@@ -526,7 +526,8 @@ function Create_Registration_Form() {
                 value={payload.motherName}
               />
               <ReactInput
-                type="text"
+                type="phone"
+                maxLength="10"
                 name="parentContact"
                 required={false}
                 label="Contact"

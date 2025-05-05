@@ -71,6 +71,7 @@ const ReactSelect = ({ label, value, handleChange, options, name, required }) =>
 // --- Main Sales Component ---
 const Sales = () => {
   // State variables
+  const user = JSON.parse(localStorage.getItem("user"));
   const [students, setStudents] = useState([]);
   const [items, setItems] = useState([]);
   const [sales, setSales] = useState([]);
@@ -583,7 +584,9 @@ const Sales = () => {
 
     const receiptContent = `
       <div style="width: 320px; padding: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; background-color: #ffffff; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 16px; text-align: center; margin: 0 0 10px; font-weight: 600; color: #333;">INVOICE / RECEIPT</h2>
+        <h2 style="font-size: 16px; text-align: center; font-weight: 600; color: #333;">${user?.schoolName}</h2>
+        <h2 style="font-size: 16px; text-align: center; font-weight: 600; color: #333;">${user?.contact}</h2>
+        <h4 style="font-size: 16px; text-align: center; margin: 0 0 10px; font-weight: 600; color: #333;">INVOICE / RECEIPT</h4>
         <div style="margin-bottom: 8px;">
             <p style="margin: 2px 0;"><strong>Student:</strong> ${studentInfo}</p>
             <p style="margin: 2px 0;"><strong>Sale Number:</strong> ${receiptData.saleNumber}</p>

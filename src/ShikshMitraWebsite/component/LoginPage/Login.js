@@ -127,7 +127,7 @@ const { loginUser } = useStateContext();
                                 />
                             </div>
                             <h1 className="text-3xl font-bold text-[#3a9ede] text-center leading-tight">
-                                Vidyalaya  <span className="text-[#f05c28]">MANAGEMENT</span> SOFTWARE
+                                VIDYAALAY  <span className="text-[#f05c28]">MANAGEMENT</span> SOFTWARE
                             </h1>
                         </div>
                     </div>

@@ -430,19 +430,32 @@ width: 270px;
 
   .p-multiselect-items-wrapper{
     /* max-height: 180px; */
-    background-color: #000000;
+    /* background-color: #000000; */
    
   } 
   .p-multiselect-items-wrapper ul li {
   
-    background-color: #5f9ea0;
-    color: white;
+    background-color: #e2d9d9;
+    /* color: white; */
+    margin: 1px;
+    
+    
+  } 
+  .p-multiselect-items-wrapper ul li div span{
+  
+    /* background-color: #4d1111; */
+    margin-left: 10px;
+    /* color: white; */
     margin: 1px;
     
     
   } 
   .p-multiselect-filter svg{
     margin-bottom: "10px";
+  }
+  .p-multiselect-filter-container svg{
+    margin-bottom: 200px;
+
   }
   svg.p-icon {
  
@@ -514,6 +527,7 @@ width: 270px;
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox {
   align-items: center;
   /* width: 196px !important; */
+  margin-right: 10px;
 }
 
 .p-multiselect-items span {
@@ -529,7 +543,7 @@ width: 270px;
 
 .p-multiselect-panel .p-multiselect-header {
   padding: 0.5rem 0.35rem;
-  background: cadetblue;
+  background: #e2d9d9;
 }
 
 .p-multiselect-panel .p-multiselect-header .p-checkbox {
@@ -605,7 +619,7 @@ width: 270px;
 .custom-calendar.p-calendar .p-inputtext {
   /* --- SET YOUR DESIRED DIMENSIONS --- */
   height: 24px;         /* Your desired height */
-  width: 130px;         /* Your desired width */
+  /* width: 130px;        */
 
   /* --- VERTICAL ALIGNMENT & FONT --- */
   /* Adjust padding to vertically center text inside the input */
@@ -670,7 +684,7 @@ width: 270px;
   /* Style the container of each item (checkbox + label) if needed */
   /* Example: Add some padding */
    padding: 0.5rem 0.8rem;
-   background-color:#5f9ea0;
+   background-color:#e2d9d9;
 }
 
 /* Target the checkbox visual representation (the box) */

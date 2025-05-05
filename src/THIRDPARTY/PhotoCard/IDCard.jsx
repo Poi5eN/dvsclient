@@ -82,7 +82,7 @@ function IDCard() {
     try {
       
       const response = await thirdpartyphotorecords(SchoolID,selectedClass, selectedSection);
-console.log("response",response)
+
       if (response.success) {
         setAllStudents(response?.data);
         setFilteredStudents(response?.data);
@@ -151,9 +151,6 @@ if (!SchoolID) {
     
     <>
    {
-      // filteredStudents?.length>0
-      // true
-      //  ?
        (
         <>
           <div

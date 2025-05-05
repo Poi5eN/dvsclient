@@ -20,6 +20,8 @@ import FeeRecipt from "./FeeRecipt";
 import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import DatePicker from "../../Dynamic/DatePicker/DatePicker";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 // import { Switch } from "@headlessui/react"; // Ensure you have @headlessui/react installed
 
 // Replace the ExemptionToggle component with this:
@@ -1564,7 +1566,7 @@ const CreateFees = () => {
   };
 
   const handleCloseMessageModal = async (sendMsg = false) => {
-    console.log(`Closing message modal, sendMsg=${sendMsg}`);
+    // console.log(`Closing message modal, sendMsg=${sendMsg}`);
     setIsMessageModalOpen(false);
     let receiptNumber = null;
     let isUnified = false;
@@ -1745,9 +1747,10 @@ const CreateFees = () => {
   };
 
   return (
-    <div className="px-4 pb-2 min-h-screen ">
+    <div className="">
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Create Fee" />
       <div className=" mx-auto">
-        <div className="flex flex-col sm:flex-row gap-4 ">
+        <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-col sm:flex-row gap-4 ">
           <ReactInput
             type="text"
             label="Search by Name"
