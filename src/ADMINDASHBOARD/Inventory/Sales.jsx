@@ -221,7 +221,7 @@ const Sales = () => {
   // Handle Student Selection
   const handleStudentSelect = (student) => {
     setSelectedStudent(student);
-    const displayName = `${student.studentName} (${student.class} - ${student.section})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}]` : ''}`;
+    const displayName = `${student.studentName} (${student.class})${student.admissionNumber ? ` [Adm: ${student.admissionNumber}] ${student.fatherName}` : ''}`;
     setSelectedStudentDisplay(displayName);
     setSearchTerm(student.studentName);
     setShowSuggestions(false);
@@ -921,7 +921,7 @@ const Sales = () => {
                   placeholder="Name/Adm#/ID"
                   required
                 />
-                {showSuggestions && (
+                {/* {showSuggestions && (
                   <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                     {searchResults.length > 0 ? (
                       searchResults.map(student => (
@@ -936,6 +936,7 @@ const Sales = () => {
                           <span className="font-medium">{student.studentName}</span>
                           <span className="text-gray-600"> ({student.class}-{student.section})</span>
                           {student.admissionNumber && <span className="text-xs text-blue-600 ml-2">[Adm: {student.admissionNumber}]</span>}
+                          {student.fatherName && <span className="text-xs text-blue-600 ml-2">[{student.fatherName}]</span>}
                         </div>
                       ))
                     ) : (
@@ -944,7 +945,60 @@ const Sales = () => {
                       </div>
                     )}
                   </div>
-                )}
+                )} */}
+                 {showSuggestions && (
+    <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+      {searchResults.length > 0 ? (
+        <table className="w-full text-sm text-left text-gray-800">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10"> {/* Sticky header with background */}
+            <tr>
+              <th scope="col" className="px-4 py-2">
+                Name
+              </th>
+              <th scope="col" className="px-4 py-2">
+                Class
+              </th>
+              <th scope="col" className="px-4 py-2">
+                Adm No
+              </th>
+              <th scope="col" className="px-4 py-2">
+                Father
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {searchResults.map(student => (
+              <tr
+                key={student.studentId}
+                className="bg-white border-b last:border-b-0 hover:bg-indigo-50 cursor-pointer"
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Keep focus on the input
+                  handleStudentSelect(student);
+                }}
+              >
+                <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                  {student.studentName}
+                </td>
+                <td className="px-4 py-2 text-gray-600">
+                  {student.class}-{student.section}
+                </td>
+                <td className="px-4 py-2 text-xs text-blue-600">
+                  {student.admissionNumber || '-'} {/* Show dash if null/empty */}
+                </td>
+                <td className="px-4 py-2 text-xs text-blue-600">
+                   {student.fatherName || '-'} {/* Show dash if null/empty */}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="px-4 py-3 text-sm text-gray-500 italic">
+          No students found matching "{searchTerm}".
+        </div>
+      )}
+    </div>
+  )}
               </div>
               <div className="space-y-2">
                 <div className={`w-full px-3 py-2 rounded-md text-sm border ${selectedStudentDisplay ? 'border-green-400 bg-green-50 text-green-800' : 'border-gray-300 bg-gray-50 text-gray-500 italic'}`}>
