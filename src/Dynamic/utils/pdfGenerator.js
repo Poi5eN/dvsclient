@@ -460,6 +460,427 @@ console.log("dataArray",dataArray)
 
 export default generatePdf;
 
+
+
+
+
+// import jsPDF from "jspdf";
+// import "jspdf-autotable";
+// import { toast } from "react-toastify";
+
+// const generatePdf = (
+//   data,
+//   columns,
+//   overallTotalPaid = 0,
+//   overallTotalDuesSum = 0,
+//   cashPayment = 0,
+//   onlinePayment = 0,
+//   chequePayment = 0,
+//   cardPayment = 0,
+//   filename = "fee-data.pdf"
+// ) => {
+//   // Ensure data is an array
+//   const dataArray = Array.isArray(data) ? data : [data];
+//   const isUnified = Array.isArray(data?.students); // Detect unified receipt
+
+//   // === Data Validation ===
+//   if (!dataArray || dataArray.length === 0) {
+//     console.error("No Data Found");
+//     toast.warn("No Data Found");
+
+//     return;
+//   }
+//   if (!dataArray[0] && !isUnified) {
+//     console.error(
+//       "Data array mein valid objects nahi hain ya format galat hai."
+//     );
+//     alert("Data format sahi nahi hai. Objects ka array hona chahiye.");
+//     return;
+//   }
+
+//   // === Helper to Parse and Format Currency ===
+//   const parseAndFormat = (value, label = "value") => {
+//     let numericValue = 0;
+//     const parsedValue = parseFloat(value);
+//     if (!isNaN(parsedValue)) {
+//       numericValue = parsedValue;
+//     }
+//     return numericValue.toLocaleString("en-IN", {
+//       minimumFractionDigits: 2,
+//       maximumFractionDigits: 2,
+//     });
+//   };
+
+//   // --- Format all passed-in totals ---
+//   const formattedTotalPaid = parseAndFormat(
+//     overallTotalPaid,
+//     "overallTotalPaid"
+//   );
+//   const formattedTotalDues = parseAndFormat(
+//     overallTotalDuesSum,
+//     "overallTotalDuesSum"
+//   );
+//   const formattedCashPayment = parseAndFormat(cashPayment, "cashPayment");
+//   const formattedOnlinePayment = parseAndFormat(onlinePayment, "onlinePayment");
+//   const formattedChequePayment = parseAndFormat(chequePayment, "chequePayment");
+//   const formattedCardPayment = parseAndFormat(cardPayment, "cardPayment");
+
+//   // === PDF Document Setup ===
+//   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+
+//   if (isUnified) {
+//     // === Unified Receipt Generation ===
+//     doc.setFontSize(14);
+//     doc.setFont(undefined, "bold");
+//     doc.text("Unified Fee Receipt", 14, 15);
+//     doc.setFont(undefined, "normal");
+
+//     let startY = 20;
+//     let grandTotalPaid = 0;
+//     let grandTotalDues = 0;
+// console.log("data",data)
+// console.log("dataArray",dataArray)
+
+//     // Iterate over each student in the unified receipt
+//     (dataArray || []).forEach((student, index) => {
+//     // (data.students || []).forEach((student, index) => {
+//       doc.setFontSize(12);
+//       doc.text(
+//         `Student ${index + 1}: ${student.studentName} (Adm: ${
+//           student.admissionNumber
+//         }, Class: ${student.studentClass})`,
+//         14,
+//         startY
+//       );
+//       startY += 10;
+
+//       // Table for regular and additional fees
+//       const tableSettings = {
+//         startY,
+//         theme: "grid",
+//         headStyles: {
+//           fillColor: [41, 128, 185],
+//           textColor: [255, 255, 255],
+//           fontStyle: "bold",
+//           halign: "center",
+//         },
+//         bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
+//         alternateRowStyles: { fillColor: [236, 240, 241] },
+//         styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+//         head: [["Name", "Month", "Amount", "Dues", "Status"]],
+//         body: [
+//           ...(dataArray.regularFees || []).map((fee) => [
+//             "Class Fee",
+//             fee.month,
+//             parseAndFormat(fee.paidAmount),
+//             parseAndFormat(fee.dueAmount),
+//             fee.status,
+//           ]),
+//           ...(dataArray.additionalFees || []).map((fee) => [
+//             fee.name,
+//             fee.month,
+//             parseAndFormat(fee.paidAmount),
+//             parseAndFormat(fee.dueAmount),
+//             fee.status,
+//           ]),
+//         ],
+//         // body: [
+//         //   ...(student.regularFees || []).map((fee) => [
+//         //     "Class Fee",
+//         //     fee.month,
+//         //     parseAndFormat(fee.paidAmount),
+//         //     parseAndFormat(fee.dueAmount),
+//         //     fee.status,
+//         //   ]),
+//         //   ...(student.additionalFees || []).map((fee) => [
+//         //     fee.name,
+//         //     fee.month,
+//         //     parseAndFormat(fee.paidAmount),
+//         //     parseAndFormat(fee.dueAmount),
+//         //     fee.status,
+//         //   ]),
+//         // ],
+//         didParseCell: function (hookData) {
+//           const numericKeys = ["Amount", "Dues"];
+//           if (numericKeys.includes(hookData.column.raw)) {
+//             const numValue = parseFloat(
+//               hookData.cell.text[0].replace(/,/g, "")
+//             );
+//             if (!isNaN(numValue)) {
+//               hookData.cell.text = [
+//                 numValue.toLocaleString("en-IN", {
+//                   minimumFractionDigits: 2,
+//                   maximumFractionDigits: 2,
+//                 }),
+//               ];
+//             }
+//           }
+//         },
+//       };
+
+//       doc.autoTable(tableSettings);
+//       startY = doc.lastAutoTable.finalY + 10;
+
+//       // Calculate totals for this student
+//       const studentTotalPaid =
+//         (student.regularFees || []).reduce(
+//           (sum, fee) => sum + (parseFloat(fee.paidAmount) || 0),
+//           0
+//         ) +
+//         (student.additionalFees || []).reduce(
+//           (sum, fee) => sum + (parseFloat(fee.paidAmount) || 0),
+//           0
+//         );
+//       const studentTotalDues =
+//         (student.regularFees || []).reduce(
+//           (sum, fee) => sum + (parseFloat(fee.dueAmount) || 0),
+//           0
+//         ) +
+//         (student.additionalFees || []).reduce(
+//           (sum, fee) => sum + (parseFloat(fee.dueAmount) || 0),
+//           0
+//         );
+
+//       // Display student summary
+//       doc.setFontSize(11);
+//       doc.text(`Total Paid (Student ${index + 1}):`, 14, startY);
+//       doc.text(`${parseAndFormat(studentTotalPaid)}`, 200, startY, {
+//         align: "right",
+//       });
+//       startY += 7;
+//       doc.text(`Total Dues (Student ${index + 1}):`, 14, startY);
+//       doc.text(`${parseAndFormat(studentTotalDues)}`, 200, startY, {
+//         align: "right",
+//       });
+//       startY += 10;
+
+//       grandTotalPaid += studentTotalPaid;
+//       grandTotalDues += studentTotalDues;
+//     });
+
+//     // Grand totals
+//     doc.setFontSize(12);
+//     doc.setFont(undefined, "bold");
+//     doc.text("Grand Total Paid:", 14, startY);
+//     doc.text(`${parseAndFormat(grandTotalPaid)}`, 200, startY, {
+//       align: "right",
+//     });
+//     startY += 7;
+//     doc.text("Grand Total Dues:", 14, startY);
+//     doc.text(`${parseAndFormat(grandTotalDues)}`, 200, startY, {
+//       align: "right",
+//     });
+
+//     // Footer
+//     const pageNumber = doc.internal.getNumberOfPages();
+//     doc.setFontSize(8);
+//     doc.setTextColor(100);
+//     const pageHeight = doc.internal.pageSize.height;
+//     doc.text("Page " + pageNumber, 14, pageHeight - 10);
+//     const dateText = "Generated on: " + new Date().toLocaleDateString("en-IN");
+//     const dateTextWidth =
+//       (doc.getStringUnitWidth(dateText) * doc.internal.getFontSize()) /
+//       doc.internal.scaleFactor;
+//     doc.text(dateText, 280 - dateTextWidth, pageHeight - 10);
+
+//     // Output PDF
+//     try {
+//       doc.output("dataurlnewwindow");
+//       console.log(`Unified PDF opened for preview/print.`);
+//     } catch (error) {
+//       console.error("Unified PDF generation or preview failed:", error);
+//       alert("Unified PDF ko generate karne ya preview karne mein error aayi.");
+//     }
+//   } else {
+//     // === Standard Table Generation (Original Behavior) ===
+//     doc.setFontSize(14);
+//     doc.setFont(undefined, "bold");
+//     doc.text("Student Fee Receipt Details", 14, 15);
+//     doc.setFont(undefined, "normal");
+
+//     // === AutoTable Configuration ===
+//     const tableSettings = {
+//       startY: 20,
+//       theme: "grid",
+//       headStyles: {
+//         fillColor: [41, 128, 185],
+//         textColor: [255, 255, 255],
+//         fontStyle: "bold",
+//         halign: "center",
+//       },
+//       bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
+//       alternateRowStyles: { fillColor: [236, 240, 241] },
+//       styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+//       columns,
+//       body: dataArray,
+//       didParseCell: function (hookData) {
+//         // Date Formatting
+//         if (hookData.column.dataKey === "date" && hookData.cell.raw) {
+//           try {
+//             const formattedDate = new Date(
+//               hookData.cell.raw
+//             ).toLocaleDateString("en-IN", {
+//               day: "2-digit",
+//               month: "2-digit",
+//               year: "numeric",
+//             });
+//             hookData.cell.text = [formattedDate];
+//           } catch (e) {
+//             hookData.cell.text = [String(hookData.cell.raw)];
+//           }
+//         }
+//         // Number Formatting
+//         const numericKeys = ["totalAmountPaid", "totalDues", "totalFeeAmount"];
+//         if (numericKeys.includes(hookData.column.dataKey)) {
+//           const numValue = parseFloat(hookData.cell.raw);
+//           if (typeof hookData.cell.raw === "number" || !isNaN(numValue)) {
+//             hookData.cell.text = [
+//               (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
+//                 minimumFractionDigits: 2,
+//                 maximumFractionDigits: 2,
+//               }),
+//             ];
+//           } else {
+//             hookData.cell.text = [String(hookData.cell.raw)];
+//           }
+//         }
+//       },
+//       didDrawPage: function (hookData) {
+//         let pageNumber = doc.internal.getNumberOfPages();
+//         doc.setFontSize(8);
+//         doc.setTextColor(100);
+//         const pageHeight = doc.internal.pageSize.height;
+//         const pageWidth = doc.internal.pageSize.width;
+//         const footerMargin = 10;
+//         doc.text(
+//           "Page " + pageNumber,
+//           hookData.settings.margin.left,
+//           pageHeight - footerMargin
+//         );
+//         const dateText =
+//           "Generated on: " + new Date().toLocaleDateString("en-IN");
+//         const dateTextWidth =
+//           (doc.getStringUnitWidth(dateText) * doc.internal.getFontSize()) /
+//           doc.internal.scaleFactor;
+//         doc.text(
+//           dateText,
+//           pageWidth - hookData.settings.margin.right - dateTextWidth,
+//           pageHeight - footerMargin
+//         );
+//       },
+//     };
+
+//     // === Generate the Table ===
+//     doc.autoTable(tableSettings);
+
+//     // === Add Summary Page ===
+//     doc.addPage();
+
+//     // Get dimensions and define margins/spacing
+//     const summaryPageWidth = doc.internal.pageSize.width;
+//     const summaryPageHeight = doc.internal.pageSize.height;
+//     const summaryMarginLeft = 20;
+//     const summaryMarginRight = 20;
+//     const summaryMarginTop = 20;
+//     const footerMargin = 10;
+//     const lineSpacing = 7;
+
+//     // --- Summary Title ---
+//     doc.setFontSize(16);
+//     doc.setFont(undefined, "bold");
+//     doc.text("Payment Summary", summaryPageWidth / 2, summaryMarginTop, {
+//       align: "center",
+//     });
+
+//     // --- Summary Content ---
+//     doc.setFontSize(12);
+//     doc.setFont(undefined, "normal");
+//     const xPosLabel = summaryMarginLeft;
+//     const xPosValue = summaryPageWidth - summaryMarginRight;
+//     let currentY = summaryMarginTop + 15;
+
+//     // Overall Total Paid
+//     doc.setFont(undefined, "bold");
+//     doc.text(`Total Amount Paid:`, xPosLabel, currentY);
+//     doc.text(`${formattedTotalPaid}`, xPosValue, currentY, { align: "right" });
+//     doc.setFont(undefined, "normal");
+//     currentY += lineSpacing * 1.5;
+
+//     // Payment Mode Breakdown Title
+//     doc.setFontSize(11);
+//     doc.setFont(undefined, "bold");
+//     doc.text(`Breakdown by Payment Mode:`, xPosLabel, currentY);
+//     doc.setFontSize(12);
+//     doc.setFont(undefined, "normal");
+//     currentY += lineSpacing;
+
+//     // Cash Payment
+//     doc.text(`Cash Payments:`, xPosLabel, currentY);
+//     doc.text(`${formattedCashPayment}`, xPosValue, currentY, {
+//       align: "right",
+//     });
+//     currentY += lineSpacing;
+
+//     // Online Payment
+//     doc.text(`Online Payments:`, xPosLabel, currentY);
+//     doc.text(`${formattedOnlinePayment}`, xPosValue, currentY, {
+//       align: "right",
+//     });
+//     currentY += lineSpacing;
+
+//     // Cheque Payment
+//     doc.text(`Cheque Payments:`, xPosLabel, currentY);
+//     doc.text(`${formattedChequePayment}`, xPosValue, currentY, {
+//       align: "right",
+//     });
+//     currentY += lineSpacing;
+
+//     // Card Payment
+//     doc.text(`Card Payments:`, xPosLabel, currentY);
+//     doc.text(`${formattedCardPayment}`, xPosValue, currentY, {
+//       align: "right",
+//     });
+//     currentY += lineSpacing * 1.5;
+
+//     // Overall Total Dues Sum
+//     doc.setFont(undefined, "bold");
+//     doc.text(`Total Dues Sum (All Records):`, xPosLabel, currentY);
+//     doc.text(`${formattedTotalDues}`, xPosValue, currentY, { align: "right" });
+//     doc.setFont(undefined, "normal");
+
+//     // === Add Footer to Summary Page ===
+//     let finalPageNumber = doc.internal.getNumberOfPages();
+//     doc.setFontSize(8);
+//     doc.setTextColor(100);
+//     doc.text(
+//       "Page " + finalPageNumber,
+//       summaryMarginLeft,
+//       summaryPageHeight - footerMargin
+//     );
+//     const dateTextFooter =
+//       "Generated on: " + new Date().toLocaleDateString("en-IN");
+//     const dateTextWidthFooter =
+//       (doc.getStringUnitWidth(dateTextFooter) * doc.internal.getFontSize()) /
+//       doc.internal.scaleFactor;
+//     doc.text(
+//       dateTextFooter,
+//       summaryPageWidth - summaryMarginRight - dateTextWidthFooter,
+//       summaryPageHeight - footerMargin
+//     );
+
+//     // === Open PDF in New Window/Tab ===
+//     try {
+//       doc.output("dataurlnewwindow");
+//       console.log(`PDF opened for preview/print.`);
+//     } catch (error) {
+//       console.error("PDF generation or preview failed:", error);
+//       alert("PDF ko generate karne ya preview karne mein error aayi.");
+//     }
+//   }
+// };
+
+// export default generatePdf;
+
 // import jsPDF from 'jspdf';
 // import 'jspdf-autotable';
 
