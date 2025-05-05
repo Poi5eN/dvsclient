@@ -571,10 +571,13 @@ const Table = ({ reLoad }) => {
                     : "N/A"}
                 </td>
                 <td className="px-1 py-1 border ">{fees.totalFeeAmount || 0}</td>
-                <td className="px-1 py-1 border">{fees.totalAmountPaid || 0}</td>
+                <td className="px-1 py-1 border">{parseFloat(fees.totalAmountPaid || 0)}</td>
                 <td className="px-1 py-1 border">{fees.concessionApplied || 0}</td>
-                <td className="px-1 py-1 border">{fees.totalDues || 0}</td>
-             
+                {/* <td className="px-1 py-1 border">{parseFloat(fees.totalDues || 0)}</td> */}
+                <td className="px-1 py-1 border">
+  {parseFloat(fees.totalDues || 0).toFixed(2)}
+</td>
+
                 <td className="px-1 py-1">
                   <a
                     onClick={() => {

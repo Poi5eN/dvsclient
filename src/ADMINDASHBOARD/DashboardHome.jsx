@@ -137,7 +137,11 @@ const DashboardHome = () => {
     },
     {
       name: "FEES",
-      Count: `₹ ${monthlyFee?.reduce((acc, num) => acc + num, 0) || 0}`,
+      // Count: `₹ ${parseFloat(monthlyFee?.reduce((acc, num) => acc + num, 0)).toFixed(2) || 0}`,
+      Count:` ₹ ${monthlyFee && monthlyFee.length > 0
+        ? parseFloat(monthlyFee.reduce((acc, num) => acc + num, 0)).toFixed(2)
+        : '0.00'}`,
+      
       logo: fees,
     },
   ];
