@@ -102,6 +102,14 @@ function Create_Registration_Form() {
       return `${emailPrefix}${contact}@gmail.com`;
     };
 
+    if (! payload.studentFullName) {
+      toast.warn("Please Fill Student's Name");
+      return;
+    }
+    if (! payload.studentContact) {
+      toast.warn("Please Fill Contact");
+      return;
+    }
     if (!selectedClass) {
       toast.warn("Please Select Class");
       return;
@@ -110,6 +118,15 @@ function Create_Registration_Form() {
       toast.warn("Please Select Section");
       return;
     }
+    if (!payload?.fatherName) {
+      toast.warn("Please Fill father Name");
+      return;
+    }
+    if (!payload?.parentContact) {
+      toast.warn("Please Fill parent Contact");
+      return;
+    }
+    
     setIsLoader(true);
 
     const payloadData = {
@@ -131,6 +148,7 @@ function Create_Registration_Form() {
       state: payload.state || "",
       city: payload.city || "",
       studentImage: payload.studentImage || "",
+      fatherName : payload.fatherName?.charAt(0)?.toUpperCase() + payload.fatherName?.slice(1) || "",
     };
 
     // Only include parent fields if not using an existing parent (sibling is true)
@@ -529,7 +547,7 @@ function Create_Registration_Form() {
                 type="phone"
                 maxLength="10"
                 name="parentContact"
-                required={false}
+                required={true}
                 label="Contact"
                 onChange={handleChange}
                 value={payload.parentContact}

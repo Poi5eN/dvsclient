@@ -40,8 +40,8 @@ const generatePdf = (
       numericValue = parsedValue;
     }
     return numericValue.toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
     });
   };
 
@@ -100,7 +100,8 @@ console.log("dataArray",dataArray)
         },
         bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
         alternateRowStyles: { fillColor: [236, 240, 241] },
-        styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+        // styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+        styles: { fontSize: 9, cellPadding: 1, overflow: "linebreak" },
         head: [["Name", "Month", "Amount", "Dues", "Status"]],
         // body: [
         //   ...(dataArray.regularFees || []).map((fee) => [
@@ -143,8 +144,8 @@ console.log("dataArray",dataArray)
             if (!isNaN(numValue)) {
               hookData.cell.text = [
                 numValue.toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
                 }),
               ];
             }
@@ -244,7 +245,8 @@ console.log("dataArray",dataArray)
       },
       bodyStyles: { textColor: [44, 62, 80], valign: "middle" },
       alternateRowStyles: { fillColor: [236, 240, 241] },
-      styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+      // styles: { fontSize: 9, cellPadding: 3, overflow: "linebreak" },
+      styles: { fontSize: 9, cellPadding: 1, overflow: "linebreak" },
       columns,
       body: dataArray,
       // didParseCell: function (hookData) {
@@ -310,8 +312,8 @@ console.log("dataArray",dataArray)
           if (typeof hookData.cell.raw === "number" || !isNaN(numValue)) {
             // Format the valid number (or 0 if parsing failed but original wasn't a number)
             hookData.cell.text = (isNaN(numValue) ? 0 : numValue).toLocaleString("en-IN", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
             });
           } else {
             // Fallback for body cells if it's not a number and couldn't be parsed

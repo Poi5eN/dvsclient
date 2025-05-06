@@ -51,25 +51,25 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
       let newDate = parseISO(normalizedData.date);
       return format(newDate, "dd/MM/yyyy");
     } catch {
-      return "N/A";
+      return "";
     }
   };
 
   const renderReceipt = (isLeftCopy = true) => {
     // Fallbacks for original data structure
     const studentName =
-      receiptData.studentName || modalData.studentName || "N/A";
-    const studentClass = receiptData.class || modalData.studentClass || "N/A";
+      receiptData.studentName || modalData.studentName || "";
+    const studentClass = receiptData.class || modalData.studentClass || "";
     const admissionNumber =
-      receiptData.admissionNumber || modalData.admissionNumber || "N/A";
+      receiptData.admissionNumber || modalData.admissionNumber || "";
     const fatherName =
-      normalizedData.parentDetails?.fatherName || modalData.fatherName || "N/A";
+      normalizedData.parentDetails?.fatherName || modalData.fatherName || "";
     const feeReceiptNumber =
-      normalizedData.receiptNumber || modalData.feeReceiptNumber || "N/A";
+      normalizedData.receiptNumber || modalData.feeReceiptNumber || "";
     const paymentMode =
-      normalizedData.paymentMode || modalData.paymentMode || "N/A";
+      normalizedData.paymentMode || modalData.paymentMode || "";
     const transactionId =
-      normalizedData.transactionId || modalData.transactionId || "N/A";
+      normalizedData.transactionId || modalData.transactionId || "";
     const totalFeeAmount =
       receiptData.feeDetails?.totalFeeAmount || modalData.totalFeeAmount || 0;
     const concessionApplied =
@@ -79,7 +79,7 @@ const FeeRecipt = ({ modalData, handleCloseModal }) => {
     const totalAmountPaid =
       normalizedData.totalAmountPaid || modalData.totalAmountPaid || 0;
     const totalDues = normalizedData.totalDues || modalData.totalDues || 0;
-    const remark = normalizedData.remark || modalData.remark || "N/A";
+    const remark = normalizedData.remark || modalData.remark || "";
     const regularFees =
       receiptData.feeDetails?.regularFees || modalData.regularFees || [];
     const additionalFees =
@@ -97,7 +97,7 @@ console.log("modalData?.status",modalData)
         <div className="flex justify-between">
           <div className="h-auto w-[150px] dark:text-white">
             <img
-              className="h-14 w-14 rounded-full"
+              className="h-14 w-14 rounded-full object-cover"
               src={
                 user?.image?.url ||
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUW0u5Eiiy3oM6wcpeEE6sXCzlh8G-tX1_Iw&s"
@@ -107,15 +107,15 @@ console.log("modalData?.status",modalData)
           </div>
           <div className="text-center dark:text-white">
             <h1 className="font-bold whitespace-nowrap text-[17px]">
-              {user?.schoolName || "N/A"}
+              {user?.schoolName || ""}
             </h1>
             <p className="text-sm">
               <span className="font-semibold">Address </span> :{" "}
-              {user?.address || "N/A"}
+              {user?.address || ""}
             </p>
             <p className="text-sm">
               <span className="font-semibold">Contact </span> :{" "}
-              {user?.contact || "N/A"}
+              {user?.contact || ""}
             </p>
           </div>
         </div>{
@@ -188,7 +188,7 @@ console.log("modalData?.status",modalData)
                       FEE
                     </td>
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.month ? addFee.month: "N/A"}
+                      {addFee.month ? addFee.month: ""}
                     </td>
                     <td className="border border-black pl-2 text-[14px] text-end">
                       {addFee.feeStructureAmount?.toFixed(2)|| 0}
@@ -198,7 +198,7 @@ console.log("modalData?.status",modalData)
                       {addFee.dueAmount?.toFixed(2) || "0.00"}
                     </td>
                     {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.status || "N/A"}
+                      {addFee.status || ""}
                     </td> */}
                   </tr>
                 ))}
@@ -206,13 +206,14 @@ console.log("modalData?.status",modalData)
             )}
             {additionalFees.length > 0 && (
               <tbody>
+                {console.log("additionalFees",additionalFees)}
                 {additionalFees.map((addFee, index) => (
                   <tr key={`add-${index}`}>
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.name || "N/A"}
+                      {addFee.name || ""}
                     </td>
                     <td className="border border-black pl-2 text-[14px]">
-                      {addFee.month || "N/A"}
+                      {addFee.month==="N/A"?"" :addFee.month}
                     </td>
                     <td className="border border-black pl-2 text-[14px] text-end">
                       {addFee.feeStructureAmount?.toFixed(2) || "0.00"}
@@ -222,7 +223,7 @@ console.log("modalData?.status",modalData)
                       {addFee.dueAmount?.toFixed(2) || "0.00"}
                     </td>
                     {/* <td className="border border-black pl-2 text-[14px]">
-                      {addFee.status || "N/A"}
+                      {addFee.status || ""}
                     </td> */}
                   </tr>
                 ))}
@@ -387,8 +388,8 @@ export default FeeRecipt;
 //               </div>
 //               <div className="text-center  dark:text-white">
 //                 <h1 className="font-bold whitespace-nowrap text-[17px]">{user?.schoolName}</h1>
-//                 <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || "N/A"}   </p>
-//                 <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || "N/A"}</p>
+//                 <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || ""}   </p>
+//                 <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || ""}</p>
 //               </div>
 //             </div>
 //             <div className="bg-gray-300 text-center  border-b-2 border-red-500 ">
@@ -586,8 +587,8 @@ export default FeeRecipt;
 //               </div>
 //               <div className="text-center  dark:text-white">
 //                 <h1 className="font-bold whitespace-nowrap text-[17px]">{user?.schoolName}</h1>
-//                 <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || "N/A"}   </p>
-//                 <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || "N/A"}</p>
+//                 <p className="text-sm"><span className="font-semibold">Address </span> : {user?.address || ""}   </p>
+//                 <p className="text-sm"> <span className="font-semibold">Contact </span> : {user?.contact || ""}</p>
 //               </div>
 //             </div>
 //             <div className="bg-gray-300 text-center  border-b-2 border-red-500 ">

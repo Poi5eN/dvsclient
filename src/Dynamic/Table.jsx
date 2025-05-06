@@ -80,33 +80,29 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
   }, [tBody, tHead, searchQuery]); // Recalculate only if these change
 
   return (
-    // --- Outer Container ---
-    // Adds padding and centers the content if the screen is wide enough.
+
     <div className="w-full  mx-auto"
    
     >
-      {/* --- Card Container --- */}
-      {/* White background, shadow, rounded corners for a card-like appearance. */}
+
       <div className="bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700"
        style={{borderTop:`3px solid ${currentColor}`}}>
 
-        {/* --- Card Header (Title & Search) --- */}
         <header className="px-5 py-1 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
           <h2 className="font-semibold text-slate-800 dark:text-slate-100 text-sm uppercase"
           style={{color:currentColor}}
          
           >
-            
-         {/* <Link to="/" className="text-xl" >🏠</Link>  */}
+
          {title}
           </h2>
           {isSearch && (
             <div className="relative w-full sm:w-64">
-              {/* Position search icon inside the input */}
+
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ">
                 <SearchIcon />
               </div>
-              {/* Using a standard input for easier styling demonstration */}
+
               <input
                 type="text"
                 placeholder="Search table..."

@@ -320,7 +320,6 @@ const CreateFees = () => {
       }
 
       const children = parentResponse?.children || [];
-      console.log("Fetched children:", children);
       if (children.length === 0) {
         toast.info("No children found for this parent.");
         setIsLoader(false);
@@ -329,7 +328,6 @@ const CreateFees = () => {
 
       setParentData(children);
 
-      console.log("Fetching fee info and additional fees for all children...");
       const promises = children.map((child) =>
         Promise.all([
           fetchStudentFeeInfo(child.studentId),
@@ -338,11 +336,7 @@ const CreateFees = () => {
       );
 
       const results = await Promise.all(promises);
-      console.log(
-        "Results from fee info and additional fees fetches:",
-        results
-      );
-
+     
       const initialFormData = [];
       const initialShowFormFlags = [];
 
@@ -619,8 +613,7 @@ const CreateFees = () => {
         initialShowFormFlags.push(false);
       });
 
-      console.log("Setting final formData state:", initialFormData);
-      console.log("Setting final showFormFlags state:", initialShowFormFlags);
+      
       setFormData(initialFormData);
       setShowFormFlags(initialShowFormFlags);
       setShowChildForms(true);
@@ -1788,6 +1781,9 @@ const CreateFees = () => {
                     <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
                       Parent Name
                     </th>
+                    <th className="p-1 text-left text-sm font-semibold text-gray-700 border-b border-gray-300">
+                      Contact
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1815,6 +1811,9 @@ const CreateFees = () => {
                       </td>
                       <td className="p-1 text-[13px]  text-gray-600">
                         {student.fatherName}
+                      </td>
+                      <td className="p-1 text-[13px]  text-gray-600">
+                        {student?.parentContact}
                       </td>
                     </tr>
                   ))}

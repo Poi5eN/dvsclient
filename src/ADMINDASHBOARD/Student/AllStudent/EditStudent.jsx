@@ -23,6 +23,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
     guardianImage: studentDetails?.guardianImage?.url || null,
   });
 
+  console.log("studentDetails",studentDetails)
   // --- Initialize State ---
   useEffect(() => {
     if (studentDetails) {
@@ -172,8 +173,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         if (value instanceof File) { // Only append if it's a NEW File object
           formDataToSend.append(key, value);
         }
-        // NOTE: We do NOT append the existing URL string here.
-        // The backend should handle logic like: if no new file is sent, keep the old one.
+        
       }
       // Handle Date - ensure correct format if necessary, but API might handle ISO strings
       else if (key === 'dateOfBirth' && value) {
@@ -184,16 +184,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         formDataToSend.append(key, value ?? ""); // Append non-file fields
       }
     });
-
-     // --- DEBUGGING: Log FormData contents ---
-    // console.log("FormData to be sent:");
-    // for (let [key, value] of formDataToSend.entries()) {
-    //   console.log(`${key}:`, value);
-    // }
-    // --- End Debugging ---
-
-
-    try {
+try {
         // Ensure studentDetails.studentId is available
         if (!studentDetails?.studentId) {
             toast.error("Student ID is missing. Cannot update.");
@@ -291,7 +282,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         <ReactInput type="text" name="fatherName" label="Father's Name" onChange={handleOnChange} value={studentData?.fatherName || ""} />
         <ReactInput type="text" name="motherName" label="Mother's Name" onChange={handleOnChange} value={studentData?.motherName || ""} />
         <ReactInput type="text" name="guardian" label="Guardian's Name" onChange={handleOnChange} value={studentData?.guardian || ""} />
-        <ReactInput type="text" name="parentcontact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentcontact || ""} />
+        <ReactInput type="phone" name="parentContact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentContact || ""} />
         <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
         <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} />
         <ReactInput type="text" name="password" placeholder="Leave blank to keep unchanged" label="New Password (Optional)" onChange={handleOnChange} value={studentData?.password || ""} />
