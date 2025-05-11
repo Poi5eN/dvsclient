@@ -338,6 +338,7 @@ const Table = ({ reLoad }) => {
         { header: "Dues", dataKey: "totalDues" },
         { header: "Status", dataKey: "feeStatus" }, // Changed header for clarity
       ];
+const  filename="Student Fee Receipt Details"
       generatePdf(
         dataToExport,
         columns,
@@ -347,7 +348,8 @@ const Table = ({ reLoad }) => {
         currentTotals.online,
         currentTotals.cheque,
         currentTotals.card,
-        activeTab === "single" ? "single-receipts-report.pdf" : "unified-receipts-report.pdf"
+        activeTab === "single" ? "single-receipts-report.pdf" : "unified-receipts-report.pdf",
+        filename
       );
     };
 
@@ -379,6 +381,7 @@ const Table = ({ reLoad }) => {
             <th scope="col" className="px-1 py-1">Mode</th>
             <th scope="col" className="px-1 py-1">Concession</th>
             <th scope="col" className="px-1 py-1">Dues</th>
+            <th scope="col" className="px-1 py-1">Status</th>
             <th scope="col" className="px-1 py-1">Action</th>
             <th scope="col" className="px-1 py-1">Share</th>
             <th scope="col" className="px-1 py-1">Cancel Fee</th>
@@ -436,9 +439,11 @@ const Table = ({ reLoad }) => {
                 <td className="px-1 py-1 border">{parseFloat(fees.totalAmountPaid || 0)}</td>
                 <td className="px-1 py-1 border ">{fees.paymentMode || 0}</td>
                 <td className="px-1 py-1 border">{fees.concessionApplied || 0}</td>
+               
                 <td className="px-1 py-1 border">
                   {parseFloat(fees.totalDues || 0).toFixed(1)}
                 </td>
+                 <td className="px-1 py-1 border">{fees.status }</td>
                 <td className="px-1 py-1">
                   <button // Changed to button for accessibility
                     onClick={() => {

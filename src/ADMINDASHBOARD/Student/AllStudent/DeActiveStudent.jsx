@@ -178,70 +178,139 @@ function DeActiveStudent() {
     { id: "action", label: "Action" },
   ];
 
-  const tBody = filteredData?.map((student, ind) => ({
-    SN: ind + 1,
-    photo: (
-      <img
-        src={
-          student?.studentImage?.url ||
-          "https://via.placeholder.com/40?text=No+Img"
-        }
-        alt="student"
-        className="w-6 h-6 object-cover rounded-md mx-auto"
-      />
-    ),
-    admissionNo: (
-      <span className="text-indigo-700 font-semibold">
-        {student.admissionNumber || "N/A"}
-      </span>
-    ),
-    name: student.studentName || "N/A",
-    email: student.email || "N/A",
-    fatherName: student.fatherName || "N/A",
-    class: (
-      <span>
-        {student.class || "N/A"} - {student?.section || "N/A"}
-      </span>
-    ),
-    dateOfBirth: student.dateOfBirth
-      ? moment(student.dateOfBirth).format("DD-MMM-YYYY")
-      : "N/A",
-    contact: student.contact || "N/A",
-    gender: student.gender || "N/A",
+  // const tBody = filteredData?.map((student, ind) => ({
+  //   SN: ind + 1,
+  //   photo: (
+  //     <img
+  //       src={
+  //         student?.studentImage?.url ||
+  //         "https://via.placeholder.com/40?text=No+Img"
+  //       }
+  //       alt="student"
+  //       className="w-6 h-6 object-cover rounded-md mx-auto"
+  //     />
+  //   ),
+  //   admissionNo: (
+  //     <span className="text-indigo-700 font-semibold">
+  //       {student.admissionNumber || "N/A"}
+  //     </span>
+  //   ),
+  //   name: student.studentName || "N/A",
+  //   email: student.email || "N/A",
+  //   fatherName: student.fatherName || "N/A",
+  //   class: (
+  //     <span>
+  //       {student.class || "N/A"} - {student?.section || "N/A"}
+  //     </span>
+  //   ),
+  //   dateOfBirth: student.dateOfBirth
+  //     ? moment(student.dateOfBirth).format("DD-MMM-YYYY")
+  //     : "N/A",
+  //   contact: student.contact || "N/A",
+  //   gender: student.gender || "N/A",
   
-    action: (
-      <div className="flex justify-center items-center gap-3">
-        <button
-          title="View Details"
-          onClick={() => handleViewClick(student)}
-          className="text-blue-600 hover:text-blue-800 text-lg"
-        >
-          <FaEye />
-        </button>
-        {/* <button
-          title="Edit Student"
-          onClick={() => handleEditClick(student)}
-          className="text-yellow-600 hover:text-yellow-800 text-lg"
-        >
-          <FaEdit />
-        </button> */}
-        <Button
-          onClick={() => handleToggleStatus(student?.studentId, student.status)}
-        //   title="Deactivate"
-          name="Activate"
-          color={"Green"}
-        //   className={`p-1 rounded-full text-xl text-green-600 hover:text-green-800`}
-        >
-          {/* <MdDelete /> */}
-          {/* Activate */}
-        </Button>
-      </div>
-    ),
-    rowClassName:
-      student.status === "deactivated" || student.status === "inactive"
-        ? "bg-gray-100 opacity-80"
-        : "",
-  }));
+  //   action: (
+  //     <div className="flex justify-center items-center gap-3">
+  //       <button
+  //         title="View Details"
+  //         onClick={() => handleViewClick(student)}
+  //         className="text-blue-600 hover:text-blue-800 text-lg"
+  //       >
+  //         <FaEye />
+  //       </button>
+  //       {/* <button
+  //         title="Edit Student"
+  //         onClick={() => handleEditClick(student)}
+  //         className="text-yellow-600 hover:text-yellow-800 text-lg"
+  //       >
+  //         <FaEdit />
+  //       </button> */}
+  //       <Button
+  //         onClick={() => handleToggleStatus(student?.studentId, student.status)}
+  //       //   title="Deactivate"
+  //         name="Activate"
+  //         color={"Green"}
+  //       //   className={`p-1 rounded-full text-xl text-green-600 hover:text-green-800`}
+  //       >
+  //         {/* <MdDelete /> */}
+  //         {/* Activate */}
+  //       </Button>
+  //     </div>
+  //   ),
+  //   rowClassName:
+  //     student.status === "deactivated" || student.status === "inactive"
+  //       ? "bg-gray-100 opacity-80"
+  //       : "",
+  // }));
+const tBody = filteredData?.map((student, ind) => ({
+  SN: <span className="uppercase">{ind + 1}</span>,
+
+  photo: (
+    <img
+      src={
+        student?.studentImage?.url ||
+        "https://via.placeholder.com/40?text=No+Img"
+      }
+      alt="student"
+      className="w-6 h-6 object-cover rounded-md mx-auto"
+    />
+  ),
+
+  admissionNo: (
+    <span className="text-indigo-700 font-semibold uppercase">
+      {student.admissionNumber || "N/A"}
+    </span>
+  ),
+
+  name: <span className="uppercase">{student.studentName || "N/A"}</span>,
+
+  email: <span className="">{student.email || "N/A"}</span>,
+
+  fatherName: (
+    <span className="uppercase">{student.fatherName || "N/A"}</span>
+  ),
+
+  class: (
+    <span className="uppercase">
+      {student.class || "N/A"} - {student?.section || "N/A"}
+    </span>
+  ),
+
+  dateOfBirth: (
+    <span className="uppercase">
+      {student.dateOfBirth
+        ? moment(student.dateOfBirth).format("DD-MMM-YYYY")
+        : "N/A"}
+    </span>
+  ),
+
+  contact: <span className="uppercase">{student.contact || "N/A"}</span>,
+
+  gender: <span className="uppercase">{student.gender || "N/A"}</span>,
+
+  action: (
+    <div className="flex justify-center items-center gap-3">
+      <button
+        title="View Details"
+        onClick={() => handleViewClick(student)}
+        className="text-blue-600 hover:text-blue-800 text-lg"
+      >
+        <FaEye />
+      </button>
+
+      <Button
+        onClick={() => handleToggleStatus(student?.studentId, student.status)}
+        name="Activate"
+        color={"Green"}
+      />
+    </div>
+  ),
+
+  rowClassName:
+    student.status === "deactivated" || student.status === "inactive"
+      ? "bg-gray-100 opacity-80"
+      : "",
+}));
 
   const dynamicOptions = getClass.map((cls) => ({
     label: cls.className,

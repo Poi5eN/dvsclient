@@ -132,6 +132,8 @@ export const apiUrls = {
       // inventry start \
       
       duesandsales:"adminRoute/duesandsales",
+      sales:"adminRoute/sales",
+      getSalesdues:"adminRoute/salesdues",
    
    
    

@@ -128,7 +128,6 @@ function Create_Registration_Form() {
     }
     
     setIsLoader(true);
-
     const payloadData = {
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: generateEmail(payload.studentFullName, payload.studentContact),
@@ -292,40 +291,77 @@ function Create_Registration_Form() {
 
   const THEAD = [
     { id: "SN", label: "S No.", width: "2%" },
-    { id: "image", label: "Photo", width: "2%" },
-    { id: "admissionNo", label: "Adm No.", width: "2%" },
+    { id: "image", label: "Photo", width: "4%" },
+    { id: "admissionNo", label: "Adm No.", width: "5%" },
     { id: "name", label: "Name", width: "20%" },
     { id: "fatherName", label: "Father Name", width: "20%" },
     { id: "class", label: "Class", width: "5%" },
-    { id: "contact", label: "Contact", width: "20%" },
-    { id: "parentc", label: "Parent Contact", width: "20%" },
+    { id: "contact", label: "Contact", width: "5%" },
+    { id: "parentc", label: "Parent Contact", width: "5%" },
+    { id: "joiningDate", label: "Admission Date", width: "10%" },
     { id: "action", label: "Action", width: "2%" },
   ];
 
+  // const tBody = filteredData?.map((val, ind) => ({
+  //   SN: ind + 1,
+  //   image: (
+  //     <img
+  //       src={val?.studentImage?.url || "https://www.stcroixstoves.com/wp-content/uploads/2020/04/no.png"}
+  //       alt="avatar"
+  //       className="relative inline-block object-cover object-center w-6 h-6 rounded-lg"
+  //     />
+  //   ),
+  //   admissionNo: (
+  //     <span className="text-green-800 font-semibold">{val.admissionNumber}</span>
+  //   ),
+  //   name: val.studentName,
+  //   fatherName: val.fatherName,
+  //   class: val.class,
+  //   contact: val.contact,
+  //   parentc: val?.parentContact,
+  //   feeStatus: val.feeStatus,
+  //   action: (
+  //     <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
+  //       🖨️
+  //     </span>
+  //   ),
+  // }));
+
   const tBody = filteredData?.map((val, ind) => ({
-    SN: ind + 1,
-    image: (
-      <img
-        src={val?.studentImage?.url || "https://www.stcroixstoves.com/wp-content/uploads/2020/04/no.png"}
-        alt="avatar"
-        className="relative inline-block object-cover object-center w-6 h-6 rounded-lg"
-      />
-    ),
-    admissionNo: (
-      <span className="text-green-800 font-semibold">{val.admissionNumber}</span>
-    ),
-    name: val.studentName,
-    fatherName: val.fatherName,
-    class: val.class,
-    contact: val.contact,
-    parentc: val?.parentContact,
-    feeStatus: val.feeStatus,
-    action: (
-      <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
-        🖨️
-      </span>
-    ),
-  }));
+  SN: (
+    <span className="uppercase">
+      {ind + 1}
+    </span>
+  ),
+  image: (
+    <img
+      src={val?.studentImage?.url || "https://www.stcroixstoves.com/wp-content/uploads/2020/04/no.png"}
+      alt="avatar"
+      className="relative inline-block object-cover object-center w-6 h-6 rounded-lg"
+    />
+  ),
+  admissionNo: (
+    val.admissionNumber
+    // <span className="text-green-800 font-semibold uppercase">
+    //   {val.admissionNumber}
+    // </span>
+  ),
+  name: val.studentName,
+  // <span className="uppercase text-deep-purple-500">{val.studentName}</span>,
+  fatherName: val.fatherName,
+  // <span className="uppercase">{val.fatherName}</span>,
+  class: <span className="uppercase">{val.class}</span>,
+  contact:val.contact,
+  //  <span className="uppercase text-cyan-800">{val.contact}</span>,
+  parentc: <span className="uppercase  text-cyan-800">{val?.parentContact}</span>,
+  joiningDate: <span className="uppercase  text-deep-purple-700">{moment(val?.joiningDate).format("DD-MMM-YYYY")}</span>,
+  // feeStatus: <span className="uppercase">{val.feeStatus}</span>,
+  action: (
+    <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
+      🖨️
+    </span>
+  ),
+}));
 
   if (loading) {
     return <Loading />;
@@ -340,12 +376,6 @@ function Create_Registration_Form() {
     value: item,
   }));
 
-  const BreadItem = [
-    {
-      title: "Admission",
-      link: "/admission",
-    },
-  ];
 
   return (
     <div className="">

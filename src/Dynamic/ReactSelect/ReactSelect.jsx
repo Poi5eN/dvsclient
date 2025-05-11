@@ -24,9 +24,9 @@ export function ReactSelect({
   };
 
   return (
-    <div className="did-floating-label-content inline-block px-1 min-w-[170px] ">
+    <div className="did-floating-label-content inline-block px-1 min-w-[170px]  ">
       <select
-        className={`did-floating-select ${value ? "has-value" : ""}`}
+        className={`did-floating-select ${value ? "has-value " : ""}`}
         name={name}
         value={value}
         onChange={handleSelectChange}
@@ -34,11 +34,11 @@ export function ReactSelect({
         style={{ borderBottom: required? "1px solid red" : "" }}
         disabled={isDisabled}
       >
-        <option value="" disabled>
+        <option value="" disabled className="">
           {label}
         </option>
         {dynamicOptions?.map((option, index) => (
-          <option key={index} value={option?.value}>
+          <option key={index} value={option?.value} className="">
             {option?.label}
           </option>
         ))}

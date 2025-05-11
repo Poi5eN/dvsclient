@@ -115,7 +115,7 @@ const Navbar = () => {
       {/* Center: School Name */}
       <div className="flex-1 text-center dark:text-white">
         <p
-          className="text-[10px] md:text-[16px] font-semibold hidden md:block"
+          className="text-[10px] md:text-[16px] font-semibold hidden md:block uppercase"
           style={{ color: "white" }}
         >
           {user?.schoolName?user?.schoolName:SchoolDetails?.schoolName } ( {session } )

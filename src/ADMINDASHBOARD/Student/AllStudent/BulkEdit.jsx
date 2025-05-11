@@ -1062,11 +1062,12 @@ const BulkEdit = () => {
                 student.email
             ),
             dateOfBirth: canEdit ? (
-                 <DatePicker
+                <div className='w-[200px]'>
+                     <DatePicker
                                             className="custom-calendar"
                                             placeholder="" 
                                             // label={"DOB"}
-                                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                                            // respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
                                             name="dateOfBirth"
                                             id="dateOfBirth"
                                             value={
@@ -1081,6 +1082,7 @@ const BulkEdit = () => {
                                            
                                             hourFormat="12"
                                         />
+                </div>
             ) : (
                 moment(student.dateOfBirth).format("DD-MM-YYYY")
             ),

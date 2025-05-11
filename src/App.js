@@ -41,8 +41,9 @@ import PhotoForm from "./THIRDPARTY/PhotoForm";
 import AllocateAdditionalFees from "./ADMINDASHBOARD/Fees/AllocateAdditionalFees";
 import DeActiveStudent from "./ADMINDASHBOARD/Student/AllStudent/DeActiveStudent";
 import BulkSetFees from "./ADMINDASHBOARD/Fees/BulkSetFees";
-import BulkFeesSet from "./ADMINDASHBOARD/Fees/BulkFeesSet";
+// import BulkFeesSet from "./ADMINDASHBOARD/Fees/BulkFeesSet";
 import ClassExemption from "./ADMINDASHBOARD/Fees/ClassExemption";
+import SibilingFees from "./ADMINDASHBOARD/Fees/SibilingFees";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -171,6 +172,8 @@ const ViewReg = lazy(() => import("./ADMINDASHBOARD/NewRegistration/ViewReg"));
 const AdmissionsForms = lazy(() => import("./ADMINDASHBOARD/Admission/NewAdmissionForm"));
 const AdmissionPrint = lazy(() => import("./ADMINDASHBOARD/Admission/AdmissionPrint"));
 const IdCard = lazy(() => import("./ADMINDASHBOARD/IdCard/IdCard"));
+const Landscape = lazy(() => import("./ADMINDASHBOARD/IdCard/Lanscape"));
+
 const AdmitCardUi = lazy(() => import("./ADMINDASHBOARD/Exams/AllExams/AdmidCardUi"));
 const AdmissionFormblank = lazy(() => import("./ADMINDASHBOARD/Form/AdmissionForm"));
 const LeavingCertificate = lazy(() => import("./Certificate/LeavingCertificate/LeavingCertificate"));
@@ -277,8 +280,9 @@ function App() {
               <Route path="books/return-book/:_id" element={<ReturnBook />} />
               <Route path="registration" element={<Newegistrations />} />
               <Route path="newregistration/:registrationNumber" element={<ViewReg />} />
-              <Route path="create-fees" element={<CreateFees />} />
-              <Route path="bulk-fees" element={<BulkFeesSet />} />
+              {/* <Route path="create-fees" element={<CreateFees />} /> */}
+              <Route path="create-fees" element={<SibilingFees/>} />
+              {/* <Route path="bulk-fees" element={<BulkFeesSet />} /> */}
               <Route path="exemption" element={<ClassExemption />} />
               <Route path="dues-status" element={<DuesStatus />} />
               <Route path="admission" element={<Registration />} />
@@ -286,7 +290,9 @@ function App() {
               <Route path="admission/admissionform" element={<AdmissionsForms />} />
               <Route path="admission/view-admission/:email" element={<AdmissionPrint />} />
               <Route path="ad" element={<AdmissioReceipt />} />
-              <Route path="idcard" element={<IdCard />} />
+              <Route path="idcard-paortrait" element={<IdCard />} />
+              <Route path="idcard-landscape" element={<Landscape />} />
+
               <Route path="admitcards" element={<AdmitCardUi />} />
               <Route path="admission/edit-admission/:email" element={<EditAdmission />} />
               <Route path="status" element={<AdmissionStatus />} />

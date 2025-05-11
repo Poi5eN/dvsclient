@@ -60,24 +60,35 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
   const [searchQuery, setSearchQuery] = useState("");
   // Use context for the primary color (e.g., for the header background)
   const { currentColor } = useStateContext();
-
-  // --- Memoized Filtering Logic ---
-  // useMemo improves performance by only recalculating when dependencies change.
+// const [studentList, setStudentList] = useState([]);
   const filteredData = useMemo(() => {
-    if (!searchQuery) {
-      return tBody; // No search query? Return all data.
-    }
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    // Filter rows where at least one cell (corresponding to a header) includes the search query.
-    return tBody.filter((row) =>
-      tHead.some((header) => {
-        const cellValue = row[header.id];
-        // Check if cellValue exists and can be converted to string before searching
-        return cellValue != null && // Check for null or undefined
-               cellValue.toString().toLowerCase().includes(lowerCaseQuery);
-      })
-    );
-  }, [tBody, tHead, searchQuery]); // Recalculate only if these change
+  if (!searchQuery) return tBody;
+
+  const lower = searchQuery.toLowerCase();
+
+  return tBody.filter((student) =>
+    Object.values(student).some((val) => {
+      if (!val) return false;
+      return val.toString().toLowerCase().includes(lower);
+    })
+  );
+}, [searchQuery, tBody]);
+
+  // const filteredData = useMemo(() => {
+  //   if (!searchQuery) {
+  //     return tBody; // No search query? Return all data.
+  //   }
+  //   const lowerCaseQuery = searchQuery.toLowerCase();
+  //   // Filter rows where at least one cell (corresponding to a header) includes the search query.
+  //   return tBody.filter((row) =>
+  //     tHead.some((header) => {
+  //       const cellValue = row[header.id];
+  //       // Check if cellValue exists and can be converted to string before searching
+  //       return cellValue != null && // Check for null or undefined
+  //              cellValue.toString().toLowerCase().includes(lowerCaseQuery);
+  //     })
+  //   );
+  // }, [tBody, tHead, searchQuery]); // Recalculate only if these change
 
   return (
 
@@ -118,43 +129,26 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
                   focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 dark:focus:border-indigo-600
                 "
               />
-               {/* If your ReactInput component accepts className and applies it correctly, you can use it:
-               <ReactInput
-                 type="text"
-                 name="searchInput"
-                 placeholder="Search table..."
-                 label="" // Hide label visually if placeholder is enough
-                 onChange={(e) => setSearchQuery(e.target.value)}
-                 value={searchQuery}
-                 className="pl-9 pr-3 py-2 text-sm ..." // Add other styles as above
-               />
-               */}
+               
             </div>
           )}
         </header>
-
-        {/* --- Table Container (Scrollable) --- */}
-        {/* Limits height and enables horizontal/vertical scrolling. */}
-        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-170px)]"> {/* Adjusted max-height */}
-          {/* Use min-w-full to ensure table takes at least full width for scrolling */}
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-210px)]"> {/* Adjusted max-height */}
           <table className="table-auto w-full min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-
-            {/* --- Table Head --- */}
-            {/* Sticky header using the context's currentColor */}
-            <thead className="sticky top-0 z-10">
+            <thead className="sticky top-0 z-10 ">
               <tr>
                 {tHead.map((header) => (
                   <th
                     key={header.id}
                     scope="col" // Important for accessibility
-                    className="
-                      px-5 py-3 // Increased padding
-                      text-left text-xs font-semibold // Adjusted font weight/size
+                    className={`
+                     py-3 px-[2px]
+                      text-start text-xs font-semibold // Adjusted font weight/size
                       text-white uppercase tracking-wider // Style for header text
                       whitespace-nowrap
-                    "
+                    `}
                     // Apply the dynamic background color from context
-                    style={{ backgroundColor: currentColor }}
+                    style={{ backgroundColor: currentColor ,width:header?.width,}}
                   >
                     {header.label}
                   </th>
@@ -162,39 +156,30 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
               </tr>
             </thead>
 
-            {/* --- Table Body --- */}
-            {/* Apply status-based background and text colors */}
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {filteredData.length > 0 ? (
                 filteredData.map((row, index) => {
+                  console.log("row",row)
                   // Get the appropriate style classes based on the row's feeStatus
                   const statusClasses = getStatusClasses(row.feeStatus);
 
                   return (
                     <tr
                       key={index}
-                      // Apply status background and a subtle hover effect
-                      // The hover slightly darkens/lightens the existing background
-                      className={`${statusClasses.bg} transition-colors duration-150 ease-in-out hover:bg-opacity-80 hover:brightness-95 dark:hover:brightness-125`}
+                      className={
+  `transition-colors duration-150 ease-in-out hover:bg-opacity-80 hover:brightness-95 dark:hover:brightness-125
+ 
+  ${index % 2 === 0 ? "bg-white" : "bg-[#edf0f2] dark:bg-gray-700"}`
+}
+                      // className={`${index % 2 === 0 ? "bg-white " : "bg-gray-200 dark:bg-gray-700 "}  border-b-4 border-red-300 dark:border-gray-600 transition-colors duration-150 ease-in-out hover:bg-opacity-80 hover:brightness-95 dark:hover:brightness-125`}
+                      // className={`${statusClasses.bg} transition-colors duration-150 ease-in-out hover:bg-opacity-80 hover:brightness-95 dark:hover:brightness-125`}
                     >
-                      {/* {tHead.map((header) => (
-                        <td
-                          key={`${index}-${header.id}`}
-                          className={`
-                            px-5 py-3 // Match header padding
-                            whitespace-nowrap text-sm // Standard text size
-                            ${statusClasses.text} // Apply status-specific text color
-                          `}
-                        >
-                        
-                          {row[header.id] != null ? String(row[header.id]) : "-"}
-                        </td>
-                      ))} */}
+                      
 
 {tHead.map((header) => (
                         <td
                           key={`${index}-${header.id}`}
-                          className="border-b-1 px-2 py-[2px] align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
+                          className=" px-2 py-[2px]   border-b-1 border-blue-800 dark:border-gray-600  align-middle  text-xs whitespace-nowrap text-left text-blueGray-700"
                         >
                           <p class="block text-sm font-normal leading-none text-slate-500">
                             {row[header.id]}

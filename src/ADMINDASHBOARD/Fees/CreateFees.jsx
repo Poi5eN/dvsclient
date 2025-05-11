@@ -14,7 +14,7 @@ import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { useStateContext } from "../../contexts/ContextProvider";
 import MonthFeeCard from "./MonthFeeCard";
 import moment from "moment";
-import { FeeResponse } from "../../Dynamic/utils/Message";
+import { FeeResponse, FeeResponseSibling } from "../../Dynamic/utils/Message";
 import generatePdf from "../../Dynamic/utils/pdfGenerator";
 import FeeRecipt from "./FeeRecipt";
 import DynamicMultiSelect from "../../Dynamic/DynamicMultiSelect/DynamicMultiSelect";
@@ -1242,16 +1242,16 @@ const CreateFees = () => {
       childFormData.selectedOneTimeFees.length === 0 &&
       parseFloat(childFormData.totalAmount) > onlyPayingDuesAndFines
     ) {
-      toast.warn(
-        `Amount paid for ${child.studentName} (₹${parseFloat(
-          childFormData.totalAmount
-        ).toFixed(
-          2
-        )}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(
-          2
-        )}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`
-      );
-      return false;
+      // toast.warn(
+      //   `Amount paid for ${child.studentName} (₹${parseFloat(
+      //     childFormData.totalAmount
+      //   ).toFixed(
+      //     2
+      //   )}) exceeds past dues and late fines (Total ₹${onlyPayingDuesAndFines.toFixed(
+      //     2
+      //   )}), but no specific month or other fee is selected. Please select the items being paid for or adjust the amount. If this is an advance payment, please add a remark.`
+      // );
+      // return false;
     }
     return true;
   };
@@ -1728,7 +1728,7 @@ const CreateFees = () => {
     }
     console.log("Sending UNIFIED fee response message:", dataToUse);
     try {
-      FeeResponse(dataToUse);
+      FeeResponseSibling(dataToUse?.feeReceipts);
       const studentNames =
         dataToUse?.students?.map((s) => s.studentName).join(", ") ||
         "selected students";

@@ -1021,6 +1021,20 @@ export const adminRouteinventory = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const PostSales = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.sales}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const getadminRouteinventory = async (payload) => {
   // setIsLoader(true)
   try {
@@ -1029,6 +1043,34 @@ export const getadminRouteinventory = async (payload) => {
       // payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.adminRouteinventory}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const getsales = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.sales}?dateStart=${payload?.fromDate}&dateEnd=${payload?.toDate}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const getSalesdues = async (payload) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "GET",
+      // payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getSalesdues}?dateStart=${payload?.fromDate}&dateEnd=${payload?.toDate}`, option);
     // setIsLoader(false)
     return data;
   } catch (error) {

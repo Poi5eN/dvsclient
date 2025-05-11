@@ -77,6 +77,7 @@ export const links = [
       icon: <GiTakeMyMoney />,
       children: [
           { name: 'Create fee', link: 'create-fees',id :22 , icon: <GiTakeMyMoney />,},
+          // { name: 'Sibling', link: 'create-siblingfees',id :22 , icon: <GiTakeMyMoney />,},
           { name: 'Fee history', link: 'feehistory' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Exemption', link: 'exemption' ,id :23 , icon: <GiTakeMyMoney />,},
           { name: 'Student History', link: 'StudentHistory' ,id :23 , icon: <GiTakeMyMoney />,},
@@ -214,7 +215,8 @@ export const links = [
   icon: <BiSolidStoreAlt />,
   children: [
       // { name: 'Records', link: 'records' },
-      { name: 'Print', link: 'idcard' },
+      { name: 'Portrait ', link: 'idcard-paortrait' },
+      { name: 'Landscape', link: 'idcard-landscape' },
       { name: 'Set Design', link: 'testing' }, 
     
   ],

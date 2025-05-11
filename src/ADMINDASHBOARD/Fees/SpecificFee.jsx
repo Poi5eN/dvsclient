@@ -11,6 +11,7 @@ import Button from "../../Dynamic/utils/Button.jsx";
 
 function SpecificFee() {
   const { currentColor, setIsLoader } = useStateContext();
+  const session=JSON.parse(localStorage.getItem("session"))
   const [getClass, setGetClass] = useState([]);
    
      const [allStudents, setAllStudents] = useState([]); 
@@ -20,7 +21,7 @@ function SpecificFee() {
     const allStudent = async () => {
         setIsLoader(true)
         try {
-            const response = await ActiveStudents();
+            const response = await ActiveStudents(session);
             if (response?.success) {
                 setIsLoader(false)
                 const students = response?.students?.data?.reverse() || [];

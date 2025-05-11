@@ -4,73 +4,17 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import DatePicker from "../../Dynamic/DatePicker/DatePicker";
+import Button from "../../Dynamic/utils/Button";
+import { getsales, getSalesdues, PostSales } from "../../Network/AdminApi";
+import moment from "moment";
+import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import generatePdf from "../../Dynamic/utils/pdfGenerator";
 
-// --- Reusable Input Component ---
-const ReactInput = ({ label, value, onChange, placeholder, type = "text", name, required, maxLength, onFocus, onBlur }) => (
-    <div className="relative">
-      <input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder || label}
-        required={required}
-        maxLength={maxLength}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm peer bg-white text-gray-900 placeholder-gray-400"
-        autoComplete="off"
-      />
-      <label
-        htmlFor={name}
-        className={`absolute left-3 -top-2.5 text-xs text-gray-600 bg-white px-1 transition-all duration-200
-                   peer-placeholder-shown:top-2 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
-                   peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-indigo-600
-                   ${value ? '-top-2.5 text-xs text-indigo-600' : 'top-2 text-sm text-gray-400'}
-                   pointer-events-none z-10`}
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-    </div>
-);
-
-// --- Reusable Select Component ---
-const ReactSelect = ({ label, value, handleChange, options, name, required }) => (
-    <div className="relative">
-      <select
-        id={name}
-        name={name}
-        value={value}
-        onChange={handleChange}
-        required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white appearance-none peer text-gray-900"
-      >
-        <option value="" disabled>{`Select ${label}`}</option>
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <label
-        htmlFor={name}
-        className={`absolute left-3 -top-2.5 text-xs text-gray-600 bg-white px-1 transition-all duration-200
-                   peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-indigo-600
-                   ${value ? '-top-2.5 text-xs text-indigo-600' : 'top-2 text-sm text-gray-400'}
-                   pointer-events-none z-10`}
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.516 7.548c.436-.446 1.043-.481 1.576 0L10 10.405l2.908-2.857c.533-.481 1.141-.446 1.574 0 .436.445.408 1.197 0 1.615-.406.418-4.695 4.502-4.695 4.502a1.095 1.095 0 0 1-1.576 0S5.11 9.581 5.11 9.163c0-.418.08-.1.406-1.615z"/></svg>
-      </div>
-    </div>
-);
-
-// --- Main Sales Component ---
 const Sales = () => {
-  // State variables
+  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
   const [students, setStudents] = useState([]);
   const [items, setItems] = useState([]);
@@ -86,6 +30,7 @@ const Sales = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [paidAmount, setPaidAmount] = useState("");
+  const [paidMode, setPaidMode] = useState({ label: "Cash", value: "Cash" });
   const [additionalDuePayment, setAdditionalDuePayment] = useState("");
   const [dueAmount, setDueAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -100,6 +45,15 @@ const Sales = () => {
   const [duePaymentAmount, setDuePaymentAmount] = useState("");
   const [dueNewItems, setDueNewItems] = useState([]);
   const [dueSelectedItem, setDueSelectedItem] = useState("");
+  const [filterData, setFilterData] = useState([]);
+  const [values,setValues]=useState(
+    
+      {
+        fromDate:new Date(),
+        toDate:new Date(),
+        mode:{}
+      }
+    )
 
   // Refs
   const receiptModalContentRef = useRef();
@@ -111,7 +65,7 @@ const Sales = () => {
       try {
         setLoading(true);
         setError(null);
-        const token = localStorage.getItem("token");
+       
         if (!token) {
           throw new Error("Authentication token not found.");
         }
@@ -147,7 +101,7 @@ const Sales = () => {
           throw new Error(itemResponse.data.message || "Failed to fetch items");
         }
         if (salesResponse.data.success) {
-          setSales(salesResponse.data.sales?.reverse() || []);
+          // setSales(salesResponse.data.sales?.reverse() || []);
         } else {
           throw new Error(salesResponse.data.message || "Failed to fetch sales");
         }
@@ -167,6 +121,33 @@ const Sales = () => {
     };
     fetchData();
   }, []);
+
+
+
+  const getAllSales=async()=>{
+    const payload={
+      fromDate:moment(values?.fromDate).format("YYYY-MM-DD"),
+      toDate:moment(values?.toDate).format("YYYY-MM-DD"),
+     
+    }
+    try {
+      const response=await getsales(payload)
+   
+      if(response?.success){
+        if(response.sales?.length<=0){
+          toast.warn("Data Not Found")
+          return
+        }
+        toast.success(response?.message)
+setSales(response.sales?.reverse() || []);
+setFilterData(response.sales?.reverse() || [])
+      }else{
+        toast.warn(response?.message)
+      }
+    } catch (error) {
+      
+    }
+  }
 
   // Update unpaid sales when sales or student changes
   useEffect(() => {
@@ -368,6 +349,7 @@ const Sales = () => {
 
   // Handle Submit (Create Sale and Optionally Pay Dues)
   const handleSubmit = async () => {
+    debugger
     if (!selectedStudent || !selectedStudent.studentId) {
       toast.error("Please search and select a student.");
       return;
@@ -388,23 +370,25 @@ const Sales = () => {
       })),
       paymentStatus: (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : "pending",
       paidAmount: parseFloat(paidAmount) || 0,
+      paymentMode:paidMode?.value
     };
-
+console.log("saleData",saleData)
     try {
       setIsSubmitting(true);
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
-        saleData,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (response.data.success) {
-        const newSale = response.data.data.sale;
+      const response=await PostSales(saleData)
+      // const token = localStorage.getItem("token");
+      // const response = await axios.post(
+      //   "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+      //   saleData,
+      //   {
+      //     withCredentials: true,
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   }
+      // );
+      if (response?.success) {
+        const newSale = response?.data.sale;
         const studentDetailsForReceipt = { ...selectedStudent };
-        const itemsForReceipt = response.data.receipt?.items || selectedItems.map(item => ({
+        const itemsForReceipt = response?.receipt?.items || selectedItems.map(item => ({
           itemName: item.itemName,
           quantity: item.quantity,
           price: item.price,
@@ -743,7 +727,99 @@ const Sales = () => {
     }, 500);
   };
 
-  // Print Existing Receipt
+  
+  const handleDateCange = (dateValue, name) => {
+    setValues((prevFormData) => ({
+      ...prevFormData,
+      [name]: dateValue,
+    }));
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handlsearch=()=>{
+    if(values?.fromDate && values?.toDate){
+      getAllSales()
+    }
+  }
+
+  useEffect(()=>{
+
+    const filtervalue=sales.filter((val)=>values?.mode === "All" ? true : val?.paymentStatus === values?.mode)
+    // const filtervalue=sales.filter((val)=>val?.paymentStatus==values?.mode) 
+    setFilterData(filtervalue || sales)
+
+  },[values?.mode])
+
+
+  const overallTotalPaid = (data) => {
+    return filterData.reduce((sum, item) => {
+      const amountPaid = parseFloat(item?.paidAmount) || 0;
+      return sum + amountPaid;
+    }, 0);
+  };
+
+  const overallTotalDuesSum = (data) => {
+    return data.reduce((sum, item) => {
+      const duesValue = parseFloat(item?.dueAmount) || 0;
+      return sum + duesValue;
+    }, 0);
+  };
+   const handleDownloadPdf = () => {
+ 
+        const dataToExport =
+           filterData.map((val) => {
+            const student = students.find((st) => st.studentId === val.studentId);
+            return{
+              ...val,
+              studentName: student?.studentName || "N/A",
+              Class: `${student?.class} - ${student?.section}`|| "N/A",
+              admissionNumber: student?.admissionNumber || "N/A",
+             
+            }
+              
+              // date: val.date ? format(parseISO(val.date), "dd/MM/yyyy") : "N/A",
+              // month: val.regularFees?.map((item) => item.month).join('\n') || 'N/A',
+              // feeStatus: val.regularFees?.map((item) => item.status).join('\n') || 'N/A'
+            })
+         
+        console.log("dataToExport",dataToExport)
+        const columns = [
+          {
+            header: "Rcpt.No.",
+            dataKey:
+              "saleNumber",
+          },
+          { header: "Date", dataKey: "date" },
+          { header: "Admission No.", dataKey: "admissionNumber" },
+          { header: "Student", dataKey: "studentName" },
+          { header: "Class", dataKey: "Class" },
+          { header: "Total Amt.", dataKey: "totalAmount" },
+          { header: "Paid Amt.", dataKey: "paidAmount" },
+          { header: "Dues Amt.", dataKey: "dueAmount" },
+          { header: "Status", dataKey: "paymentStatus" },
+        
+         
+        ];
+        const filename="Inventry Details"
+        generatePdf(
+          dataToExport,
+          columns,
+          overallTotalPaid(filterData),
+          overallTotalDuesSum(filterData),
+          filename,
+          // currentTotals.cash,
+          // currentTotals.online,
+          // currentTotals.cheque,
+          // currentTotals.card,
+          // activeTab === "single" ? "single-receipts-report.pdf" : "unified-receipts-report.pdf"
+        );
+      };
   const handlePrintReceipt = async (saleNumber) => {
     if (!saleNumber) {
       toast.error("Sale number is missing. Unable to fetch receipt.");
@@ -829,7 +905,7 @@ const Sales = () => {
   );
 
   // Loading/Error States
-  if (loading && !sales.length) {
+  if (loading && !filterData.length) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
@@ -837,7 +913,7 @@ const Sales = () => {
     );
   }
 
-  if (error && !sales.length) {
+  if (error && !filterData.length) {
     return (
       <div className="p-4 text-center text-red-600 bg-red-100 border border-red-400 rounded">
         Error: {error}
@@ -852,6 +928,7 @@ const Sales = () => {
         <thead className="bg-gray-50">
           <tr>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adm No.</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale #</th>
             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -875,11 +952,13 @@ const Sales = () => {
             return (
               <tr key={s._id || s.saleNumber} className={`hover:bg-gray-50/80 transition-colors duration-150 ${s.paymentStatus !== 'paid' ? 'bg-red-50/40' : ''}`}>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{new Date(s.date).toLocaleDateString()}</td>
+                <td className="px-4 py-3 whitespace-normal text-sm text-gray-800 font-medium">{student?.admissionNumber}</td>
+               
                 <td className="px-4 py-3 whitespace-normal text-sm text-gray-800 font-medium">{studentDisplay}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 font-mono text-[11px]">{s.saleNumber}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">₹{s.totalAmount.toFixed(2)}</td>
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-green-700 text-right">₹{s.paidAmount.toFixed(2)}</td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm text-right ${s.dueAmount > 0 ? 'text-red-700 font-semibold' : 'text-gray-500'}`}>₹{s.dueAmount.toFixed(2)}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right font-medium">₹{s.totalAmount?.toFixed(2)}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-green-700 text-right">₹{s.paidAmount?.toFixed(2)}</td>
+                <td className={`px-4 py-3 whitespace-nowrap text-sm text-right ${s.dueAmount > 0 ? 'text-red-700 font-semibold' : 'text-gray-500'}`}>₹{s.dueAmount?.toFixed(2)}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-center">
                   <span className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${
                     s.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
@@ -907,15 +986,14 @@ const Sales = () => {
     </div>
   );
 
-  // Main Render
   return (
-    <div className="px-4 md:px-6 py-2">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Create New Sale</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+    <div className="">
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Create New Sale" />
+     <div className="bg-white p-2 rounded-lg shadow border border-gray-200 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4 items-start">
               <div className="relative" ref={searchContainerRef}>
+                         
                 <ReactInput
                   label="Student Search"
                   name="studentSearch"
@@ -924,96 +1002,14 @@ const Sales = () => {
                   placeholder="Name/Adm#/ID"
                   required
                 />
-                {/* {showSuggestions && (
-                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                    {searchResults.length > 0 ? (
-                      searchResults.map(student => (
-                        <div
-                          key={student.studentId}
-                          className="px-4 py-2 text-sm text-gray-800 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            handleStudentSelect(student);
-                          }}
-                        >
-                          <span className="font-medium">{student.studentName}</span>
-                          <span className="text-gray-600"> ({student.class}-{student.section})</span>
-                          {student.admissionNumber && <span className="text-xs text-blue-600 ml-2">[Adm: {student.admissionNumber}]</span>}
-                          {student.fatherName && <span className="text-xs text-blue-600 ml-2">[{student.fatherName}]</span>}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-4 py-3 text-sm text-gray-500 italic">
-                        No students found matching "{searchTerm}".
-                      </div>
-                    )}
-                  </div>
-                )} */}
-                 {showSuggestions && (
-    <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-      {searchResults.length > 0 ? (
-        <table className="w-full text-sm text-left text-gray-800">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10"> {/* Sticky header with background */}
-            <tr>
-              <th scope="col" className="px-4 py-2">
-                Name
-              </th>
-              <th scope="col" className="px-4 py-2">
-                Class
-              </th>
-              <th scope="col" className="px-4 py-2">
-                Adm No
-              </th>
-              <th scope="col" className="px-4 py-2">
-                Father
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {searchResults.map(student => (
-              <tr
-                key={student.studentId}
-                className="bg-white border-b last:border-b-0 hover:bg-indigo-50 cursor-pointer"
-                onMouseDown={(e) => {
-                  e.preventDefault(); // Keep focus on the input
-                  handleStudentSelect(student);
-                }}
-              >
-                <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
-                  {student.studentName}
-                </td>
-                <td className="px-4 py-2 text-gray-600">
-                  {student.class}-{student.section}
-                </td>
-                <td className="px-4 py-2 text-xs text-blue-600">
-                  {student.admissionNumber || '-'} {/* Show dash if null/empty */}
-                </td>
-                <td className="px-4 py-2 text-xs text-blue-600">
-                   {student.fatherName || '-'} {/* Show dash if null/empty */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <div className="px-4 py-3 text-sm text-gray-500 italic">
-          No students found matching "{searchTerm}".
-        </div>
-      )}
-    </div>
-  )}
-              </div>
-              <div className="space-y-2">
-                <div className={`w-full px-3 py-2 rounded-md text-sm border ${selectedStudentDisplay ? 'border-green-400 bg-green-50 text-green-800' : 'border-gray-300 bg-gray-50 text-gray-500 italic'}`}>
-                  {selectedStudentDisplay ? (
+                 {selectedStudentDisplay ? (
                     <>
-                      <span className="font-medium">Selected:</span> {selectedStudentDisplay}
+                      <span className="font-medium text-green-600">Selected : {selectedStudentDisplay} </span> 
                     </>
                   ) : (
                     'No student selected'
                   )}
-                </div>
-                {selectedStudent && selectedStudentTotalDue > 0 && (
+                 {selectedStudent && selectedStudentTotalDue > 0 && (
                   <div className="p-3 border border-orange-400 bg-orange-50 rounded-md text-sm shadow-sm">
                     <p className="font-semibold text-orange-800 mb-1">
                       <span className="font-bold text-red-600">(!)</span> Previous Outstanding Balance: <span className="font-bold text-red-600 text-base ml-1">₹{selectedStudentTotalDue.toFixed(2)}</span>
@@ -1032,39 +1028,90 @@ const Sales = () => {
                     )}
                   </div>
                 )}
-                {selectedStudent && selectedStudentTotalDue <= 0 && (
-                  <div className="px-3 py-2 border border-green-300 bg-green-50/80 rounded-md text-sm text-green-700">
-                    ✓ No previous outstanding balance found.
-                  </div>
-                )}
+                
+                 {showSuggestions && (
+    <div className="absolute z-20  mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+      {searchResults.length > 0 ? (
+        <table className=" text-sm text-left text-gray-800">
+          <thead className="text-[10px] text-gray-700 uppercase bg-gray-100 sticky top-0 z-10"> {/* Sticky header with background */}
+            <tr>
+              <th scope="col" className="px-2 py-1 text-[10px]">
+                Name
+              </th>
+              <th scope="col" className="px-2 py-1 text-[10px]">
+                Class
+              </th>
+              <th scope="col" className="px-2 py-1 text-[10px]">
+                Adm No
+              </th>
+              <th scope="col" className="px-2 py-1 text-[10px]">
+                Father
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {searchResults.map(student => (
+              <tr
+                key={student.studentId}
+                className="bg-white border-b last:border-b-0 hover:bg-indigo-50 cursor-pointer"
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Keep focus on the input
+                  handleStudentSelect(student);
+                }}
+              >
+                <td className="px-2 py-1 text-[13px] font-bold text-gray-900 whitespace-nowrap">
+                  {student.studentName}
+                </td>
+                <td className="px-2 py-1 text-[13px] text-gray-600">
+                  {student.class}-{student.section}
+                </td>
+                <td className="px-2 py-1 text-[13px] text-xs text-blue-600">
+                  {student.admissionNumber || '-'} {/* Show dash if null/empty */}
+                </td>
+                <td className="px-2 py-1 text-[13px] text-xs text-blue-600">
+                   {student.fatherName || '-'} {/* Show dash if null/empty */}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="px-4 py-3 text-sm text-gray-500 italic">
+          No students found matching "{searchTerm}".
+        </div>
+      )}
+    </div>
+  )}
               </div>
+              
             </div>
 
-            {/* New Sale Section */}
-            <div className="border-t border-gray-200 pt-4">
+            <div className="border-t border-gray-200 ">
               <h3 className="text-lg font-semibold text-gray-700 mb-3">New Sale Items</h3>
-              <div className="flex items-start space-x-3">
-                <div className="flex-grow">
+
                   <ReactSelect
                     label="Item"
                     name="selectedItem"
                     value={selectedItem}
                     handleChange={(e) => setSelectedItem(e.target.value)}
-                    options={itemOptions}
+                    dynamicOptions={itemOptions}
+                   
                   />
-                </div>
-                <button
+              
+                <Button
                   type="button"
+                  name="Add Item"
                   onClick={handleAddItem}
-                  className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
+                  color="blue"
+                  // className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
                   disabled={!selectedItem || isSubmitting}
-                >
-                  Add Item
-                </button>
-              </div>
+                />
+                  
+                
+              {/* </div> */}
               <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-gray-200 pt-5">
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-lg font-semibold text-gray-700">Current Sale Total:</span>
+                  <span className="text-lg font-semibold text-gray-700">Total:</span>
                   <span className="text-xl font-bold text-blue-800">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
@@ -1075,10 +1122,22 @@ const Sales = () => {
                       name="paidAmount"
                       value={paidAmount}
                       onChange={(e) => setPaidAmount(e.target.value)}
-                      placeholder="Paid Now"
+                      // placeholder="Paid Now"
                       required={false}
                     />
                   </div>
+                  <ReactSelect
+                    label="mode"
+                    name="paidMode"
+                    value={paidMode}
+                    handleChange={(e) => setPaidMode(e.target.value)}
+                    dynamicOptions={[
+                      { label: "Cash", value: "Cash" },
+                      { label: "Online", value: "Online" },
+                    
+                     
+                    ]}
+                  />
                   <div className="w-full sm:w-32">
                     <ReactInput
                       label="Pay Dues"
@@ -1086,7 +1145,7 @@ const Sales = () => {
                       name="additionalDuePayment"
                       value={additionalDuePayment}
                       onChange={(e) => setAdditionalDuePayment(e.target.value)}
-                      placeholder="Pay Dues"
+                      // placeholder="Pay Dues"
                       required={false}
                     />
                     {selectedStudentUnpaidSales.length > 0 && (
@@ -1095,31 +1154,23 @@ const Sales = () => {
                       </p>
                     )}
                   </div>
-                  {subtotal > 0 && (
-                    <div className={`flex items-center space-x-1.5 px-3 py-2 rounded-md text-sm ${dueAmount > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
-                      <span className={`font-medium ${dueAmount > 0 ? 'text-red-600' : 'text-green-600'}`}>Due (Current Sale):</span>
-                      <span className={`font-bold ${dueAmount > 0 ? 'text-red-700' : 'text-green-700'}`}>₹{dueAmount.toFixed(2)}</span>
-                    </div>
-                  )}
+                  
                 </div>
               </div>
               <div className="text-right pt-3">
-                <button
+                <Button
                   type="button"
                   onClick={handleSubmit}
                   className={`inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ${isSubmitting || !selectedStudent || selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   disabled={isSubmitting || !selectedStudent || selectedItems.length === 0}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </>
-                  ) : 'Create Sale & View Receipt'}
-                </button>
+                
+                name={isSubmitting ? 
+                 
+                    "Processing..."
+                 
+                : 'Create Sale & View Receipt'}
+                />
+                
               </div>
             </div>
 
@@ -1133,7 +1184,7 @@ const Sales = () => {
                     name="dueSaleNumber"
                     value={dueSaleNumber}
                     handleChange={(e) => setDueSaleNumber(e.target.value)}
-                    options={selectedStudentUnpaidSales.map(sale => ({
+                    dynamicOptions={selectedStudentUnpaidSales.map(sale => ({
                       value: sale.saleNumber,
                       label: `Sale #${sale.saleNumber} - Due: ₹${sale.dueAmount.toFixed(2)} (${new Date(sale.date).toLocaleDateString()})`
                     }))}
@@ -1146,17 +1197,19 @@ const Sales = () => {
                         name="dueSelectedItem"
                         value={dueSelectedItem}
                         handleChange={(e) => setDueSelectedItem(e.target.value)}
-                        options={itemOptions}
+                        dynamicOptions={itemOptions}
                       />
                     </div>
-                    <button
+                    <Button
                       type="button"
                       onClick={handleAddDueItem}
-                      className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
+                      colo="blue"
+                      // className="px-4 py-2 mt-[6px] bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 whitespace-nowrap disabled:opacity-50 shadow-sm transition duration-150"
                       disabled={!dueSelectedItem || isSubmitting}
-                    >
-                      Add Item
-                    </button>
+                    name={"Add Item"}
+                    />
+                      
+                    {/* </Button> */}
                   </div>
                   {dueNewItems.length > 0 && (
                     <div className="border border-gray-200 rounded-md bg-white p-3">
@@ -1221,31 +1274,25 @@ const Sales = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-full sm:w-32">
                       <ReactInput
-                        label="Payment Amount"
+                        label="Payment "
                         type="number"
                         name="duePaymentAmount"
                         value={duePaymentAmount}
                         onChange={(e) => setDuePaymentAmount(e.target.value)}
-                        placeholder="Amount to Pay"
+                        // placeholder="Amount to Pay"
                         required={dueNewItems.length === 0}
                       />
                     </div>
-                    <button
+                    <Button
                       type="button"
+                      name={isSubmitting ? 
+                          "Processing..."
+                      : 'Pay Dues & View Receipt'}
                       onClick={handlePayDues}
                       className={`inline-flex items-center justify-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ${isSubmitting || !dueSaleNumber ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={isSubmitting || !dueSaleNumber}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Processing...
-                        </>
-                      ) : 'Pay Dues & View Receipt'}
-                    </button>
+                    />
+                     
                   </div>
                 </div>
               </div>
@@ -1321,38 +1368,58 @@ const Sales = () => {
             )}
           </div>
         </div>
-      </div>
+  
 
-      <div className="bg-white p-4 md:p-6 rounded-lg shadow-md border border-gray-200">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200">
         <PageHeaderWithBreadcrumb />
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Sales History</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                activeTab === "all"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              All Sales
-            </button>
-            <button
-              onClick={() => setActiveTab("dues")}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                activeTab === "dues"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              Dues Only
-            </button>
-          </div>
+        <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex gap-5 mb-4">
+          {/* <h2 className="text-xl font-semibold text-gray-800">Sales History</h2> */}
+          <DatePicker
+                        className="custom-calendar"
+                        placeholder=""
+                        label={"From Date"}
+                        respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                        name="fromDate"
+                        id="fromDate"
+                        value={ new Date(values.fromDate)}
+                        handleChange={(e) => handleDateCange(e.value, "fromDate")}
+                        hourFormat="12"
+                      />
+          <DatePicker
+                        className="custom-calendar"
+                        placeholder=""
+                        label={"To Date"}
+                        respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                        name="toDate"
+                        id="toDate"
+                        value={ new Date(values.toDate)}
+                        handleChange={(e) => handleDateCange(e.value, "toDate")}
+                        hourFormat="12"
+                      />
+                      <Button color={"green"} name="Search ALL Sale" onClick={handlsearch}/>
+                      <ReactSelect
+                    label="mode"
+                    name="mode"
+                    value={values?.mode}
+                    handleChange={(e) => handleInputChange(e)}
+                    dynamicOptions={[
+                      { label: "All", value: "All" },
+                      { label: "Paid", value: "paid" },
+                      { label: "Pending", value: "pending" },
+                     
+                    ]}
+                  />
+                    <Button
+                              name="Download Report"
+                              onClick={handleDownloadPdf}
+                              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded h-10"
+                              // icon={<FaFileAlt className="mr-2"/>} // Added margin to icon
+                            />
+                   
         </div>
         {loading && sales.length === 0 && <p className="text-center py-4 text-gray-500">Loading history...</p>}
         {error && sales.length === 0 && <p className="text-center py-4 text-red-500">Error loading history: {error}</p>}
-        {activeTab === "all" ? renderSalesTable(sales) : renderSalesTable(duesSales)}
+        {activeTab === "all" ? renderSalesTable(filterData) : renderSalesTable(duesSales)}
       </div>
 
       {renderReceiptModal()}

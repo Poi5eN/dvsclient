@@ -371,7 +371,7 @@ const Topbar = () => {
                   }
                 >
                   {child.icon}
-                  <span className="capitalize">{child.name}</span>
+                  <span className="uppercase">{child.name}</span>
                 </NavLink>
               </li>
             ))}

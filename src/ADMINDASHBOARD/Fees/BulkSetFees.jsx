@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import { AdminGetAllClasses } from "../../Network/AdminApi";
 
 const BulkFeesSet = () => {
   const [mode, setMode] = useState("create");
@@ -27,8 +28,25 @@ const BulkFeesSet = () => {
       }
   });
 
+   const getAllClass = async () => {
+      try {
+        const response = await AdminGetAllClasses();
+        if (response?.success) {
+          let classes = response.classes;
+           setClasses(classes || []);
+          // setGetClass(classes.sort((a, b) => a - b));
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+
+    useEffect(()=>{
+getAllClass()
+    },)
   useEffect(() => {
     const fetchData = async () => {
+      
       try {
         const [clsRes, feesRes] = await Promise.all([
           api.get("/class"),
@@ -36,7 +54,7 @@ const BulkFeesSet = () => {
         ]);
 
         // ✅ FIX: Access the correct field from the response
-        setClasses(clsRes.data.classes || []);
+        // setClasses(clsRes.data.classes || []);
         setExistingFees(feesRes.data.data || []);
       } catch (err) {
         console.log("error",err.message)
@@ -112,6 +130,9 @@ const BulkFeesSet = () => {
     }
   };
 
+
+  
+
   return (
     <div className="">
        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Bulk Fees Setup "/>
@@ -140,8 +161,8 @@ const BulkFeesSet = () => {
             onChange={(e) => setFrequency(e.target.value)}
             className="block w-full p-1 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
-            <option value="monthly">Monthly</option>
-            <option value="one-time">One Time</option>
+            <option value="Monthly">Monthly</option>
+            <option value="One Time">One Time</option>
           </select>
 
           <input

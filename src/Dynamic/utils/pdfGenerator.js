@@ -11,7 +11,7 @@ const generatePdf = (
   onlinePayment = 0,
   chequePayment = 0,
   cardPayment = 0,
-  filename = "fee-data.pdf"
+  filename = "Details"
 ) => {
   // Ensure data is an array
   const dataArray = Array.isArray(data) ? data : [data];
@@ -230,7 +230,7 @@ console.log("dataArray",dataArray)
     // === Standard Table Generation (Original Behavior) ===
     doc.setFontSize(14);
     doc.setFont(undefined, "bold");
-    doc.text("Student Fee Receipt Details", 14, 15);
+    doc.text(filename, 14, 15);
     doc.setFont(undefined, "normal");
 
     // === AutoTable Configuration ===
