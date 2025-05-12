@@ -725,3 +725,55 @@ width: 270px;
 .custom-multiselect-panel .p-multiselect-item:not(.p-highlight):hover {
     background-color: #f8f9fa; /* Subtle background for the whole item on hover */
 }
+
+
+
+
+
+ @media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  html, body {
+    width: 1123px;
+    height: 794px;
+    background: white;
+  }
+
+
+
+  .print-page {
+  width: 1123px;
+  height: 794px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* Remove page-break-after here */
+}
+
+.print-page:not(:last-child) {
+  page-break-after: always;
+}
+
+  .student-card {
+    height: 325px !important;  /* Match your card height */
+    width: 204px !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  button, .print-hidden {
+    display: none !important;
+  }
+}
