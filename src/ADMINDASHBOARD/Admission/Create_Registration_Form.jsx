@@ -742,7 +742,7 @@ const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
                 value={payload.parentContact}
               />
             </div>
-            <div className="flex">
+            <div className="flex ">
                        {/* Student Image */}
             <ImageCaptureCrop
                 label="Student Photo"
