@@ -23,6 +23,7 @@ import AdmissionForm from "../../ShikshMitraWebsite/component/LoginPage/Admissio
 import DatePicker from "../../Dynamic/DatePicker/DatePicker";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import ImageCaptureCrop from "../../Dynamic/Camera/ImageCaptureCrop";
 
 function Create_Registration_Form() {
   const [refreshRegistrations, setRefreshRegistrations] = useState(false);
@@ -44,6 +45,13 @@ function Create_Registration_Form() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMoreDetails, setIsMoreDetails] = useState(false);
   const [whatsAppMsg, setWhatsAppMsg] = useState("");
+
+  const [studentImageFile, setStudentImageFile] = useState(null);
+// If you have an existing image URL (e.g., when editing a student):
+const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
+
+
+
   const [payload, setPayload] = useState({
     studentFullName: "",
     admissionNumber: "",
@@ -54,7 +62,7 @@ function Create_Registration_Form() {
     studentGender: "",
     studentClass: "",
     studentSection: "",
-    studentImage: null,
+   
     fatherName: "",
     motherName: "",
     parentAdmissionNumber: "",
@@ -66,8 +74,30 @@ function Create_Registration_Form() {
     pincode: "",
     state: "",
     city: "",
+    fatherImage:null,
+    studentImage:null,
+    motherImage:null,
+    guardianImage:null,
   });
 
+
+  const handleImageProcessed = (fileObject, imageFieldName) => {
+    setPayload((prevPayload) => ({
+        ...prevPayload,
+        [imageFieldName]: fileObject, // fileObject will be a File or null
+    }));
+};
+
+//   const handleStudentImageProcessed = (fileObject) => {
+
+//     setStudentImageFile(fileObject); // fileObject will be the File or null
+//     setPayload((preV)=>({
+//       ...preV,
+//       studentImage: fileObject,
+//     }))
+//     // If you are using a single 'values' state object for your form:
+//     // setValues(prev => ({ ...prev, studentImage: fileObject }));
+// };
   const toggleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -93,42 +123,48 @@ function Create_Registration_Form() {
     newAdmission();
   }, [refreshRegistrations]);
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
 
     const generateEmail = (name, contact) => {
+      if (!name || !contact) return `default${Date.now()}@gmail.com`; // Fallback
       let emailPrefix = name.toLowerCase();
       emailPrefix = emailPrefix.replace(/[^a-z0-9]/g, "");
+      if (!emailPrefix) emailPrefix = "user"; // Fallback if name is all special chars
       return `${emailPrefix}${contact}@gmail.com`;
     };
 
-    if (! payload.studentFullName) {
+    // --- Validations (keep as is) ---
+    if (!payload.studentFullName) {
       toast.warn("Please Fill Student's Name");
       return;
     }
-    if (! payload.studentContact) {
-      toast.warn("Please Fill Contact");
+    // ... (your other validations for contact, class, section, fatherName, parentContact)
+    if (!payload.studentContact) {
+      toast.warn("Please Fill Student Contact");
       return;
     }
-    if (!selectedClass) {
+    if (!selectedClass) { // Assuming selectedClass is managed separately
       toast.warn("Please Select Class");
       return;
     }
-    if (!selectedSection) {
+    if (!selectedSection) { // Assuming selectedSection is managed separately
       toast.warn("Please Select Section");
       return;
     }
     if (!payload?.fatherName) {
-      toast.warn("Please Fill father Name");
+      toast.warn("Please Fill Father's Name");
       return;
     }
     if (!payload?.parentContact) {
-      toast.warn("Please Fill parent Contact");
+      toast.warn("Please Fill Parent Contact");
       return;
     }
     
     setIsLoader(true);
-    const payloadData = {
+
+    // --- Prepare non-file data for the API ---
+    const payloadDataForApi = {
       studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
       studentEmail: generateEmail(payload.studentFullName, payload.studentContact),
       studentPassword: payload.studentContact,
@@ -146,59 +182,192 @@ function Create_Registration_Form() {
       pincode: payload.pincode || "",
       state: payload.state || "",
       city: payload.city || "",
-      studentImage: payload.studentImage || "",
+      // Note: studentImage is NOT here; it will be handled as a File
       fatherName : payload.fatherName?.charAt(0)?.toUpperCase() + payload.fatherName?.slice(1) || "",
+      // motherName and other parent fields will be added based on 'sibling' condition
     };
 
     // Only include parent fields if not using an existing parent (sibling is true)
-    if (sibling) {
-      payloadData.fatherName = payload.fatherName?.charAt(0)?.toUpperCase() + payload.fatherName?.slice(1) || "";
-      payloadData.motherName = payload.motherName?.charAt(0)?.toUpperCase() + payload.motherName?.slice(1) || "";
-      payloadData.parentEmail = generateEmail(payload.fatherName, payload.studentContact);
-      payloadData.parentPassword = payload.studentContact;
-      payloadData.parentContact = payload.parentContact || "";
+    if (sibling) { // Assuming 'sibling' flag indicates creating a new parent
+      payloadDataForApi.motherName = payload.motherName?.charAt(0)?.toUpperCase() + payload.motherName?.slice(1) || "";
+      // fatherName is already in payloadDataForApi from above
+      payloadDataForApi.parentEmail = generateEmail(payload.fatherName, payload.parentContact);
+      payloadDataForApi.parentPassword = payload.parentContact;
+      payloadDataForApi.parentContact = payload.parentContact || "";
     } else {
-      payloadData.parentAdmissionNumber = payload.parentAdmissionNumber || "";
+      payloadDataForApi.parentAdmissionNumber = payload.parentAdmissionNumber || "";
     }
 
     const formDataToSend = new FormData();
-    Object.entries(payloadData).forEach(([key, value]) => {
-      if (key === "studentImage" && value) {
-        formDataToSend.append(key, value);
-      } else if (value !== undefined && value !== "") {
-        formDataToSend.append(key, String(value));
+
+    // Append non-file data from payloadDataForApi
+    for (const key in payloadDataForApi) {
+      if (payloadDataForApi.hasOwnProperty(key)) {
+        const value = payloadDataForApi[key];
+        if (value !== undefined && value !== null && value !== "") { // Ensure value is not undefined/null/empty
+          formDataToSend.append(key, String(value));
+        }
       }
+    }
+
+    // Append image files from the main 'payload' state
+    const imageFields = ['studentImage', 'fatherImage', 'motherImage', 'guardianImage'];
+    imageFields.forEach(fieldKey => {
+      if (payload[fieldKey] instanceof File) {
+        formDataToSend.append(fieldKey, payload[fieldKey]);
+      }
+      // Optional: If your backend expects the URL of an existing image if no new file is uploaded
+      // else if (typeof payload[fieldKey] === 'string' && payload[fieldKey]) {
+      //   formDataToSend.append(fieldKey, payload[fieldKey]);
+      // }
     });
 
+    // --- API Call (keep as is, but ensure createStudentParent handles FormData) ---
     try {
-      const response = await createStudentParent(formDataToSend);
+      // console.log("FormData being sent:"); // For debugging
+      // for (let [key, value] of formDataToSend.entries()) {
+      //   console.log(key, value);
+      // }
+      const response = await createStudentParent(formDataToSend); // Ensure this API endpoint expects FormData
       if (response?.success) {
+        // ... (your success logic)
         newAdmission();
         setWhatsAppMsg(response);
-        setIsModalOpen(true);
-        setIsLoader(false);
+        setIsModalOpen(true); // Assuming these are for different modals/states
         toast.success(response?.message);
-        toggleModal();
-        setPayload({});
-        setLoading(false);
-        setModalOpen(false);
+        // toggleModal(); // This seems to be for another modal, ensure it's correct
+        setPayload({ // Reset payload to initial state
+            studentFullName: "", admissionNumber: "", studentContact: "", studentAddress: "",
+            guardian_name: "", studentDateOfBirth: "01-01-2000", studentGender: "",
+            studentClass: "", studentSection: "", fatherName: "", motherName: "",
+            parentAdmissionNumber: "", parentContact: "", country: "", religion: "",
+            caste: "", nationality: "", pincode: "", state: "", city: "",
+            fatherImage:null, studentImage:null, motherImage:null, guardianImage:null,
+        });
+        // setLoading(false); // You have setIsLoader, maybe this is redundant or for something else
+        // setModalOpen(false); // Another modal state?
         setSelectedClass("");
         setSelectedSection("");
       } else {
         if(response?.parent){
           setIsParent(true)
-
         }
         setResponsedetails(response?.parent)
         toast.error(response?.message);
-        setIsLoader(false);
-
       }
     } catch (error) {
-      console.log("error", error);
-      setIsLoader(false);
+      console.log("API Error in handleSubmit:", error);
+      toast.error("An error occurred while saving. Please try again.");
+    } finally {
+        setIsLoader(false); // Ensure loader is turned off in all cases
     }
   };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const generateEmail = (name, contact) => {
+  //     let emailPrefix = name.toLowerCase();
+  //     emailPrefix = emailPrefix.replace(/[^a-z0-9]/g, "");
+  //     return `${emailPrefix}${contact}@gmail.com`;
+  //   };
+
+  //   if (! payload.studentFullName) {
+  //     toast.warn("Please Fill Student's Name");
+  //     return;
+  //   }
+  //   if (! payload.studentContact) {
+  //     toast.warn("Please Fill Contact");
+  //     return;
+  //   }
+  //   if (!selectedClass) {
+  //     toast.warn("Please Select Class");
+  //     return;
+  //   }
+  //   if (!selectedSection) {
+  //     toast.warn("Please Select Section");
+  //     return;
+  //   }
+  //   if (!payload?.fatherName) {
+  //     toast.warn("Please Fill father Name");
+  //     return;
+  //   }
+  //   if (!payload?.parentContact) {
+  //     toast.warn("Please Fill parent Contact");
+  //     return;
+  //   }
+    
+  //   setIsLoader(true);
+  //   const payloadData = {
+  //     studentFullName: payload.studentFullName.charAt(0).toUpperCase() + payload.studentFullName.slice(1),
+  //     studentEmail: generateEmail(payload.studentFullName, payload.studentContact),
+  //     studentPassword: payload.studentContact,
+  //     studentDateOfBirth: payload.studentDateOfBirth ? moment(payload.studentDateOfBirth).format("MM-DD-YYYY") : "",
+  //     studentGender: payload.studentGender || "",
+  //     studentJoiningDate: moment(Date.now()).format("MM-DD-YYYY") || "",
+  //     studentAddress: payload.studentAddress?.charAt(0)?.toUpperCase() + payload.studentAddress?.slice(1) || "",
+  //     studentContact: payload.studentContact || "",
+  //     studentClass: selectedClass || "",
+  //     studentSection: selectedSection || "",
+  //     studentCountry: payload.country || "",
+  //     religion: payload.religion || "",
+  //     caste: payload.caste || "",
+  //     nationality: payload.nationality || "",
+  //     pincode: payload.pincode || "",
+  //     state: payload.state || "",
+  //     city: payload.city || "",
+  //     studentImage: payload.studentImage || "",
+  //     fatherName : payload.fatherName?.charAt(0)?.toUpperCase() + payload.fatherName?.slice(1) || "",
+  //   };
+
+  //   // Only include parent fields if not using an existing parent (sibling is true)
+  //   if (sibling) {
+  //     payloadData.fatherName = payload.fatherName?.charAt(0)?.toUpperCase() + payload.fatherName?.slice(1) || "";
+  //     payloadData.motherName = payload.motherName?.charAt(0)?.toUpperCase() + payload.motherName?.slice(1) || "";
+  //     payloadData.parentEmail = generateEmail(payload.fatherName, payload.studentContact);
+  //     payloadData.parentPassword = payload.studentContact;
+  //     payloadData.parentContact = payload.parentContact || "";
+  //   } else {
+  //     payloadData.parentAdmissionNumber = payload.parentAdmissionNumber || "";
+  //   }
+
+  //   const formDataToSend = new FormData();
+  //   Object.entries(payloadData).forEach(([key, value]) => {
+  //     if (key === "studentImage" && value) {
+  //       formDataToSend.append(key, value);
+  //     } else if (value !== undefined && value !== "") {
+  //       formDataToSend.append(key, String(value));
+  //     }
+  //   });
+
+  //   try {
+  //     const response = await createStudentParent(formDataToSend);
+  //     if (response?.success) {
+  //       newAdmission();
+  //       setWhatsAppMsg(response);
+  //       setIsModalOpen(true);
+  //       setIsLoader(false);
+  //       toast.success(response?.message);
+  //       toggleModal();
+  //       setPayload({});
+  //       setLoading(false);
+  //       setModalOpen(false);
+  //       setSelectedClass("");
+  //       setSelectedSection("");
+  //     } else {
+  //       if(response?.parent){
+  //         setIsParent(true)
+
+  //       }
+  //       setResponsedetails(response?.parent)
+  //       toast.error(response?.message);
+  //       setIsLoader(false);
+
+  //     }
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     setIsLoader(false);
+  //   }
+  // };
 
   const sendWhatsAppMessage = (val) => {
     const receiptCard = `
@@ -302,31 +471,6 @@ function Create_Registration_Form() {
     { id: "action", label: "Action", width: "2%" },
   ];
 
-  // const tBody = filteredData?.map((val, ind) => ({
-  //   SN: ind + 1,
-  //   image: (
-  //     <img
-  //       src={val?.studentImage?.url || "https://www.stcroixstoves.com/wp-content/uploads/2020/04/no.png"}
-  //       alt="avatar"
-  //       className="relative inline-block object-cover object-center w-6 h-6 rounded-lg"
-  //     />
-  //   ),
-  //   admissionNo: (
-  //     <span className="text-green-800 font-semibold">{val.admissionNumber}</span>
-  //   ),
-  //   name: val.studentName,
-  //   fatherName: val.fatherName,
-  //   class: val.class,
-  //   contact: val.contact,
-  //   parentc: val?.parentContact,
-  //   feeStatus: val.feeStatus,
-  //   action: (
-  //     <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
-  //       🖨️
-  //     </span>
-  //   ),
-  // }));
-
   const tBody = filteredData?.map((val, ind) => ({
   SN: (
     <span className="uppercase">
@@ -376,6 +520,18 @@ function Create_Registration_Form() {
     value: item,
   }));
 
+
+//   const handleSubmit = async () => {
+//     const formData = new FormData();
+//     // ... append other form fields ...
+//     if (studentImageFile) { // Or if (values.studentImage)
+//         formData.append('studentImage', studentImageFile, studentImageFile.name);
+//     } else if (!studentImageFile && !initialStudentImageUrl) {
+//         // Handle case where image was explicitly removed or never set
+//         // formData.append('studentImage', ''); // Or however your backend expects a removed image
+//     }
+//     // ... API call with formData ...
+// };
 
   return (
     <div className="">
@@ -467,14 +623,16 @@ function Create_Registration_Form() {
               onChange={handleChange}
               value={payload.studentAddress}
             />
-            <ReactInput
+            {/* <ReactInput
               type="file"
               name="studentImage"
               accept="image/*"
               required={false}
               label="Student Image"
               onChange={handleImageChange}
-            />
+            /> */}
+              
+              
             <Button
               color="green"
               name="More Details"
@@ -540,13 +698,13 @@ function Create_Registration_Form() {
                 />
               </>
             )}
-            {payload.studentImage && (
+            {/* {payload.studentImage && (
               <img
                 src={URL.createObjectURL(payload.studentImage)}
                 alt="Preview"
                 className="w-10 h-10 object-cover rounded-md"
               />
-            )}
+            )} */}
           </div>
           <div className="flex flex-row gap-10 justify-center text-center">
             <span className="text-xl text-blue-900">Parent Details</span>
@@ -556,6 +714,7 @@ function Create_Registration_Form() {
             />
           </div>
           {sibling ? (
+          <>
             <div className="mt-2 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 w-full gap-3 px-1 mx-auto bg-white rounded-md">
               <ReactInput
                 type="text"
@@ -583,6 +742,44 @@ function Create_Registration_Form() {
                 value={payload.parentContact}
               />
             </div>
+            <div className="flex">
+                       {/* Student Image */}
+            <ImageCaptureCrop
+                label="Student Photo"
+                onImageCropped={(file) => handleImageProcessed(file, 'studentImage')}
+                initialImageUrl={typeof payload.studentImage === 'string' ? payload.studentImage : null}
+                aspectRatio={1}
+                previewSize={120}
+            />
+
+            {/* Father's Photo */}
+            <ImageCaptureCrop
+                label="Father's Photo"
+                onImageCropped={(file) => handleImageProcessed(file, 'fatherImage')}
+                initialImageUrl={typeof payload.fatherImage === 'string' ? payload.fatherImage : null}
+                aspectRatio={1}
+                previewSize={120}
+            />
+
+            {/* Mother's Photo */}
+            <ImageCaptureCrop
+                label="Mother's Photo"
+                onImageCropped={(file) => handleImageProcessed(file, 'motherImage')}
+                initialImageUrl={typeof payload.motherImage === 'string' ? payload.motherImage : null}
+                aspectRatio={1}
+                previewSize={120}
+            />
+
+            {/* Guardian's Photo */}
+            <ImageCaptureCrop
+                label="Guardian's Photo"
+                onImageCropped={(file) => handleImageProcessed(file, 'guardianImage')}
+                initialImageUrl={typeof payload.guardianImage === 'string' ? payload.guardianImage : null}
+                aspectRatio={1}
+                previewSize={120}
+            />
+            </div>
+          </>
           ) : (
             <div className="px-5 md:max-w-[25%] w-full text-center">
               <ReactInput

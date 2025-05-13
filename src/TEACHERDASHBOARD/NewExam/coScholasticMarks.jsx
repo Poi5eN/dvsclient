@@ -5,8 +5,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 import { getAllStudents } from "../../Network/TeacherApi";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const CoScholasticMarks = () => {
+    const session = JSON.parse(localStorage.getItem("session"))
     const { currentColor, setIsLoader } = useStateContext();
     const authToken = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
@@ -46,7 +49,7 @@ const CoScholasticMarks = () => {
         const fetchStudents = async () => {
             setIsLoader(true);
             try {
-                const response = await getAllStudents(param);
+                const response = await getAllStudents(param,session);
                 if (response?.success) {
                     setSubmittedData(response?.students?.data);
                 } else {
@@ -165,20 +168,13 @@ const CoScholasticMarks = () => {
 
     return (
         <>
-            <div className="mt-12 md:mt-0 p-4">
-                <div
-                    className="rounded-tl-lg border rounded-tr-lg text-white text-[12px] lg:text-lg py-2"
-                    style={{
-                        background: `linear-gradient(to bottom, ${currentColor}, #8d8b8b)`,
-                    }}
-                >
-                    <p className="px-5">Allot Co-Scholastic Marks</p>
-                </div>
+            <div className="">
+            <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Allot Co-Scholastic Marks" />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div className="bg-white p-2 rounded-lg shadow border border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-2">
                     {/* Exam Selection */}
                     <div className="flex flex-col">
-                        <label htmlFor="examSelector">Select Exam:</label>
+                        {/* <label htmlFor="examSelector">Select Exam:</label> */}
                         <select
                             id="examSelector"
                             className="outline-none border-2"

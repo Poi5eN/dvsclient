@@ -6,6 +6,11 @@ const BreadcrumbList = {
     // { label: 'Issue', href: '/issues' },
     // { label: 'Patient Issue' }
   ],
+  teacherDashboard: [
+    { label: 'Home', href: '/teacher' },
+    // { label: 'Issue', href: '/issues' },
+    // { label: 'Patient Issue' }
+  ],
   student: [
     { label: 'Home', href: '/' },
   ],

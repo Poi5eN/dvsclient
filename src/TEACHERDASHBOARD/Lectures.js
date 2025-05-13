@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useStateContext } from "../contexts/ContextProvider";
 import { Button } from "@mui/material";
+import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../Dynamic/BreadcrumbList";
 
 
 
@@ -174,13 +176,15 @@ const Lectures = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1
+    <div className="">
+        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Lectures" />
+      
+      {/* <h1
         className="text-xl font-bold mb-4 uppercase text-center hover:text-gray-700 transition-colors duration-200"
         style={{ color: currentColor }}
       >
         School Dashboard
-      </h1>
+      </h1> */}
       <div className="overflow-x-auto">
         <table className="min-w-full border p-1">
           <thead>

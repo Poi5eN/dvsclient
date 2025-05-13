@@ -8,6 +8,8 @@ import Modal from "../Dynamic/Modal";
 import Button from "../Dynamic/utils/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Tables from "../Dynamic/Tables";
+import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../Dynamic/BreadcrumbList";
 
 const Study = () => {
   const authToken = localStorage.getItem("token");
@@ -120,13 +122,17 @@ const Study = () => {
 
   ];
   return (
-    <div className="p-5">
-      <Heading2 title={"Study Materials"}>
-      </Heading2>
+    <div className="">
+      {/* <Heading2 title={"Study Materials"}>
+      </Heading2> */}
+             <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Study Materials" />
+      
+          <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
       <Button
         onClick={handleOpenModal}
         name="Create"
       />
+      </div>
       <Modal
         isOpen={modalOpen}
         setIsOpen={setModalOpen}

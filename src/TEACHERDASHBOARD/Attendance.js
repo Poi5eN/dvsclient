@@ -8,6 +8,8 @@ import Button from "../Dynamic/utils/Button"; // Ensure path is correct
 import { getAllStudents } from "../Network/TeacherApi"; // Ensure path is correct
 import moment from "moment";
 import { createAttendance } from "../Network/ThirdPartyApi";
+import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../Dynamic/BreadcrumbList";
 
 // Helper function to get formatted date YYYY-MM
 function getFormattedDate(date) {
@@ -22,6 +24,7 @@ function getDaysInMonth(date) {
 }
 
 const Attendance = () => {
+  
   const authToken = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const session =JSON.parse(localStorage.getItem("session"))
@@ -53,7 +56,7 @@ const Attendance = () => {
       };
 
       try {
-        const response = await getAllStudents(params);
+        const response = await getAllStudents(params,session);
         // Use optional chaining and check if data exists and is an array
         if (response?.success && Array.isArray(response?.students?.data)) {
            // Ensure studentId exists before adding to state
@@ -301,7 +304,7 @@ const Attendance = () => {
     }))}
 
     try {
-      const response=await createAttendance(studentInfo)
+      const response=await createAttendance(studentInfo,session)
       if(response?.success){
         toast.success(response?.message)
         setStudents((prevStudents) =>
@@ -438,18 +441,11 @@ const Attendance = () => {
   const handleMouseLeave = () => {
     setHoverMessage("");
   };
-
-  // --- Render the Component UI ---
   return (
-    <div className="m-2 md:m-5 mt-5 p-2 md:p-5 bg-white rounded-3xl shadow-lg">
-      <h5
-        className="text-xl font-bold mb-6 uppercase text-center tracking-wide"
-        style={{ color: currentColor }}
-      >
-        Student Attendance Management
-      </h5>
-
-       <div className="mb-6 flex justify-start">
+    <div className="">
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Student Attendance Management" />
+     
+       <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
          <Button
             name="Mark Today's Attendance"
             onClick={() => setModalOpen(true)}
@@ -529,8 +525,9 @@ const Attendance = () => {
         </div>
       </Modal>
 
-      {/* --- Monthly Attendance Grid Section --- */}
-      <div className="mt-8 border-t pt-6">
+     
+       <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
+
         <h6 className="text-lg font-semibold mb-4" style={{ color: currentColor }}>
           Monthly Attendance Overview
         </h6>

@@ -9,6 +9,8 @@ import Cookies from 'js-cookie';
 import Heading2 from '../Dynamic/Heading2';
 import Button from '../Dynamic/utils/Button';
 import Tables from '../Dynamic/Tables';
+import PageHeaderWithBreadcrumb from '../Dynamic/PageHeaderWithBreadcrumb';
+import BreadcrumbList from '../Dynamic/BreadcrumbList';
 const authToken = Cookies.get('token');
 const Curriculum = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -107,11 +109,16 @@ const Curriculum = () => {
 
   ];
   return (
-    <div className='p-5'>
+    <div className=''>
+      <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Curriculum" />
+{/*             
       <Heading2 title={"Curriculum"}>
 
-      </Heading2>
+      </Heading2> */}
+      <div className='bg-white p-2 rounded-lg shadow border border-gray-200' >
       <Button name="Create" onClick={handleOpenModal} />
+      </div>
+      
       <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create Curriculum"}>
         <form onSubmit={handleFormSubmit}>
           <div className="grid md:grid-cols-1 grid-cols-1 gap-2 p-5 bg-gray-50">

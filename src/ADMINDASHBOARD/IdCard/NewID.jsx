@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
-import StudentCard from "./StudentCard";
+import StudentCard from "./StudentCardFront";
 
 // --- Constants ---
 const CARD_WIDTH_MM = 54;

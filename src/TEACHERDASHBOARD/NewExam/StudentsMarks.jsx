@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getAllStudents, marksmarks } from "../../Network/TeacherApi";
 import { useStateContext } from "../../contexts/ContextProvider";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const StudentsMarks = () => {
   const { setIsLoader } = useStateContext();
@@ -57,10 +59,13 @@ const StudentsMarks = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+    <div className="">
+             <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Students Marks" />
+
+{/* <div className="bg-white p-2 rounded-lg shadow border border-gray-200"> */}
+      {/* <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         Students Marks
-      </h2>
+      </h2> */}
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">

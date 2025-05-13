@@ -8,6 +8,8 @@ import Heading2 from "../Dynamic/Heading2";
 import Modal from "../Dynamic/Modal";
 import Tables from "../Dynamic/Tables";
 import Button from "../Dynamic/utils/Button";
+import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../Dynamic/BreadcrumbList";
 // const authToken = Cookies.get("token");
 
 const Assignments = () => {
@@ -184,11 +186,13 @@ const Api_Create =
   ];
 
   return (
-    <div className="mx-5">
-    <Heading2 title={"Create Homework Assignment"}>
+    <div className="">
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Create Homework Assignment" />
 
-    </Heading2>
+    <div className="bg-white p-2 rounded-lg shadow border border-gray-200">
     <Button name="Create Assignment" onClick={handleOpenModal}/>
+    </div>
+   
    
     <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"Create Assignment"}>
       <form onSubmit={handleSubmit} className="bg-gray-100">

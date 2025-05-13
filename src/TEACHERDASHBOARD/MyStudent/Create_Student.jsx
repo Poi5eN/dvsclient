@@ -10,18 +10,23 @@ import Breadcrumbs from "../../components/Breadcrumbs .jsx";
 import {getAllStudents} from "../../Network/TeacherApi.js";
 import { toast } from "react-toastify";
 import StudentDetails from "../../ADMINDASHBOARD/Student/AllStudent/StudentDetails.jsx";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb.jsx";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList.jsx";
+import EditStudent from "../../ADMINDASHBOARD/Student/AllStudent/EditStudent.jsx";
 
 
 function CreateStudent() {
+    const session = JSON.parse(localStorage.getItem("session"))
     const { setIsLoader } = useStateContext();
     const [selectedClass, setSelectedClass] = useState(null); // Store selected class object { value: string, label: string } | null
     const [selectedSection, setSelectedSection] = useState(null); // Store selected section object { value: string, label: string } | null
     const [availableSections, setAvailableSections] = useState([]); // Sections for selected class [{ value: string, label: string }]
     const [allStudents, setAllStudents] = useState([]); // Raw student data from API
     const [filteredData, setFilteredData] = useState([]); // Filtered student data for display
-    const [isEditing, setIsEditing] = useState(false);  const [studentToView, setStudentToView] = useState(null); // Student data for viewing details
-
-   
+    const [isEditing, setIsEditing] = useState(false);
+    
+   const [studentToEdit, setStudentToEdit] = useState(null);
+     const [studentToView, setStudentToView] = useState(null);
     const user = JSON.parse(localStorage.getItem("user"));
      const param = {
             class: user?.classTeacher,
@@ -32,7 +37,7 @@ function CreateStudent() {
     const allStudent = async () => {
         setIsLoader(true)
         try {
-            const response = await getAllStudents(param);
+            const response = await getAllStudents(param,session);
 
             if (response?.success) {
                 setIsLoader(false)
@@ -89,6 +94,18 @@ function CreateStudent() {
     const handleCloseView = () => {
         setStudentToView(null);
     };
+    const handleEditClick = (student) => {
+        setStudentToEdit(student);
+        setIsEditing(true);
+        setStudentToView(null);
+      };
+      const handleCloseEdit = (shouldRefetch = false) => {
+        setIsEditing(false);
+        setStudentToEdit(null);
+        if (shouldRefetch) {
+            allStudent();
+        }
+      };
 
     const THEAD = [
         { id: "SN", label: "S No.", width: "5" },
@@ -143,9 +160,9 @@ function CreateStudent() {
                 <button title="View Details" onClick={() => handleViewClick(student)} className="text-blue-600 hover:text-blue-800 text-lg">
                     <FaEye />
                 </button>
-                {/* <button title="Edit Student" onClick={() => handleEditClick(student)} className="text-yellow-600 hover:text-yellow-800 text-lg">
+                <button title="Edit Student" onClick={() => handleEditClick(student)} className="text-yellow-600 hover:text-yellow-800 text-lg">
                     <FaEdit />
-                </button> */}
+                </button>
                
             </div>
         ),
@@ -154,12 +171,12 @@ function CreateStudent() {
 
     if (!isEditing && !studentToView) {
         return (
-            <div className="mx-auto p-4 overflow-hidden">
-                All student
-
-                {/* Student Table */}
+            <div className="">
+               
+ <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Students" />
+             
                 {filteredData.length > 0 ? (
-                    <Table tHead={THEAD} tBody={tBody} isSearch={true} />
+                    <Table tHead={THEAD} tBody={tBody} isSearch={true} title="STudent Details" />
                 ) : (
                     <NoDataFound message="No students found matching the criteria." />
                 )}
@@ -169,12 +186,26 @@ function CreateStudent() {
     }
 
     // View: Student Details
+
+
+
     if (studentToView) {
+        return <StudentDetails student={studentToView} onBack={handleCloseView} />;
+      }
+      if (isEditing && studentToEdit) {
         return (
-             // Add a wrapper div if needed for layout/styling
-            <StudentDetails student={studentToView} onBack={handleCloseView} />
+          <EditStudent
+            studentDetails={studentToEdit}
+            onFinished={handleCloseEdit}
+          />
         );
-    }
+      }
+    // if (studentToView) {
+    //     return (
+    //          // Add a wrapper div if needed for layout/styling
+    //         <StudentDetails student={studentToView} onBack={handleCloseView} />
+    //     );
+    // }
  return <NoDataFound message="Loading or error state." />;
 }
 

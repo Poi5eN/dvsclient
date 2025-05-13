@@ -10,6 +10,7 @@ import {
 } from "../../../Network/AdminApi";
 import { useStateContext } from "../../../contexts/ContextProvider";
 import DatePicker from "../../../Dynamic/DatePicker/DatePicker";
+import ImageCaptureCrop from "../../../Dynamic/Camera/ImageCaptureCrop";
 
 const EditStudent = ({ studentDetails, onFinished }) => {
   const { setIsLoader } = useStateContext();
@@ -33,10 +34,10 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         section: studentDetails?.section || "", // Ensure section is initialized
         class: studentDetails?.class || "",   // Ensure class is initialized
          // Initialize image fields as null or existing URL, not the File object yet
-         studentImage: null,
-         fatherImage: null,
-         motherImage: null,
-         guardianImage: null,
+        //  studentImage: null,
+        //  fatherImage: null,
+        //  motherImage: null,
+        //  guardianImage: null,
       });
 
        // Set initial image previews
@@ -108,6 +109,15 @@ const EditStudent = ({ studentDetails, onFinished }) => {
         setStudentData((prevData) => ({ ...prevData, [name]: value }));
     }
   };
+
+
+
+    const handleImageProcessed = (fileObject, imageFieldName) => {
+    setStudentData((prevPayload) => ({
+        ...prevPayload,
+        [imageFieldName]: fileObject, // fileObject will be a File or null
+    }));
+};
 
   const handleClassChange = (e) => {
     const selectedClassName = e.target.value;
@@ -293,7 +303,7 @@ try {
         <ReactInput type="text" name="nationality" label="Nationality" onChange={handleOnChange} value={studentData?.nationality || ""} />
 
         {/* Image Inputs with Previews */}
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
             <ReactInput
             type="file" label="Student Image" accept="image/*"
             onChange={handleOnChange} name="studentImage" />
@@ -316,9 +326,48 @@ try {
                 type="file" label="Guardian Image" accept="image/*"
                 onChange={handleOnChange} name="guardianImage" />
             {imagePreviews.guardianImage && (<img src={imagePreviews.guardianImage} alt="Guardian Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
-        </div>
+        </div> */}
+         
 
       </div>
+      <div className="flex ">
+          {console.log(studentData.studentImage,"studentData.studentImage")}
+                               {/* Student Image */}
+                    <ImageCaptureCrop
+                        label="Student Photo"
+                        onImageCropped={(file) => handleImageProcessed(file, 'studentImage')}
+                        initialImageUrl={typeof studentData.studentImage === 'string' ? studentData.studentImage : studentData.studentImage?.url}
+                        aspectRatio={1}
+                        previewSize={120}
+                    />
+        
+                    {/* Father's Photo */}
+                    <ImageCaptureCrop
+                        label="Father's Photo"
+                        onImageCropped={(file) => handleImageProcessed(file, 'fatherImage')}
+                        initialImageUrl={typeof studentData.fatherImage === 'string' ? studentData.fatherImage : studentData.fatherImage?.url}
+                        aspectRatio={1}
+                        previewSize={120}
+                    />
+        
+                    {/* Mother's Photo */}
+                    <ImageCaptureCrop
+                        label="Mother's Photo"
+                        onImageCropped={(file) => handleImageProcessed(file, 'motherImage')}
+                        initialImageUrl={typeof studentData.motherImage === 'string' ? studentData.motherImage : studentData.motherImage?.url}
+                        aspectRatio={1}
+                        previewSize={120}
+                    />
+        
+                    {/* Guardian's Photo */}
+                    <ImageCaptureCrop
+                        label="Guardian's Photo"
+                        onImageCropped={(file) => handleImageProcessed(file, 'guardianImage')}
+                        initialImageUrl={typeof studentData.guardianImage === 'string' ? studentData.guardianImage : studentData.guardianImage?.url}
+                        aspectRatio={1}
+                        previewSize={120}
+                    />
+                    </div>
       <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
          {/* Pass false to onFinished for Cancel to indicate no refetch needed */}
         <Button name="Cancel" onClick={() => onFinished(false)} variant="secondary" />

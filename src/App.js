@@ -45,6 +45,8 @@ import BulkSetFees from "./ADMINDASHBOARD/Fees/BulkSetFees";
 import ClassExemption from "./ADMINDASHBOARD/Fees/ClassExemption";
 import SibilingFees from "./ADMINDASHBOARD/Fees/SibilingFees";
 import PrintPage from "./ADMINDASHBOARD/IdCard/PrintPage";
+import PrintPageBack from "./ADMINDASHBOARD/IdCard/PrintPageBack";
+import PrintPageLandScape from "./ADMINDASHBOARD/IdCard/PrintPageLandScape";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -294,6 +296,8 @@ function App() {
 
               <Route path="idcard-paortrait" element={<IdCard />} />
               <Route path="idcardnew" element={<PrintPage />} />
+              <Route path="idcardlandscape" element={<PrintPageLandScape />} />
+              <Route path="idcardback" element={<PrintPageBack />} />
               <Route path="idcard-landscape" element={<Landscape />} />
 
               <Route path="admitcards" element={<AdmitCardUi />} />

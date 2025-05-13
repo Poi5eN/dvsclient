@@ -12,8 +12,11 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import { getAllStudents } from "../../Network/TeacherApi";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
 const AllotMarks = () => {
+    const session = JSON.parse(localStorage.getItem("session"))
     const { currentColor, setIsLoader } = useStateContext();
     const authToken = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
@@ -57,7 +60,7 @@ const AllotMarks = () => {
         const fetchStudents = async () => {
             setIsLoader(true);
             try {
-                const response = await getAllStudents(param);
+                const response = await getAllStudents(param,session);
                 if (response?.success) {
                     setSubmittedData(response?.students?.data);
                 } else {
@@ -247,18 +250,12 @@ const AllotMarks = () => {
 
     return (
         <>
-            <div className="mt-12 md:mt-0 p-4">
-                {/* ... (Header and Selection Controls) ... */}
-                <div
-                    className="rounded-tl-lg border rounded-tr-lg text-white text-[12px] lg:text-lg py-2"
-                    style={{
-                        background: `linear-gradient(to bottom, ${currentColor}, #8d8b8b)`,
-                    }}
-                >
-                    <p className="px-5">Allot Marks</p>
-                </div>
+            <div className="">
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+            <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Allot Marks" />
+
+
+                <div className="bg-white p-2 rounded-lg shadow border border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
                     <FormControl fullWidth size="small">
                         <InputLabel id="exam-select-label">Select Exam</InputLabel>
                         <Select
