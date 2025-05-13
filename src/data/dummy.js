@@ -215,6 +215,7 @@ export const links = [
   icon: <BiSolidStoreAlt />,
   children: [
       // { name: 'Records', link: 'records' },
+      { name: 'New', link: 'idcardnew' },
       { name: 'Portrait ', link: 'idcard-paortrait' },
       { name: 'Landscape', link: 'idcard-landscape' },
       { name: 'Set Design', link: 'testing' }, 

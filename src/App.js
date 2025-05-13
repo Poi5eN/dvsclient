@@ -292,8 +292,8 @@ function App() {
               <Route path="admission/view-admission/:email" element={<AdmissionPrint />} />
               <Route path="ad" element={<AdmissioReceipt />} />
 
-              {/* <Route path="idcard-paortrait" element={<IdCard />} /> */}
-              <Route path="idcard-paortrait" element={<PrintPage />} />
+              <Route path="idcard-paortrait" element={<IdCard />} />
+              <Route path="idcardnew" element={<PrintPage />} />
               <Route path="idcard-landscape" element={<Landscape />} />
 
               <Route path="admitcards" element={<AdmitCardUi />} />
