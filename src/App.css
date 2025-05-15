@@ -728,7 +728,7 @@ width: 270px;
 
 
 
-
+/* 
 
  @media print {
   body {
@@ -737,7 +737,7 @@ width: 270px;
   }
 
   @page {
-    /* size: A4 portrait; */
+    size: A4 portrait;
     size: A4 landscape;
     margin: 10mm;
   }
@@ -760,7 +760,6 @@ width: 270px;
   padding: 20px;
   box-sizing: border-box;
 
-  /* Remove page-break-after here */
 }
   .print-page-landscape {
   width: 794px;
@@ -772,7 +771,6 @@ width: 270px;
   padding: 20px;
   box-sizing: border-box;
 
-  /* Remove page-break-after here */
 }
 
 .print-page:not(:last-child) {
@@ -780,13 +778,13 @@ width: 270px;
 }
 
   .student-card {
-    height: 325px !important;  /* Match your card height */
+    height: 325px !important;  
     width: 204px !important;
     break-inside: avoid;
     page-break-inside: avoid;
   }
   .student-card-landscape {
-    width: 325px !important;  /* Match your card height */
+    width: 325px !important;
     height: 204px !important;
     break-inside: avoid;
     page-break-inside: avoid;
@@ -795,4 +793,27 @@ width: 270px;
   button, .print-hidden {
     display: none !important;
   }
+} */
+:root {
+    /* --orientation: portrait; */
+     --orientation: landscape;
 }
+   
+@media print {
+    @page {
+        size: A4 var(--orientation);
+    }
+
+
+}
+     /* .print-page-landscape {
+  width: 794px;
+  height: 1123px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(5, auto);
+  gap: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+
+} */

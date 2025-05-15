@@ -12,7 +12,7 @@ import {
 } from "react-icons/bs";
 import { BiSolidStoreAlt } from "react-icons/bi";
 import { MdAccountBalanceWallet, MdGroups3, MdWork} from "react-icons/md";
-
+import { IoPhoneLandscape,IoTabletPortrait } from "react-icons/io5";
 import { ImManWoman } from "react-icons/im";
 import { PiStudentFill, PiPiggyBankFill } from "react-icons/pi";
 import {
@@ -159,14 +159,14 @@ export const links = [
         
       ],
   },
-  {
-      name: 'Library',
-      icon: <GiBookshelf />,
-      children: [
-          { name: 'Books', link: 'books',icon: <GiBookshelf />, },
-          { name: 'Issued', link: 'issued',icon: <GiBookshelf />, },
-      ],
-  },
+  // {
+  //     name: 'Library',
+  //     icon: <GiBookshelf />,
+  //     children: [
+  //         { name: 'Books', link: 'books',icon: <GiBookshelf />, },
+  //         { name: 'Issued', link: 'issued',icon: <GiBookshelf />, },
+  //     ],
+  // },
 
   
   // {
@@ -210,16 +210,17 @@ export const links = [
 //         // { name: 'Syllabus', link: 'curriculum' },
 //     ],
 // },
+
 {
   name: 'ID Card',
   icon: <BiSolidStoreAlt />,
   children: [
       // { name: 'Records', link: 'records' },
-      { name: 'New Portrait', link: 'idcardnew' },
-      { name: 'New LandScape ', link: 'idcardlandscape' },
+      // { name: 'New Portrait', link: 'idcardnew' },
+      // { name: 'New LandScape ', link: 'idcardlandscape' },
       // { name: 'Back', link: 'idcardback' },
-      { name: 'Portrait ', link: 'idcard-paortrait' },
-      { name: 'Landscape', link: 'idcard-landscape' },
+      { name: 'Portrait ', link: 'idcard-paortrait' ,icon: <IoTabletPortrait  />},
+      { name: 'Landscape', link: 'idcard-landscape',icon: <IoPhoneLandscape /> },
       { name: 'Set Design', link: 'testing' }, 
     
   ],

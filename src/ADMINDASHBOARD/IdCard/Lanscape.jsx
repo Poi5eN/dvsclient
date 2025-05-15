@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useStateContext } from "../../contexts/ContextProvider"; // Adjust path if needed
 import { useReactToPrint } from "react-to-print";
+import '../../App.css';
 import {
     Button, TextField, Typography, Box, CircularProgress,
     FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel
