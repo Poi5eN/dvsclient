@@ -4,16 +4,19 @@ import axios from "axios";
 import '../../../Dynamic/Form/FormStyle.css';
 import { useStateContext } from "../../../contexts/ContextProvider";
 import DynamicDataTable from "./DataTable";
+import Table from "../../../Dynamic/Table";
 import Button from "../../../Dynamic/utils/Button";
 import Modal from "../../../Dynamic/Modal";
 import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
 import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
 import { adminRoutestaff, getstaff } from "../../../Network/AdminApi";
+  import moment from "moment/moment";
+import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
 
 function Create_Staff() {
   const authToken = localStorage.getItem("token");
   const { currentColor, setIsLoader } = useStateContext();
-  
   const [formData, setFormData] = useState({
     fullName: "",
     // employeeId: "",
@@ -131,13 +134,64 @@ function Create_Staff() {
     });
   };
 
+   const THEAD = [
+    { id: "SN", label: "S No.", width: "2%" },
+    { id: "image", label: "Photo", width: "4%" },
+    // { id: "admissionNo", label: "Adm No.", width: "5%" },
+    { id: "name", label: "Name", width: "10%" },
+    { id: "email", label: "Email", width: "20%" },
+    { id: "gender", label: "Gender", width: "10%" },
+    { id: "joiningDate", label: "Joining Date", width: "5%" },
+    { id: "qualification", label: "Qualification", width: "5%" },
+    { id: "contact", label: "Contact", width: "5%" },
+    { id: "dateOfBirth", label: "DOB", width: "5%" },
+    { id: "salary", label: "Salary", width: "5%" },
+    { id: "joiningDate", label: "Admission Date", width: "10%" },
+    { id: "action", label: "Action", width: "2%" },
+  ];
+    const tBody = submittedData?.map((val, ind) => ({
+    SN: (
+      <span className="uppercase">
+        {ind + 1}
+      </span>
+    ),
+    image: (
+      <img
+        src={val?.studentImage?.url || "https://www.stcroixstoves.com/wp-content/uploads/2020/04/no.png"}
+        alt="avatar"
+        className="relative inline-block object-cover object-center w-6 h-6 rounded-lg"
+      />
+    ),
+    
+    name: val.staffName,
+    // <span className="uppercase text-deep-purple-500">{val.studentName}</span>,
+    email: val.email,
+    gender: val.gender,
+    // <span className="uppercase">{val.fatherName}</span>,
+    joiningDate: <span className="uppercase">{moment(val.joiningDate).format("DD-MM-YYYY")}</span>,
+    qualification: <span className="uppercase">{val.qualification}</span>,
+    contact:val.contact,
+    dateOfBirth:moment(val.dateOfBirth).format("DD-MM-YYYY"),
+    //  <span className="uppercase text-cyan-800">{val.contact}</span>,
+    salary: <span className="uppercase  text-cyan-800">{val?.salary}</span>,
+    // joiningDate: <span className="uppercase  text-deep-purple-700">{moment(val?.joiningDate).format("DD-MMM-YYYY")}</span>,
+    // // feeStatus: <span className="uppercase">{val.feeStatus}</span>,
+    // action: (
+    //   <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
+    //     🖨️
+    //   </span>
+    // ),
+  }));
   return (
-    <div className="mx-auto p-3">
-      <h1 className="text-4xl font-bold mb-4 uppercase text-center hover-text" style={{ color: currentColor }}>
-        All Staff Here
-      </h1>
-      <Button name="Add Staff" onClick={openModal} />
+    <div className="">
+       <PageHeaderWithBreadcrumb
+              breadcrumbItems={BreadcrumbList.admission}
+              title="All Staff"
+            />
 
+                <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2 mb-4">
+      <Button name="Add Staff" onClick={openModal} />
+</div>
       <Modal setIsOpen={closeModal} isOpen={isModalOpen} title="Create Staff" maxWidth="100px">
         <div className="p-2">
           <ReactInput type="text" name="fullName" label="Name" 
@@ -186,286 +240,11 @@ function Create_Staff() {
           </div>
         </div>
       </Modal>
-
-      <DynamicDataTable data={submittedData} handleDelete={handleDelete} />
+ <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" />
+      {/* <DynamicDataTable data={submittedData} handleDelete={handleDelete} /> */}
     </div>
   );
 }
 
 export default Create_Staff;
 
-
-
-// import React, { useState, useEffect } from "react";
-// import { toast } from "react-toastify";
-// import axios from "axios";
-// import '../../../Dynamic/Form/FormStyle.css'
-// import { useStateContext } from "../../../contexts/ContextProvider";
-// import DynamicDataTable from "./DataTable";
-// import Button from "../../../Dynamic/utils/Button";
-// import Modal from "../../../Dynamic/Modal";
-// import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
-// import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
-// import { adminRoutestaff } from "../../../Network/AdminApi";
-
-// function Create_Staff() {
-//   const authToken = localStorage.getItem("token");
-//   const { currentColor,setIsLoader } = useStateContext();
-//   const [formData, setFormData] = useState({
-//     fullName: "",
-//     employeeId: "",
-//     email: "",
-//     password: "",
-//     dateOfBirth: "",
-//     qualification: "",
-//     salary: "",
-//     gender: "",
-//     joiningDate: "",
-//     address: "",
-//     contact: "",
-//     image: null,
-//   });
-//   const [submittedData, setSubmittedData] = useState([]);
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   useEffect(() => {
-//     // Fetch data from the server when the component mounts
-//     axios.get('https://dvsserver.onrender.com/api/v1/adminRoute/getAllEmployees', {
-//       withCredentials: true,
-//       headers: {
-//         Authorization: `Bearer ${authToken}`,
-//       }, // Set withCredentials to true
-//     })
-//       .then((response) => {
-
-//         if (Array.isArray(response.data.allEmployee)) {
-//           // Update the state with the array
-//           setSubmittedData(response.data.allEmployee);
-//         } else {
-//           console.error("Data format is not as expected:", response.data);
-//         }
-//       })
-
-//       .catch((error) => {
-//         console.error("Error fetching data:", error);
-//       });
-//   }, []);
-
-//   const handleFieldChange = (fieldName, value) => {
-//     setFormData({
-//       ...formData,
-//       [fieldName]: value,
-//     });
-//   };
-
-//   const handleImageChange = (e) => {
-//     const file = e.target.files[0];
-//     if (file) {
-//       setFormData({
-//         ...formData,
-//         image: file,
-//       });
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     setIsLoader(true)
-//     const formDataToSend = new FormData();
-//     Object.entries(formData).forEach(([key, value]) => {
-//       if (key !== "image") {
-//         formDataToSend.append(key, String(value));
-//       }
-//     });
-//     formDataToSend.append("image", formData.image);
-
-
-//     try {
-//       const response = await adminRoutestaff(formDataToSend)
-//       if(response?.success){
-//         toast.success(response?.message)
-//         closeModal();
-//       }
-//       else{
-//         toast.error(response?.message)
-//       }
-//     } catch (error) {
-//       console.log("error",error)
-//     }finally{
-//       closeModal();
-//       setIsLoader(false)
-//     }
-
-//   };
- 
-//   const handleDelete = (email) => {
-//     axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee`, { email }, {
-//       withCredentials: true,
-//       headers: {
-//         Authorization: `Bearer ${authToken}`,
-//       },
-//     })
-//       .then((response) => {
-//         const updatedData = submittedData.filter((item) => item.email !== email);
-//         setSubmittedData(updatedData);
-
-//         toast.success("Staff data deleted successfully");
-//       })
-//       .catch((error) => {
-
-//         console.error("Error deleting Staff data:", error);
-//         toast.error("An error occurred while deleting the staff data.");
-//       });
-//   };
-
-//   const openModal = () => {
-//     setIsModalOpen(true);
-//   };
-
-//   const closeModal = () => {
-//     setIsModalOpen(false);
-//   };
-
-
-
-//   return (
-//     <div className="  mx-auto p-3">
-//       <h1
-//         className="text-4xl font-bold mb-4 uppercase text-center  hover-text "
-//         style={{ color: currentColor }}
-//       >All Staff Here</h1>
-//       <Button name="Add Staff"
-//         onClick={openModal}
-//       />
-
-
-//       <Modal
-//         setIsOpen={() => setIsModalOpen(false)}
-//         isOpen={isModalOpen} title={" Create Staff"} maxWidth="100px">
-//         <div className="p-2">
-       
-//          <ReactInput
-//                       type="text"
-//                       name="fullName"
-//                       // required={true}
-//                       label="Name"
-//                       onChange={handleChange}
-//                       value={payload?.fullName}
-//                     />
-//          <ReactInput
-//                       type="text"
-//                       name="employeeId"
-//                       // required={true}
-//                       label="Employee ID"
-//                       onChange={handleChange}
-//                       value={payload?.employeeId}
-//                     />
-//          <ReactInput
-//                       type="email"
-//                       name="email"
-//                       // required={true}
-//                       label="Email"
-//                       onChange={handleChange}
-//                       value={payload?.email}
-//                     />
-//          <ReactInput
-//                       type="password"
-//                       name="password"
-//                       // required={true}
-//                       label="Password"
-//                       onChange={handleChange}
-//                       value={payload?.password}
-//                     />
-//          <ReactInput
-//                       type="date"
-//                       name="dateOfBirth"
-//                       // required={true}
-//                       label="Date of Birth"
-//                       onChange={handleChange}
-//                       value={payload?.dateOfBirth}
-//                     />
-//          <ReactInput
-//                       type="text"
-//                       name="qualification"
-//                       // required={true}
-//                       label="Qualification"
-//                       onChange={handleChange}
-//                       value={payload?.qualification}
-//                     />
-//          <ReactInput
-//                       type="number"
-//                       name="salary"
-//                       // required={true}
-//                       label="Salary"
-//                       onChange={handleChange}
-//                       value={payload?.salary}
-//                     />
-//          <ReactSelect
-//                       name="Gender"
-//                       value={payload?.gender}
-//                       handleChange={handleChange}
-//                       label="Gender"
-//                       dynamicOptions={[
-//                         { label: "Male", value: "Male" },
-//                         { label: "Female", value: "Female" },
-//                         { label: "Other", value: "Other" },
-//                       ]}
-//                     />
-//                     <ReactInput
-//                       type="date"
-//                       name="joiningDate"
-//                       // required={true}
-//                       label="Joining Date"
-//                       onChange={handleChange}
-//                       value={payload?.joiningDate}
-//                     />
-//                     <ReactInput
-//                       type="text"
-//                       name="address"
-//                       // required={true}
-//                       label="Address"
-//                       onChange={handleChange}
-//                       value={payload?.address}
-//                     />
-//                     <ReactInput
-//                       type="tel"
-//                       name="contact"
-//                       // required={true}
-//                       label="Contact"
-//                       onChange={handleChange}
-//                       value={payload?.contact}
-//                     />
-//                     <ReactInput
-//                       type="file"
-//                       name="image"
-//                       // required={true}
-//                       label="Image"
-//                       // accept: "image/*"
-//                       onChange={handleChange}
-//                       value={payload?.image}
-//                     />
-//         <div
-//           style={{ display: "flex", justifyContent: "flex-end", padding: "10px" }}
-//         >
-//           <Button
-//             onClick={handleSubmit}
-
-//             name="Submit"
-
-//           />
-
-//           <Button onClick={closeModal}
-
-//             name="Cancel"
-//           />
-
-//         </div>
-//         </div>
-//       </Modal>
-
-
-//       <DynamicDataTable data={submittedData} handleDelete={handleDelete} />
-//     </div>
-//   );
-// }
-
-// export default Create_Staff;

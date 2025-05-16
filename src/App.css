@@ -794,8 +794,8 @@ width: 270px;
     display: none !important;
   }
 } */
-:root {
-    /* --orientation: portrait; */
+/* :root {
+    --orientation: portrait;
      --orientation: landscape;
 }
    
@@ -805,7 +805,7 @@ width: 270px;
     }
 
 
-}
+} */
      /* .print-page-landscape {
   width: 794px;
   height: 1123px;

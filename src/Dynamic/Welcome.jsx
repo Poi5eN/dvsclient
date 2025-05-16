@@ -52,10 +52,10 @@ const Welcome = ({teacherRoleData}) => {
 
   return (
     <div
-      className="flex items-center justify-between text-white p-5 rounded-lg shadow-lg md:col-span-2"
+      className={`flex items-center justify-between text-white p-5 rounded-lg shadow-lg md:col-span-2`}
       style={{
-        background:currentColor
-        // background: `linear-gradient(to right, ${currentColor}, ${"#ffffff"})`,
+        // background:currentColor
+        background: `linear-gradient(to right, ${currentColor}, ${"#fafcfd"})`,
       }}
     >
       <div className="py-1">

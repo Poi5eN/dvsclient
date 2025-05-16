@@ -169,14 +169,14 @@ export const links = [
   // },
 
   
-  // {
-  //     name: 'Employee',
-  //     icon: <MdWork />,
-  //     children: [
-  //         { name: 'Staff', link: 'staff' },
-  //         { name: 'Wages', link: 'wages' },
-  //     ],
-  // },
+  {
+      name: 'Employee',
+      icon: <MdWork />,
+      children: [
+          { name: 'Staff', link: 'staff' },
+          { name: 'Wages', link: 'wages' },
+      ],
+  },
   {
       name: 'Exam System',
       icon: <ImBookmarks />,

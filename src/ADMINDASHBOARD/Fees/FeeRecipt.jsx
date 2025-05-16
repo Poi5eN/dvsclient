@@ -130,41 +130,41 @@ console.log("modalData?.status",modalData)
         </div>
         <div className="flex justify-between text-[12px] dark:text-white">
           <div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Rec.No.: <strong>{feeReceiptNumber}</strong>
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Name:{" "}
               <strong>{isUnified ? unifiedStudentNames?.toUpperCase() : studentName?.toUpperCase()}</strong>
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Class:{" "}
               <strong>{isUnified ? unifiedClasses : studentClass}</strong>
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               S/D. of: <strong>{fatherName?.toUpperCase()}</strong>
             </div>
             {transactionId.length > 4 && (
-              <div className="text-[14px]">
+              <div className="text-[12px]">
                 checkBook/transactionId: <strong>{transactionId}</strong>
               </div>
             )}
           </div>
           <div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Date: <strong>{moment(normalizedData.date).format("DD-MM-YYYY")}</strong>
               {/* Date: <strong>{date()}</strong> */}
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Adm No:{" "}
               <strong>
                 {isUnified ? unifiedAdmissionNumbers : admissionNumber}
               </strong>
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Mode: <strong>{paymentMode}</strong>
             </div>
-            <div className="text-[14px]">
+            <div className="text-[12px]">
               Month: <strong>{regularFees.map((addFee, index) => (addFee?.month))}</strong>
             </div>
           </div>
@@ -173,31 +173,31 @@ console.log("modalData?.status",modalData)
           <table className="min-w-full leading-normal">
             <thead>
               <tr>
-                <th className="border border-black pl-2 text-[14px] text-start">FEE HEAD</th>
-                <th className="border border-black pl-2 text-[14px]">Month</th>
-                <th className="border border-black pl-2 text-[14px] text-start">AMOUNT (Rs.)</th>
-                <th className="border border-black pl-2 text-[14px] text-start">DUES</th>
-                {/* <th className="border border-black pl-2 text-[14px] text-start">STATUS</th> */}
+                <th className="border border-black pl-2 text-[12px] text-start">FEE HEAD</th>
+                <th className="border border-black pl-2 text-[12px]">Month</th>
+                <th className="border border-black pl-2 text-[12px] text-start">AMOUNT (Rs.)</th>
+                <th className="border border-black pl-2 text-[12px] text-start">DUES</th>
+                {/* <th className="border border-black pl-2 text-[12px] text-start">STATUS</th> */}
               </tr>
             </thead>
             {regularFees.length > 0 && (
               <tbody>
                 {regularFees.map((addFee, index) => (
                   <tr key={`reg-${index}`}>
-                    <td className="border border-black pl-2 text-[14px]">
+                    <td className="border border-black pl-2 text-[12px]">
                       FEE
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    <td className="border border-black pl-2 text-[12px]">
                       {addFee.month ? addFee.month: ""}
                     </td>
-                    <td className="border border-black pl-2 text-[14px] text-end">
+                    <td className="border border-black pl-2 text-[12px] text-end">
                       {addFee.feeStructureAmount?.toFixed(2)|| 0}
                       {/* {addFee.paidAmount || 0} */}
                     </td>
-                    <td className="border border-black pl-2 text-[14px] text-red-300 text-end">
+                    <td className="border border-black pl-2 text-[12px] text-red-300 text-end">
                       {addFee.dueAmount?.toFixed(2) || "0.00"}
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[12px]">
                       {addFee.status || ""}
                     </td> */}
                   </tr>
@@ -209,20 +209,20 @@ console.log("modalData?.status",modalData)
                 {console.log("additionalFees",additionalFees)}
                 {additionalFees.map((addFee, index) => (
                   <tr key={`add-${index}`}>
-                    <td className="border border-black pl-2 text-[14px]">
+                    <td className="border border-black pl-2 text-[12px]">
                       {addFee.name || ""}
                     </td>
-                    <td className="border border-black pl-2 text-[14px]">
+                    <td className="border border-black pl-2 text-[12px]">
                       {addFee.month==="N/A"?"" :addFee.month}
                     </td>
-                    <td className="border border-black pl-2 text-[14px] text-end">
+                    <td className="border border-black pl-2 text-[12px] text-end">
                       {addFee.feeStructureAmount?.toFixed(2) || "0.00"}
                       {/* {addFee.paidAmount || 0} */}
                     </td>
-                    <td className="border border-black pl-2 text-[14px] text-red-300 text-end">
+                    <td className="border border-black pl-2 text-[12px] text-red-300 text-end">
                       {addFee.dueAmount?.toFixed(2) || "0.00"}
                     </td>
-                    {/* <td className="border border-black pl-2 text-[14px]">
+                    {/* <td className="border border-black pl-2 text-[12px]">
                       {addFee.status || ""}
                     </td> */}
                   </tr>
@@ -234,7 +234,7 @@ console.log("modalData?.status",modalData)
           <h1 className="text-center">No Fee</h1>
         )}
         <div className="mt-1">
-          <table className="w-full border border-black text-[14px]">
+          <table className="w-full border border-black text-[12px]">
             <tbody>
               <tr>
                 <td className="border border-black pl-2">Total Fee Amount.</td>
@@ -262,13 +262,13 @@ console.log("modalData?.status",modalData)
           </table>
         </div>
         <div className="border-black p-2 border-1 my-2">
-          <p className="text-[14px] font-bold">
+          <p className="text-[12px] font-bold">
             Rupees {toWords(Repees()).toUpperCase()} ONLY
           </p>
-          <p className="text-[14px]">
+          <p className="text-[12px]">
             Remarks: <strong>{remark}</strong>
           </p>
-          <div className="flex justify-between text-[14px]">
+          <div className="flex justify-between text-[12px]">
             <div>Fee Collected: ................</div>
             <div>Authorised sign</div>
           </div>
@@ -397,33 +397,33 @@ export default FeeRecipt;
 //             </div>
 //             <div className="flex justify-between text-[12px] dark:text-white">
 //               <div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Rec.No.: <strong>{modalData.feeReceiptNumber}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Name: <strong>{modalData.studentName}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Class: <strong> {modalData.studentClass}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   S/D. of: <strong>{modalData?.fatherName}</strong>
 //                 </div>
 //                 {
-//                 modalData.transactionId.length>4 &&  <div className="text-[14px]">
+//                 modalData.transactionId.length>4 &&  <div className="text-[12px]">
 //                 checkBook/transactionId: <strong>{modalData.transactionId}</strong>
 //                </div>
 //                 }
                
 //               </div>
 //               <div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Date: <strong>{date()}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Adm No: <strong>{modalData.admissionNumber}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Mode: <strong>{modalData.paymentMode}</strong>
 //                 </div>
                
@@ -433,20 +433,20 @@ export default FeeRecipt;
 //               <table class="min-w-full leading-normal">
 //                 <thead>
 //                   <tr>
-//                     <th class="border border-black pl-2 text-[14px]">Name</th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">Name</th>
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Month
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Amount
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Dues
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Status{" "}
 //                     </th>
@@ -457,22 +457,22 @@ export default FeeRecipt;
 //                   <tbody>
 //                     {modalData.regularFees.map((addFee) => (
 //                       <tr>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           FEE{" "}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.month}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.paidAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.dueAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.status}
 //                         </td>
 //                       </tr>
@@ -483,20 +483,20 @@ export default FeeRecipt;
 //                   <tbody>
 //                     {modalData.additionalFees.map((addFee) => (
 //                       <tr>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.name}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.month}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.paidAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.dueAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.status}
 //                         </td>
 //                       </tr>
@@ -509,7 +509,7 @@ export default FeeRecipt;
 //             )}
 
 //             <div class="mt-1">
-//               <table class="w-full border border-black text-[14px]">
+//               <table class="w-full border border-black text-[12px]">
 //                 <tbody>
 //                 <tr>
 //                     <td class="border border-black pl-2">Total Fee Amount.</td>
@@ -546,13 +546,13 @@ export default FeeRecipt;
 //             </div>
 
 //            <div className="border-black p-1 border-1 my-2">
-//            <p class="text-[14px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
-//             <p className="text-[14px]">
+//            <p class="text-[12px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
+//             <p className="text-[12px]">
 //               {" "}
 //               Remarks:{" "}
 //               <strong className="">{modalData.remark}</strong>
 //             </p>
-//             <div class="flex justify-between text-[14px]">
+//             <div class="flex justify-between text-[12px]">
 //               <div>Fee Collected: ................</div>
 //               <div>Authorised sign</div>
 //             </div>
@@ -596,33 +596,33 @@ export default FeeRecipt;
 //             </div>
 //             <div className="flex justify-between text-[12px] dark:text-white">
 //               <div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Rec.No.: <strong>{modalData.feeReceiptNumber}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Name: <strong>{modalData.studentName}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Class: <strong> {modalData.studentClass}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   S/D. of: <strong>{modalData?.fatherName}</strong>
 //                 </div>
 //                 {
-//                 modalData.transactionId.length>4 &&  <div className="text-[14px]">
+//                 modalData.transactionId.length>4 &&  <div className="text-[12px]">
 //                 checkBook/transactionId: <strong>{modalData.transactionId}</strong>
 //                </div>
 //                 }
                
 //               </div>
 //               <div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Date: <strong>{date()}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Adm No: <strong>{modalData.admissionNumber}</strong>
 //                 </div>
-//                 <div className="text-[14px]">
+//                 <div className="text-[12px]">
 //                   Mode: <strong>{modalData.paymentMode}</strong>
 //                 </div>
                
@@ -632,20 +632,20 @@ export default FeeRecipt;
 //               <table class="min-w-full leading-normal">
 //                 <thead>
 //                   <tr>
-//                     <th class="border border-black pl-2 text-[14px]">Name</th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">Name</th>
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Month
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Amount
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Dues
 //                     </th>
-//                     <th class="border border-black pl-2 text-[14px]">
+//                     <th class="border border-black pl-2 text-[12px]">
 //                       {" "}
 //                       Status{" "}
 //                     </th>
@@ -656,22 +656,22 @@ export default FeeRecipt;
 //                   <tbody>
 //                     {modalData.regularFees.map((addFee) => (
 //                       <tr>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           FEE{" "}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.month}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.paidAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.dueAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.status}
 //                         </td>
 //                       </tr>
@@ -682,20 +682,20 @@ export default FeeRecipt;
 //                   <tbody>
 //                     {modalData.additionalFees.map((addFee) => (
 //                       <tr>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.name}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.month}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {" "}
 //                           {addFee.paidAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.dueAmount}
 //                         </td>
-//                         <td class="border border-black pl-2 text-[14px]">
+//                         <td class="border border-black pl-2 text-[12px]">
 //                           {addFee.status}
 //                         </td>
 //                       </tr>
@@ -708,7 +708,7 @@ export default FeeRecipt;
 //             )}
 
 //             <div class="mt-1">
-//               <table class="w-full border border-black text-[14px]">
+//               <table class="w-full border border-black text-[12px]">
 //                 <tbody>
 //                 <tr>
 //                     <td class="border border-black pl-2">Total Fee Amount.</td>
@@ -745,13 +745,13 @@ export default FeeRecipt;
 //             </div>
 
 //            <div className="border-black p-2 border-1 my-2">
-//            <p class="text-[14px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
-//             <p className="text-[14px]">
+//            <p class="text-[12px] font-bold">Rupees {toWords(Repees()).toUpperCase()} ONLY</p>
+//             <p className="text-[12px]">
 //               {" "}
 //               Remarks:{" "}
 //               <strong className="">{modalData.remark}</strong>
 //             </p>
-//             <div class="flex justify-between text-[14px]">
+//             <div class="flex justify-between text-[12px]">
 //               <div>Fee Collected: ................</div>
 //               <div>Authorised sign</div>
 //             </div>
