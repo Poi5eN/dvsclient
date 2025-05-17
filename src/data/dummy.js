@@ -65,6 +65,8 @@ export const links = [
           { name: 'Active Student', link: 'allstudent',id :22 , icon: <PiStudentFill />,},
           { name: 'Deactive Student', link: 'deactive-student',id :22 , icon: <PiStudentFill />,},
           { name: 'Bulk Edit', link: 'bulkedit' ,id :23 , icon: <GiTakeMyMoney />,},
+          { name: 'Promotion', link: 'promotion' ,id :23 , icon: <FaArrowDownUpAcrossLine />,},
+         
           // { name: 'Student History', link: 'StudentHistory' ,id :23 , icon: <GiTakeMyMoney />,},
           // { name: 'Late Fine', link: 'lateFine' ,id :23 , icon: <GiTakeMyMoney />,},
           // { name: 'Specific Fee', link: 'specificFee' ,id :23 , icon: <GiTakeMyMoney />,},
@@ -111,13 +113,23 @@ export const links = [
 
 },
   
-  {
-      name: 'Teachers',
-      icon: <GiTeacher />,
-      children: [
-          { name: 'All Teachers', link: 'allteachers' , icon: <GiTeacher />,},
-          { name: 'Payment', link: 'payment' ,icon: <GiTakeMyMoney />},
+  // {
+  //     name: 'Teachers',
+  //     icon: <GiTeacher />,
+  //     children: [
+  //         { name: 'All Teachers', link: 'allteachers' , icon: <GiTeacher />,},
+  //         { name: 'Payment', link: 'payment' ,icon: <GiTakeMyMoney />},
          
+  //     ],
+  // },
+    
+  {
+      name: 'Employee',
+      icon: <MdWork />,
+      children: [
+        { name: 'Teachers', link: 'allteachers' , icon: <GiTeacher />,},
+          { name: 'Staff', link: 'staff' , icon: <GiTeacher />,},
+          // { name: 'Wages', link: 'wages',  icon: <GiTeacher />,},
       ],
   },
 
@@ -135,12 +147,22 @@ export const links = [
 //     link: 'exam-system',
 
 // },
-{
-  name: 'Account',
-  icon: <MdAccountBalanceWallet />,
-  link: 'account',
 
-},
+  {
+      name: 'Account',
+      icon: <MdWork />,
+      children: [
+        { name: 'Dsshboard', link: 'account' , icon: <MdAccountBalanceWallet />,},
+          { name: 'Staff Payment', link: 'staffpayment' , icon: <GiTeacher />,},
+          // { name: 'Wages', link: 'wages',  icon: <GiTeacher />,},
+      ],
+  },
+// {
+//   name: 'Account',
+//   icon: <MdAccountBalanceWallet />,
+//   link: 'account',
+
+// },
   // {
   //     name: 'Account',
   //     icon: <MdAccountBalanceWallet />,
@@ -168,15 +190,7 @@ export const links = [
   //     ],
   // },
 
-  
-  {
-      name: 'Employee',
-      icon: <MdWork />,
-      children: [
-          { name: 'Staff', link: 'staff' },
-          { name: 'Wages', link: 'wages' },
-      ],
-  },
+
   {
       name: 'Exam System',
       icon: <ImBookmarks />,
@@ -229,11 +243,11 @@ export const links = [
 // { name: 'Udise', link: 'udise' ,icon: <FaIdCard />},
 // { name: 'Admit Card', link: 'admitcards' ,icon: <BsFillCreditCard2FrontFill />},
 // { name: 'All Form', link: 'allforms' ,icon: <FaWpforms />},
-{
-  name: 'Promotion',
-  icon: <FaArrowDownUpAcrossLine />, link: 'promotion'
+// {
+//   name: 'Promotion',
+//   icon: <FaArrowDownUpAcrossLine />, link: 'promotion'
 
-},
+// },
 {
   name: 'UserDetails',
   icon: <FaArrowDownUpAcrossLine />, link: 'userdetails'

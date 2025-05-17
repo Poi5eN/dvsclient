@@ -101,7 +101,7 @@ function AllStudent() {
     }
   };
 useEffect(()=>{
-  getStudent()
+  // getStudent()
 },[reRender])
 
   useEffect(() => {

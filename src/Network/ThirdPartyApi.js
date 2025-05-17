@@ -30,7 +30,7 @@ export const thirdpartyscholars = async (SchoolID,selectedClass,selectedSection)
     };
     const data = await makeApiRequest(
       `${apiUrls?.thirdpartyscholars}?schoolId=${SchoolID}${
-        selectedClass ? `&class=${selectedClass}&section=${selectedSection}&limit=2000` : ""
+        selectedClass ? `&class=${selectedClass}&section=${selectedSection}&limit=2000` : "&limit=2000"
       }`,
       option
     );

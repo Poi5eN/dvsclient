@@ -974,6 +974,21 @@ export const getstaffBYID = async (ID) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const editStaffNew = async (payload,email) => {
+  // setIsLoader(true)
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.adminRoutestaff}/${email}`, option);
+    // setIsLoader(false)
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+
 export const editStaff = async (payload,ID) => {
   // setIsLoader(true)
   try {

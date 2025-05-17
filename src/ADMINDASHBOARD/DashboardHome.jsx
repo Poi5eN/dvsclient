@@ -422,6 +422,11 @@ const DashboardHome = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const active = allStudents?.filter(s => s.status === "active").length;
+const deactive = allStudents?.length - active;
+const boys = allStudents.filter(s => s.gender === "Male" && s.status === "active").length;
+const girls = active - boys;
+
 const statsData = [
   {
     id: 1,
@@ -507,39 +512,6 @@ const StatsCard = ({ value, label, gradient, sparklineSvgPath }) => {
     </div>
   );
 };
-// const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
-//   // const numericValue = typeof value === "number" ? value : parseFloat(value?.toString().replace(/[^\d.-]/g, "")) || 0;
-//   // const animatedCount = UseCountUp(numericValue, 1000);
-
-//   return (
-//     <div 
-//       className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
-//     >
-//       <div className="flex flex-col space-y-0.5">
-//         <span className="text-3xl font-bold leading-tight">
-//           {typeof value === "string" && value.includes("₹")
-//             ? `₹ ${animatedCount.toLocaleString("en-IN")}`
-//             : animatedCount}
-//         </span>
-//         <span className="text-sm uppercase tracking-wider font-medium">{label}</span>
-//       </div>
-
-//       <div className="w-[80px] h-[40px]">
-//         <svg viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-//           <path
-//             d={sparklineSvgPath}
-//             stroke="white"
-//             strokeWidth="3.5"
-//             fill="none"
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//             style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }}
-//           />
-//         </svg>
-//       </div>
-//     </div>
-//   );
-// };
 
 
 const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
@@ -570,33 +542,6 @@ const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
   );
 };
 
-// const StatsCard = ({ value, label, gradient, sparklineSvgPath }) => {
-//   return (
-//     <div 
-//       className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
-//     >
-
-//       <div className="flex flex-col space-y-0.5">
-//         <span className="text-3xl font-bold leading-tight">{value}</span>
-//         <span className="text-sm uppercase tracking-wider font-medium">{label}</span>
-//       </div>
- 
-//       <div className="w-[80px] h-[40px]"> 
-//         <svg viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-//             <path 
-//               d={sparklineSvgPath}
-//               stroke="white"
-//               strokeWidth="3.5"
-//               fill="none"
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }} 
-//             />
-//         </svg>
-//       </div>
-//     </div>
-//   );
-// };
   return (
     <>
       <div>
@@ -644,10 +589,19 @@ const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
             </div>
 
             <div
-              className="bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-md  p-3 gap-2 flex justify-center items-center flex-col"
-              style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
+              className="bg-white shadow-lg dark:text-gray-200 dark:bg-secondary-dark-bg rounded-md  p-3 gap-2 flex justify-center items-center flex-col"
+              // style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
             >
-              <PieChart allStudents={allStudents} />
+              {/* <PieChart allStudents={allStudents} /> */}
+              <PieChart
+  chartTitle=" Students Distribution"
+  // data={[active, deactive]}
+  // labels={[`Active: ${active}`, `Deactive: ${deactive}`]}
+  // colors={["#1d8348", "#1c2833"]}
+  data={[active, deactive,boys,girls]}
+  labels={[`Active: ${active}`, `Deactive: ${deactive}`,`Boys: ${boys}`, `Girls: ${girls}`]}
+  colors={["#1d8348", "#1c2833","#2874a6", "#DE3163"]}
+/>
             </div>
            
           </div>

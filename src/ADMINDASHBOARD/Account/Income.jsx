@@ -16,21 +16,12 @@ import FeeChart from "./FeeChart";
 import AllIncomeChart from "./Income/AllIncomeChart";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import Button from "../../Dynamic/utils/Button";
+import DatePicker from "../../Dynamic/DatePicker/DatePicker";
+import EarningChart from "../../CHART/EarningChart";
+import PieChart from "../../pages/Charts/PieChart";
 
 
-// const DropDown = ({ currentMode }) => (
-//   <div className="w-28 border-1 border-color px-2 py-1 rounded-md">
-//     <DropDownListComponent
-//       id="time"
-//       fields={{ text: "Time", value: "Id" }}
-//       style={{ border: "none", color: currentMode === "Dark" && "white" }}
-//       value="1"
-//       dataSource={dropdownData}
-//       popupHeight="220px"
-//       popupWidth="120px"
-//     />
-//   </div>
-// );
 const Income = () => {
   const authToken = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -39,6 +30,12 @@ const Income = () => {
   const [studentCount, setStudentCount] = useState([]);
   const [parentCount, setParentCount] = useState([]);
   const [earningData, setEarningData] = useState([]);
+  const [values,setValues]=useState(
+    {
+fromDate:new Date(),
+toDate:new Date(),
+    }
+  )
   const [schoolInfo, setSchoolInfo] = useState({
     schoolImage: "",
     schoolName: "",
@@ -203,109 +200,244 @@ const Income = () => {
       window.removeEventListener("popstate", handlePopstate);
     };
   }, [location.pathname]);
-  const Income = [
-    {
-      name: "Inventry",
-      // Count: admissionCount,
-      // logo: admission,
-    },
-    {
-      name: "Transport",
-      // Count: allStudents?.length,
-      // logo: student,
-    },
-    {
-      name: "Regular Fee",
-      // Count: teacherCount,
-      // logo: teacherlogo,
-    },
-    {
-      name: "Additional Fee",
-      // Count: `₹ ${monthlyFee?.reduce((acc, num) => acc + num, 0) || 0}`,
-      // logo: fees,
-    },
-  ];
-  const Expanse = [
-    {
-      name: "Inventry Purchase",
-      // Count: admissionCount,
-      // logo: admission,
-    },
-    {
-      name: "Teacher Salary",
-      // Count: allStudents?.length,
-      // logo: student,
-    },
-    {
-      name: "Staff Salary",
-      // Count: teacherCount,
-      // logo: teacherlogo,
-    },
-    {
-      name: "Extra Purchase",
-      // Count: `₹ ${monthlyFee?.reduce((acc, num) => acc + num, 0) || 0}`,
-      // logo: fees,
-    },
-  ];
+    const handleDateCange = (dateValue, name) => {
+    console.log(`Updating state for ${name}:`, dateValue); // For debugging
+    setValues((prevFormData) => ({
+        ...prevFormData,
+        [name]: dateValue, // Update the state with the received date object (or null)
+    }));
+};
+const formatCurrency = (value) => {
+    if (typeof value === 'number') {
+      return `₹${value.toFixed(2)}`; // Example: $10.00
+    }
+    return value; // If it's already a string (e.g., "$1,200")
+  };
+const Income = [
+  {
+    name: "Inventory",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-pink-400 to-pink-600",
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Transport",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-blue-400 to-blue-600",
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Regular Fee",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-green-400 to-green-600",
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Additional Fee",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-purple-400 to-purple-600",
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  }
+];
+ const Expanse = [
+  {
+    name: "Inventry Purchase",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-red-500 to-red-700", // Example gradient for expenses
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Teacher Salary",
+    total: 10, // Assuming these are in some currency unit
+    paid: 4,
+    dues: 6,
+    gradient: "from-orange-500 to-orange-700", // Different gradient
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Staff Salary",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-amber-500 to-amber-700", // Yet another gradient
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+  {
+    name: "Extra Purchase",
+    total: 10,
+    paid: 4,
+    dues: 6,
+    gradient: "from-cyan-500 to-cyan-700", // And another
+    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
+  },
+];
   return (
     <div className="mt-12">
        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Income"/>
+                       <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2">
+     <DatePicker
+                            className="custom-calendar"
+                            placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
+                            label={"From Date"} // Corrected typo
+                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                            name="fromDate"
+                            id="fromDate"
+                             value={values?.fromDate ? new Date(values.fromDate) : null}
+                            handleChange={(e) => handleDateCange(e.value, "fromDate")}
+                            // showaTime // Pass prop
+                            hourFormat="12" // Pass prop
+                           
+                        />
+     <DatePicker
+                            className="custom-calendar"
+                            placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
+                            label={"To Date"} // Corrected typo
+                            respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+                            name="toDate"
+                            id="toDate"
+                             value={values?.toDate ? new Date(values.toDate) : null}
+                            handleChange={(e) => handleDateCange(e.value, "toDate")}
+                            // showaTime // Pass prop
+                            hourFormat="12" // Pass prop
+                           
+                        />
+      <Button name="Search" 
+      // onClick={openModal}
+       />
+</div>
        <div className="bg-white p-2 rounded-lg shadow border border-gray-200 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {Income?.map((val) => (
-              <div class="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg">
-                <div class="flex items-start justify-between">
-                  <div class="flex flex-col space-y-2">
-                    <span class="text-[#33ace0] font-bold">{val?.name}</span>
-                    <span class="text-lg font-semibold text-[#f05a28]">
-                      {val?.Count}
-                    </span>
-                  </div>
-                  <div class="rounded-md  ">
-                    <img src={val?.logo} alt="" className=" h-20" />
-                  </div>
-                </div>   
-              </div>
-            ))}
+           
+         {Income.map((val, idx) => (
+        <div
+          key={idx}
+          className={`p-4 text-white rounded-xl shadow-lg transition-transform transform hover:scale-105 bg-gradient-to-br ${val.gradient} w-full max-w-xs sm:max-w-none sm:w-auto md:w-64 lg:w-72 flex flex-col justify-between`} // Added max-width and some responsive width
+        >
+          {/* Top section: Name and Sparkline */}
+          <div className="flex items-start justify-between mb-3">
+            <h2 className="text-md font-semibold tracking-tight">{val.name}</h2>
+            <div className="w-16 h-8 ml-2 flex-shrink-0"> {/* Reduced SVG size */}
+              <svg
+                viewBox="0 0 100 35" // Keep viewBox for scaling
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
+              >
+                <path
+                  d={val.sparklineSvgPath}
+                  stroke="rgba(255,255,255,0.8)" // Slightly less opaque stroke
+                  strokeWidth="2.5" // Slightly thinner stroke
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.3))" }} // Softer shadow
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Bottom section: Stats */}
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-200">Total :</span>
+              <span className="text-sm font-bold">{formatCurrency(val.total)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-200">Paid :</span>
+              <span className="text-sm font-bold">{formatCurrency(val.paid)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-200">Dues :</span>
+              <span className="text-sm font-bold text-red-300">{formatCurrency(val.dues)}</span> {/* Example: Dues in a different color */}
+            </div>
+          </div>
+        </div>
+      ))}
        </div>
        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Expanse"/>
        <div className="bg-white p-2 rounded-lg shadow border border-gray-200 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {Expanse?.map((val) => (
-              <div class="p-4 transition-shadow border rounded-lg shadow-sm hover:shadow-lg">
-                <div class="flex items-start justify-between">
-                  <div class="flex flex-col space-y-2">
-                    <span class="text-[#33ace0] font-bold">{val?.name}</span>
-                    <span class="text-lg font-semibold text-[#f05a28]">
-                      {val?.Count}
-                    </span>
-                  </div>
-                  <div class="rounded-md  ">
-                    <img src={val?.logo} alt="" className=" h-20" />
-                  </div>
-                </div>   
-              </div>
-            ))}
+            
+             {Expanse.map((item, idx) => (
+         <div
+      className={`p-4 text-white rounded-xl shadow-lg transition-transform transform hover:scale-105 bg-gradient-to-br ${item.gradient} w-full max-w-xs sm:max-w-none sm:w-auto md:w-64 lg:w-72 flex flex-col justify-between`}
+    >
+      {/* Top section: Name and Sparkline */}
+      <div className="flex items-start justify-between mb-3">
+        <h2 className="text-md font-semibold tracking-tight">{item.name}</h2>
+        <div className="w-16 h-8 ml-2 flex-shrink-0">
+          <svg
+            viewBox="0 0 100 35"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <path
+              d={item.sparklineSvgPath}
+              stroke="rgba(255,255,255,0.8)"
+              strokeWidth="2.5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.3))" }}
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Bottom section: Stats */}
+      <div className="space-y-1 text-xs">
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-200">Total :</span>
+          <span className="text-sm font-bold">{formatCurrency(item.total)}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-200">Paid :</span>
+          <span className="text-sm font-bold">{formatCurrency(item.paid)}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="font-medium text-gray-200">Dues :</span>
+          <span className={`text-sm font-bold ${item.dues > 0 ? 'text-red-300' : 'text-green-300'}`}>
+            {formatCurrency(item.dues)}
+          </span>
+        </div>
+      </div>
+    </div>
+      ))}
        </div>
  
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-2  gap-2 p-3">
+      <div className="grid sm:grid-cols-1 md:grid-cols-3  gap-2 p-3">
         {/* <div className="bg-white  dark:text-gray-200 dark:bg-secondary-dark-bg  rounded-2xl p-3"> */}
+          <div>
+          <PageHeaderWithBreadcrumb title="Overall"/>
+          {/* <AllIncomeChart /> */}
+          <PieChart
+            // chartTitle=" Students Distribution"
+            data={[80,100]}
+            labels={[`Income: ${80}`, `Expanse: ${100}`]}
+            colors={["#008080", "#DE3163"]}
+          />
+          </div>
+          <div>
+          <PageHeaderWithBreadcrumb title="Income / Expanse"/>
+         <EarningChart />
+          </div>
+          <div>
+          <PageHeaderWithBreadcrumb title="Fees"/>
+          <AllIncomeChart />
+          </div>
+          <div>
+          <PageHeaderWithBreadcrumb title="Inventry %"/>
+          <AllIncomeChart />
+          </div>
           
-          <div>
-          <PageHeaderWithBreadcrumb title="Monthly Expanse"/>
-          <AllIncomeChart />
-          </div>
-          <div>
-          <PageHeaderWithBreadcrumb title="Monthly Income"/>
-          <AllIncomeChart />
-          </div>
-          <div>
-          <PageHeaderWithBreadcrumb title="Monthly Expanse %"/>
-          <AllIncomeChart />
-          </div>
-          <div>
-          <PageHeaderWithBreadcrumb title="Monthly Fee Dues"/>
-          <AllIncomeChart />
-          </div>
          
 
         {/* </div> */}
@@ -322,17 +454,3 @@ const Income = () => {
 };
 
 export default Income;
-
-
-// import React from 'react'
-// import Create_Income from './Create_Income'
-
-// function Income() {
-//   return (
-//     <div>
-//     <Create_Income/>
-//     </div>
-//   )
-// }
-
-// export default Income

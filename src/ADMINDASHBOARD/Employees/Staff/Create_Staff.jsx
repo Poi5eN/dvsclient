@@ -13,10 +13,15 @@ import { adminRoutestaff, getstaff } from "../../../Network/AdminApi";
   import moment from "moment/moment";
 import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
-
+import Edit from "./Edit";
+import { MdDelete, MdToggleOn, MdToggleOff } from "react-icons/md";
+import { FaEdit, FaEye, FaUsersCog } from "react-icons/fa"; // Added FaUsersCog
 function Create_Staff() {
   const authToken = localStorage.getItem("token");
   const { currentColor, setIsLoader } = useStateContext();
+  const [staffToEdit, setStaffToEdit] = useState(null);
+   const [isEditing, setIsEditing] = useState(false);
+   const [studentToView, setStudentToView] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     // employeeId: "",
@@ -37,6 +42,14 @@ function Create_Staff() {
 
   // Fetch all staff on component mount & when data changes
 
+
+    const handleCloseEdit = (shouldRefetch = false) => {
+    setIsEditing(false);
+    setStaffToEdit(null);
+    // if (shouldRefetch) {
+    //   fetchAllStudents();
+    // }
+  };
 
   const fetchEmployees = async () => {
     try {
@@ -99,8 +112,8 @@ function Create_Staff() {
 
   const handleDelete = async (email) => {
     try {
-      await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee`, 
-        { email },
+      await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee/${email}`, 
+        // { email },
         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
       );
 
@@ -116,6 +129,11 @@ function Create_Staff() {
     setIsModalOpen(true);
   };
 
+    const handleEditClick = (val) => {
+    setStaffToEdit(val);
+    setIsEditing(true);
+    setStudentToView(null);
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setFormData({
@@ -146,7 +164,7 @@ function Create_Staff() {
     { id: "contact", label: "Contact", width: "5%" },
     { id: "dateOfBirth", label: "DOB", width: "5%" },
     { id: "salary", label: "Salary", width: "5%" },
-    { id: "joiningDate", label: "Admission Date", width: "10%" },
+    { id: "dateOfBirth", label: "DOB", width: "10%" },
     { id: "action", label: "Action", width: "2%" },
   ];
     const tBody = submittedData?.map((val, ind) => ({
@@ -176,12 +194,37 @@ function Create_Staff() {
     salary: <span className="uppercase  text-cyan-800">{val?.salary}</span>,
     // joiningDate: <span className="uppercase  text-deep-purple-700">{moment(val?.joiningDate).format("DD-MMM-YYYY")}</span>,
     // // feeStatus: <span className="uppercase">{val.feeStatus}</span>,
-    // action: (
-    //   <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
-    //     🖨️
-    //   </span>
-    // ),
+    action: (
+      <div className="gap-2 w-full flex justify-between">
+      
+        <button
+                title="Edit "
+                onClick={() => handleEditClick(val)}
+                className="text-yellow-600 hover:text-yellow-800 text-lg"
+              >
+                <FaEdit />
+              </button>
+        <button
+                title="Delete "
+                onClick={() => handleDelete(val?.email)}
+                className="text-red-600 hover:text-red-800 text-lg"
+              >
+                <MdDelete />
+              </button>
+      </div>
+      // <span onClick={() => handlePrintClick(val)} className="cursor-pointer text-2xl">
+      //   🖨️
+      // </span>
+    ),
   }));
+    if (isEditing && staffToEdit) {
+    return (
+      <Edit
+        staffDetails={staffToEdit} // Corrected: Pass staff data to Edit component
+        onFinished={handleCloseEdit}
+      />
+    );
+  }
   return (
     <div className="">
        <PageHeaderWithBreadcrumb
@@ -189,7 +232,7 @@ function Create_Staff() {
               title="All Staff"
             />
 
-                <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2 mb-4">
+                <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap md:flex-row gap-2">
       <Button name="Add Staff" onClick={openModal} />
 </div>
       <Modal setIsOpen={closeModal} isOpen={isModalOpen} title="Create Staff" maxWidth="100px">
@@ -242,9 +285,11 @@ function Create_Staff() {
       </Modal>
  <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" />
       {/* <DynamicDataTable data={submittedData} handleDelete={handleDelete} /> */}
+      
     </div>
   );
 }
+
 
 export default Create_Staff;
 

@@ -246,7 +246,7 @@ try {
             value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("YYYY-MM-DD") : ""} // Format for display
             max={moment().format("YYYY-MM-DD")} // Prevent future dates
             /> */}
-            {console.log("studentData?.dateOfBirth",moment(studentData.dateOfBirth).format("DD-mm-yyyy"))}
+            {/* {console.log("studentData?.dateOfBirth",moment(studentData.dateOfBirth).format("DD-mm-yyyy"))} */}
               <DatePicker
                             className="custom-calendar"
                             placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
@@ -290,11 +290,12 @@ try {
         <ReactInput type="text" name="city" label="City" onChange={handleOnChange} value={studentData?.city || ""} />
         <ReactInput type="text" name="pincode" label="Pin Code" onChange={handleOnChange} value={studentData?.pincode || ""} />
         <ReactInput type="text" name="fatherName" label="Father's Name" onChange={handleOnChange} value={studentData?.fatherName || ""} />
+        <ReactInput type="text" name="transport" label="Transport" onChange={handleOnChange} value={studentData?.transport || ""} />
         <ReactInput type="text" name="motherName" label="Mother's Name" onChange={handleOnChange} value={studentData?.motherName || ""} />
         <ReactInput type="text" name="guardian" label="Guardian's Name" onChange={handleOnChange} value={studentData?.guardian || ""} />
         <ReactInput type="phone" name="parentContact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentContact || ""} />
         <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
-        <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} />
+        {/* <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} /> */}
         <ReactInput type="text" name="password" placeholder="Leave blank to keep unchanged" label="New Password (Optional)" onChange={handleOnChange} value={studentData?.password || ""} />
         {/* Removed duplicate parentContact */}
         <ReactInput type="text" name="rollNo" label="Roll No" onChange={handleOnChange} value={studentData?.rollNo || ""} />
@@ -331,7 +332,7 @@ try {
 
       </div>
       <div className="flex ">
-          {console.log(studentData.studentImage,"studentData.studentImage")}
+      
                                {/* Student Image */}
                     <ImageCaptureCrop
                         label="Student Photo"

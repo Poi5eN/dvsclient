@@ -140,7 +140,7 @@ const EarningChart = () => {
 
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <h2 className="dark:text-white text-[#01579b] dark:bg-secondary-dark-bg mx-auto text-base font-semibold mb-3 text-center"
       // style={{color:"red"}} // Use Tailwind for styling if possible
       >
