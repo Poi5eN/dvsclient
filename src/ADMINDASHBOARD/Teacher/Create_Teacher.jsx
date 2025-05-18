@@ -15,6 +15,7 @@ import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
 import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import Modal from "../../Dynamic/Modal";
 import ImageCaptureCrop from "../../Dynamic/Camera/ImageCaptureCrop";
+import StudentTable from "../../Dynamic/StudentTable";
 
 const authToken = localStorage.getItem("token");
 
@@ -452,7 +453,8 @@ function CreateTeacher() {
                     </div>
           </Modal>
 
-          <Table tBody={tBody} tHead={THEAD} />
+          <StudentTable tBody={tBody} tHead={THEAD} />
+          {/* <Table tBody={tBody} tHead={THEAD} /> */}
         </>
       ) : (
         <EditTeacher

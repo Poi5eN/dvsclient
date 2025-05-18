@@ -27,6 +27,7 @@ import StudentDetails from "./StudentDetails.jsx";
 import Button from "../../../Dynamic/utils/Button.jsx";
 import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb.jsx";
 import BreadcrumbList from "../../../Dynamic/BreadcrumbList.jsx";
+import StudentTable from "../../../Dynamic/StudentTable.jsx";
 
 function DeActiveStudent() {
   const { setIsLoader } = useStateContext();
@@ -367,7 +368,8 @@ const tBody = filteredData?.map((student, ind) => ({
         </div>
 
         {filteredData.length > 0 ? (
-          <Table tHead={THEAD} tBody={tBody} isSearch={true} />
+          <StudentTable tHead={THEAD} tBody={tBody} isSearch={true} />
+          // <Table tHead={THEAD} tBody={tBody} isSearch={true} />
         ) : (
           <NoDataFound message="No students found matching the criteria." />
         )}

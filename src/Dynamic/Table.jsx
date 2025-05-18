@@ -68,7 +68,7 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
       >
         <header className="px-5 py-1 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
           <h2
-            className="font-semibold text-slate-800 dark:text-slate-100 text-sm uppercase"
+            className="font-semibold text-slate-800 dark:text-slate-100 text-sm uppercase hidden sm:block"
             style={{ color: currentColor }}
           >
             {title}
@@ -180,55 +180,52 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
           )}
         </div> */}
         <div className="md:hidden px-4 py-2 space-y-4 max-h-[calc(100vh-210px)] overflow-y-auto">
-  {filteredData?.length > 0 ? (
-    filteredData.map((row, index) => {
-      const statusClasses = getStatusClasses(row.feeStatus);
-      return (
-        <div
-          key={index}
-          className={`rounded-md shadow-sm p-4 ${statusClasses.bg} ${statusClasses.text} border border-gray-200 dark:border-slate-600`}
-        >
-          {tHead.map((header) => (
-            <div
-              key={header.id}
-              className="flex justify-between items-center py-1 border-b last:border-none"
-            >
-              <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
-                {header.label}
-              </span>
-              <span
-                className={`text-sm font-medium text-right ${
-                  header.id === "name"
-                    ? "text-teal-600 dark:text-teal-400"
-                    : header.id === "class"
-                    ? "text-purple-600 dark:text-purple-400"
-                    : ""
-                }`}
-              >
-                {row[header.id] ?? "—"}
-              </span>
+          {filteredData?.length > 0 ? (
+            filteredData.map((row, index) => {
+              const statusClasses = getStatusClasses(row.feeStatus);
+              return (
+                <div
+                  key={index}
+                  className={`rounded-md shadow-sm p-4 ${statusClasses.bg} ${statusClasses.text} border border-gray-200 dark:border-slate-600`}
+                >
+                  {tHead.map((header) => (
+                    <div
+                      key={header.id}
+                      className="flex justify-between items-center py-1 border-b last:border-none"
+                    >
+                      <span className="text-xs font-semibold text-blue-800 dark:text-gray-500 uppercase">
+                        {header.label}
+                      </span>
+                      <span
+                        className={`text-sm font-medium text-right ${
+                          header.id === "name"
+                            ? "text-teal-600 dark:text-teal-400"
+                            : header.id === "class"
+                            ? "text-purple-600 dark:text-purple-400"
+                            : ""
+                        }`}
+                      >
+                        {row[header.id] ?? "—"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center text-sm text-slate-500 dark:text-slate-400 italic py-8">
+              {searchQuery
+                ? "No matching records found."
+                : "No data available in table."}
             </div>
-          ))}
+          )}
         </div>
-      );
-    })
-  ) : (
-    <div className="text-center text-sm text-slate-500 dark:text-slate-400 italic py-8">
-      {searchQuery
-        ? "No matching records found."
-        : "No data available in table."}
-    </div>
-  )}
-</div>
-
       </div>
     </div>
   );
 };
 
 export default Table;
-
-
 
 // import React, { useState, useMemo } from "react";
 // import { useStateContext } from "../contexts/ContextProvider";

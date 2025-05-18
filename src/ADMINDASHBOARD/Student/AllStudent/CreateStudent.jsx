@@ -25,6 +25,7 @@ import EditStudent from "./EditStudent.jsx";
 import StudentDetails from "./StudentDetails.jsx";
 import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb.jsx";
 import BreadcrumbList from "../../../Dynamic/BreadcrumbList.jsx";
+import StudentTable from "../../../Dynamic/StudentTable.jsx";
 
 function CreateStudent() {
   const session=JSON.parse(localStorage.getItem("session"))
@@ -389,7 +390,8 @@ function CreateStudent() {
         </div>
 
         {filteredData.length > 0 ? (
-          <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students" />
+          <StudentTable tHead={THEAD} tBody={tBody} isSearch={true} title="Students" />
+          // <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students" />
         ) : (
           <NoDataFound message="No students found matching the criteria." />
         )}

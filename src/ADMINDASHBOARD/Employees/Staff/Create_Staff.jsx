@@ -16,6 +16,7 @@ import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
 import Edit from "./Edit";
 import { MdDelete, MdToggleOn, MdToggleOff } from "react-icons/md";
 import { FaEdit, FaEye, FaUsersCog } from "react-icons/fa"; // Added FaUsersCog
+import StudentTable from "../../../Dynamic/StudentTable";
 function Create_Staff() {
   const authToken = localStorage.getItem("token");
   const { currentColor, setIsLoader } = useStateContext();
@@ -283,7 +284,8 @@ function Create_Staff() {
           </div>
         </div>
       </Modal>
- <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" />
+ <StudentTable tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" />
+ {/* <Table tHead={THEAD} tBody={tBody} isSearch={true} title="Students Details" /> */}
       {/* <DynamicDataTable data={submittedData} handleDelete={handleDelete} /> */}
       
     </div>

@@ -229,7 +229,6 @@
 //     },
 //   };
 
-
 //   return (
 //     <>
 //       <div className="sm:mt-20 mt-20 md:mt-0 dark:bg-main-dark-bg">
@@ -300,10 +299,6 @@
 
 // export default DashboardHome;
 
-
-
-
-
 import React, { useEffect, useState } from "react";
 import PieChart from "../pages/Charts/PieChart";
 import { useStateContext } from "../contexts/ContextProvider";
@@ -334,7 +329,6 @@ const DashboardHome = () => {
   const formattedToday = `${todayDay}-${todayMonth}`;
 
   const getTeachers = async () => {
-    
     try {
       const response = await getAllTeachers();
       if (response?.success) {
@@ -345,7 +339,6 @@ const DashboardHome = () => {
     } catch (error) {
       console.log("error", error);
     } finally {
-     
     }
   };
   const getAllStudent = async () => {
@@ -356,27 +349,27 @@ const DashboardHome = () => {
         setAllStudents(response?.students?.data);
       } else {
         toast.error(response?.message);
-         setIsLoader(false);
+        setIsLoader(false);
       }
     } catch (error) {
       console.log("error", error);
-       setIsLoader(false);
+      setIsLoader(false);
     }
   };
   const monthlyFeeIncome = async () => {
-     setIsLoader(true);
+    setIsLoader(true);
     try {
       const response = await feeIncomeMonths();
       if (response?.success) {
-         setIsLoader(false);
+        setIsLoader(false);
         setMonthlyFee(response?.data);
       } else {
         toast.error(response?.message);
-         setIsLoader(false);
+        setIsLoader(false);
       }
     } catch (error) {
       console.log("error", error);
-       setIsLoader(false);
+      setIsLoader(false);
     }
   };
   const newAdmission = async () => {
@@ -422,155 +415,173 @@ const DashboardHome = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const active = allStudents?.filter(s => s.status === "active").length;
-const deactive = allStudents?.length - active;
-const boys = allStudents.filter(s => s.gender === "Male" && s.status === "active").length;
-const girls = active - boys;
+  const active = allStudents?.filter((s) => s.status === "active").length;
+  const deactive = allStudents?.length - active;
+  const boys = allStudents.filter(
+    (s) => s.gender === "Male" && s.status === "active"
+  ).length;
+  const girls = active - boys;
 
-const statsData = [
-  {
-    id: 1,
-    value: admissionCount,
-    label: "ADMISSION",
-    // Original image was blueish. Let's use a nice blue gradient that isn't sky.
-    gradient: "bg-gradient-to-br from-blue-400 to-indigo-500", 
-    sparklineSvgPath: "M5 28 Q15 18, 25 22 T45 15 Q55 5, 65 10 T85 8 Q95 12, 100 10"
-    // sparklineSvgPath: "M5 20 Q15 10, 25 20 T45 15 Q55 25, 65 18 T85 12 Q95 22, 100 15"
-  },
-  {
-    id: 2,
-    value: allStudents?.length,
-    label: "STUDENTS",
-    // Original image was cyan/teal. Let's go for a green.
-    // gradient: "bg-gradient-to-br from-emerald-400 to-green-500", 
-       gradient: "bg-gradient-to-r from-blue-200 to-blue-500 ",
-    sparklineSvgPath: "M5 25 Q15 20, 25 12 T45 10 Q55 5, 65 15 T85 22 Q95 18, 100 20"
-  },
-  {
-    id: 3,
-    value: teacherCount,
-    label: "TEACHER",
-    // Original image was orange/red. Let's use a warm amber/orange.
-    gradient: "bg-gradient-to-br from-amber-400 to-orange-500", 
-    sparklineSvgPath: "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18"
-  },
-  // {
-  //   id: 4,
-  //   value: ` ₹ ${monthlyFee && monthlyFee.length > 0
-  //       ? parseFloat(monthlyFee.reduce((acc, num) => acc + num, 0)).toFixed(2)
-  //       : '0.00'}`,
-  //   label: "FEES",
-  //   // Original image was purple/fuchsia. Let's use a rose/red, avoiding fuchsia.
-  //   gradient: "bg-gradient-to-br from-pink-400 to-red-500", 
-  //   sparklineSvgPath: "M5 22 Q15 8, 25 20 T45 10 Q55 30, 65 15 T85 25 Q95 12, 100 20"
-  // }
-];
-const statsDatafee = [
-  
-  {
-    id: 4,
-    value: ` ₹ ${monthlyFee && monthlyFee.length > 0
-        ? parseFloat(monthlyFee.reduce((acc, num) => acc + num, 0)).toFixed(2)
-        : '0.00'}`,
-    label: "FEES",
-    // Original image was purple/fuchsia. Let's use a rose/red, avoiding fuchsia.
-    gradient: "bg-gradient-to-br from-pink-400 to-red-500", 
-    sparklineSvgPath: "M5 22 Q15 8, 25 20 T45 10 Q55 30, 65 15 T85 25 Q95 12, 100 20"
-  }
-];
+  const statsData = [
+    {
+      id: 1,
+      value: admissionCount,
+      label: "ADMISSION",
+      // Original image was blueish. Let's use a nice blue gradient that isn't sky.
+      gradient: "bg-gradient-to-br from-blue-400 to-indigo-500",
+      sparklineSvgPath:
+        "M5 28 Q15 18, 25 22 T45 15 Q55 5, 65 10 T85 8 Q95 12, 100 10",
+      // sparklineSvgPath: "M5 20 Q15 10, 25 20 T45 15 Q55 25, 65 18 T85 12 Q95 22, 100 15"
+    },
+    {
+      id: 2,
+      value: allStudents?.length,
+      label: "STUDENTS",
+      // Original image was cyan/teal. Let's go for a green.
+      // gradient: "bg-gradient-to-br from-emerald-400 to-green-500",
+      gradient: "bg-gradient-to-r from-blue-200 to-blue-500 ",
+      sparklineSvgPath:
+        "M5 25 Q15 20, 25 12 T45 10 Q55 5, 65 15 T85 22 Q95 18, 100 20",
+    },
+    {
+      id: 3,
+      value: teacherCount,
+      label: "TEACHER",
+      // Original image was orange/red. Let's use a warm amber/orange.
+      gradient: "bg-gradient-to-br from-amber-400 to-orange-500",
+      sparklineSvgPath:
+        "M5 15 Q15 28, 25 12 T45 20 Q55 5, 65 22 T85 10 Q95 25, 100 18",
+    },
+    // {
+    //   id: 4,
+    //   value: ` ₹ ${monthlyFee && monthlyFee.length > 0
+    //       ? parseFloat(monthlyFee.reduce((acc, num) => acc + num, 0)).toFixed(2)
+    //       : '0.00'}`,
+    //   label: "FEES",
+    //   // Original image was purple/fuchsia. Let's use a rose/red, avoiding fuchsia.
+    //   gradient: "bg-gradient-to-br from-pink-400 to-red-500",
+    //   sparklineSvgPath: "M5 22 Q15 8, 25 20 T45 10 Q55 30, 65 15 T85 25 Q95 12, 100 20"
+    // }
+  ];
+  const statsDatafee = [
+    {
+      id: 4,
+      value: ` ₹ ${
+        monthlyFee && monthlyFee.length > 0
+          ? parseFloat(monthlyFee.reduce((acc, num) => acc + num, 0)).toFixed(2)
+          : "0.00"
+      }`,
+      label: "FEES",
+      // Original image was purple/fuchsia. Let's use a rose/red, avoiding fuchsia.
+      gradient: "bg-gradient-to-br from-pink-400 to-red-500",
+      sparklineSvgPath:
+        "M5 22 Q15 8, 25 20 T45 10 Q55 30, 65 15 T85 25 Q95 12, 100 20",
+    },
+  ];
 
-const StatsCard = ({ value, label, gradient, sparklineSvgPath }) => {
-  const numericValue = typeof value === "number" ? value : parseFloat(value?.toString().replace(/[^\d.-]/g, "")) || 0;
-  const animatedCount = UseCountUp(numericValue, 1000);
+  const StatsCard = ({ value, label, gradient, sparklineSvgPath }) => {
+    const numericValue =
+      typeof value === "number"
+        ? value
+        : parseFloat(value?.toString().replace(/[^\d.-]/g, "")) || 0;
+    const animatedCount = UseCountUp(numericValue, 1000);
 
-  return (
-    <div 
-      className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
-    >
-      <div className="flex flex-col space-y-0.5">
-        <span className="text-3xl font-bold leading-tight">
-          {typeof value === "string" && value.includes("₹")
-            ? `₹ ${animatedCount.toLocaleString("en-IN")}`
-            : animatedCount}
-        </span>
-        <span className="text-sm uppercase tracking-wider font-medium">{label}</span>
-      </div>
+    return (
+      <div
+        className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
+      >
+        <div className="flex flex-col space-y-0.5">
+          <span className="text-3xl font-bold leading-tight">
+            {typeof value === "string" && value.includes("₹")
+              ? `₹ ${animatedCount.toLocaleString("en-IN")}`
+              : animatedCount}
+          </span>
+          <span className="text-sm uppercase tracking-wider font-medium">
+            {label}
+          </span>
+        </div>
 
-      <div className="w-[80px] h-[40px]">
-        <svg viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <path
-            d={sparklineSvgPath}
-            stroke="white"
-            strokeWidth="3.5"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }}
-          />
-        </svg>
-      </div>
-    </div>
-  );
-};
-
-
-const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
-  return (
-    <div 
-      className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
-    >
-
-      <div className="flex flex-col space-y-0.5">
-        <span className="text-3xl font-bold leading-tight">{value}</span>
-        <span className="text-sm uppercase tracking-wider font-medium">{label}</span>
-      </div>
- 
-      <div className="w-[80px] h-[40px]"> 
-        <svg viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-            <path 
+        <div className="w-[80px] h-[40px]">
+          <svg
+            viewBox="0 0 100 35"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <path
               d={sparklineSvgPath}
               stroke="white"
               strokeWidth="3.5"
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }} 
+              style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }}
             />
-        </svg>
+          </svg>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+
+  const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
+    return (
+      <div
+        className={`p-5 rounded-md text-white ${gradient} w-full h-[120px] flex items-center justify-between shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out`}
+      >
+        <div className="flex flex-col space-y-0.5">
+          <span className="text-3xl font-bold leading-tight">{value}</span>
+          <span className="text-sm uppercase tracking-wider font-medium">
+            {label}
+          </span>
+        </div>
+
+        <div className="w-[80px] h-[40px]">
+          <svg
+            viewBox="0 0 100 35"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <path
+              d={sparklineSvgPath}
+              stroke="white"
+              strokeWidth="3.5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ filter: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.3))" }}
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
       <div>
         <div className="sm:mt-20 mt-20 md:mt-0  dark:bg-main-dark-bg">
           <div class="grid grid-cols-1 gap-2 mt-6 sm:grid-cols-2 lg:grid-cols-4 px-2">
-           
-            {statsData.map(card => (
-          <StatsCard
-            key={card.id}
-            value={card.value}
-            label={card.label}
-            gradient={card.gradient}
-            sparklineSvgPath={card.sparklineSvgPath}
-          />
-        ))}
-            {statsDatafee.map(card => (
-          <StatsCardFee
-            key={card.id}
-            value={card.value}
-            label={card.label}
-            gradient={card.gradient}
-            sparklineSvgPath={card.sparklineSvgPath}
-          />
-        ))}
-             
+            {statsData.map((card) => (
+              <StatsCard
+                key={card.id}
+                value={card.value}
+                label={card.label}
+                gradient={card.gradient}
+                sparklineSvgPath={card.sparklineSvgPath}
+              />
+            ))}
+            {statsDatafee.map((card) => (
+              <StatsCardFee
+                key={card.id}
+                value={card.value}
+                label={card.label}
+                gradient={card.gradient}
+                sparklineSvgPath={card.sparklineSvgPath}
+              />
+            ))}
           </div>
 
           <div className="grid gap-3 p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          <Welcome />
+            <Welcome />
             <BirthdayCarousel allBday={allBday} today={today} />
             <div
               style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
@@ -594,26 +605,28 @@ const StatsCardFee = ({ value, label, gradient, sparklineSvgPath }) => {
             >
               {/* <PieChart allStudents={allStudents} /> */}
               <PieChart
-  chartTitle=" Students Distribution"
-  // data={[active, deactive]}
-  // labels={[`Active: ${active}`, `Deactive: ${deactive}`]}
-  // colors={["#1d8348", "#1c2833"]}
-  data={[active, deactive,boys,girls]}
-  labels={[`Active: ${active}`, `Deactive: ${deactive}`,`Boys: ${boys}`, `Girls: ${girls}`]}
-  colors={["#1d8348", "#1c2833","#2874a6", "#DE3163"]}
-/>
+                chartTitle=" Students Distribution"
+                // data={[active, deactive]}
+                // labels={[`Active: ${active}`, `Deactive: ${deactive}`]}
+                // colors={["#1d8348", "#1c2833"]}
+                data={[active, deactive, boys, girls]}
+                labels={[
+                  `Active: ${active}`,
+                  `Deactive: ${deactive}`,
+                  `Boys: ${boys}`,
+                  `Girls: ${girls}`,
+                ]}
+                colors={["#1d8348", "#1c2833", "#2874a6", "#DE3163"]}
+              />
             </div>
-           
           </div>
         </div>
       </div>
-
     </>
   );
 };
 
 export default DashboardHome;
-
 
 
 // import React, { useEffect, useState } from "react";
@@ -635,7 +648,7 @@ export default DashboardHome;
 // import admission from '../ShikshMitraWebsite/assets/admission.png'
 // import moment from "moment";
 // const DashboardHome = () => {
-  
+
 //   const [teacherCount, setTeacherCount] = useState(0);
 //   const [admissionCount, setAdmissionCount] = useState(0);
 //  const [monthlyFee,setMonthlyFee]=useState()
@@ -654,11 +667,11 @@ export default DashboardHome;
 //       const response= await getAllTeachers()
 //       if(response?.success){
 //         setTeacherCount(response?.data?.length || 0);
-        
+
 //       }
 //       else{
 //         toast.error(response?.message)
-      
+
 //       }
 //     } catch (error) {
 //       console.log("error",error)
@@ -675,7 +688,7 @@ export default DashboardHome;
 //       }
 //       else{
 //         toast.error(response?.message)
-       
+
 //       }
 //     } catch (error) {
 //       console.log("error",error)
@@ -689,7 +702,7 @@ export default DashboardHome;
 //       }
 //       else{
 //         toast.error(response?.message)
-       
+
 //       }
 //     } catch (error) {
 //       console.log("error",error)
@@ -700,7 +713,7 @@ export default DashboardHome;
 //     try {
 //       const response= await GetAdmissions()
 //       if(response?.success){
-      
+
 //         setAdmissionCount(response?.newAdmissions?.data?.length);
 //       }
 //       else{
@@ -729,8 +742,6 @@ export default DashboardHome;
 //     monthlyFeeIncome()
 //   },[])
 
-
-
 // useEffect(() => {
 //     const handleKeyDown = (event) => {
 //       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
@@ -751,7 +762,7 @@ export default DashboardHome;
 //     name:"STUDENTS",
 //     Count:allStudents?.length,
 //     logo:student
-  
+
 //   },
 //   {
 //     name:"TEACHER",
@@ -767,12 +778,12 @@ export default DashboardHome;
 
 //   return (
 //     <>
-//      <div 
+//      <div
 //     //  className="sm:block md:hidden"
 //      >
 //         {/* <Mobile /> */}
 //       </div>
-//       <div 
+//       <div
 //       // className="mt:0 sm:hidden hidden md:block px-2"
 //       >
 //       <div className="sm:mt-20 mt-20 md:mt-0  dark:bg-main-dark-bg">
@@ -799,11 +810,11 @@ export default DashboardHome;
 //             }
 
 //           </div>
-        
+
 //         <div className="grid gap-3 p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-     
+
 //         <Welcome />
-     
+
 //      <div
 //        style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
 //        className="p-2 rounded-md text-center bg-white dark:text-white dark:bg-secondary-dark-bg"
@@ -847,7 +858,7 @@ export default DashboardHome;
 //        <TeacherNotice />
 //      </div>
 //    </div>
-      
+
 //         <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-2 px-3">
 //           <div
 //             className="bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-md  p-3"
@@ -855,13 +866,13 @@ export default DashboardHome;
 //           >
 //             <EarningChart />
 //           </div>
-          
+
 //           <div
 //             className="bg-white dark:text-gray-200 dark:bg-secondary-dark-bg rounded-md  p-3 gap-2 flex justify-center items-center flex-col"
 //             style={{ boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px" }}
 //           >
 //             <PieChart allStudents={allStudents} />
-           
+
 //             <ActivePieChart allStudents={allStudents} />
 //           </div>
 //           {/* <div
@@ -873,11 +884,10 @@ export default DashboardHome;
 //         </div>
 //       </div>
 //       </div>
-     
+
 //       {/* <Footer /> */}
 //     </>
 //   );
 // };
 
 // export default DashboardHome;
-

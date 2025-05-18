@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useStateContext } from "../../contexts/ContextProvider"; // Adjust path if needed
 import { useReactToPrint } from "react-to-print";
-import '../../App.css'; // Assuming this is still needed
+import '../../App.css'; 
 import {
     Button, TextField, Typography, Box, CircularProgress,
     Checkbox, FormControlLabel,
@@ -14,7 +14,7 @@ import moment from "moment";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 
-// --- Constants ---
+
 const CARD_WIDTH_MM = 210;
 const CARD_HEIGHT_MM = 297;
 
@@ -296,13 +296,13 @@ const TCprint = () => {
                     pageWrapperForFront.innerHTML = frontHtml;
                     printContainer.appendChild(pageWrapperForFront);
                 }
-                if (printMode === 'back' || printMode === 'both') {
-                    const backHtml = renderBackTemplate(student);
-                    const pageWrapperForBack = document.createElement('div');
-                    pageWrapperForBack.className = 'print-page-wrapper';
-                    pageWrapperForBack.innerHTML = backHtml;
-                    printContainer.appendChild(pageWrapperForBack);
-                }
+                // if (printMode === 'back' || printMode === 'both') {
+                //     const backHtml = renderBackTemplate(student);
+                //     const pageWrapperForBack = document.createElement('div');
+                //     pageWrapperForBack.className = 'print-page-wrapper';
+                //     pageWrapperForBack.innerHTML = backHtml;
+                //     printContainer.appendChild(pageWrapperForBack);
+                // }
             });
             return printContainer;
         },
@@ -454,13 +454,13 @@ const TCprint = () => {
                                 <div className={`screen-id-card-layout-area`}>
                                     <Box className="student-preview-wrapper-in-a4">
                                         {printMode === 'front' && (<div className="id-card-preview" style={{border:'1px dashed #ccc'}} dangerouslySetInnerHTML={{__html:renderFrontTemplate(student)}}/>)}
-                                        {printMode === 'back' && (<div className="id-card-preview" style={{border:'1px dashed #aaa'}} dangerouslySetInnerHTML={{__html:renderBackTemplate(student)}}/>)}
-                                        {printMode === 'both' && (
+                                        {/* {printMode === 'back' && (<div className="id-card-preview" style={{border:'1px dashed #aaa'}} dangerouslySetInnerHTML={{__html:renderBackTemplate(student)}}/>)} */}
+                                        {/* {printMode === 'both' && (
                                             <div style={{display:'flex',flexDirection:'column',width:'100%',height:'100%', overflowY:'auto', gap:'2mm'}}>
                                                 <div className="id-card-preview id-card-front-preview" style={{border:'1px dashed #ccc'}} dangerouslySetInnerHTML={{__html:renderFrontTemplate(student)}}/>
                                                 <div className="id-card-preview id-card-back-preview" style={{border:'1px dashed #aaa'}} dangerouslySetInnerHTML={{__html:renderBackTemplate(student)}}/>
                                             </div>
-                                        )}
+                                        )} */}
                                     </Box>
                                 </div>
                             </Paper>
