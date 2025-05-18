@@ -47,6 +47,8 @@ import SibilingFees from "./ADMINDASHBOARD/Fees/SibilingFees";
 import PrintPage from "./ADMINDASHBOARD/IdCard/PrintPage";
 import PrintPageBack from "./ADMINDASHBOARD/IdCard/PrintPageBack";
 import PrintPageLandScape from "./ADMINDASHBOARD/IdCard/PrintPageLandScape";
+import TC from "./ADMINDASHBOARD/Certtficate/TC";
+import TCprint from "./ADMINDASHBOARD/Certtficate/TCprint";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -326,6 +328,8 @@ function App() {
               <Route path="udise" element={<Udise />} />
               <Route path="userdetails" element={<AdminUser />} />
               <Route path="testing" element={<Testing />} />
+              <Route path="transfer-certificate" element={<TC />} />
+              <Route path="transfer-certificate-print" element={<TCprint />} />
               <Route path="admitdesign" element={<AdmitcardTesting />} />
               <Route path="newcard" element={<Admitcardmarch />} />
             </Route>

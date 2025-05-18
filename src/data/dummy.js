@@ -182,6 +182,17 @@ export const links = [
       ],
   },
   // {
+  //     name: 'Design',
+  //     icon: <BiSolidStoreAlt />,
+  //     children: [
+  //         // { name: 'Records', link: 'records' },
+  //         { name: 'TC', link: 'transfer-certificate' },
+  //         { name: 'TC-Print', link: 'transfer-certificate-print' },
+  //         // { name: 'Sales', link: 'sales' }, 
+        
+  //     ],
+  // },
+  // {
   //     name: 'Library',
   //     icon: <GiBookshelf />,
   //     children: [
