@@ -171,7 +171,8 @@ if (!SchoolID) {
         <>
           <div
         // className="bg-gray-800 py-[1px] fixed top-0 w-full  z-10"
-           className="py-[1px] fixed top-[70px] w-full  z-10"
+{/*            className="py-[1px] fixed top-[70px] w-full  z-10" */}
+   className="py-[1px] fixed top-[95px] w-full  z-10 bg-white"
         // style={{ background: "#2fa7db" }}
       >
         <div className="flex justify-around max-w-md mx-auto gap-1">
