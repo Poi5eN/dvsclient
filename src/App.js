@@ -49,6 +49,7 @@ import PrintPageBack from "./ADMINDASHBOARD/IdCard/PrintPageBack";
 import PrintPageLandScape from "./ADMINDASHBOARD/IdCard/PrintPageLandScape";
 import TC from "./ADMINDASHBOARD/Certtficate/TC";
 import TCprint from "./ADMINDASHBOARD/Certtficate/TCprint";
+import Printed from "./ADMINDASHBOARD/IdCard/Printed";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -301,6 +302,7 @@ function App() {
               <Route path="idcardlandscape" element={<PrintPageLandScape />} />
               <Route path="idcardback" element={<PrintPageBack />} />
               <Route path="idcard-landscape" element={<Landscape />} />
+              <Route path="printed" element={<Printed />} />
 
               <Route path="admitcards" element={<AdmitCardUi />} />
               <Route path="admission/edit-admission/:email" element={<EditAdmission />} />

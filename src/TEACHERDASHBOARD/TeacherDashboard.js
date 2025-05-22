@@ -75,7 +75,7 @@ function TeacherDashboard() {
             <Navbar />
             <Topbar/>
           </div>
-          // <div className="mt-[75px] px-1">
+       
                   <div className="mt-[90px] sm:mt-[90px] px-1">
                 {themeSettings && <ThemeSettings />}
                 <Outlet />

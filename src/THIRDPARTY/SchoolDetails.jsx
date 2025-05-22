@@ -159,7 +159,7 @@ const SchoolDetails = () => {
 
   useEffect(() => {
     if (currentSchoolID) {
-      getStudent();
+      // getStudent();
     } else {
       setStudent([]); // Clear student data if no school is selected
     }
@@ -283,7 +283,7 @@ const SchoolDetails = () => {
           // Prompt to select a school if multiple are available and none is active
           assignedSchools && assignedSchools.length > 0 && (
             <div className="p-6 text-center bg-white dark:bg-secondary-dark-bg rounded-lg shadow text-gray-600 dark:text-gray-300">
-              <p className="text-lg">Please select a school from the dropdown above to see more options.</p>
+              <p className="text-lg">Kindly  select a school from the dropdown above to see more options.</p>
             </div>
           )
         )}

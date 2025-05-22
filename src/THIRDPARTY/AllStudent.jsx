@@ -56,6 +56,8 @@ function AllStudent() {
   };
 
   const Getclasses = async () => {
+     if (!SchoolID) return;
+    setIsLoader(true);
     try {
       setIsLoader(true);
       if (!SchoolID) return;
@@ -139,6 +141,7 @@ useEffect(()=>{
     //     );
     // }
     if(selectedClass || selectedSection){
+
       getStudent()
     }
 
@@ -161,7 +164,7 @@ useEffect(()=>{
 console.log("selectedClass",selectedClass)
 // }, [selectedClass, selectedSection, allStudents, searchTerm]);
 if (!SchoolID) {
-  return <div className="text-center mt-10 text-red-500 font-semibold">Please Select School</div>;
+  return <div className="text-center mt-10 text-red-500 font-semibold">Kindly Select School</div>;
 }
   return (
     
@@ -171,7 +174,7 @@ if (!SchoolID) {
         <>
           <div
         // className="bg-gray-800 py-[1px] fixed top-0 w-full  z-10"
-{/*            className="py-[1px] fixed top-[70px] w-full  z-10" */}
+// {/*            className="py-[1px] fixed top-[70px] w-full  z-10" */}
    className="py-[1px] fixed top-[95px] w-full  z-10 bg-white"
         // style={{ background: "#2fa7db" }}
       >

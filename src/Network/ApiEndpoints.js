@@ -29,6 +29,7 @@ export const apiUrls = {
    createStudentParent: "adminRoute/admission", 
    // createStudentParent: "adminRoute/createStudentParent", 
    editStudentParent: "adminRoute/students", 
+   studentstoggleprinted: "students/toggle-printed", 
    // editStudentParent: "adminRoute/editStudentParent", 
    
    // class end

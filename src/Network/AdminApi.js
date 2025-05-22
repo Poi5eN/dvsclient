@@ -119,6 +119,18 @@ export const promotionOfStudent = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const studentstoggleprinted = async (payload) => {
+  try {
+    const option = {
+      method: "POST",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.studentstoggleprinted}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 // export const getStudentsBySession = async ({ session }) => {
 //   try {

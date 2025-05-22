@@ -6,7 +6,7 @@ import getCroppedImg from "./getCroppedImg"; // Your utility function for croppi
 import Modal from "../../Modal";         // Your Modal component
 import { FormControl, InputLabel, Select, TextField, MenuItem, Button as MuiButton } from "@mui/material"; // Material UI components
 import Button from "../../utils/Button"; // Your CUSTOM Button component
-import { Admission } from "../../../Network/ThirdPartyApi"; // Your API function
+import { Admission, thirdpartyclasses } from "../../../Network/ThirdPartyApi"; // Your API function
 import { toast } from "react-toastify"; // For notifications
 import moment from "moment";             // For date handling
 import { useStateContext } from "../../../contexts/ContextProvider"; // Your context
@@ -120,6 +120,7 @@ const getFileFromSource = async (source, fileName = "image.jpeg", type = "image/
 
 
 function DynamicFormFileds(props) {
+     const SchoolID = localStorage.getItem("SchoolID");
     const { studentData, buttonLabel, setIsOpen, setReRender } = props;
     const { isLoader, setIsLoader } = useStateContext();
     const [getClass, setGetClass] = useState([]);
@@ -150,13 +151,37 @@ function DynamicFormFileds(props) {
     const [modalOpen, setModalOpen] = useState(false);
 
     // --- Effects ---
-    useEffect(() => {
-        const classes = JSON.parse(localStorage.getItem("classes"));
-        if (classes) {
-            setGetClass(classes);
+    // useEffect(() => {
+    //     const classes = JSON.parse(localStorage.getItem("classes"));
+    //     if (classes) {
+    //         setGetClass(classes);
+    //     }
+    // }, []);
+    const Getclasses = async () => {
+        try {
+          if (!SchoolID) return;
+          const response = await thirdpartyclasses(SchoolID);
+          if (response.success) {
+            let classes = response.classList;
+            localStorage.setItem(
+              "classes",
+              JSON.stringify(classes.sort((a, b) => a - b))
+            );
+            setGetClass([
+              
+              ...classes.sort((a, b) => a - b),
+            ]);
+          } else {
+            console.log("error", response?.message);
+          }
+        } catch (error) {
+          console.log("error", error);
         }
-    }, []);
+      };
 
+      useEffect(()=>{
+Getclasses();
+      },[])
     useEffect(() => {
         // Only populate if getClass has data, prevents race condition
         if (studentData && getClass.length > 0) {
