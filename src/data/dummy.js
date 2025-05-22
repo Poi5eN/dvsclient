@@ -11,10 +11,12 @@ import {
   BsPersonFillAdd,
 } from "react-icons/bs";
 import { BiSolidStoreAlt } from "react-icons/bi";
-import { MdAccountBalanceWallet, MdGroups3, MdWork} from "react-icons/md";
+import { MdAccountBalanceWallet, MdGroups3, MdWork,MdPrint} from "react-icons/md";
 import { IoPhoneLandscape,IoTabletPortrait } from "react-icons/io5";
 import { ImManWoman } from "react-icons/im";
 import { PiStudentFill, PiPiggyBankFill } from "react-icons/pi";
+import { FaEdit } from "react-icons/fa";
+
 import {
   GiTeacher,
   GiTakeMyMoney,
@@ -246,7 +248,8 @@ export const links = [
       // { name: 'Back', link: 'idcardback' },
       { name: 'Portrait ', link: 'idcard-paortrait' ,icon: <IoTabletPortrait  />},
       { name: 'Landscape', link: 'idcard-landscape',icon: <IoPhoneLandscape /> },
-      { name: 'Set Design', link: 'testing' }, 
+      { name: 'Check Print', link: 'printed',icon: <MdPrint /> },
+      { name: 'Set Design', link: 'testing',icon: <FaEdit  /> }, 
     
   ],
 },

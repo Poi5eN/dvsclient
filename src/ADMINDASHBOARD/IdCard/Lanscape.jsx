@@ -136,8 +136,16 @@ const Lanscape = () => {
         setIsLoadingData(true);
         try {
             const response = await ActiveStudents(session);
-            setStudentData(response?.success && response.students?.data ? (response.students.data || []).filter(s => s && s._id) : []);
-            if (!response?.success) toast.error(response?.message || "Failed to fetch students.");
+            if(response?.success){
+                 const filterStudent=response.students?.data?.filter((val)=>val?.isPrinted===false);
+                console.log("filterStudentanand",filterStudent)
+                setStudentData(filterStudent || []);
+            }
+            else{
+ toast.error(response?.message || "Failed to fetch students.");
+            }
+            // setStudentData(response?.success && response.students?.data ? (response.students.data || []).filter(s => s && s._id) : []);
+            // if (!response?.success) toast.error(response?.message || "Failed to fetch students.");
         } catch (error) { console.error("Error fetching students:", error); setStudentData([]); } 
         finally { setIsLoadingData(false); }
      }, [session]);

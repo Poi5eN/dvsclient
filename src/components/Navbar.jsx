@@ -116,7 +116,11 @@ const Navbar = () => {
       <div className="flex-1 text-center dark:text-white">
         <p
           className="text-[10px] md:text-[16px] font-semibold hidden md:block uppercase"
-          style={{ color: "white" }}
+          // style={{ color: "white" }}
+           style={{
+    color: "white",
+    fontFamily: "'Poppins', sans-serif",
+  }}
         >
           {user?.schoolName?user?.schoolName:SchoolDetails?.schoolName } ( {session } )
         </p>
@@ -143,7 +147,7 @@ const Navbar = () => {
               > <span 
                 // style={{background:currentColor,}}
                 >
-                  <VscSymbolColor className="text-[25px] text-white"/>
+                  <VscSymbolColor className="text-[20px] text-white"/>
                 </span>
               </button>
             
@@ -154,19 +158,19 @@ const Navbar = () => {
           className="cursor-pointer text-white"
           title="Logout"
         >
-          <MdLogout className="text-2xl font-bold" />
+          <MdLogout className="text-[20px] font-bold" />
         </div>
 
         {/* Fullscreen Toggle */}
         <button onClick={toggleFullScreen} className="" style={{ color: currentColor }}>
           {isFullScreen ? (
             <MdFullscreenExit
-              className="text-[30px] text-white"
+              className="text-[20px] text-white"
               title="Exit Fullscreen"
             />
           ) : (
             <MdFullscreen
-              className="text-[30px] text-white"
+              className="text-[20px] text-white"
               title="Enter Fullscreen"
             />
           )}

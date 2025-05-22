@@ -6474,7 +6474,10 @@ const IdCard = () => {
         try {
             const response = await ActiveStudents(session);
             if (response?.success && response.students?.data) {
-                setStudentData(response.students.data || []);
+                const filterStudent=response.students?.data?.filter((val)=>val?.isPrinted===false);
+                console.log("filterStudentanand",filterStudent)
+                setStudentData(filterStudent || []);
+                // setStudentData(response.students.data || []);
             } else {
                 toast.error(response?.message || "Failed to fetch students or data format incorrect.");
                 setStudentData([]);

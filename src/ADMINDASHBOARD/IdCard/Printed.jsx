@@ -3,8 +3,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   ActiveStudents,
   AdminGetAllClasses,
-  promotionOfStudent,
-  getStudentsBySession,
   studentstoggleprinted,
 } from "../../Network/AdminApi";
 import Table from "../../Dynamic/Table";
@@ -24,19 +22,14 @@ const Printed = () => {
   const [getClass, setGetClass] = useState([]);
   const [fromSections, setFromSections] = useState([]);
   const [toSections, setToSections] = useState([]);
-  const [historicalStudents, setHistoricalStudents] = useState([]);
   const session=JSON.parse(localStorage.getItem("session"))
-  const sessionOptions = [
-    { label: "2024-2025", value: "2024-2025" },
-    { label: "2025-2026", value: "2025-2026" },
-  ];
 
   const [values, setValues] = useState({
     fromClass: "",
     fromSection: "",
-    toClass: "",
-    toSection: "",
-    toSession: "",
+    IsPrint: {},
+   
+   
   });
 
   const studentData = async () => {
@@ -104,7 +97,7 @@ const Printed = () => {
   const handleSelectAllChange = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
-    setSelectedStudent(newSelectAll ? filteredStudents.map((s) => s._id) : []);
+    setSelectedStudent(newSelectAll ? filteredStudents.map((s) => s.studentId) : []);
   };
 
   const handleCheckboxChange = (studentId) => {
@@ -114,10 +107,14 @@ const Printed = () => {
         : [...prev, studentId]
     );
   };
-console.log("selectedStudent",selectedStudent)
+
   const handleSave = async () => {
     if (!selectedStudent.length) {
       toast.error("No students selected for Print");
+      return;
+    }
+    if (values?.IsPrint ==="") {
+      toast.error("Please selected IsPrint  for Print");
       return;
     }
    
@@ -125,12 +122,13 @@ console.log("selectedStudent",selectedStudent)
     setIsLoader(true);
     const dataToUpdate = {
       studentIds: selectedStudent,
-      "isPrinted": true,
+      "isPrinted":values?.IsPrint==="false"?false :true,
     };
 
     try {
       const response = await studentstoggleprinted(dataToUpdate);
       if (response?.success) {
+        studentData()
         toast.success(response.message || "Students promoted successfully");
         setValues({ fromClass: "", fromSection: "", toClass: "", toSection: "", toSession: "" });
         setFilteredStudents([]);
@@ -155,10 +153,7 @@ console.log("selectedStudent",selectedStudent)
     label: item,
     value: item,
   }));
-  const toSectionOptions = toSections.map((item) => ({
-    label: item,
-    value: item,
-  }));
+
 
   const THEAD = [
     {
@@ -179,8 +174,8 @@ console.log("filteredStudents",filteredStudents)
     select: (
       <input
         type="checkbox"
-        checked={selectedStudent.includes(val._id)}
-        onChange={() => handleCheckboxChange(val._id)}
+        checked={selectedStudent.includes(val.studentId)}
+        onChange={() => handleCheckboxChange(val.studentId)}
       />
     ),
     SN: ind + 1,
@@ -188,15 +183,15 @@ console.log("filteredStudents",filteredStudents)
     fullName: val.studentName,
     class: val.class,
     section: val.section,
-    print: val.isPrinted===false? "No":"Yes",
+    print: val.isPrinted===false? <span className="text-gray-800 font-extrabold">NO</span>:<span className="text-green-900 font-extrabold">YES</span>,
   }));
 
   return (
     <div>
-        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Student Promote"/>
+        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="ID CARD PRINT STATUS"/>
       <div className="bg-white p-2 rounded-lg shadow border border-gray-200 flex flex-wrap gap-8">
         <div>
-          <span className="font-semibold">From</span>
+         
           <ReactSelect
             name="fromClass"
             label="Select a Class"
@@ -211,11 +206,21 @@ console.log("filteredStudents",filteredStudents)
             handleChange={handleInputChange}
             dynamicOptions={fromSectionOptions}
           />
+         
         </div>
-        <div>
-          
-          <Button color="Green" name="Save" onClick={handleSave} />
+        {
+          selectedStudent.length>0 && <div>
+           <ReactSelect
+            name="IsPrint"
+            label="IsPrint"
+            value={values.IsPrint}
+            handleChange={handleInputChange}
+            dynamicOptions={[{value:"",label:"Select"},{value:true,label:"Yes"},{value:false,label:"No"}]}
+          />
+          <Button color="#c60f44" name="Save" onClick={handleSave} />
         </div>
+        }
+       
       </div>
 
       <Table isSearch={false} tHead={THEAD} tBody={tBody} />
