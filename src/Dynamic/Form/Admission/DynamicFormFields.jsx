@@ -149,14 +149,6 @@ function DynamicFormFileds(props) {
 
     // --- Modal State ---
     const [modalOpen, setModalOpen] = useState(false);
-
-    // --- Effects ---
-    // useEffect(() => {
-    //     const classes = JSON.parse(localStorage.getItem("classes"));
-    //     if (classes) {
-    //         setGetClass(classes);
-    //     }
-    // }, []);
     const Getclasses = async () => {
         try {
           if (!SchoolID) return;
@@ -429,7 +421,7 @@ Getclasses();
                     guardianImage: null, transport: "", remarks: "", parentId: ""
                  });
                  setAvailableSections([]);
-                setReRender(true);
+               setReRender((preV)=>!preV);
                
               
             } else {
@@ -493,7 +485,7 @@ Getclasses();
 
             if (result.success) {
                 toast.success("Update successful!");
-                setReRender(true);
+               setReRender((preV)=>!preV);
                 setIsOpen(false);
             } else {
                 toast.error(result.message || "Failed to update admission");
@@ -502,8 +494,8 @@ Getclasses();
             console.error("Error updating student:", error);
             toast.error(`An error occurred during update: ${error.message || 'Please try again.'}`);
         } finally {
-            setLoading(false);
-            setIsLoader(false);
+            // setLoading(false);
+            // setIsLoader(false);
         }
     };
 
@@ -1086,7 +1078,7 @@ export default DynamicFormFileds;
 //           remarks: "",
 //         });
 //         toast.success("Admission successfully!");
-//         setReRender(true);
+//        setReRender((preV)=>!preV);
 //         setIsOpen(false);
 //       } else {
 //         toast.error(response?.message)
@@ -1172,7 +1164,7 @@ export default DynamicFormFileds;
 
 //       if (result.success) {
 //         setIsLoader(false);
-//         setReRender(true);
+//        setReRender((preV)=>!preV);
 //         setIsOpen(false);
 //         toast.success("Update successfully!");
 //         setValues({
