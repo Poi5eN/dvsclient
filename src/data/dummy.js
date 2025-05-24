@@ -183,6 +183,16 @@ export const links = [
         
       ],
   },
+  {
+      name: 'Certificate',
+      icon: <BiSolidStoreAlt />,
+      children: [
+          // { name: 'Records', link: 'records' },
+          { name: 'Reimbursement', link: 'reimb-certificate-print' },
+          // { name: 'Sales', link: 'sales' }, 
+        
+      ],
+  },
   // {
   //     name: 'Design',
   //     icon: <BiSolidStoreAlt />,

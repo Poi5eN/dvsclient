@@ -50,6 +50,7 @@ import PrintPageLandScape from "./ADMINDASHBOARD/IdCard/PrintPageLandScape";
 import TC from "./ADMINDASHBOARD/Certtficate/TC";
 import TCprint from "./ADMINDASHBOARD/Certtficate/TCprint";
 import Printed from "./ADMINDASHBOARD/IdCard/Printed";
+import Reimbrucement from "./ADMINDASHBOARD/Certtficate/Reimbrucement";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -332,6 +333,7 @@ function App() {
               <Route path="testing" element={<Testing />} />
               <Route path="transfer-certificate" element={<TC />} />
               <Route path="transfer-certificate-print" element={<TCprint />} />
+              <Route path="reimb-certificate-print" element={<Reimbrucement />} />
               <Route path="admitdesign" element={<AdmitcardTesting />} />
               <Route path="newcard" element={<Admitcardmarch />} />
             </Route>
