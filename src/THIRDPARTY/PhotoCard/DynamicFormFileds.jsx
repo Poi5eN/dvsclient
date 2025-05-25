@@ -412,7 +412,7 @@ function DynamicFormFileds(props) {
 
             if (response?.success) {
                 toast.success("Student data saved successfully!");
-                setValues({ fullName: "", class: "", section: "", studentImage: null });
+                setValues({ fullName: "", studentImage: null });
                 setImagePreviewUrl(null);
                 if (setReRender) setReRender(prev => !prev);
                 if (setIsOpen) setIsOpen(false);

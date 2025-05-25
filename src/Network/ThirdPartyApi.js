@@ -157,7 +157,7 @@ export const thirdpartyphotorecords = async (SchoolID,selectedClass, selectedSec
       method: "GET", // Ensure the method is GET
     };
 
-    const data = await makeApiRequest(`${apiUrls?.thirdpartyphotorecords}?schoolId=${SchoolID}&class=${selectedClass}&section=${selectedSection}`, option);
+    const data = await makeApiRequest(`${apiUrls?.thirdpartyphotorecords}?schoolId=${SchoolID}&class=${selectedClass}&section=${selectedSection}&limit=30000`, option);
     return data;
   } catch (error) {
     console.error("Error fetching registrations:", error);

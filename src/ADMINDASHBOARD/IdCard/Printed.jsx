@@ -156,34 +156,38 @@ const Printed = () => {
 
 
   const THEAD = [
-    {
+   
+    { id: "SN", label: "S No." },
+    { id: "admissionNumber", label: "Admission No" },
+    { id: "fullName", label: "Name" },
+    { id: "fatherName", label: "Father Name" },
+    { id: "class", label: "Class" },
+    { id: "section", label: "Section" },
+    { id: "print", label: "Is Print" },
+     {
       id: "select",
       label: (
         <input type="checkbox" checked={selectAll} onChange={handleSelectAllChange} />
       ),
     },
-    { id: "SN", label: "S No." },
-    { id: "admissionNumber", label: "Admission No" },
-    { id: "fullName", label: "Name" },
-    { id: "class", label: "Class" },
-    { id: "section", label: "Section" },
-    { id: "print", label: "Is Print" },
   ];
 console.log("filteredStudents",filteredStudents)
   const tBody = filteredStudents.map((val, ind) => ({
-    select: (
+  
+    SN: ind + 1,
+    admissionNumber: <span className="text-red-700 font-semibold">{val.admissionNumber}</span>,
+    fullName: val.studentName,
+    fatherName: val.fatherName,
+    class: val.class,
+    section: val.section,
+    print: val.isPrinted===false? <span className="text-gray-800 font-extrabold">NO</span>:<span className="text-green-900 font-extrabold">YES</span>,
+   select: (
       <input
         type="checkbox"
         checked={selectedStudent.includes(val.studentId)}
         onChange={() => handleCheckboxChange(val.studentId)}
       />
     ),
-    SN: ind + 1,
-    admissionNumber: <span className="text-red-700 font-semibold">{val.admissionNumber}</span>,
-    fullName: val.studentName,
-    class: val.class,
-    section: val.section,
-    print: val.isPrinted===false? <span className="text-gray-800 font-extrabold">NO</span>:<span className="text-green-900 font-extrabold">YES</span>,
   }));
 
   return (
@@ -222,8 +226,10 @@ console.log("filteredStudents",filteredStudents)
         }
        
       </div>
-
-      <Table isSearch={false} tHead={THEAD} tBody={tBody} />
+{
+   filteredStudents.length>0 ? (<Table isSearch={true} tHead={THEAD} tBody={tBody} />):( <div className="col-span-full text-center text-gray-500 mt-10">kindly select class and section for student....</div> )
+}
+      
     </div>
   );
 };

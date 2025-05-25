@@ -99,14 +99,7 @@ function IDCard() {
 
   const getStudent = async () => {
     if (!SchoolID) return;
-    // Do not fetch if "all" classes is selected but no specific section,
-    // or if class is selected but no section (unless "all sections" is an option).
-    // The current logic seems to fetch if both are selected, or if class is "all" (which might be too broad)
-    // Let's adjust the condition to be more specific for fetching.
-    // Fetch only if (class is not 'all' AND section is selected) OR (class is 'all' and section is effectively 'all' or empty, depending on API)
-    // The API `thirdpartyphotorecords(SchoolID,selectedClass, selectedSection)` will handle 'all' if you pass empty strings or "all".
-    // For now, let's assume the API handles selectedClass="all" or selectedSection="all" appropriately.
-    
+
     setIsLoader(true);
     try {
       const classParam = selectedClass === "all" ? "" : selectedClass; // Adjust if your API expects "all" string
@@ -308,7 +301,7 @@ function IDCard() {
             </div>
           ))
         ) : (
-          !setIsLoader && <div className="col-span-full text-center text-gray-500 mt-10">No students match your criteria.</div> // Show message if no students
+          <div className="col-span-full text-center text-gray-500 mt-10">kindly select class and section for student....</div> // Show message if no students
         )}
       </div>
 

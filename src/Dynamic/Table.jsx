@@ -63,7 +63,7 @@ const Table = ({ tHead, tBody, isSearch = true, title = "Data Records" }) => {
   return (
     <div className="w-full mx-auto">
       {
-        filteredData?.length > 0 &&
+       
           <div
         className="bg-white dark:bg-slate-800 shadow-lg rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700"
         style={{ borderTop: `3px solid ${currentColor}` }}

@@ -213,8 +213,10 @@ function AllStudent() {
               </div>
             </div>
           </div>
-          <div className="container mx-auto p-4 grid md:grid-cols-3 gap-2 mt-10">
-            {filteredStudents.map((val, index) => (
+          <div className="w-full container mx-auto p-4 grid md:grid-cols-3 gap-2 mt-10">
+    {
+      filteredStudents.length>0? 
+      (  filteredStudents.map((val, index) => (
               <div
                 key={index}
                 className="bg-white relative shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] rounded-lg p-4  mb-2 flex items-center justify-between"
@@ -285,7 +287,16 @@ function AllStudent() {
                   </div>
                 </div>
               </div>
-            ))}
+            ))):<>
+            <div className=" ">
+              {/* kindly select class and section for student... */}
+            </div>
+            <div className="text-center text-blue-500 mt-10 ">
+              kindly select class and section for student...
+            </div>
+            </>
+
+              }  
 
             <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
               <Box
