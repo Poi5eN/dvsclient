@@ -14,7 +14,7 @@ import {
     CircularProgress, // Added for loading state on upload button
 } from "@mui/material";
 // Assume these imports are correct and function as expected
-import { initialstudentphoto } from "../../Network/ThirdPartyApi"; // Your API function
+import { initialstudentphoto, thirdpartyclasses } from "../../Network/ThirdPartyApi"; // Your API function
 import { toast } from "react-toastify";
 import { useStateContext } from "../../contexts/ContextProvider";
 import getCroppedImg from "../../Dynamic/Form/Admission/getCroppedImg";
@@ -74,6 +74,7 @@ const dataURLtoFile = (dataurl, filename) => {
 
 
 function DynamicFormFileds(props) {
+    const SchoolID = localStorage.getItem("SchoolID");
     // Destructure props with defaults
     const { studentData, buttonLabel = "Save Initial Details", setIsOpen, setReRender } = props;
     const { isLoader, setIsLoader } = useStateContext();
@@ -110,21 +111,53 @@ function DynamicFormFileds(props) {
 
     // --- Effect Hooks --- (Keep existing useEffects for classes, sections, initialization, preview URL)
     // Fetch classes
-    useEffect(() => {
-        try {
-            const classesString = localStorage.getItem("classes");
-            if (classesString) {
-                const classes = JSON.parse(classesString);
-                setGetClass(Array.isArray(classes) ? classes : []);
-            } else {
-                 setGetClass([]);
-            }
-        } catch (error) {
-            console.error("Failed to parse classes from localStorage:", error);
-            setGetClass([]);
-        }
-    }, []);
+    // useEffect(() => {
+    //     try {
+    //         const classesString = localStorage.getItem("classes");
+    //         if (classesString) {
+    //             const classes = JSON.parse(classesString);
+    //             setGetClass(Array.isArray(classes) ? classes : []);
+    //         } else {
+    //              setGetClass([]);
+    //         }
+    //     } catch (error) {
+    //         console.error("Failed to parse classes from localStorage:", error);
+    //         setGetClass([]);
+    //     }
+    // }, []);
 
+
+     const Getclasses = async () => {
+        if (!SchoolID) return;
+        // setIsLoader(true);
+        try {
+          // setIsLoader(true);
+          if (!SchoolID) return;
+          const response = await thirdpartyclasses(SchoolID);
+    
+          if (response.success) {
+            let classes = response.classList;
+            // localStorage.setItem(
+            //   "classes",
+            //   JSON.stringify(classes.sort((a, b) => a - b))
+            // );
+            setGetClass([
+            
+              ...classes.sort((a, b) => a - b),
+            ]); // Add "All Classes" option
+            // setIsLoader(false);
+          } else {
+            console.log("error", response?.message);
+            // setIsLoader(false);
+          }
+        } catch (error) {
+          console.log("error", error);
+          // setIsLoader(false);
+        }
+      };
+      useEffect(()=>{
+Getclasses()
+      },[])
     // Update sections
      useEffect(() => {
          let sectionsArray = [];
@@ -149,12 +182,11 @@ function DynamicFormFileds(props) {
             const initialStudentImage = studentData.studentImage?.url ?? studentData.studentImage ?? null;
             setValues({
                 fullName: studentData.fullName || "",
-                class: studentData.class || "",
-                section: studentData.section || "",
+              
                 studentImage: initialStudentImage,
             });
         } else {
-            setValues({ fullName: "", class: "", section: "", studentImage: null });
+            setValues({ fullName: "", studentImage: null });
              setAvailableSections([]);
         }
     }, [studentData]);
@@ -309,9 +341,6 @@ function DynamicFormFileds(props) {
             return;
         }
 
-        // **DEBUGGING POINT 1:** Log inputs to getCroppedImg
-        // console.log("Applying crop with source (first 100 chars):", croppedImageSource.substring(0, 100));
-        // console.log("Applying crop with pixels:", JSON.stringify(croppedAreaPixels));
 
         setCroppingLoading(true);
         try {
@@ -323,11 +352,7 @@ function DynamicFormFileds(props) {
                 0 // Rotation
             );
 
-            // **DEBUGGING POINT 2:** Log the output of getCroppedImg
-            // console.log("getCroppedImg returned:", typeof croppedDataUrl === 'string' ? croppedDataUrl.substring(0,100) + '...' : croppedDataUrl);
 
-
-            // Validate the output from getCroppedImg
             if (!croppedDataUrl || typeof croppedDataUrl !== 'string' || !croppedDataUrl.startsWith('data:image/')) {
                  // The error originates here if getCroppedImg fails
                  console.error("getCroppedImg did not return a valid image Data URL:", croppedDataUrl);
@@ -412,7 +437,7 @@ function DynamicFormFileds(props) {
 
             if (response?.success) {
                 toast.success("Student data saved successfully!");
-                setValues({ fullName: "", studentImage: null });
+                // setValues({ fullName: "", studentImage: null });
                 setImagePreviewUrl(null);
                 if (setReRender) setReRender(prev => !prev);
                 if (setIsOpen) setIsOpen(false);

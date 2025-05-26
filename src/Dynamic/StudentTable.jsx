@@ -223,7 +223,8 @@ const StudentTable = ({ tHead, tBody, isSearch = true, title = "Data Records" })
                   key={index}
                   className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-3 border border-slate-200 dark:border-slate-700"
                 >
-                  <div className="flex justify-between items-start mb-2 pb-2 border-b border-slate-200 dark:border-slate-600">
+                  <div className="flex justify-between items-start mb-2  border-b border-slate-200 dark:border-slate-600">
+                  {/* <div className="flex justify-between items-start mb-2 pb-2 border-b border-slate-200 dark:border-slate-600"> */}
                     <h3 className="text-base font-semibold text-blue-600 dark:text-blue-400 truncate pr-2 flex-grow">
                       {renderDetailValue(cardTitleValue)} {/* Use renderDetailValue for consistency */}
                     </h3>
@@ -247,7 +248,7 @@ const StudentTable = ({ tHead, tBody, isSearch = true, title = "Data Records" })
                     {(imageSrc || photoHeader) && ( // Render photo area if an image source exists OR a photo column is defined
                       <div className="flex-shrink-0 w-24 flex items-start justify-center pl-2">
                         {imageSrc ? (
-                          <img src={imageSrc} alt={imageAlt} className="w-20 h-20 rounded-full object-cover border-2 border-cyan-400" />
+                          <img src={imageSrc} alt={imageAlt} className="w-20 h-24 rounded-md object-cover border-2 border-cyan-400" />
                         ) : (
                           <DefaultImagePlaceholder />
                         )}

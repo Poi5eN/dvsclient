@@ -173,12 +173,13 @@ function CreateStudent() {
     { id: "photo", label: "Photo", width: "7", width: "2%" },
     { id: "admissionNo", label: "Adm No", width: "2%" },
     { id: "name", label: "Name", width: "10%" },
-    { id: "email", label: "Email", width: "10%" },
+    // { id: "email", label: "Email", width: "10%" },
     { id: "fatherName", label: "F Name" },
     { id: "class", label: "Class" },
     { id: "dateOfBirth", label: "DOB" },
     { id: "contact", label: "Contact" },
-    { id: "gender", label: "Gender" },
+    // { id: "gender", label: "Gender" },
+    { id: "address", label: "Address" },
     { id: "action", label: "Action" },
   ];
 
@@ -286,7 +287,7 @@ function CreateStudent() {
       {student.studentName || "N/A"}
     </span>
   ),
-    email: student.email || "N/A",
+    // email: student.email || "N/A",
     fatherName: student.fatherName || "N/A",
   //   fatherName: (
   //   <span className="text-green-600 font-semibold ">
@@ -302,7 +303,8 @@ function CreateStudent() {
       ? moment(student.dateOfBirth).format("DD-MMM-YYYY")
       : "N/A"}</span>,
     contact: student.contact || "N/A",
-    gender:<span className="text-indigo-500">{ student.gender || "N/A"}</span>,
+    // gender:<span className="text-indigo-500">{ student.gender || "N/A"}</span>,
+    address:<span className="text-indigo-500">{ student.address || "N/A"}</span>,
   
     action: (
       <div className="flex justify-center items-center gap-3">

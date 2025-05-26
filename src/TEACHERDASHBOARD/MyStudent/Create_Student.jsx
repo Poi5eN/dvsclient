@@ -13,6 +13,7 @@ import StudentDetails from "../../ADMINDASHBOARD/Student/AllStudent/StudentDetai
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb.jsx";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList.jsx";
 import EditStudent from "../../ADMINDASHBOARD/Student/AllStudent/EditStudent.jsx";
+import StudentTable from "../../Dynamic/StudentTable.jsx";
 
 
 function CreateStudent() {
@@ -112,13 +113,13 @@ function CreateStudent() {
         { id: "photo", label: "Photo", width: "7" },
         { id: "admissionNo", label: "Admission No" },
         { id: "name", label: "Name" },
-        { id: "email", label: "Email" },
+        // { id: "email", label: "Email" },
         { id: "fatherName", label: "Father Name" },
         // { id: "class", label: "Class" },
         { id: "dateOfBirth", label: "DOB" },
         { id: "contact", label: "Contact" },
-        { id: "gender", label: "Gender" },
-        // { id: "status", label: "Status" },
+        // { id: "gender", label: "Gender" },
+        { id: "address", label: "Address" },
         { id: "action", label: "Action" },
     ];
 
@@ -137,12 +138,13 @@ function CreateStudent() {
             </span>
         ),
         name: student.studentName || 'N/A',
-        email: student.email || 'N/A',
+        // email: student.email || 'N/A',
         fatherName: student.fatherName || 'N/A',
         // class: <span>{student.class || 'N/A'} - {student?.section || 'N/A'}</span>,
         dateOfBirth: student.dateOfBirth ? moment(student.dateOfBirth).format("DD-MMM-YYYY") : 'N/A',
         contact: student.contact || 'N/A',
-        gender: student.gender || 'N/A',
+        address: student.address || 'N/A',
+        // gender: student.gender || 'N/A',
         // status: (
         //     <button
         //         onClick={() => handleToggleStatus(student?.studentId, student.status)}
@@ -176,7 +178,8 @@ function CreateStudent() {
  <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.teacherDashboard} title="Students" />
              
                 {filteredData.length > 0 ? (
-                    <Table tHead={THEAD} tBody={tBody} isSearch={true} title="STudent Details" />
+                    <StudentTable tHead={THEAD} tBody={tBody} isSearch={true} title="STudent Details" />
+                    // <Table tHead={THEAD} tBody={tBody} isSearch={true} title="STudent Details" />
                 ) : (
                     <NoDataFound message="No students found matching the criteria." />
                 )}

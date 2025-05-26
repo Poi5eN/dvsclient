@@ -11,6 +11,8 @@ import {
 import { useStateContext } from "../../../contexts/ContextProvider";
 import DatePicker from "../../../Dynamic/DatePicker/DatePicker";
 import ImageCaptureCrop from "../../../Dynamic/Camera/ImageCaptureCrop";
+import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
 
 const EditStudent = ({ studentDetails, onFinished }) => {
   const { setIsLoader } = useStateContext();
@@ -226,11 +228,14 @@ try {
 
   // --- Render ---
   return (
-    <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto my-4">
-      <h1 className="text-xl font-semibold text-gray-700 mb-6 border-b pb-2">Edit Student Profile</h1>
+    <div
+    //  className="p-4 sm:p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto my-4"
+     >
+       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.student} title="Update Student"/>
+      {/* <h1 className="text-xl font-semibold text-gray-700 mb-6 border-b pb-2">Edit Student Profile</h1> */}
 
         {/* Use studentData for values and ensure names match state keys */}
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <ReactInput type="text" name="studentName" label="Student's Name" onChange={handleOnChange} value={studentData?.studentName || ""} />
         <ReactInput type="email" name="email" label="Student's Email" onChange={handleOnChange} value={studentData?.email || ""} />
         <ReactInput type="number" name="contact" label="Student's Contact" onChange={handleOnChange} value={studentData?.contact || ""} />
@@ -296,7 +301,7 @@ try {
         <ReactInput type="phone" name="parentContact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentContact || ""} />
         <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
         {/* <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} /> */}
-        <ReactInput type="text" name="password" placeholder="Leave blank to keep unchanged" label="New Password (Optional)" onChange={handleOnChange} value={studentData?.password || ""} />
+        <ReactInput type="text" name="password"  label="New Password " onChange={handleOnChange} value={studentData?.password || ""} />
         {/* Removed duplicate parentContact */}
         <ReactInput type="text" name="rollNo" label="Roll No" onChange={handleOnChange} value={studentData?.rollNo || ""} />
         <ReactInput type="text" name="religion" label="Religion" onChange={handleOnChange} value={studentData?.religion || ""} />

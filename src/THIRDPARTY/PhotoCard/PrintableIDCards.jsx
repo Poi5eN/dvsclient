@@ -1,4 +1,3 @@
-// src/components/PrintableIDCards.js
 import React from 'react';
 import moment from 'moment';
 
@@ -28,7 +27,7 @@ const printStyles = `
 
     @page {
       size: A4 portrait;
-      margin: 7mm; /* Page margins */
+      margin: 7mm;
     }
 
     .school-print-header {
@@ -209,16 +208,17 @@ const PrintableIDCards = React.forwardRef(({ students, schoolDetails }, ref) => 
   const pagedStudents = chunkArray(students, STUDENTS_PER_PAGE);
 
   return (
-    <div ref={ref}>
+    <div 
+    // ref={ref}
+    >
       <style>{printStyles}</style>
-      
-      {/* School Name Header - Fixed for print, normal flow for screen */}
-      <div className="school-print-header">
+
+     
+
+      <div className="all-print-pages-wrapper"  ref={ref}> 
+         <div className="school-print-header">
         <h2>{schoolName || "School Name"}</h2>
       </div>
-      
-      {/* This outer wrapper is mainly for structure; print-page-container handles page breaks */}
-      <div className="all-print-pages-wrapper"> 
         {pagedStudents.map((studentPage, pageIndex) => (
           <div key={`page-${pageIndex}`} className="print-page-container">
             <div className="printable-id-cards-grid">
@@ -257,11 +257,7 @@ const PrintableIDCards = React.forwardRef(({ students, schoolDetails }, ref) => 
                       <span className="detail-label">Address: </span>
                       <span className="detail-value">{student?.address || ''}</span>
                     </p>
-                    {/* Empty p for spacing if needed, or adjust card height/min-height
-                    <p>
-                      <span className="detail-label"></span>
-                      <span className="detail-value"></span>
-                    </p> */}
+                   
                   </div>
 
                   <div className="print-card-image-section">
