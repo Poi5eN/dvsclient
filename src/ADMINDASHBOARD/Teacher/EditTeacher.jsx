@@ -6,6 +6,9 @@ import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import Button from "../../Dynamic/utils/Button";
 import { AdminGetAllClasses, editTeacher } from "../../Network/AdminApi";
 import { useStateContext } from "../../contexts/ContextProvider";
+import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import ImageCaptureCrop from "../../Dynamic/Camera/ImageCaptureCrop";
 
 
 const EditTeacher = ({ teacherDetails, handleCancel, setIsEdit }) => {
@@ -15,7 +18,7 @@ const EditTeacher = ({ teacherDetails, handleCancel, setIsEdit }) => {
   const [selectedSection, setSelectedSection] = useState(teacherDetails?.section || ""); // Initialize with existing section
   const [availableSections, setAvailableSections] = useState([]);
   const [teacherData, setTeacherData] = useState({});
-
+console.log("teacherData",teacherData)
   useEffect(() => {
     if (teacherDetails) {
       setTeacherData(teacherDetails);
@@ -118,9 +121,11 @@ const EditTeacher = ({ teacherDetails, handleCancel, setIsEdit }) => {
       "address":  teacherData?.address,
       "contact":Number( teacherData?.contact),
       "experience":  teacherData?.experience,
-      "section":  teacherData?.section,
-      "classTeacher":  teacherData?.classTeacher,
-      "image":  teacherData?.image,
+      "section":  teacherData?.section?teacherData?.section:selectedSection,
+      "classTeacher":  teacherData?.classTeacher?teacherData?.classTeacher:selectedClass,
+      //  "section":  selectedSection,
+      // "classTeacher": selectedClass,
+      "image": teacherData?.teacherImage?teacherData?.teacherImage: teacherData?.image,
       // "role": "teacher"
     }
     
@@ -163,11 +168,21 @@ finally{
       });
     }}
 
+        const handleImageProcessed = (fileObject, imageFieldName) => {
+    setTeacherData  ((prevPayload) => ({
+        ...prevPayload,
+        [imageFieldName]: fileObject, // fileObject will be a File or null
+    }));
+};
   return (
-    <div className="text-center p-5 bg-white">
-      <h1 className="text-xl font-bold mb-6">Edit Teacher Profile</h1>
+    <div className="">
+       <PageHeaderWithBreadcrumb
+        breadcrumbItems={BreadcrumbList.admission}
+        title="Update Teacher Details"
+      />
+       {/* <h1 className="text-xl font-bold mb-6">Edit Teacher Profile</h1> */}
 
-      <div className="py-5 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 p-4 bg-white ">
+      <div className="py-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-2 p-4 bg-white ">
         <ReactInput type="text" name="teacherName" label="Teacher's Name" onChange={handleOnChange} value={teacherData?.teacherName || ""} />
         <ReactInput type="text" name="employeeId" label="Employee Id" onChange={handleOnChange} value={teacherData?.employeeId || ""} />
         <ReactInput type="text" name="email" label="Teacher's Email" onChange={handleOnChange} value={teacherData?.email || ""} />
@@ -195,20 +210,26 @@ finally{
           label="Select a Section"
           dynamicOptions={DynamicSection}
         />
-          <ReactInput
+          {/* <ReactInput
             type="file"
             label="Teacher Image"
             accept="image/*"
             onChange={handleImageChange}  // Use new handler
             name="image" // Keep this name
-          />
-          
-        {teacherData.image && (<img src={teacherData?.image?.url || URL.createObjectURL(teacherData.image)} alt="Preview" className="w-10 h-10 object-cover rounded-md" />)}
+          /> */}
+           <ImageCaptureCrop
+                                  label="Teacher Photo"
+                                  onImageCropped={(file) => handleImageProcessed(file, 'teacherImage')}
+                                  initialImageUrl={typeof teacherData?.image === 'string' ? teacherData?.image : teacherData?.image?.url}
+                                  aspectRatio={1}
+                                  previewSize={120}
+                              />
+        {/* {teacherData.image && (<img src={teacherData?.image?.url || URL.createObjectURL(teacherData.image)} alt="Preview" className="w-10 h-10 object-cover rounded-md" />)} */}
       </div>
 
-      <div className="flex gap-3 mt-6">
-        <Button name="Update" onClick={handleUpdate}  width="full" />
-        <Button name="Cancel" onClick={() => setIsEdit(false)} width="full" />
+      <div className="flex justify-end gap-3 ">
+        <Button name="Update" color={"green"} onClick={handleUpdate}  width="full" />
+        <Button name="Cancel" color={"gray"} onClick={() => setIsEdit(false)} width="full" />
        
       </div>
     </div>
