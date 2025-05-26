@@ -8,9 +8,12 @@ import {
   AdminGetAllClasses,
   editStudentParent,
 } from "../../../Network/AdminApi";
+// import plusbtn from "../../../ShikshMitraWebsite/assets/btn/plus.png"
+
 import { useStateContext } from "../../../contexts/ContextProvider";
 import DatePicker from "../../../Dynamic/DatePicker/DatePicker";
 import ImageCaptureCrop from "../../../Dynamic/Camera/ImageCaptureCrop";
+import Modal from "../../../Dynamic/Modal";
 import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
 
@@ -18,6 +21,7 @@ const EditStudent = ({ studentDetails, onFinished }) => {
   const { setIsLoader } = useStateContext();
   const [getClass, setGetClass] = useState([]);
   const [availableSections, setAvailableSections] = useState([]);
+   const [modalOpen, setModalOpen] = useState(false);
   const [studentData, setStudentData] = useState({}); // Single source of truth for form data
   const [imagePreviews, setImagePreviews] = useState({ // Optional: for showing previews
     studentImage: studentDetails?.studentImage?.url || null,
@@ -224,18 +228,23 @@ try {
       setIsLoader(false);
     }
   };
-
+const toggleModal = () => {
+    // setIsOpen(!isOpen);
+    setModalOpen(!modalOpen)
+   
+  };
 
   // --- Render ---
   return (
-    <div
-    //  className="p-4 sm:p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto my-4"
-     >
-       <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.student} title="Update Student"/>
+    <div className="px-5">
+   
+      <PageHeaderWithBreadcrumb
+                breadcrumbItems={BreadcrumbList.admission}
+                title="Update Student Profilles"/>
       {/* <h1 className="text-xl font-semibold text-gray-700 mb-6 border-b pb-2">Edit Student Profile</h1> */}
 
         {/* Use studentData for values and ensure names match state keys */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200  grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">
         <ReactInput type="text" name="studentName" label="Student's Name" onChange={handleOnChange} value={studentData?.studentName || ""} />
         <ReactInput type="email" name="email" label="Student's Email" onChange={handleOnChange} value={studentData?.email || ""} />
         <ReactInput type="number" name="contact" label="Student's Contact" onChange={handleOnChange} value={studentData?.contact || ""} />
@@ -243,16 +252,7 @@ try {
           // readOnly={true}
           // disabled={true} // Use disabled visually and functionally
           type="text" name="admissionNumber" label="Admission Number"  onChange={handleOnChange} value={studentData?.admissionNumber || ""} />
-        {/* <ReactInput
-            type="date"
-            label="Date Of Birth"
-            onChange={handleOnChange}
-            name="dateOfBirth"
-            value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("YYYY-MM-DD") : ""} // Format for display
-            max={moment().format("YYYY-MM-DD")} // Prevent future dates
-            /> */}
-            {/* {console.log("studentData?.dateOfBirth",moment(studentData.dateOfBirth).format("DD-mm-yyyy"))} */}
-              <DatePicker
+         <DatePicker
                             className="custom-calendar"
                             placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
                             label={"DOB"} // Corrected typo
@@ -289,54 +289,46 @@ try {
           dynamicOptions={DynamicSection}
           disabled={!studentData?.class || availableSections.length === 0} // Disable if no class or sections
         />
-        <ReactInput type="text" name="country" label="Country" onChange={handleOnChange} value={studentData?.country || ""} />
         <ReactInput type="text" name="address" label="Address" onChange={handleOnChange} value={studentData?.address || ""} />
-        <ReactInput type="text" name="state" label="State" onChange={handleOnChange} value={studentData?.state || ""} />
-        <ReactInput type="text" name="city" label="City" onChange={handleOnChange} value={studentData?.city || ""} />
-        <ReactInput type="text" name="pincode" label="Pin Code" onChange={handleOnChange} value={studentData?.pincode || ""} />
-        <ReactInput type="text" name="fatherName" label="Father's Name" onChange={handleOnChange} value={studentData?.fatherName || ""} />
+       <ReactInput type="text" name="fatherName" label="Father's Name" onChange={handleOnChange} value={studentData?.fatherName || ""} />
         <ReactInput type="text" name="transport" label="Transport" onChange={handleOnChange} value={studentData?.transport || ""} />
         <ReactInput type="text" name="motherName" label="Mother's Name" onChange={handleOnChange} value={studentData?.motherName || ""} />
         <ReactInput type="text" name="guardian" label="Guardian's Name" onChange={handleOnChange} value={studentData?.guardian || ""} />
         <ReactInput type="phone" name="parentContact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentContact || ""} />
-        <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
         {/* <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} /> */}
-        <ReactInput type="text" name="password"  label="New Password " onChange={handleOnChange} value={studentData?.password || ""} />
         {/* Removed duplicate parentContact */}
         <ReactInput type="text" name="rollNo" label="Roll No" onChange={handleOnChange} value={studentData?.rollNo || ""} />
-        <ReactInput type="text" name="religion" label="Religion" onChange={handleOnChange} value={studentData?.religion || ""} />
+       {/* <button onClick={toggleModal} className=" bg-cyan-700 rounded-full h-10 w-10 shadow-[0px_3px_12px_-6px_rgba(34,_197,_94,_0.5)]">
+  +
+</button> */}
+        
+        {/* <img src={plusbtn} alt="" className="w-10 bg-contain cursor-pointer" onClick={toggleModal}/>
+     */}
+          
+          <button className="bg-gray-600 w-8 h-8 rounded-full text-xl" onClick={toggleModal}>
+            +
+          </button>
+        
+
+
+       
+          <Modal isOpen={modalOpen} setIsOpen={setModalOpen} title={"More Details"} maxWidth="500px">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200  grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">
+     <ReactInput type="text" name="religion" label="Religion" onChange={handleOnChange} value={studentData?.religion || ""} />
         <ReactInput type="text" name="caste" label="Caste" onChange={handleOnChange} value={studentData?.caste || ""} />
         <ReactInput type="text" name="nationality" label="Nationality" onChange={handleOnChange} value={studentData?.nationality || ""} />
-
-        {/* Image Inputs with Previews */}
-        {/* <div className="flex flex-col">
-            <ReactInput
-            type="file" label="Student Image" accept="image/*"
-            onChange={handleOnChange} name="studentImage" />
-            {imagePreviews.studentImage && (<img src={imagePreviews.studentImage} alt="Student Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
-        </div>
-         <div className="flex flex-col">
-             <ReactInput
-                type="file" label="Father Image" accept="image/*"
-                onChange={handleOnChange} name="fatherImage" />
-            {imagePreviews.fatherImage && (<img src={imagePreviews.fatherImage} alt="Father Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
-        </div>
-         <div className="flex flex-col">
-            <ReactInput
-                type="file" label="Mother Image" accept="image/*"
-                onChange={handleOnChange} name="motherImage" />
-            {imagePreviews.motherImage && (<img src={imagePreviews.motherImage} alt="Mother Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
-        </div>
-         <div className="flex flex-col">
-            <ReactInput
-                type="file" label="Guardian Image" accept="image/*"
-                onChange={handleOnChange} name="guardianImage" />
-            {imagePreviews.guardianImage && (<img src={imagePreviews.guardianImage} alt="Guardian Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
-        </div> */}
-         
+ <ReactInput type="text" name="state" label="State" onChange={handleOnChange} value={studentData?.state || ""} />
+        <ReactInput type="text" name="city" label="City" onChange={handleOnChange} value={studentData?.city || ""} />
+        <ReactInput type="text" name="pincode" label="Pin Code" onChange={handleOnChange} value={studentData?.pincode || ""} />
+        <ReactInput type="text" name="country" label="Country" onChange={handleOnChange} value={studentData?.country || ""} />
+        <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
+        <ReactInput type="text" name="password"  label="New Password" onChange={handleOnChange} value={studentData?.password || ""} />
+        
+  </div>
+       </Modal>
 
       </div>
-      <div className="flex ">
+      <div className="bg-white p-2 rounded-lg shadow border border-gray-200  grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4">
       
                                {/* Student Image */}
                     <ImageCaptureCrop
@@ -376,14 +368,411 @@ try {
                     </div>
       <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
          {/* Pass false to onFinished for Cancel to indicate no refetch needed */}
-        <Button name="Cancel" onClick={() => onFinished(false)} variant="secondary" />
         <Button name="Update Student" onClick={handleUpdate} variant="primary" />
+        <Button name="Cancel" color="gray" onClick={() => onFinished(false)} variant="secondary" />
+
       </div>
+      
     </div>
   );
 };
 
 export default EditStudent;
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useCallback } from "react";
+// import { toast } from "react-toastify";
+// import { ReactInput } from "../../../Dynamic/ReactInput/ReactInput";
+// import { ReactSelect } from "../../../Dynamic/ReactSelect/ReactSelect";
+// import Button from "../../../Dynamic/utils/Button";
+// import moment from "moment";
+// import {
+//   AdminGetAllClasses,
+//   editStudentParent,
+// } from "../../../Network/AdminApi";
+// import { useStateContext } from "../../../contexts/ContextProvider";
+// import DatePicker from "../../../Dynamic/DatePicker/DatePicker";
+// import ImageCaptureCrop from "../../../Dynamic/Camera/ImageCaptureCrop";
+// import PageHeaderWithBreadcrumb from "../../../Dynamic/PageHeaderWithBreadcrumb";
+// import BreadcrumbList from "../../../Dynamic/BreadcrumbList";
+
+// const EditStudent = ({ studentDetails, onFinished }) => {
+//   const { setIsLoader } = useStateContext();
+//   const [getClass, setGetClass] = useState([]);
+//   const [availableSections, setAvailableSections] = useState([]);
+//   const [studentData, setStudentData] = useState({}); // Single source of truth for form data
+//   const [imagePreviews, setImagePreviews] = useState({ // Optional: for showing previews
+//     studentImage: studentDetails?.studentImage?.url || null,
+//     fatherImage: studentDetails?.fatherImage?.url || null,
+//     motherImage: studentDetails?.motherImage?.url || null,
+//     guardianImage: studentDetails?.guardianImage?.url || null,
+//   });
+
+//   console.log("studentDetails",studentDetails)
+//   // --- Initialize State ---
+//   useEffect(() => {
+//     if (studentDetails) {
+//         // Initialize studentData with details, ensure section is included
+//       setStudentData({
+//         ...studentDetails,
+//         section: studentDetails?.section || "", // Ensure section is initialized
+//         class: studentDetails?.class || "",   // Ensure class is initialized
+//          // Initialize image fields as null or existing URL, not the File object yet
+//         //  studentImage: null,
+//         //  fatherImage: null,
+//         //  motherImage: null,
+//         //  guardianImage: null,
+//       });
+
+//        // Set initial image previews
+//        setImagePreviews({
+//         studentImage: studentDetails?.studentImage?.url || null,
+//         fatherImage: studentDetails?.fatherImage?.url || null,
+//         motherImage: studentDetails?.motherImage?.url || null,
+//         guardianImage: studentDetails?.guardianImage?.url || null,
+//       });
+//     }
+//   }, [studentDetails]); // Dependency: studentDetails
+
+
+//   // --- Fetch Classes and Set Initial Sections ---
+//   const fetchClassesAndSetSections = useCallback(async (initialClassName) => {
+//     setIsLoader(true);
+//     try {
+//       const response = await AdminGetAllClasses();
+//       if (response?.success) {
+//         const classes = response.classes || [];
+//         setGetClass(classes.sort((a, b) => a.className.localeCompare(b.className))); // Sort alphabetically or numerically as needed
+
+//         if (initialClassName) {
+//           const initialClassObj = classes.find(cls => cls.className === initialClassName);
+//           setAvailableSections(initialClassObj?.sections || []);
+//         } else {
+//             setAvailableSections([]); // Clear sections if no initial class
+//         }
+
+//       } else {
+//         toast.error(response?.message || "Failed to fetch classes.");
+//       }
+//     } catch (error) {
+//       console.error("Error fetching classes:", error);
+//       toast.error("An error occurred while fetching classes.");
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   }, [setIsLoader]); // Dependency: setIsLoader
+
+//   useEffect(() => {
+//     if (studentDetails?.class) {
+//         fetchClassesAndSetSections(studentDetails.class);
+//     } else {
+//         fetchClassesAndSetSections(null); // Fetch classes even if no initial class
+//     }
+//   }, [studentDetails?.class, fetchClassesAndSetSections]); // Dependencies
+
+
+//   // --- Input Handlers ---
+//   const handleOnChange = (e) => {
+//     const { name, value, type, files } = e.target;
+
+//     if (type === "file") {
+//         const file = files[0];
+//         setStudentData((prevData) => ({
+//             ...prevData,
+//             [name]: file || null // Store the File object or null if cleared
+//         }));
+//         // Optional: Update preview
+//         if (file) {
+//             setImagePreviews(prev => ({...prev, [name]: URL.createObjectURL(file)}));
+//         } else {
+//             // Handle case where file input is cleared (might need original URL)
+//              setImagePreviews(prev => ({...prev, [name]: studentDetails?.[name]?.url || null}));
+//         }
+
+//     } else {
+//         setStudentData((prevData) => ({ ...prevData, [name]: value }));
+//     }
+//   };
+
+
+
+//     const handleImageProcessed = (fileObject, imageFieldName) => {
+//     setStudentData((prevPayload) => ({
+//         ...prevPayload,
+//         [imageFieldName]: fileObject, // fileObject will be a File or null
+//     }));
+// };
+
+//   const handleClassChange = (e) => {
+//     const selectedClassName = e.target.value;
+
+//     setStudentData((prevData) => ({
+//       ...prevData,
+//       class: selectedClassName,
+//       section: "" // Reset section when class changes
+//     }));
+
+//     const selectedClassObj = getClass.find(cls => cls.className === selectedClassName);
+//     setAvailableSections(selectedClassObj?.sections || []);
+//   };
+
+//   const handleSectionChange = (e) => {
+//     const newSection = e.target.value;
+//     setStudentData(prevData => ({
+//       ...prevData,
+//       section: newSection
+//     }));
+//   };
+
+//   const handleDateCange = (dateValue, name) => {
+//     console.log(`Updating state for ${name}:`, dateValue); // For debugging
+//     setStudentData((prevFormData) => ({
+//         ...prevFormData,
+//         [name]: dateValue, // Update the state with the received date object (or null)
+//     }));
+// };
+//   // --- Options for Select ---
+//   const dynamicOptions = getClass.map((cls) => ({
+//     label: cls.className,
+//     value: cls.className,
+//   }));
+
+//   const DynamicSection = availableSections.map((item) => ({
+//     label: item,
+//     value: item,
+//   }));
+
+
+//   // --- Handle Form Submission ---
+//   const handleUpdate = async () => {
+//     setIsLoader(true);
+//     const formDataToSend = new FormData();
+
+//     // Define the fields to include in the FormData
+//     const fieldsToInclude = [
+//       "studentName", "email", "password", "fatherName", "motherName","admissionNumber",
+//       "class", "section", "dateOfBirth", "transport", "rollNo", "gender",
+//       "address", "contact", "country", "caste", "nationality", "pincode",
+//       "state", "city", "guardian", "parentcontact", "parentemail", // Added missing parent fields if needed
+//       "religion",
+//       // Image fields
+//       "studentImage", "fatherImage", "motherImage", "guardianImage"
+//     ];
+
+//     fieldsToInclude.forEach(key => {
+//       const value = studentData[key];
+
+//       // Handle File Inputs specifically
+//       if (["studentImage", "fatherImage", "motherImage", "guardianImage"].includes(key)) {
+//         if (value instanceof File) { // Only append if it's a NEW File object
+//           formDataToSend.append(key, value);
+//         }
+        
+//       }
+//       // Handle Date - ensure correct format if necessary, but API might handle ISO strings
+//       else if (key === 'dateOfBirth' && value) {
+//          formDataToSend.append(key, moment(value).isValid() ? moment(value).format('YYYY-MM-DD') : ''); // Format date
+//       }
+//       // Handle other fields (convert null/undefined to empty string)
+//       else {
+//         formDataToSend.append(key, value ?? ""); // Append non-file fields
+//       }
+//     });
+// try {
+//         // Ensure studentDetails.studentId is available
+//         if (!studentDetails?.studentId) {
+//             toast.error("Student ID is missing. Cannot update.");
+//             setIsLoader(false);
+//             return;
+//         }
+
+//       const response = await editStudentParent(studentDetails.studentId, formDataToSend);
+
+//       if (response?.success) {
+//         toast.success("Student updated successfully!");
+//         onFinished(true); // Pass true to indicate success and trigger refetch
+//       } else {
+//         toast.error(response?.message || "Update failed. Please try again.");
+//       }
+//     } catch (error) {
+//       console.error("Error updating student:", error);
+//       toast.error("An error occurred during the update.");
+//        // More specific error logging if available
+//        if (error.response) {
+//         console.error("Error Response Data:", error.response.data);
+//         console.error("Error Response Status:", error.response.status);
+//       }
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+
+//   // --- Render ---
+//   return (
+//     <div
+//     //  className="p-4 sm:p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto my-4"
+//      >
+//        <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.student} title="Update Student"/>
+//       {/* <h1 className="text-xl font-semibold text-gray-700 mb-6 border-b pb-2">Edit Student Profile</h1> */}
+
+//         {/* Use studentData for values and ensure names match state keys */}
+//       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+//         <ReactInput type="text" name="studentName" label="Student's Name" onChange={handleOnChange} value={studentData?.studentName || ""} />
+//         <ReactInput type="email" name="email" label="Student's Email" onChange={handleOnChange} value={studentData?.email || ""} />
+//         <ReactInput type="number" name="contact" label="Student's Contact" onChange={handleOnChange} value={studentData?.contact || ""} />
+//         <ReactInput
+//           // readOnly={true}
+//           // disabled={true} // Use disabled visually and functionally
+//           type="text" name="admissionNumber" label="Admission Number"  onChange={handleOnChange} value={studentData?.admissionNumber || ""} />
+//         {/* <ReactInput
+//             type="date"
+//             label="Date Of Birth"
+//             onChange={handleOnChange}
+//             name="dateOfBirth"
+//             value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("YYYY-MM-DD") : ""} // Format for display
+//             max={moment().format("YYYY-MM-DD")} // Prevent future dates
+//             /> */}
+//             {/* {console.log("studentData?.dateOfBirth",moment(studentData.dateOfBirth).format("DD-mm-yyyy"))} */}
+//               <DatePicker
+//                             className="custom-calendar"
+//                             placeholder="" // Can be left empty, DatePicker default is DD/MM/YYYY
+//                             label={"DOB"} // Corrected typo
+//                             respclass={"col-xl-2 col-md-3 col-sm-6 col-12"}
+//                             name="dateOfBirth"
+//                             id="dateOfBirth"
+//                             // value={studentData?.dateOfBirth}
+//                             // value={studentData?.dateOfBirth ?moment(studentData.dateOfBirth).format("DD-mm-yyyy") : ""}
+//                             value={studentData?.dateOfBirth ? new Date(studentData.dateOfBirth) : null}
+
+//                             // value={studentData?.dateOfBirth ? moment(studentData.dateOfBirth).format("DD-MM-YYYY") : ""}
+//                             // Pass an arrow function to adapt PrimeReact's onChange event
+//                             // PrimeReact's event 'e' has the date in 'e.value'
+//                             handleChange={(e) => handleDateCange(e.value, "dateOfBirth")}
+//                             // showaTime // Pass prop
+//                             hourFormat="12" // Pass prop
+//                             // removed duplicate/incorrect handleChange props
+//                         />
+           
+//         <ReactSelect name="gender" value={studentData?.gender || ""} handleChange={handleOnChange} label="Gender" dynamicOptions={[{ label: "Male", value: "Male" }, { label: "Female", value: "Female" }, { label: "Other", value: "Other" }]} />
+//         <ReactSelect
+//           required={true}
+//           name="class"
+//           value={studentData?.class || ""} // Get value from studentData
+//           handleChange={handleClassChange} // Use correct handler
+//           label="Select a Class"
+//           dynamicOptions={dynamicOptions}
+//         />
+//         <ReactSelect
+//           name="section"
+//           value={studentData?.section || ""} // Get value from studentData
+//           handleChange={handleSectionChange} // Use correct handler
+//           label="Select a Section"
+//           dynamicOptions={DynamicSection}
+//           disabled={!studentData?.class || availableSections.length === 0} // Disable if no class or sections
+//         />
+//         <ReactInput type="text" name="country" label="Country" onChange={handleOnChange} value={studentData?.country || ""} />
+//         <ReactInput type="text" name="address" label="Address" onChange={handleOnChange} value={studentData?.address || ""} />
+//         <ReactInput type="text" name="state" label="State" onChange={handleOnChange} value={studentData?.state || ""} />
+//         <ReactInput type="text" name="city" label="City" onChange={handleOnChange} value={studentData?.city || ""} />
+//         <ReactInput type="text" name="pincode" label="Pin Code" onChange={handleOnChange} value={studentData?.pincode || ""} />
+//         <ReactInput type="text" name="fatherName" label="Father's Name" onChange={handleOnChange} value={studentData?.fatherName || ""} />
+//         <ReactInput type="text" name="transport" label="Transport" onChange={handleOnChange} value={studentData?.transport || ""} />
+//         <ReactInput type="text" name="motherName" label="Mother's Name" onChange={handleOnChange} value={studentData?.motherName || ""} />
+//         <ReactInput type="text" name="guardian" label="Guardian's Name" onChange={handleOnChange} value={studentData?.guardian || ""} />
+//         <ReactInput type="phone" name="parentContact" label="Parent's Contact" onChange={handleOnChange} value={studentData?.parentContact || ""} />
+//         <ReactInput type="email" name="parentemail" label="Parent's Email" onChange={handleOnChange} value={studentData?.parentemail || ""} />
+//         {/* <ReactSelect name="transport" label="Transport Required" value={studentData?.transport || "no"} handleChange={handleOnChange} dynamicOptions={[{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]} /> */}
+//         <ReactInput type="text" name="password"  label="New Password " onChange={handleOnChange} value={studentData?.password || ""} />
+//         {/* Removed duplicate parentContact */}
+//         <ReactInput type="text" name="rollNo" label="Roll No" onChange={handleOnChange} value={studentData?.rollNo || ""} />
+//         <ReactInput type="text" name="religion" label="Religion" onChange={handleOnChange} value={studentData?.religion || ""} />
+//         <ReactInput type="text" name="caste" label="Caste" onChange={handleOnChange} value={studentData?.caste || ""} />
+//         <ReactInput type="text" name="nationality" label="Nationality" onChange={handleOnChange} value={studentData?.nationality || ""} />
+
+//         {/* Image Inputs with Previews */}
+//         {/* <div className="flex flex-col">
+//             <ReactInput
+//             type="file" label="Student Image" accept="image/*"
+//             onChange={handleOnChange} name="studentImage" />
+//             {imagePreviews.studentImage && (<img src={imagePreviews.studentImage} alt="Student Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
+//         </div>
+//          <div className="flex flex-col">
+//              <ReactInput
+//                 type="file" label="Father Image" accept="image/*"
+//                 onChange={handleOnChange} name="fatherImage" />
+//             {imagePreviews.fatherImage && (<img src={imagePreviews.fatherImage} alt="Father Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
+//         </div>
+//          <div className="flex flex-col">
+//             <ReactInput
+//                 type="file" label="Mother Image" accept="image/*"
+//                 onChange={handleOnChange} name="motherImage" />
+//             {imagePreviews.motherImage && (<img src={imagePreviews.motherImage} alt="Mother Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
+//         </div>
+//          <div className="flex flex-col">
+//             <ReactInput
+//                 type="file" label="Guardian Image" accept="image/*"
+//                 onChange={handleOnChange} name="guardianImage" />
+//             {imagePreviews.guardianImage && (<img src={imagePreviews.guardianImage} alt="Guardian Preview" className="mt-2 w-16 h-16 object-cover rounded-md border" />)}
+//         </div> */}
+         
+
+//       </div>
+//       <div className="flex ">
+      
+//                                {/* Student Image */}
+//                     <ImageCaptureCrop
+//                         label="Student Photo"
+//                         onImageCropped={(file) => handleImageProcessed(file, 'studentImage')}
+//                         initialImageUrl={typeof studentData.studentImage === 'string' ? studentData.studentImage : studentData.studentImage?.url}
+//                         aspectRatio={1}
+//                         previewSize={120}
+//                     />
+        
+//                     {/* Father's Photo */}
+//                     <ImageCaptureCrop
+//                         label="Father's Photo"
+//                         onImageCropped={(file) => handleImageProcessed(file, 'fatherImage')}
+//                         initialImageUrl={typeof studentData.fatherImage === 'string' ? studentData.fatherImage : studentData.fatherImage?.url}
+//                         aspectRatio={1}
+//                         previewSize={120}
+//                     />
+        
+//                     {/* Mother's Photo */}
+//                     <ImageCaptureCrop
+//                         label="Mother's Photo"
+//                         onImageCropped={(file) => handleImageProcessed(file, 'motherImage')}
+//                         initialImageUrl={typeof studentData.motherImage === 'string' ? studentData.motherImage : studentData.motherImage?.url}
+//                         aspectRatio={1}
+//                         previewSize={120}
+//                     />
+        
+//                     {/* Guardian's Photo */}
+//                     <ImageCaptureCrop
+//                         label="Guardian's Photo"
+//                         onImageCropped={(file) => handleImageProcessed(file, 'guardianImage')}
+//                         initialImageUrl={typeof studentData.guardianImage === 'string' ? studentData.guardianImage : studentData.guardianImage?.url}
+//                         aspectRatio={1}
+//                         previewSize={120}
+//                     />
+//                     </div>
+//       <div className="flex justify-end gap-4 mt-6 pt-4 border-t">
+//          {/* Pass false to onFinished for Cancel to indicate no refetch needed */}
+//         <Button name="Cancel" onClick={() => onFinished(false)} variant="secondary" />
+//         <Button name="Update Student" onClick={handleUpdate} variant="primary" />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default EditStudent;
 
 
 

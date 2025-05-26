@@ -18,7 +18,6 @@ const EditTeacher = ({ teacherDetails, handleCancel, setIsEdit }) => {
   const [selectedSection, setSelectedSection] = useState(teacherDetails?.section || ""); // Initialize with existing section
   const [availableSections, setAvailableSections] = useState([]);
   const [teacherData, setTeacherData] = useState({});
-console.log("teacherData",teacherData)
   useEffect(() => {
     if (teacherDetails) {
       setTeacherData(teacherDetails);
@@ -182,7 +181,7 @@ finally{
       />
        {/* <h1 className="text-xl font-bold mb-6">Edit Teacher Profile</h1> */}
 
-      <div className="py-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-2 p-4 bg-white ">
+      <div className="py-5 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-2 p-4 bg-white ">
         <ReactInput type="text" name="teacherName" label="Teacher's Name" onChange={handleOnChange} value={teacherData?.teacherName || ""} />
         <ReactInput type="text" name="employeeId" label="Employee Id" onChange={handleOnChange} value={teacherData?.employeeId || ""} />
         <ReactInput type="text" name="email" label="Teacher's Email" onChange={handleOnChange} value={teacherData?.email || ""} />
