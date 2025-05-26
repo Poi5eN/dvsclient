@@ -52,7 +52,6 @@ function CreateTeacher() {
   const [teacherDetails, setTeacherDetails] = useState([]);
   const [formData, setFormData] = useState(initialState);
   const [submittedData, setSubmittedData] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [getClass, setGetClass] = useState([]);
 
   const toggleModal = () => {
@@ -433,13 +432,13 @@ function CreateTeacher() {
                   previewSize={120}
                 />
 
-                <ReactInput
+                {/* <ReactInput
                   type="file"
                   name="image"
                   label="Profile Pic"
                   onChange={handleImageChange}
                   accept="image/*"
-                />
+                /> */}
               </div>
               <div className="flex items-center justify-end gap-3 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600 mt-4">
                 <Button
@@ -448,8 +447,9 @@ function CreateTeacher() {
                 />
                 <Button
                   name="Cancel"
+                   color={"gray"}
                   onClick={toggleModal}
-                  variant="outlined"
+                 
                 />
               </div>
             </div>
