@@ -164,6 +164,26 @@ function CreateTeacher() {
   };
 
   const handleSubmit = async () => {
+    if(!formData?.teacherName){
+      toast("Please Fill Name ","warn");
+      return
+    }
+    if(!formData?.email){
+      toast("Please Fill email ","warn");
+      return
+    }
+    if(!formData?.password){
+      toast("Please Fill password ","warn");
+      return
+    }
+    if(!selectedClass){
+      toast("Please Select Class ","warn");
+      return
+    }
+    if(!selectedSection){
+      toast("Please Select Section ","warn");
+      return
+    }
     const formDataToSend = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -299,7 +319,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="text"
                   name="employeeId"
-                  required={true}
+                  // required={true}
                   label="Employee ID"
                   onChange={handleInputChange}
                   value={formData.employeeId}
@@ -323,7 +343,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="date"
                   name="dateOfBirth"
-                  required={true}
+                  // required={true}
                   label="Date of Birth"
                   onChange={handleInputChange}
                   value={formData.dateOfBirth}
@@ -331,7 +351,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="text"
                   name="qualification"
-                  required={true}
+                  // required={true}
                   label="Qualification"
                   onChange={handleInputChange}
                   value={formData.qualification}
@@ -339,7 +359,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="number"
                   name="salary"
-                  required={true}
+                  // required={true}
                   label="Salary"
                   onChange={handleInputChange}
                   value={formData.salary}
@@ -347,7 +367,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="text"
                   name="subject"
-                  required={true}
+                  // required={true}
                   label="Subject Taught"
                   onChange={handleInputChange}
                   value={formData.subject}
@@ -355,7 +375,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="date"
                   name="joiningDate"
-                  required={true}
+                  // required={true}
                   label="Joining Date"
                   onChange={handleInputChange}
                   value={formData.joiningDate}
@@ -363,7 +383,7 @@ function CreateTeacher() {
                 <ReactInput
                   type="text"
                   name="address"
-                  required={true}
+                  // required={true}
                   label="Address"
                   onChange={handleInputChange}
                   value={formData.address}
@@ -372,13 +392,13 @@ function CreateTeacher() {
                   type="tel"
                   maxLength="10"
                   name="contact"
-                  required={true}
+                  // required={true}
                   label="Contact Number"
                   onChange={handleInputChange}
                   value={formData.contact}
                 />
                 <ReactSelect
-                  required={true}
+                  // required={true}
                   name="experience"
                   value={formData.experience}
                   handleChange={handleInputChange}
