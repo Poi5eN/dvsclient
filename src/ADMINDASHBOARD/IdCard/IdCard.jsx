@@ -240,7 +240,7 @@ const IdCard = () => {
         }
 
         setFilteredStudentData(filtered);
-        setSelectedStudentIds(new Set());
+        // setSelectedStudentIds(new Set());
     }, [selectedClass, selectedSection, filterName, studentData, isLoadingData, photoFilter]); // Added photoFilter
 
     const handleFilterByNameChange = (e) => setFilterName(e.target.value);
