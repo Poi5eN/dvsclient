@@ -1,4 +1,3 @@
-// src/ADMINDASHBOARD/Inventory/Stocks.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -36,9 +35,14 @@ const Stocks = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Bundle states
+  const [bundles, setBundles] = useState([]);
+  const [bundleForm, setBundleForm] = useState({ bundleName: "", price: "" });
+  const [bundleItems, setBundleItems] = useState([]);
 
   useEffect(() => {
     fetchItems();
+    fetchBundles();
   }, []);
 
   const fetchItems = async () => {
@@ -49,18 +53,31 @@ const Stocks = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (response.data.success) {
-        const fetchedItems = response.data.listOfAllItems || []; // updated key
-        setItems(fetchedItems); // Now items state is populated correctly
-        console.log("Fetched items:", fetchedItems); // Debug log
+        setItems(response.data.listOfAllItems || []);
       } else {
         toast.error(response.data.message || "Failed to fetch items.");
       }
     } catch (error) {
       toast.error("Failed to fetch items.");
       setError(error.message);
-      console.error("Fetch error:", error); // Debug log
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBundles = async () => {
+    try {
+      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/bundles", {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (response.data.success) {
+        setBundles(response.data.data || []);
+      } else {
+        toast.error(response.data.message || "Failed to fetch bundles.");
+      }
+    } catch (error) {
+      toast.error("Failed to fetch bundles.");
     }
   };
 
@@ -96,6 +113,46 @@ const Stocks = () => {
       } else toast.error(response.data.message);
     } catch (error) {
       toast.error("Failed to create item.");
+    }
+  };
+
+  // Bundle handlers
+  const handleBundleInputChange = (e) => {
+    const { name, value } = e.target;
+    setBundleForm({ ...bundleForm, [name]: value });
+  };
+
+  const handleAddItemToBundle = (itemId, quantity) => {
+    const item = items.find(i => i.itemId === itemId);
+    if (item && quantity > 0) {
+      setBundleItems([...bundleItems, { itemId, quantity }]);
+    }
+  };
+
+  const handleCreateBundle = async () => {
+    if (!bundleForm.bundleName || !bundleForm.price || bundleItems.length === 0) {
+      toast.error("Bundle name, price, and at least one item are required.");
+      return;
+    }
+    try {
+      const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/bundles", {
+        bundleName: bundleForm.bundleName,
+        items: bundleItems,
+        price: parseFloat(bundleForm.price),
+      }, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (response.data.success) {
+        setBundles([...bundles, response.data.data]);
+        setBundleForm({ bundleName: "", price: "" });
+        setBundleItems([]);
+        toast.success("Bundle created");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error("Failed to create bundle.");
     }
   };
 
@@ -150,6 +207,58 @@ const Stocks = () => {
                 </Grid>
               </Grid>
               <Button onClick={handleSubmit} variant="contained" color="primary" sx={{ mt: 2 }}>Create</Button>
+            </CardContent>
+          </Card>
+
+          {/* Bundle Creation Section */}
+          <Card sx={{ p: 2, mt: 2, background: "linear-gradient(45deg, #fff 0%, #f1f2f6 100%)" }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>Create New Bundle <AddIcon /></Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField
+                    name="bundleName"
+                    value={bundleForm.bundleName}
+                    onChange={handleBundleInputChange}
+                    fullWidth
+                    placeholder="Bundle Name"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    type="number"
+                    name="price"
+                    value={bundleForm.price}
+                    onChange={handleBundleInputChange}
+                    fullWidth
+                    placeholder="Bundle Price"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Select
+                    value=""
+                    onChange={(e) => {
+                      const itemId = e.target.value;
+                      handleAddItemToBundle(itemId, 1);
+                    }}
+                    displayEmpty
+                    fullWidth
+                  >
+                    <MenuItem value="" disabled>Select Item to Add</MenuItem>
+                    {items.map((item) => (
+                      <MenuItem key={item.itemId} value={item.itemId}>{item.itemName}</MenuItem>
+                    ))}
+                  </Select>
+                  {bundleItems.map((bi, index) => (
+                    <Box key={index} sx={{ mt: 1 }}>
+                      {items.find(i => i.itemId === bi.itemId)?.itemName} - Quantity: {bi.quantity}
+                    </Box>
+                  ))}
+                </Grid>
+              </Grid>
+              <Button onClick={handleCreateBundle} variant="contained" color="primary" sx={{ mt: 2 }}>Create Bundle</Button>
             </CardContent>
           </Card>
         </motion.div>

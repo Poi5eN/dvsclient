@@ -179,6 +179,7 @@ export const links = [
       children: [
           // { name: 'Records', link: 'records' },
           { name: 'Stocks', link: 'stocks' },
+          { name: 'Suppliers', link: 'suppliers' },
           { name: 'Sales', link: 'sales' }, 
         
       ],

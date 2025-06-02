@@ -98,6 +98,7 @@ const Expenditure = lazy(() =>
   import("./ADMINDASHBOARD/Account/Expenditure/Expenditure")
 );
 const Stocks = lazy(() => import("./ADMINDASHBOARD/Inventory/Stocks"));
+const Suppliers = lazy(() => import("./ADMINDASHBOARD/Inventory/Suppliers"));
 const EditStocks = lazy(() => import("./ADMINDASHBOARD/Inventory/Edit_Stocks"));
 const Sales = lazy(() => import("./ADMINDASHBOARD/Inventory/Sales"));
 const AllBooks = lazy(() => import("./ADMINDASHBOARD/Library/AllBooks"));
@@ -276,6 +277,7 @@ function App() {
               <Route path="account" element={<Income />} />
               <Route path="expenditure" element={<Expenditure />} />
               <Route path="stocks" element={<Stocks />} />
+              <Route path="suppliers" element={<Suppliers />} />
               <Route path="stocks/editstock/:itemId" element={<EditStocks />} />
               <Route path="sales" element={<Sales />} />
               {/* <Route path="records" element={<InventoryDashboard />} /> New Route */}
