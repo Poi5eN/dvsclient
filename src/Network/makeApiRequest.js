@@ -2,7 +2,8 @@ import axios from "axios";
 
 
 // const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
-const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
+// const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 // const baseURL = "https://dvsserver.onrender.com/api/v1/" || process.env.REACT_APP_API_BASE_URL;
 
 const axiosInstance = axios.create({

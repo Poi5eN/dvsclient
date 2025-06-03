@@ -8,10 +8,11 @@ import { useStateContext } from '../contexts/ContextProvider';
 const PageHeaderWithBreadcrumb = ({breadcrumbItems = [],  title = "Title" }) => {
    const {  setIsLoader,currentColor } = useStateContext();
 
-  const lighterCol = LightenColor(currentColor, 0.9); // 30% lighter
+  const lighterCol = LightenColor(currentColor, 0.8); // 30% lighter
+  // const lighterCol = LightenColor(currentColor, 0.9); // 30% lighter
   return (
-    <div className="bg-white p-2 rounded-lg shadow border border-gray-200"
-    style={{ background: lighterCol ,borderTop:`3px solid ${currentColor}`}}
+    <div className="bg-white p-2 py-1 rounded-lg shadow  border border-gray-200"
+    style={{ background: lighterCol ,borderTop:`2px solid ${currentColor}`}}
     >
         {/* <LightenColor style={{ color: lighterCol }}/> */}
      <nav aria-label="Breadcrumb" className="flex items-center space-x-1.5 text-xs text-gray-500 ">
