@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Box, Typography, Stack, Button, TextField, Grid, Card, CardContent, Table, TableBody, TableCell, TableHead, TableRow, MenuItem } from "@mui/material"; // Added MenuItem
+import { Box, Typography, Stack, Button, TextField, Grid, Card, CardContent, Table, TableBody, TableCell, TableHead, TableRow, MenuItem } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,11 +14,13 @@ const Suppliers = () => {
   const [supplierForm, setSupplierForm] = useState({ name: "", contact: "", address: "" });
   const [paymentForm, setPaymentForm] = useState({ supplierId: "", amount: "", paymentMode: "", description: "" });
   const [payments, setPayments] = useState([]);
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSuppliers();
     fetchPayments();
+    fetchPurchaseOrders();
   }, []);
 
   const fetchSuppliers = async () => {
@@ -48,6 +50,29 @@ const Suppliers = () => {
     } catch (error) {
       toast.error("Failed to fetch payments.");
     }
+  };
+
+  const fetchPurchaseOrders = async () => {
+    try {
+      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/purchaseorders", {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (response.data.success) setPurchaseOrders(response.data.data || []);
+      else toast.error(response.data.message || "Failed to fetch purchase orders.");
+    } catch (error) {
+      toast.error("Failed to fetch purchase orders.");
+    }
+  };
+
+  const calculateSupplierDues = (supplierId) => {
+    const totalOrders = purchaseOrders
+      .filter(po => po.supplierId === supplierId)
+      .reduce((sum, po) => sum + (po.totalCost || 0), 0);
+    const totalPayments = payments
+      .filter(p => p.supplierId === supplierId)
+      .reduce((sum, p) => sum + (p.amount || 0), 0);
+    return Math.max(0, totalOrders - totalPayments);
   };
 
   const handleSupplierInputChange = (e) => {
@@ -185,6 +210,7 @@ const Suppliers = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Contact</TableCell>
                 <TableCell>Address</TableCell>
+                <TableCell>Dues</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -194,6 +220,7 @@ const Suppliers = () => {
                   <TableCell>{s.name}</TableCell>
                   <TableCell>{s.contact}</TableCell>
                   <TableCell>{s.address}</TableCell>
+                  <TableCell>₹{calculateSupplierDues(s.supplierId).toFixed(2)}</TableCell>
                   <TableCell>
                     <Button size="small" variant="outlined" sx={{ mr: 1 }}><EditIcon /></Button>
                     <Button size="small" color="error" onClick={() => handleDeleteSupplier(s.supplierId)}><DeleteIcon /></Button>

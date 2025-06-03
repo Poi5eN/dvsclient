@@ -1,4 +1,3 @@
-// src/ADMINDASHBOARD/Inventory/InventoryDashboard.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -11,13 +10,14 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CategoryIcon from "@mui/icons-material/Category";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
+import WorkIcon from "@mui/icons-material/Work"; // For Total Bundles
 import WarningIcon from "@mui/icons-material/Warning"; // For low stock
 import theme from "../../theme";
 import { ThemeProvider } from "@mui/material/styles";
 
 ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
-const InventoryDashboard = () => {
+const InventoryDashboard = ({ bundles = [] }) => {
   const [stats, setStats] = useState(null);
   const [period, setPeriod] = useState("month");
   const [loading, setLoading] = useState(true);
@@ -102,6 +102,17 @@ const InventoryDashboard = () => {
     }],
   };
 
+  const bundleData = {
+    labels: bundles.map((bundle) => bundle.bundleName),
+    datasets: [{
+      label: "Total Items in Bundle",
+      data: bundles.map((bundle) => bundle.items.reduce((sum, bi) => sum + (bi.quantity || 0), 0)),
+      backgroundColor: "rgba(255, 159, 64, 0.6)",
+      borderColor: "rgba(255, 159, 64, 1)",
+      borderWidth: 1,
+    }],
+  };
+
   const options = {
     responsive: true,
     plugins: {
@@ -110,6 +121,7 @@ const InventoryDashboard = () => {
     },
     scales: {
       y: { beginAtZero: true, ticks: { color: theme.palette.text.primary } },
+      x: { ticks: { color: theme.palette.text.primary } },
     },
   };
 
@@ -136,6 +148,7 @@ const InventoryDashboard = () => {
             { label: "Total Revenue", value: `₹${stats.totalRevenue.toFixed(2)}`, icon: <MonetizationOnIcon /> },
             { label: "Avg Order Value", value: `₹${stats.avgOrderValue.toFixed(2)}`, icon: <EqualizerIcon /> },
             { label: "Total Categories", value: stats.totalCategories, icon: <CategoryIcon /> },
+            { label: "Total Bundles", value: bundles.length, icon: <WorkIcon /> },
           ].map((stat, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <motion.div variants={cardVariants} initial="hidden" animate="visible">
@@ -208,6 +221,18 @@ const InventoryDashboard = () => {
                   <Typography variant="h6" sx={{ mb: 2, color: theme.palette.text.secondary }}>Low Stock Items (&lt; 25)</Typography>
                   <Box sx={{ height: 300 }}>
                     <Bar data={lowStockData} options={options} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <motion.div variants={cardVariants} initial="hidden" animate="visible">
+              <Card sx={{ p: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2, color: theme.palette.text.secondary }}>Bundle Composition</Typography>
+                  <Box sx={{ height: 300 }}>
+                    <Bar data={bundleData} options={options} />
                   </Box>
                 </CardContent>
               </Card>
