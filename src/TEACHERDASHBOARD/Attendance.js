@@ -112,7 +112,7 @@ const Attendance = () => {
 
     try {
       const response = await axios.get(
-        "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
+        "https://api.digitalvidyasaarthi.in/api/v1/teacher/getAttendance",
         {
           params: { year, month },
           headers: { Authorization: `Bearer ${authToken}` },
@@ -240,7 +240,7 @@ const Attendance = () => {
 
   //   try {
   //     const response = await axios.post(
-  //       "https://dvsserver.onrender.com/api/v1/teacher/createAttendance",
+  //       "https://api.digitalvidyasaarthi.in/api/v1/teacher/createAttendance",
   //       { attendanceRecords: studentInfo },
   //       {
   //         headers: {
@@ -321,7 +321,7 @@ const Attendance = () => {
         toast.error(response?.message)
       }
       // let response = await axios.post(
-      //   "https://dvsserver.onrender.com/api/v1/teacher/createAttendance",
+      //   "https://api.digitalvidyasaarthi.in/api/v1/teacher/createAttendance",
       //   {
       //     attendanceRecords: studentInfo,
       //   },
@@ -682,7 +682,7 @@ export default Attendance;
 //     const month = selectedDate.getMonth() + 1;
 //     try {
 //       const response = await axios.get(
-//         "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
+//         "https://api.digitalvidyasaarthi.in/api/v1/teacher/getAttendance",
 //         {
 //           params: {
 //             year: year,
@@ -749,7 +749,7 @@ export default Attendance;
 
 //     try {
 //       let response = await axios.post(
-//         "https://dvsserver.onrender.com/api/v1/teacher/createAttendance",
+//         "https://api.digitalvidyasaarthi.in/api/v1/teacher/createAttendance",
 //         {
 //           attendanceRecords: studentInfo,
 //         },

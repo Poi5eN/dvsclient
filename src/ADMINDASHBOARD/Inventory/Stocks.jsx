@@ -52,7 +52,7 @@ const Stocks = () => {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/items", {
+      const response = await axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items", {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -71,7 +71,7 @@ const Stocks = () => {
 
   const fetchBundles = async () => {
     try {
-      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/bundles", {
+      const response = await axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/bundles", {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -104,7 +104,7 @@ const Stocks = () => {
   const handleSubmit = async () => {
     const payload = { ...formData, icon: selectedItem?.icon || "🛒", color: selectedItem?.color || "#000000" };
     try {
-      const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/items", payload, {
+      const response = await axios.post("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items", payload, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -149,7 +149,7 @@ const Stocks = () => {
       return;
     }
     try {
-      const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/bundles", {
+      const response = await axios.post("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/bundles", {
         bundleName: bundleForm.bundleName,
         items: bundleItems,
         price: parseFloat(bundleForm.price),

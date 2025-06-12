@@ -26,7 +26,7 @@ const StudentResults = () => {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAdminInfo",
         {
           withCredentials: true,
           headers: {
@@ -50,7 +50,7 @@ const StudentResults = () => {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/exam/getAllExams",
+        "https://api.digitalvidyasaarthi.in/api/v1/exam/getAllExams",
         {
           withCredentials: true,
           headers: {
@@ -100,7 +100,7 @@ const StudentResults = () => {
     if (selectedExam && userId) {
       axios
         .get(
-          `https://dvsserver.onrender.com/api/v1/results/getResults?examName=${selectedExam}&studentId=${userId}`,
+          `https://api.digitalvidyasaarthi.in/api/v1/results/getResults?examName=${selectedExam}&studentId=${userId}`,
           {
             withCredentials: true,
             headers: {

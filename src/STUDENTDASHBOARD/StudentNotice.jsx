@@ -5,7 +5,7 @@ import { GrFormView } from "react-icons/gr";
 
 import { useStateContext } from "../contexts/ContextProvider";
 const API_GET_DATA =
-  "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
+  "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice";
 
 const StudentNotice = () => {
   const authToken = localStorage.getItem("token");

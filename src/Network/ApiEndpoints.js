@@ -77,7 +77,7 @@ export const apiUrls = {
       // examresult:"exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report",
       examresult:"exam/results",
       allexamresult:"exam/results",
-      // "https://dvsserver.onrender.com/api/v1/exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report"
+      // "https://api.digitalvidyasaarthi.in/api/v1/exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report"
       // createExam:"adminRoute/exam",
    
       deleteexams:"exam/exams",
@@ -251,7 +251,7 @@ export const apiUrls = {
 //    // examresult:"exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report",
 //    examresult:"exam/results",
 //    allexamresult:"exam/results",
-//    // "https://dvsserver.onrender.com/api/v1/exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report"
+//    // "https://api.digitalvidyasaarthi.in/api/v1/exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report"
 //    // createExam:"adminRoute/exam",
 
 //    deleteexams:"exam/exams",

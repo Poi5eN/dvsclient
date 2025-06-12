@@ -25,7 +25,7 @@ function DuesTable() {
 
   useEffect(() => {
     axios
-      .get(`https://dvsserver.onrender.com/api/v1/fees/getAllStudentsFeeStatus`, {
+      .get(`https://api.digitalvidyasaarthi.in/api/v1/fees/getAllStudentsFeeStatus`, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,

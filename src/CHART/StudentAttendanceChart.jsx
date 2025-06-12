@@ -54,7 +54,7 @@ export default StudentAttendanceChart
 //         const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed, so add 1
 
 //         const response = await axios.get(
-//           `https://dvsserver.onrender.com/api/v1/teacher/getAttendanceForStudent?year=${currentYear}&month=${currentMonth}`,
+//           `https://api.digitalvidyasaarthi.in/api/v1/teacher/getAttendanceForStudent?year=${currentYear}&month=${currentMonth}`,
 //           {
 //             withCredentials: true,
 //             headers: {

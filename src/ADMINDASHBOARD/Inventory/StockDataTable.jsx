@@ -15,7 +15,7 @@ const StockDataTable = ({ data }) => {
   const handleDelete = async (itemId) => {
     if (window.confirm("Are you sure?")) {
       try {
-        const response = await axios.delete(`https://dvsserver.onrender.com/api/v1/adminRoute/items/${itemId}`, {
+        const response = await axios.delete(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items/${itemId}`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });

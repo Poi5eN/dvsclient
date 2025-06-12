@@ -4,7 +4,7 @@ const authToken = localStorage.getItem("token");
 
 export const teacherApi = async (email) => {
   const tachapi = await axios.get(
-    `https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers?email=${email}`,
+    `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getTeachers?email=${email}`,
     {
       withCredentials: true,
       headers: {
@@ -17,7 +17,7 @@ export const teacherApi = async (email) => {
 
 export const getAllStudent = () => {
   const numberOfStudent = axios.get(
-    "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
+    "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents",
     {
       withCredentials: true,
       headers: {

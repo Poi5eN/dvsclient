@@ -36,7 +36,7 @@ const AdmitCard = () => {
         setLoading(true);
         try {
             const response = await axios.get(
-                "https://dvsserver.onrender.com/api/v1/exam/getExams",
+                "https://api.digitalvidyasaarthi.in/api/v1/exam/getExams",
                 {
                     withCredentials: true,
                     headers: {

@@ -40,7 +40,7 @@ function Edit_Classwise_Fees() {
     try {
       setLoading(true);
       const response = await axios.put(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/updateFees/${_id}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/updateFees/${_id}`,
         formDataToSend,
         {
           withCredentials: true,
@@ -63,7 +63,7 @@ function Edit_Classwise_Fees() {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getFees?_id=${_id}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getFees?_id=${_id}`,
         {
           withCredentials: true,
           headers: {

@@ -23,7 +23,7 @@ const ViewTeacher = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers?email=${email}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getTeachers?email=${email}`,
         {
           withCredentials: true,
           headers: {

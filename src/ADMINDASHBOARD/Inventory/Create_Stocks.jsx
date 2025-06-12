@@ -282,8 +282,8 @@ export default Create_Sales;
 //     try {
 //       // setLoading(true)
 //      await axios.post(
-//         "https://dvsserver.onrender.com/api/v1/adminRoute/inventory",
-//         // "https://dvsserver.onrender.com/api/v1/adminRoute/createItem",
+//         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/inventory",
+//         // "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createItem",
 //         formDataToSend,
 //         {
 //           withCredentials: true,
@@ -314,8 +314,8 @@ export default Create_Sales;
 
 //   const handleDelete = (itemId) => {
 //     axios
-//       .delete(`https://dvsserver.onrender.com/api/v1/adminRoute/deleteItem/${itemId}`, {
-//       // .delete(`https://dvsserver.onrender.com/api/v1/adminRoute/deleteItem/${itemId}`, {
+//       .delete(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteItem/${itemId}`, {
+//       // .delete(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteItem/${itemId}`, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -385,8 +385,8 @@ export default Create_Sales;
 //   useEffect(() => {
 //     // Fetch data from the server when the component mounts
 //     axios
-//       .get("https://dvsserver.onrender.com/api/v1/adminRoute/inventory", {
-//       // .get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems", {
+//       .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/inventory", {
+//       // .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllItems", {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,

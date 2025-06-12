@@ -51,7 +51,7 @@ export default AttendenceCart
 
 //         try {
 //             const response = await axios.get(
-//                 "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
+//                 "https://api.digitalvidyasaarthi.in/api/v1/teacher/getAttendance",
 //                 {
 //                     params: {
 //                         year: year,
@@ -161,7 +161,7 @@ export default AttendenceCart
 
 // //         try {
 // //             const response = await axios.get(
-// //                 "https://dvsserver.onrender.com/api/v1/teacher/getAttendance",
+// //                 "https://api.digitalvidyasaarthi.in/api/v1/teacher/getAttendance",
 // //                 {
 // //                     params: {
 // //                         year: year,

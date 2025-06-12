@@ -72,7 +72,7 @@ function Create_Subjects() {
 
     try {
       const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/createTeacher",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createTeacher",
         formDataToSend,
         {
           headers: {

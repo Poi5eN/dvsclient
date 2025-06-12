@@ -67,7 +67,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -92,7 +92,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAdminInfo`,
         {
           withCredentials: true,
           headers: {
@@ -117,7 +117,7 @@ const ParentFees = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus?studentId=${studentData._id}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeStatus?studentId=${studentData._id}`,
         {
           withCredentials: true,
           headers: {

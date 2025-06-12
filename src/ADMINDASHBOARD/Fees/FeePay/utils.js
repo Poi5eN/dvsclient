@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 export const fetchAdditionalFeesForClass = async (className, authToken) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/adminRoute/fees/?additional=true&className=${className}`,
+      `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/adminRoute/fees/?additional=true&className=${className}`,
       {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },

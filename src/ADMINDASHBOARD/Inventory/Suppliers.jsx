@@ -26,7 +26,7 @@ const Suppliers = () => {
   const fetchSuppliers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/suppliers", {
+      const response = await axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/suppliers", {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -41,7 +41,7 @@ const Suppliers = () => {
 
   const fetchPayments = async () => {
     try {
-      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/supplier-payments", {
+      const response = await axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/supplier-payments", {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -54,7 +54,7 @@ const Suppliers = () => {
 
   const fetchPurchaseOrders = async () => {
     try {
-      const response = await axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/purchaseorders", {
+      const response = await axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/purchaseorders", {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -87,7 +87,7 @@ const Suppliers = () => {
 
   const handleCreateSupplier = async () => {
     try {
-      const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/suppliers", supplierForm, {
+      const response = await axios.post("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/suppliers", supplierForm, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -104,7 +104,7 @@ const Suppliers = () => {
   const handleDeleteSupplier = async (supplierId) => {
     if (window.confirm("Are you sure?")) {
       try {
-        const response = await axios.delete(`https://dvsserver.onrender.com/api/v1/adminRoute/suppliers/${supplierId}`, {
+        const response = await axios.delete(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/suppliers/${supplierId}`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
@@ -120,7 +120,7 @@ const Suppliers = () => {
 
   const handleCreatePayment = async () => {
     try {
-      const response = await axios.post("https://dvsserver.onrender.com/api/v1/adminRoute/supplier-payments", paymentForm, {
+      const response = await axios.post("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/supplier-payments", paymentForm, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

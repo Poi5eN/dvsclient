@@ -5,7 +5,7 @@ import { apiUrls } from './ApiEndpoints';
 import makeApiRequest from './makeApiRequest'; // Provide the correct path
 import axios from "axios";
 
-const API_URL = "https://dvsserver.onrender.com/api/v1/thirdparty";
+const API_URL = "https://api.digitalvidyasaarthi.in/api/v1/thirdparty";
 
 
 export const thirdpartyadmissions = async (SchoolID) => {
@@ -230,7 +230,7 @@ export const createAttendance = async (payload) => {
 // import makeApiRequest from './makeApiRequest'; // Provide the correct path
 // import axios from "axios";
 
-// const API_URL = "https://dvsserver.onrender.com/api/v1/thirdparty";
+// const API_URL = "https://api.digitalvidyasaarthi.in/api/v1/thirdparty";
 
 
 // export const thirdpartyadmissions = async (SchoolID) => {

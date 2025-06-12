@@ -22,10 +22,10 @@ import "@tailwindcss/line-clamp"; // make sure this plugin is installed & enable
 
 Modal.setAppElement("#root");
 
-const API_BASE_URL = "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
-const API_EDIT = "https://dvsserver.onrender.com/api/v1/adminRoute/notice/";
-const API_DELETE = "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
-const API_GET_DATA = "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
+const API_BASE_URL = "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice";
+const API_EDIT = "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice/";
+const API_DELETE = "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice";
+const API_GET_DATA = "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice";
 
 const TeacherNotice = () => {
   const [loading, setLoading] = useState(false);

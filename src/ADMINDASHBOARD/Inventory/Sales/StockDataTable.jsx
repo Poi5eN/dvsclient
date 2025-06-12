@@ -15,7 +15,7 @@
 //     // Fetch all items (fees) when the component mounts
 //     axios
 //       .get(
-//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems",
+//         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllItems",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -42,7 +42,7 @@
 //   }, [authToken]);
 //   const fetchSalesRecords = () => {
 //     axios
-//       .get("https://dvsserver.onrender.com/api/v1/inventory/getSalesRecords", {
+//       .get("https://api.digitalvidyasaarthi.in/api/v1/inventory/getSalesRecords", {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -110,7 +110,7 @@
 
 //     // Send POST request
 //     axios
-//       .post("https://dvsserver.onrender.com/api/v1/inventory/multiItemSell", dataToPost, {
+//       .post("https://api.digitalvidyasaarthi.in/api/v1/inventory/multiItemSell", dataToPost, {
 //         withCredentials: true,
 //         headers: {
 //           Authorization: `Bearer ${authToken}`,
@@ -274,7 +274,7 @@ const StockTable = () => {
   // useEffect(() => {
   //   axios
   //     .get(
-  //       "https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems",
+  //       "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllItems",
   //       {
   //         withCredentials: true,
   //         headers: {
@@ -338,7 +338,7 @@ const StockTable = () => {
   const fetchSalesRecords = () => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/inventory/getSalesRecords",
+        "https://api.digitalvidyasaarthi.in/api/v1/inventory/getSalesRecords",
         {
           withCredentials: true,
           headers: {
@@ -412,7 +412,7 @@ const StockTable = () => {
     // Send POST request
     axios
       .post(
-        "https://dvsserver.onrender.com/api/v1/inventory/multiItemSell",
+        "https://api.digitalvidyasaarthi.in/api/v1/inventory/multiItemSell",
         dataToPost,
         {
           withCredentials: true,

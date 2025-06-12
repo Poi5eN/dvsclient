@@ -20,7 +20,7 @@ export default EmployeeChart
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://dvsserver.onrender.com/api/v1/teacher/getPaymentHistory`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/teacher/getPaymentHistory`,
 //         {
 //           withCredentials: true,
 //       headers: {
@@ -49,7 +49,7 @@ export default EmployeeChart
 //         // Fetch and extract month-wise paid amounts for employees
 //         axios
 //           .get(
-//             `https://dvsserver.onrender.com/api/v1/employee/getPaymentHistory`,
+//             `https://api.digitalvidyasaarthi.in/api/v1/employee/getPaymentHistory`,
 //             {
 //               withCredentials: true,
 //       headers: {

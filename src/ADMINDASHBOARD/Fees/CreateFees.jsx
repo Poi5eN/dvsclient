@@ -105,7 +105,7 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
   try {
     const response = await axios.get(
       `${
-        process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+        process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
       {
         withCredentials: true,
@@ -237,7 +237,7 @@ const CreateFees = () => {
     try {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+          process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
         }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
         {
           withCredentials: true,
@@ -1098,10 +1098,10 @@ const CreateFees = () => {
     try {
       const url = isUnified
         ? `${
-            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
           }/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
         : `${
-            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
           }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -1129,7 +1129,7 @@ const CreateFees = () => {
         try {
           const fallbackResponse = await axios.get(
             `${
-              process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+              process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
             }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
             { headers: { Authorization: `Bearer ${authToken}` } }
           );

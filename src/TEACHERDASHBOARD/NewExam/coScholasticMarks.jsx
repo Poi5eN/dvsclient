@@ -29,7 +29,7 @@ const CoScholasticMarks = () => {
         const fetchExams = async () => {
             try {
                 const response = await axios.get(
-                    `https://dvsserver.onrender.com/api/v1/exam/exams?className=${param?.class}&section=${param?.section}`,
+                    `https://api.digitalvidyasaarthi.in/api/v1/exam/exams?className=${param?.class}&section=${param?.section}`,
                     {
                         withCredentials: true,
                         headers: {
@@ -129,7 +129,7 @@ const CoScholasticMarks = () => {
 
         try {
             const response = await axios.put(
-                "https://dvsserver.onrender.com/api/v1/marks/marksbulkupload",
+                "https://api.digitalvidyasaarthi.in/api/v1/marks/marksbulkupload",
                 formattedData,
                 {
                     withCredentials: true,
@@ -310,7 +310,7 @@ export default CoScholasticMarks;
 //         const fetchExams = async () => {
 //             try {
 //                 const response = await axios.get(
-//                     `https://dvsserver.onrender.com/api/v1/exam/exams?classNames=${param?.class}&section=${param?.section}`,
+//                     `https://api.digitalvidyasaarthi.in/api/v1/exam/exams?classNames=${param?.class}&section=${param?.section}`,
 //                     {
 //                         withCredentials: true,
 //                         headers: {
@@ -407,7 +407,7 @@ export default CoScholasticMarks;
     
 //         try {
 //             const response = await axios.put(
-//                 "https://dvsserver.onrender.com/api/v1/marks/marksbulkupload",
+//                 "https://api.digitalvidyasaarthi.in/api/v1/marks/marksbulkupload",
 //                 formattedData,
 //                 {
 //                     withCredentials: true,
@@ -579,7 +579,7 @@ export default CoScholasticMarks;
 //         const fetchExams = async () => {
 //             try {
 //                 const response = await axios.get(
-//                     `https://dvsserver.onrender.com/api/v1/exam/exams?classNames=${param?.class}&section=${param?.section}`,
+//                     `https://api.digitalvidyasaarthi.in/api/v1/exam/exams?classNames=${param?.class}&section=${param?.section}`,
 //                     {
 //                         withCredentials: true,
 //                         headers: {
@@ -739,7 +739,7 @@ export default CoScholasticMarks;
 
 //         try {
 //             const response = await axios.post(
-//                 "https://dvsserver.onrender.com/api/v1/marks/marksbulkupload",
+//                 "https://api.digitalvidyasaarthi.in/api/v1/marks/marksbulkupload",
 //                 postData,
 //                 {
 //                     withCredentials: true,

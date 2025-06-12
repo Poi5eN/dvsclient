@@ -2114,7 +2114,7 @@ export default CreateExam;
 
 //     try {
 //       const response = await axios.post(
-//         "https://dvsserver.onrender.com/api/v1/exam/exams",
+//         "https://api.digitalvidyasaarthi.in/api/v1/exam/exams",
 //         examData,
 //         {
 //           headers: {
@@ -2350,7 +2350,7 @@ export default CreateExam;
 
 //     try {
 //       const response = await axios.post(
-//         'https://dvsserver.onrender.com/api/v1/exam/exams',
+//         'https://api.digitalvidyasaarthi.in/api/v1/exam/exams',
 //         examData,
 //         {
 //           headers: {

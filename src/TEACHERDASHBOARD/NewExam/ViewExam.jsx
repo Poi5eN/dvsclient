@@ -225,9 +225,9 @@ export default ViewExam;
 //         setLoading(true);
 //         try {
 //             let response = await axios.get(
-//                 // `https://dvsserver.onrender.com/api/v1/adminRoute/exams?className=${user?.classTeacher}&section=${user?.section}`,
-//                 "https://dvsserver.onrender.com/api/v1/adminRoute/exams",
-//                 // "https://dvsserver.onrender.com/api/v1/exam/getExams",
+//                 // `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/exams?className=${user?.classTeacher}&section=${user?.section}`,
+//                 "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/exams",
+//                 // "https://api.digitalvidyasaarthi.in/api/v1/exam/getExams",
 //                 {
 //                     withCredentials: true,
 //                     headers: {
@@ -249,7 +249,7 @@ export default ViewExam;
 //         setLoading(true);
 //         try {
 //             await axios.delete(
-//                 `https://dvsserver.onrender.com/api/v1/exam/exams/${examId}`,
+//                 `https://api.digitalvidyasaarthi.in/api/v1/exam/exams/${examId}`,
 //                 {
 //                     withCredentials: true,
 //                     headers: {

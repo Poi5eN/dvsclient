@@ -35,7 +35,7 @@ const StudentHome = () => {
     // GET Request to fetch existing notices
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents?email=${email}`,
         {
           withCredentials: true,
           headers: {
@@ -59,7 +59,7 @@ const StudentHome = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllIssuedBookStudent?bookId=${_id}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllIssuedBookStudent?bookId=${_id}`,
         {
           withCredentials: true,
           headers: {

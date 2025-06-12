@@ -15,9 +15,9 @@ const EditClass = () => {
   });
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ 
-      ...formData, 
-      [name]: value // Ensure subjects remain as a string
+    setFormData({
+      ...formData,
+      [name]: value, // Ensure subjects remain as a string
     });
   };
 
@@ -29,7 +29,7 @@ const EditClass = () => {
           ...response.class,
           subjects: Array.isArray(response.class.subjects)
             ? response.class.subjects.join(", ") // Convert array to comma-separated string
-            : response.class.subjects
+            : response.class.subjects,
         });
       } else {
         toast.error(response?.message);
@@ -41,10 +41,17 @@ const EditClass = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    const normalizeCommaString = (str) =>
+      str
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .join(", ");
+
     const payload = {
-      className: formData?.className,
-      sections: String(formData?.sections),
-      subjects: formData?.subjects, // Already a string
+      className: formData?.className.trim(),
+      sections: normalizeCommaString(formData?.sections),
+      subjects: normalizeCommaString(formData?.subjects),
     };
 
     try {
@@ -79,7 +86,7 @@ const EditClass = () => {
             required
             style={{ width: "70%", paddingBottom: "20px" }}
           />
-          
+
           <TextField
             label="Sections"
             name="sections"
@@ -110,10 +117,7 @@ const EditClass = () => {
             Update
           </Button>
           <Link to="/admin/classes">
-            <Button variant="contained"
-            
-            style={{ background:"gray" }}
-            >
+            <Button variant="contained" style={{ background: "gray" }}>
               Cancel
             </Button>
           </Link>
@@ -124,4 +128,3 @@ const EditClass = () => {
 };
 
 export default EditClass;
-

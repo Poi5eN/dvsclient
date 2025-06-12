@@ -14,7 +14,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -36,7 +36,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getFees",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getFees",
         {
           withCredentials: true,
           headers: {
@@ -59,7 +59,7 @@ const Expenses = () => {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdditionalFees",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAdditionalFees",
         {
           withCredentials: true,
           headers: {

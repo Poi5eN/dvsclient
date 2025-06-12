@@ -136,7 +136,7 @@ const AllIncomeCharts = () => { // Renamed component slightly for clarity
     setIsLoading(true);
     setError(null); // Reset error on new fetch
 
-    axios.get('https://dvsserver.onrender.com/api/v1/fees/feeIncomeMonths', {
+    axios.get('https://api.digitalvidyasaarthi.in/api/v1/fees/feeIncomeMonths', {
       withCredentials: true, // Keep this if your backend requires cookies
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -240,7 +240,7 @@ export default AllIncomeCharts;
 
 //   useEffect(() => {
 
-//     axios.get('https://dvsserver.onrender.com/api/v1/fees/feeIncomeMonths', 
+//     axios.get('https://api.digitalvidyasaarthi.in/api/v1/fees/feeIncomeMonths', 
 //     {
 //       withCredentials: true,
 //       headers: {

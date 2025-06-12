@@ -34,8 +34,8 @@ const ReceiptModals = () => {
     setIsLoader(true);
     try {
       const url = isUnified
-        ? `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
-        : `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+        ? `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
+        : `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${authToken}` } });
       if (response.data.success) {
         setReceiptData(response.data);
@@ -49,7 +49,7 @@ const ReceiptModals = () => {
       if (isUnified && error.response?.status === 404) {
         try {
           const fallbackResponse = await axios.get(
-            `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+            `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
             { headers: { Authorization: `Bearer ${authToken}` } }
           );
           if (fallbackResponse.data.success) {

@@ -51,7 +51,7 @@ export const FeePayProvider = ({ children }) => {
   const fetchStudentFeeInfo = async (studentId) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+        `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
         {
           withCredentials: true,
           headers: { Authorization: `Bearer ${authToken}` },

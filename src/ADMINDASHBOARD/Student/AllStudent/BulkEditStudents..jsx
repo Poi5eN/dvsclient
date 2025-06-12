@@ -166,7 +166,7 @@ const BulkEditStudents = () => {
 
     setIsLoader(true);
     try {
-      const response = await fetch("https://dvsserver.onrender.com/api/v1/adminRoute/studentparent/many", {
+      const response = await fetch("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent/many", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

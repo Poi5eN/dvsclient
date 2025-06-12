@@ -110,7 +110,7 @@ export default function CreateExam() {
   const getAllClasses = async () => {
     try {
       let response = await axios.get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllClasses",
         {
           withCredentials: true,
           headers: {
@@ -203,10 +203,10 @@ export default function CreateExam() {
       subjects: modalFormData?.subjects,
     };
 
-    let apiUrl = "https://dvsserver.onrender.com/api/v1/exam/createExams";
+    let apiUrl = "https://api.digitalvidyasaarthi.in/api/v1/exam/createExams";
     let method = "post";
     if (editMode) {
-      apiUrl = `https://dvsserver.onrender.com/api/v1/exam/updateExam/${examId}`;
+      apiUrl = `https://api.digitalvidyasaarthi.in/api/v1/exam/updateExam/${examId}`;
       method = "put";
     }
     try {

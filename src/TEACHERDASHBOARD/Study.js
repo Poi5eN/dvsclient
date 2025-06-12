@@ -27,7 +27,7 @@ const Study = () => {
     image: null,
   });
 
-  const API_BASE_URL = "https://dvsserver.onrender.com/api/v1/teacher";
+  const API_BASE_URL = "https://api.digitalvidyasaarthi.in/api/v1/teacher";
 
   const closeModal = () => { };
 

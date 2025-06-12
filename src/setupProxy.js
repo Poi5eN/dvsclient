@@ -4,8 +4,8 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      // target: 'https://dvsserver.onrender.com',
-      target: 'https://dvsserver.onrender.com',
+      // target: 'https://api.digitalvidyasaarthi.in',
+      target: 'https://api.digitalvidyasaarthi.in',
       changeOrigin: true,
     })
   );

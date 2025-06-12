@@ -77,23 +77,23 @@ const Sales = () => {
           duesResponse,
         ] = await Promise.all([
           axios.get(
-            "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
             { withCredentials: true, headers }
           ),
-          axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/items", {
+          axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items", {
             withCredentials: true,
             headers,
           }),
           axios.get(
-            "https://dvsserver.onrender.com/api/v1/adminRoute/bundles",
+            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/bundles",
             { withCredentials: true, headers }
           ),
-          axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/sales", {
+          axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales", {
             withCredentials: true,
             headers,
           }),
           axios.get(
-            "https://dvsserver.onrender.com/api/v1/adminRoute/salesdues",
+            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/salesdues",
             { withCredentials: true, headers }
           ),
         ]);
@@ -490,7 +490,7 @@ const Sales = () => {
               newItems: [],
             };
             const duesResponse = await axios.post(
-              "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+              "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/duesandsales",
               duesData,
               {
                 withCredentials: true,
@@ -580,7 +580,7 @@ const Sales = () => {
     try {
       setIsSubmitting(true);
       const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/duesandsales",
         duesData,
         {
           withCredentials: true,
@@ -858,7 +858,7 @@ const Sales = () => {
     try {
       setIsFetchingReceipt(true);
       const response = await axios.get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${encodeURIComponent(
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${encodeURIComponent(
           saleNumber
         )}`,
         {
@@ -1727,19 +1727,19 @@ export default Sales;
 //         const [studentResponse, itemResponse, salesResponse, duesResponse] =
 //           await Promise.all([
 //             axios.get(
-//               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+//               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 //               { withCredentials: true, headers }
 //             ),
 //             axios.get(
-//               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+//               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 //               { withCredentials: true, headers }
 //             ),
 //             axios.get(
-//               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+//               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 //               { withCredentials: true, headers }
 //             ),
 //             axios.get(
-//               "https://dvsserver.onrender.com/api/v1/adminRoute/salesdues",
+//               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/salesdues",
 //               { withCredentials: true, headers }
 //             ),
 //           ]);
@@ -2060,7 +2060,7 @@ export default Sales;
 //       const response = await PostSales(saleData);
 //       // const token = localStorage.getItem("token");
 //       // const response = await axios.post(
-//       //   "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+//       //   "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 //       //   saleData,
 //       //   {
 //       //     withCredentials: true,
@@ -2111,7 +2111,7 @@ export default Sales;
 //               newItems: [],
 //             };
 //             const duesResponse = await axios.post(
-//               "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+//               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/duesandsales",
 //               duesData,
 //               {
 //                 withCredentials: true,
@@ -2207,7 +2207,7 @@ export default Sales;
 //       setIsSubmitting(true);
 //       const token = localStorage.getItem("token");
 //       const response = await axios.post(
-//         "https://dvsserver.onrender.com/api/v1/adminRoute/duesandsales",
+//         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/duesandsales",
 //         duesData,
 //         {
 //           withCredentials: true,
@@ -2570,7 +2570,7 @@ export default Sales;
 //       setIsFetchingReceipt(true);
 //       const token = localStorage.getItem("token");
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${encodeURIComponent(
+//         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${encodeURIComponent(
 //           saleNumber
 //         )}`,
 //         {
@@ -3514,15 +3514,15 @@ export default Sales;
 // //         const [studentResponse, itemResponse, salesResponse] =
 // //           await Promise.all([
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //               { withCredentials: true, headers }
 // //             ),
 // //           ]);
@@ -3730,7 +3730,7 @@ export default Sales;
 // //       setIsSubmitting(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.post(
-// //         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //         saleData,
 // //         {
 // //           withCredentials: true,
@@ -3982,7 +3982,7 @@ export default Sales;
 // //       setIsFetchingReceipt(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.get(
-// //         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${saleId}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: { Authorization: `Bearer ${token}` },
@@ -4508,15 +4508,15 @@ export default Sales;
 // //         const [studentResponse, itemResponse, salesResponse] =
 // //           await Promise.all([
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //               { withCredentials: true, headers }
 // //             ),
 // //           ]);
@@ -4688,7 +4688,7 @@ export default Sales;
 // //       setIsSubmitting(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.post(
-// //         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //         saleData,
 // //         {
 // //           withCredentials: true,
@@ -4923,7 +4923,7 @@ export default Sales;
 // //       setIsFetchingReceipt(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.get(
-// //         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${saleId}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: { Authorization: `Bearer ${token}` },
@@ -5400,15 +5400,15 @@ export default Sales;
 // //         const [studentResponse, itemResponse, salesResponse] =
 // //           await Promise.all([
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //               { withCredentials: true, headers }
 // //             ),
 // //           ]);
@@ -5583,7 +5583,7 @@ export default Sales;
 // //       setIsSubmitting(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.post(
-// //         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //         saleData,
 // //         {
 // //           withCredentials: true,
@@ -5774,7 +5774,7 @@ export default Sales;
 // //       setIsFetchingReceipt(true);
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.get(
-// //         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${saleId}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: { Authorization: `Bearer ${token}` },
@@ -6234,15 +6234,15 @@ export default Sales;
 // //         const [studentResponse, itemResponse, salesResponse] =
 // //           await Promise.all([
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 // //               { withCredentials: true, headers }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //               { withCredentials: true, headers }
 // //             ),
 // //           ]);
@@ -6421,7 +6421,7 @@ export default Sales;
 // //       setIsSubmitting(true); // Start submission loading
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.post(
-// //         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //         saleData,
 // //         {
 // //           withCredentials: true,
@@ -6586,7 +6586,7 @@ export default Sales;
 // //       setIsFetchingReceipt(true); // Show loading indicator for this action
 // //       const token = localStorage.getItem("token");
 // //       const response = await axios.get(
-// //         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${saleId}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: { Authorization: `Bearer ${token}` },
@@ -7043,7 +7043,7 @@ export default Sales;
 // //         const [studentResponse, itemResponse, salesResponse] =
 // //           await Promise.all([
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/studentparent?fetchAllStudents=true",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
 // //               {
 // //                 withCredentials: true,
 // //                 headers: {
@@ -7052,7 +7052,7 @@ export default Sales;
 // //               }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/items",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items",
 // //               {
 // //                 withCredentials: true,
 // //                 headers: {
@@ -7061,7 +7061,7 @@ export default Sales;
 // //               }
 // //             ),
 // //             axios.get(
-// //               "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //               "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //               {
 // //                 withCredentials: true,
 // //                 headers: {
@@ -7156,7 +7156,7 @@ export default Sales;
 // //     };
 // //     try {
 // //       const response = await axios.post(
-// //         "https://dvsserver.onrender.com/api/v1/adminRoute/sales",
+// //         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales",
 // //         saleData,
 // //         {
 // //           withCredentials: true,
@@ -7329,7 +7329,7 @@ export default Sales;
 // //       }
 // //       // Retrieve receipt details from the API
 // //       const response = await axios.get(
-// //         `https://dvsserver.onrender.com/api/v1/adminRoute/receipts/${saleId}`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/receipts/${saleId}`,
 // //         {
 // //           withCredentials: true,
 // //           headers: {

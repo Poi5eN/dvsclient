@@ -25,7 +25,7 @@ const EditStocks = () => {
 
   useEffect(() => {
     axios
-      .get(`https://dvsserver.onrender.com/api/v1/adminRoute/items?itemId=${itemId}`, {
+      .get(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items?itemId=${itemId}`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${authToken}` },
       })
@@ -55,7 +55,7 @@ const EditStocks = () => {
   const handleSubmit = async () => {
     try {
       const response = await axios.put(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/items/${itemId}`, // ✅ update using itemId
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items/${itemId}`, // ✅ update using itemId
         formData,
         {
           withCredentials: true,

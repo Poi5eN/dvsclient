@@ -33,7 +33,7 @@ function IssueBookCreate() {
 
   useEffect(() => {
     axios
-      .get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllBooks", {
+      .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllBooks", {
         withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,

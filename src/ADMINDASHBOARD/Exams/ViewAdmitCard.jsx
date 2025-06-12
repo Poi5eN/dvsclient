@@ -26,8 +26,8 @@ const ViewAdmitCard = () => {
   useEffect(() => {
     axios
       .get(
-        // `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents`,
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents?email=${email}`,
+        // `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents?email=${email}`,
         {
           withCredentials: true,
           headers: {
@@ -48,7 +48,7 @@ const ViewAdmitCard = () => {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/exam/getAllExams",
+        "https://api.digitalvidyasaarthi.in/api/v1/exam/getAllExams",
         {
           withCredentials: true,
           headers: {

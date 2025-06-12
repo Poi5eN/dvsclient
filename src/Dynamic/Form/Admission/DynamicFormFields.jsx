@@ -473,7 +473,7 @@ Getclasses();
             if (values.guardianImage instanceof File) formDataToSend.append("guardianImage", values.guardianImage);
 
             const response = await fetch(
-                `https://dvsserver.onrender.com/api/v1/thirdparty/admissions/${studentId}`, // Use env variable for base URL ideally
+                `https://api.digitalvidyasaarthi.in/api/v1/thirdparty/admissions/${studentId}`, // Use env variable for base URL ideally
                 {
                     method: "PUT",
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -1150,7 +1150,7 @@ export default DynamicFormFileds;
 
 //       // Update API call to match editAdmission endpoint
 //       const response = await fetch(
-//         `https://dvsserver.onrender.com/api/v1/thirdparty/admissions/${studentId}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/thirdparty/admissions/${studentId}`,
 //         {
 //           method: "PUT",
 //           headers: {

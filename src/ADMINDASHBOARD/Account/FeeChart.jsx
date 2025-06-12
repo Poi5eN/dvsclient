@@ -27,7 +27,7 @@ export default FeeChart
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeStatus`,
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -161,7 +161,7 @@ export default FeeChart
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeStatus`,
 // //         {
 // //           withCredentials: true,
 // //       headers: {
@@ -275,7 +275,7 @@ export default FeeChart
 // //   useEffect(() => {
 // //     axios
 // //       .get(
-// //         `https://dvsserver.onrender.com/api/v1/fees/getFeeStatus`,
+// //         `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeStatus`,
 // //         {
 // //           withCredentials: true,
 // //       headers: {

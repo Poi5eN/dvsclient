@@ -43,7 +43,7 @@ const Curriculum = () => {
     formDataToSend.append("image", formData.image);
 
     axios
-      .post("https://dvsserver.onrender.com/api/v1/adminRoute/createCurriculum", formDataToSend, {
+      .post("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createCurriculum", formDataToSend, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -66,7 +66,7 @@ const Curriculum = () => {
   };
 
   useEffect(() => {
-    axios.get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllCurriculum", {
+    axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllCurriculum", {
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -84,7 +84,7 @@ const Curriculum = () => {
   const handleDeleteCurriculum = (index) => {
     const curriculumId = curriculumData[index]._id;
     axios
-      .delete("https://dvsserver.onrender.com/api/v1/adminRoute/deleteCurriculum/" + curriculumId, {
+      .delete("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteCurriculum/" + curriculumId, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${authToken}`,

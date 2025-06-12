@@ -9,7 +9,7 @@ const FeeStatus = ({ admissionNumber }) => {
     const fee = async () => {
       try {
         const response = await axios.get(
-          `https://dvsserver.onrender.com/api/v1/fees/getFeeHistoryAndDues/${admissionNumber}`,
+          `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeHistoryAndDues/${admissionNumber}`,
 
           {
             withCredentials: true,

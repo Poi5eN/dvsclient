@@ -28,7 +28,7 @@ const ViewReg = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getRegistration/${registrationNumber}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getRegistration/${registrationNumber}`,
         {
           withCredentials: true,
           headers: {

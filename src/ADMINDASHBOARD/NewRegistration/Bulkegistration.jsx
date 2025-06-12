@@ -45,7 +45,7 @@ console.log("first response",response)
           
         //     setLoading(true);
         //   await axios.post(
-        //     "https://dvsserver.onrender.com/api/v1/adminRoute/createBulkRegistrations",
+        //     "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createBulkRegistrations",
         //     { registrations: worksheet },
         //     {
         //       withCredentials: true,

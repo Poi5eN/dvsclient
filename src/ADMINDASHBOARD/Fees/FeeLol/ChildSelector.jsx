@@ -25,7 +25,7 @@
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
 //       {
 //         withCredentials: true,
@@ -57,7 +57,7 @@
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
 //       {
 //         withCredentials: true,

@@ -30,7 +30,7 @@ const AdmitCard = () => {
   // useEffect(() => {
   //   axios
   //     .get(
-  //       "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
+  //       "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents",
   //       {
   //         withCredentials: true,
   //         headers: {

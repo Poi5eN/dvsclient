@@ -13,7 +13,7 @@ const StudentFeeDetails = ({ modalData }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://dvsserver.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
+          `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
           {
             withCredentials: true,
             headers: {
@@ -109,7 +109,7 @@ export default StudentFeeDetails;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://dvsserver.onrender.com/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/getFeeHistoryAndDues/${modalData}`,
 //         {
 //           withCredentials: true,
 //           headers: {

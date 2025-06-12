@@ -27,7 +27,7 @@ export function ExamChart() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://dvsserver.onrender.com/api/v1/exam/getAllExams`,
+          `https://api.digitalvidyasaarthi.in/api/v1/exam/getAllExams`,
           {
             withCredentials: true,
             headers: {

@@ -113,7 +113,7 @@ function Create_Staff() {
 
   const handleDelete = async (email) => {
     try {
-      await axios.put(`https://dvsserver.onrender.com/api/v1/adminRoute/deactivateEmployee/${email}`, 
+      await axios.put(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deactivateEmployee/${email}`, 
         // { email },
         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
       );

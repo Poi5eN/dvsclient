@@ -31,10 +31,10 @@ const ReceiptModal = ({
     try {
       const url = isUnified
         ? `${
-            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
           }/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
         : `${
-            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
           }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${authToken}` },

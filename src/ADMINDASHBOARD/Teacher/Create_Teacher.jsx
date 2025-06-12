@@ -206,7 +206,7 @@ function CreateTeacher() {
     setIsLoader(true);
     try {
       const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/teacher",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/teacher",
         formDataToSend,
         {
           withCredentials: true,

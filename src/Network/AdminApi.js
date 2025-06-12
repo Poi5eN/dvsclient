@@ -134,7 +134,7 @@ export const studentstoggleprinted = async (payload) => {
 
 // export const getStudentsBySession = async ({ session }) => {
 //   try {
-//     const url = `https://dvsserver.onrender.com/api/v1/adminRoute/getStudentsBySession?session=${encodeURIComponent(session)}`;
+//     const url = `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getStudentsBySession?session=${encodeURIComponent(session)}`;
 //     console.log("API URL:", url); // Debug log
 //     const response = await fetch(url, {
 //       method: "GET",
@@ -153,7 +153,7 @@ export const studentstoggleprinted = async (payload) => {
 // };
 export const getStudentsBySession = async ({ session }) => {
   try {
-    const url = 'https://dvsserver.onrender.com/api/v1/adminRoute/getStudentsBySession';
+    const url = 'https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getStudentsBySession';
     console.log("Sending POST request to:", url, "with session:", session); // Debug log
     const response = await fetch(url, {
       method: 'POST',

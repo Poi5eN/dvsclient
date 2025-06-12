@@ -14,7 +14,7 @@ const BookManagement = () => {
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/getIssueBookToMe`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getIssueBookToMe`,
         {
           withCredentials: true,
           headers: {

@@ -19,7 +19,7 @@ const ParentCurriculum = () => {
   useEffect(() => {
     axios
       .get(
-       ` https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
+       ` https://api.digitalvidyasaarthi.in/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -46,7 +46,7 @@ const ParentCurriculum = () => {
     if (studentData.class) {
       axios
         .get(
-         ` https://dvsserver.onrender.com/api/v1/adminRoute/getAllCurriculum?className=${studentData.class}`,
+         ` https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllCurriculum?className=${studentData.class}`,
           {
             withCredentials: true,
           headers: {

@@ -15,7 +15,7 @@ import BreadcrumbList from "../Dynamic/BreadcrumbList";
 const Assignments = () => {
   const authToken = localStorage.getItem("token");
 const Api_Create =
-  "https://dvsserver.onrender.com/api/v1/adminRoute/createAssignment";
+  "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createAssignment";
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -44,7 +44,7 @@ const Api_Create =
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllClasses",
         {
           withCredentials: true,
           headers: {
@@ -131,7 +131,7 @@ const Api_Create =
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllAssignment",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllAssignment",
         {
           withCredentials: true,
           headers: {
@@ -152,7 +152,7 @@ const Api_Create =
     const assignmentId = assignmentData[index]._id;
     axios
       .delete(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/deleteAssignment/" +
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteAssignment/" +
           assignmentId,
         {
           withCredentials: true,

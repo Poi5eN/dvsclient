@@ -11,7 +11,7 @@ const IncomeChart = () => {
 
   useEffect(() => {
     axios
-      .get("https://dvsserver.onrender.com/api/v1/adminRoute/getAllItems", {
+      .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllItems", {
         withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,

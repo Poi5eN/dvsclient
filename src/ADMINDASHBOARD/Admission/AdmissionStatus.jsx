@@ -14,7 +14,7 @@ function AdmissionStatus({ data }) {
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getLastYearStudents",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getLastYearStudents",
         {
           withCredentials: true,
           headers: {

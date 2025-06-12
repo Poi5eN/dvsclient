@@ -152,7 +152,7 @@ const RegForm = ({ setReload, reload }) => {
   // useEffect(() => {
   //   axios
   //     .get(
-  //       "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses",
+  //       "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllClasses",
   //       {
   //         withCredentials: true,
   //         headers: { Authorization: `Bearer ${authToken}` },
@@ -365,7 +365,7 @@ export default RegForm;
 //       setLoading(true);
 //       await axios
 //         .post(
-//           "https://dvsserver.onrender.com/api/v1/adminRoute/createRegistration",
+//           "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createRegistration",
 //           formData,
 //           {
 //             withCredentials: true,
@@ -393,7 +393,7 @@ export default RegForm;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllClasses`,
 //         {
 //           withCredentials: true,
 //           headers: {

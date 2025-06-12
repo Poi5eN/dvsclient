@@ -97,7 +97,7 @@ const Table = ({ reLoad }) => {
     // setIsLoader(true); // Consider enabling if it's a long operation
     try {
       const response = await axios.get(
-        `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/fees/unified-receipts?session=${session}`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
           withCredentials: true,
@@ -223,7 +223,7 @@ const Table = ({ reLoad }) => {
     try {
       const receiptNumber = fees.feeReceiptNumber || fees.unifiedReceiptNumber;
       const response = await axios.get(
-        `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
         }
@@ -881,7 +881,7 @@ export default Table;
 //     // setIsLoader(true);  
 //     try {
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/unified-receipts?session=${session}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //           withCredentials: true,
@@ -954,7 +954,7 @@ export default Table;
 //     try {
 //       const receiptNumber = fees.feeReceiptNumber || fees.unifiedReceiptNumber;
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //         }
@@ -1702,7 +1702,7 @@ export default Table;
 //     // setIsLoader(true);  
 //     try {
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/unified-receipts?session=${session}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //           withCredentials: true,
@@ -1794,7 +1794,7 @@ export default Table;
 //     try {
 //       const receiptNumber = fees.feeReceiptNumber || fees.unifiedReceiptNumber;
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //         }
@@ -2737,7 +2737,7 @@ export default Table;
 //     // setIsLoader(true);  
 //     try {
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/unified-receipts?session=${session}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //           withCredentials: true,
@@ -2825,7 +2825,7 @@ export default Table;
 //     try {
 //       const receiptNumber = fees.feeReceiptNumber || fees.unifiedReceiptNumber;
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //         }
@@ -3738,7 +3738,7 @@ export default Table;
 //     // setIsLoader(true);  
 //     try {
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/unified-receipts?session=${session}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/unified-receipts?session=${session}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //           withCredentials: true,
@@ -3826,7 +3826,7 @@ export default Table;
 //     try {
 //       const receiptNumber = fees.feeReceiptNumber || fees.unifiedReceiptNumber;
 //       const response = await axios.get(
-//         `https://dvsserver.onrender.com/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
 //         {
 //           headers: { Authorization: `Bearer ${authToken}` },
 //         }

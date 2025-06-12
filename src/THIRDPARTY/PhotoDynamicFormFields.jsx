@@ -263,7 +263,7 @@ function PhotoDynamicFormFields(props) {
       }
 
       const response = await fetch(
-        `https://dvsserver.onrender.com/api/v1/thirdparty/photo/${photoData.photoId}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/thirdparty/photo/${photoData.photoId}`,
         {
           method: "PUT",
           headers: {

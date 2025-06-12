@@ -31,7 +31,7 @@ const authToken = localStorage.getItem("token");
   useEffect(() => {
     axios
       .get(
-        `https://dvsserver.onrender.com/api/v1/timeTable/getClassTimeTable?className=${data.class}&section=${data.section}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/timeTable/getClassTimeTable?className=${data.class}&section=${data.section}`,
         {
           withCredentials: true,
           headers: {

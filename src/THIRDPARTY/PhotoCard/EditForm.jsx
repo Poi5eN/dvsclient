@@ -814,7 +814,7 @@ export default EditForm;
      
 //       const response = await thirdpartycompleteadmission(formDataToSend);
 //       // const response = await fetch(
-//       //   `https://dvsserver.onrender.com/api/v1/thirdparty/admissions/${studentId}`,
+//       //   `https://api.digitalvidyasaarthi.in/api/v1/thirdparty/admissions/${studentId}`,
 //       //   {
 //       //     method: "PUT",
 //       //     headers: {

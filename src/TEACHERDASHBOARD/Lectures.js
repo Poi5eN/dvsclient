@@ -36,7 +36,7 @@ const Lectures = () => {
     const fetchTimetable = async () => {
       try {
         const response = await axios.get(
-          `https://dvsserver.onrender.com/api/v1/timeTable/getClassTimeTable?className=${data.classTeacher}§ion=${data.section}`,
+          `https://api.digitalvidyasaarthi.in/api/v1/timeTable/getClassTimeTable?className=${data.classTeacher}§ion=${data.section}`,
           {
             withCredentials: true,
             headers: {
@@ -128,7 +128,7 @@ const Lectures = () => {
 
     try {
       await axios.post(
-        "https://dvsserver.onrender.com/api/v1/timeTable/createClassTimeTable",
+        "https://api.digitalvidyasaarthi.in/api/v1/timeTable/createClassTimeTable",
         formattedTimetable,
         {
           withCredentials: true,
@@ -151,7 +151,7 @@ const Lectures = () => {
     console.log(timetableId);
     try {
       await axios.delete(
-        `https://dvsserver.onrender.com/api/v1/timeTable/deleteClassTimeTable/${timetableId}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/timeTable/deleteClassTimeTable/${timetableId}`,
         {
           withCredentials: true,
           headers: {

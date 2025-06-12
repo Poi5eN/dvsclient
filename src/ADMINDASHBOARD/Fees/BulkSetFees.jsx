@@ -22,7 +22,7 @@ const BulkFeesSet = () => {
 
   const token = localStorage.getItem('token');
   const api = axios.create({
-    baseURL: "https://dvsserver.onrender.com/api/v1/adminRoute",
+    baseURL: "https://api.digitalvidyasaarthi.in/api/v1/adminRoute",
     headers: {
         Authorization: `Bearer ${token}`
       }

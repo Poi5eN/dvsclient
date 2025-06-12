@@ -89,7 +89,7 @@ function Create_Book() {
   //   // Fetch data from the server when the component mounts
   //   axios
   //     .get(
-  //       "https://dvsserver.onrender.com/api/v1/adminRoute/library",
+  //       "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/library",
   //       {
   //         withCredentials: true,
   //         headers: {
@@ -168,7 +168,7 @@ if(response?.success){
     try {
       // Make an API request to delete the row from the server
       const response = await axios.delete(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteBook/${_id}`,
         {
           withCredentials: true,
           headers: {
@@ -419,7 +419,7 @@ export default Create_Book;
 //     // Fetch data from the server when the component mounts
 //     axios
 //       .get(
-//         "https://dvsserver.onrender.com/api/v1/adminRoute/getAllBooks",
+//         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllBooks",
 //         {
 //           withCredentials: true,
 //           headers: {
@@ -468,7 +468,7 @@ export default Create_Book;
 //     try {
 //       setLoading(true);
 //       const response = await axios.post(
-//         "https://dvsserver.onrender.com/api/v1/adminRoute/createBook",
+//         "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/createBook",
 //         formData,
 //         {
 //           withCredentials: true,
@@ -507,7 +507,7 @@ export default Create_Book;
 //     try {
 //       // Make an API request to delete the row from the server
 //       const response = await axios.delete(
-//         `https://dvsserver.onrender.com/api/v1/adminRoute/deleteBook/${_id}`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/deleteBook/${_id}`,
 //         {
 //           withCredentials: true,
 //           headers: {

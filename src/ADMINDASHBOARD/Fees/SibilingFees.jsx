@@ -55,7 +55,7 @@
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
 //       {
 //         withCredentials: true,
@@ -203,7 +203,7 @@
 //   const fetchStudentFeeInfo = async (studentId) => {
 //     try {
 //       const response = await axios.get(
-//         `${ process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         `${ process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
 //         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
 //       );
 //       if (response.data.success) return response.data.data;
@@ -623,15 +623,15 @@
 //   const fetchReceiptData = async (receiptNumber, isUnifiedRec = false) => {
 //     setIsPreviewReady(false); setIsLoader(true);
 //     try {
-//       const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
-//                               : `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+//       const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
+//                               : `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
 //       const response = await axios.get(url, { headers: { Authorization: `Bearer ${authToken}` } });
 //       if (response.data.success) { setReceiptData(response.data); setIsPreviewReady(true); return response.data; }
 //       else { toast.error(`Failed to fetch receipt data: ${response.data.message || "Unknown error"}`); return null; }
 //     } catch (error) {
 //       if (isUnifiedRec && error.response?.status === 404) {
 //         try {
-//           const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
+//           const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
 //           if (fallbackResponse.data.success) { setReceiptData(fallbackResponse.data); setIsPreviewReady(true); return fallbackResponse.data; }
 //           else { toast.error(`Fallback receipt fetch failed: ${fallbackResponse.data.message || "Unknown error"}`); return null; }
 //         } catch (fallbackError) { toast.error("Error fetching receipt data: " + fallbackError.message); return null; }
@@ -1136,7 +1136,7 @@ const fetchAdditionalFeesForClass = async (className, authToken) => {
   try {
     const response = await axios.get(
       `${
-        process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+        process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
       {
         withCredentials: true,
@@ -1284,7 +1284,7 @@ const SibilingFees = () => {
   const fetchStudentFeeInfo = async (studentId) => {
     try {
       const response = await axios.get(
-        `${ process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+        `${ process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
       );
       if (response.data.success) return response.data.data;
@@ -1720,16 +1720,16 @@ const SibilingFees = () => {
     debugger
     setIsPreviewReady(false); setIsLoader(true);
     try {
-      const url =`${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
-      // const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
-      //                         : `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+      const url =`${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+      // const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
+      //                         : `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
       const response = await axios.get(url, { headers: { Authorization: `Bearer ${authToken}` } });
       if (response.data.success) { setReceiptData(response.data); setIsPreviewReady(true); return response.data; }
       else { toast.error(`Failed to fetch receipt data: ${response.data.message || "Unknown error"}`); return null; }
     } catch (error) {
       if (isUnifiedRec && error.response?.status === 404) {
         try {
-          const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
+          const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
           if (fallbackResponse.data.success) { setReceiptData(fallbackResponse.data); setIsPreviewReady(true); return fallbackResponse.data; }
           else { toast.error(`Fallback receipt fetch failed: ${fallbackResponse.data.message || "Unknown error"}`); return null; }
         } catch (fallbackError) { toast.error("Error fetching receipt data: " + fallbackError.message); return null; }
@@ -2256,7 +2256,7 @@ export default SibilingFees;
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
 //       {
 //         withCredentials: true,
@@ -2404,7 +2404,7 @@ export default SibilingFees;
 //   const fetchStudentFeeInfo = async (studentId) => {
 //     try {
 //       const response = await axios.get(
-//         `${ process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
+//         `${ process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in" }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
 //         { withCredentials: true, headers: { Authorization: `Bearer ${authToken}` } }
 //       );
 //       if (response.data.success) return response.data.data;
@@ -2813,15 +2813,15 @@ export default SibilingFees;
 //   const fetchReceiptData = async (receiptNumber, isUnifiedRec = false) => {
 //     setIsPreviewReady(false); setIsLoader(true);
 //     try {
-//       const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
-//                               : `${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
+//       const url = isUnifiedRec ? `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
+//                               : `${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
 //       const response = await axios.get(url, { headers: { Authorization: `Bearer ${authToken}` } });
 //       if (response.data.success) { setReceiptData(response.data); setIsPreviewReady(true); return response.data; }
 //       else { toast.error(`Failed to fetch receipt data: ${response.data.message || "Unknown error"}`); return null; }
 //     } catch (error) {
 //       if (isUnifiedRec && error.response?.status === 404) {
 //         try {
-//           const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
+//           const fallbackResponse = await axios.get(`${process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"}/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, { headers: { Authorization: `Bearer ${authToken}` } });
 //           if (fallbackResponse.data.success) { setReceiptData(fallbackResponse.data); setIsPreviewReady(true); return fallbackResponse.data; }
 //           else { toast.error(`Fallback receipt fetch failed: ${fallbackResponse.data.message || "Unknown error"}`); return null; }
 //         } catch (fallbackError) { toast.error("Error fetching receipt data: " + fallbackError.message); return null; }
@@ -3327,7 +3327,7 @@ export default SibilingFees;
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
 //       {
 //         withCredentials: true,
@@ -3462,7 +3462,7 @@ export default SibilingFees;
 //     try {
 //       const response = await axios.get(
 //         `${
-//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //         }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
 //         {
 //           withCredentials: true,
@@ -4053,10 +4053,10 @@ export default SibilingFees;
 //     try {
 //       const url = isUnifiedRec
 //         ? `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
 //         : `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
 //       const response = await axios.get(url, {
 //         headers: { Authorization: `Bearer ${authToken}` },
@@ -4077,7 +4077,7 @@ export default SibilingFees;
 //         try {
 //           const fallbackResponse = await axios.get(
 //             `${
-//               process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//               process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //             }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`, // This might be wrong if it was truly a unified #
 //             { headers: { Authorization: `Bearer ${authToken}` } }
 //           );
@@ -4958,7 +4958,7 @@ export default SibilingFees;
 //   try {
 //     const response = await axios.get(
 //       `${
-//         process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//         process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //       }/api/v1/adminRoute/fees/?additional=true&className=${className}`,
 //       {
 //         withCredentials: true,
@@ -5090,7 +5090,7 @@ export default SibilingFees;
 //     try {
 //       const response = await axios.get(
 //         `${
-//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //         }/api/v1/fees/getStudentFeeInfo?studentId=${studentId}&session=${session}`,
 //         {
 //           withCredentials: true,
@@ -5951,10 +5951,10 @@ export default SibilingFees;
 //     try {
 //       const url = isUnified
 //         ? `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/fees/unified-receipts?unifiedReceiptNumber=${receiptNumber}`
 //         : `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`;
 //       const response = await axios.get(url, {
 //         headers: { Authorization: `Bearer ${authToken}` },
@@ -5982,7 +5982,7 @@ export default SibilingFees;
 //         try {
 //           const fallbackResponse = await axios.get(
 //             `${
-//               process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//               process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //             }/api/v1/fees/generateFeeReceipt?receiptNumber=${receiptNumber}`,
 //             { headers: { Authorization: `Bearer ${authToken}` } }
 //           );

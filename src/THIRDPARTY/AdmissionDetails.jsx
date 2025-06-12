@@ -283,7 +283,7 @@ export default AdmissionDetails;
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses`,
+//         `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllClasses`,
 //         {
 //           withCredentials: true,
 //           headers: {

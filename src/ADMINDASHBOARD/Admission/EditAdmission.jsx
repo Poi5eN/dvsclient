@@ -67,7 +67,7 @@ const EditAdmission = () => {
 
     axios
       .put(
-        `https://dvsserver.onrender.com/api/v1/adminRoute/updateStudent`,
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/updateStudent`,
         data,
         {
           withCredentials: true,

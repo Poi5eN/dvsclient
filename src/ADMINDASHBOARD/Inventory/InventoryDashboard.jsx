@@ -26,7 +26,7 @@ const InventoryDashboard = ({ bundles = [] }) => {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://dvsserver.onrender.com/api/v1/adminRoute/inventory/stats?period=${period}&lowStockThreshold=5`, {
+        const response = await axios.get(`https://api.digitalvidyasaarthi.in/api/v1/adminRoute/inventory/stats?period=${period}&lowStockThreshold=5`, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });

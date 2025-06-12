@@ -19,7 +19,7 @@ const ParentExam= () => {
   useEffect(() => {
     axios
       .get(
-       ` https://dvsserver.onrender.com/api/v1/adminRoute/myKids`,
+       ` https://api.digitalvidyasaarthi.in/api/v1/adminRoute/myKids`,
         {
           withCredentials: true,
           headers: {
@@ -49,7 +49,7 @@ const ParentExam= () => {
     if (studentData.class && studentData.section) {
       axios
         .get(
-         ` https://dvsserver.onrender.com/api/v1/exam/getAllExams?className=${studentData.class}&section=${studentData.section}`,
+         ` https://api.digitalvidyasaarthi.in/api/v1/exam/getAllExams?className=${studentData.class}&section=${studentData.section}`,
           {
             withCredentials: true,
           headers: {

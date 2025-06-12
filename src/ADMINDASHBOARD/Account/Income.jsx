@@ -45,7 +45,7 @@ toDate:new Date(),
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAdminInfo",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAdminInfo",
         {
           withCredentials: true,
           headers: {
@@ -72,7 +72,7 @@ toDate:new Date(),
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getTeachers",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getTeachers",
         {
           withCredentials: true,
           headers: {
@@ -97,7 +97,7 @@ toDate:new Date(),
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllStudents",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllStudents",
         {
           withCredentials: true,
           headers: {
@@ -120,7 +120,7 @@ toDate:new Date(),
   useEffect(() => {
     axios
       .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllParents",
+        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllParents",
         {
           withCredentials: true,
           headers: {

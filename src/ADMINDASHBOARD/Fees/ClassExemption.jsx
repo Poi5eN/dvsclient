@@ -39,7 +39,7 @@
 //     try {
 //       const response = await axios.get(
 //         `${
-//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //         }/api/v1/adminRoute/studentparent?status=active&session=${session}`,
 //         {
 //           withCredentials: true,
@@ -71,7 +71,7 @@
 //         // Fetch sections
 //         const studentsResponse = await axios.get(
 //           `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/adminRoute/studentparent?status=active&session=${session}`,
 //           {
 //             withCredentials: true,
@@ -91,7 +91,7 @@
 //         // Fetch fee structure
 //         const feesResponse = await axios.get(
 //           `${
-//             process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//             process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //           }/api/v1/adminRoute/fees/?className=${className}`,
 //           {
 //             withCredentials: true,
@@ -232,7 +232,7 @@
 //     try {
 //       const response = await axios.post(
 //         `${
-//           process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+//           process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
 //         }/api/v1/fees/exemption`,
 //         payload,
 //         {
@@ -443,7 +443,7 @@ const ClassExemption = () => {
       try {
         const response = await axios.get(
           `${
-            process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+            process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
           }/api/v1/adminRoute/students/active`,
           {
             headers: { Authorization: `Bearer ${authToken}` },
@@ -476,7 +476,7 @@ const ClassExemption = () => {
         const [regularRes, additionalRes] = await Promise.all([
           axios.get(
             `${
-              process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+              process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
             }/api/v1/adminRoute/fees/?additional=false&className=${
               formData.className
             }`,
@@ -487,7 +487,7 @@ const ClassExemption = () => {
           ),
           axios.get(
             `${
-              process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+              process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
             }/api/v1/adminRoute/fees/?additional=true&className=${
               formData.className
             }`,
@@ -596,7 +596,7 @@ const ClassExemption = () => {
     try {
       const response = await axios.post(
         `${
-          process.env.REACT_APP_BASE_URL || "https://dvsserver.onrender.com"
+          process.env.REACT_APP_BASE_URL || "https://api.digitalvidyasaarthi.in"
         }/api/v1/fees/exemption`,
         payload,
         {

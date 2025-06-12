@@ -37,7 +37,7 @@ const AllocateAdditionalFees = () => {
     try {
          const response = await getAdditionalfees()
     //   const response = await axios.get(
-    //     `https://dvsserver.onrender.com/api/v1/fees/getAdditionalFeeStructures?session=${session}`,
+    //     `https://api.digitalvidyasaarthi.in/api/v1/fees/getAdditionalFeeStructures?session=${session}`,
     //     {
     //       headers: { Authorization: `Bearer ${authToken}` },
     //     }
@@ -112,7 +112,7 @@ const AllocateAdditionalFees = () => {
     setIsLoader(true);
     try {
       const response = await axios.post(
-        "https://dvsserver.onrender.com/api/v1/fees/allotAdditionalFees",
+        "https://api.digitalvidyasaarthi.in/api/v1/fees/allotAdditionalFees",
         payload,
         {
           headers: { Authorization: `Bearer ${authToken}` },

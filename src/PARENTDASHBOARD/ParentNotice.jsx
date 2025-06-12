@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 
-const API_GET_DATA = "https://dvsserver.onrender.com/api/v1/adminRoute/notice";
+const API_GET_DATA = "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/notice";
 
 
 const ParentNotice = () => {
