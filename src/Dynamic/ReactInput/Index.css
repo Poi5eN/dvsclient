@@ -27,3 +27,7 @@
     color: #9d3b3b;
   }
   
+  .form-group input, .form-group select, .form-group textarea{
+    font-size: 13px !important;
+    padding: 1px 6px !important;
+  }

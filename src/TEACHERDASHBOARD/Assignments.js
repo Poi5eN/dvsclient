@@ -10,6 +10,7 @@ import Tables from "../Dynamic/Tables";
 import Button from "../Dynamic/utils/Button";
 import PageHeaderWithBreadcrumb from "../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../Dynamic/BreadcrumbList";
+import { AdminGetAllClasses } from "../Network/AdminApi";
 // const authToken = Cookies.get("token");
 
 const Assignments = () => {
@@ -41,28 +42,42 @@ const Api_Create =
   });
   const [assignmentData, setAssignmentsData] = useState([]);
   const [shouldFetchData, setShouldFetchData] = useState(false);
-  useEffect(() => {
-    axios
-      .get(
-        "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        const { classList } = response.data;
+  // useEffect(() => {
+  //   axios
+  //     .get(
+  //       "https://dvsserver.onrender.com/api/v1/adminRoute/getAllClasses",
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       const { classList } = response.data;
       
-        setClassData(classList);
-      })
-      .catch((error) => {
-        console.error("Error fetching class data:", error);
-      });
-  }, [authToken]);
+  //       setClassData(classList);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching class data:", error);
+  //     });
+  // }, [authToken]);
 
+   const getAllClass = async () => {
+     try {
+       const response = await AdminGetAllClasses();
+       if (response?.success) {
+         let classes = response.classes;
+         setClassData(classes.sort((a, b) => a - b));
+       }
+     } catch (error) {
+       console.log("error", error);
+     }
+   };
  
+   useEffect(() => {
+     getAllClass();
+   }, []);
 
   const handleSubjectChange = (e) => {
     setSelectedSubject(e.target.value);
