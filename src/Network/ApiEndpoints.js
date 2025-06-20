@@ -71,7 +71,7 @@ export const apiUrls = {
      
       // Exams Strt 
       adminRouteexams:"exam/exams",
-      createExam:"exam/exams",
+      createExam:"adminRoute/exam",
       marksmarksbulkupload:"marks/marksbulkupload",
       // examresult:"exam/results/ce947fc0-b79c-4981-864d-70badba51ae7/report",
       // examresult:"exam/results/2782ef35-293f-4cc7-aca6-4e105309017b/report",

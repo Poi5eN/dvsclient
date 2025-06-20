@@ -24,9 +24,9 @@ const initialFormData = {
   classNames: [],
   sections: [],
   term: "",
-  startDate: null,
-  endDate: null,
-  resultPublishDate: null,
+  startDate: new Date(),
+  endDate: new Date(),
+  resultPublishDate: new Date(),
   subjects: [],
 };
 
@@ -189,17 +189,17 @@ const CreateExam = () => {
       const transformedSubjects = JSON.parse(JSON.stringify(formData.subjects));
       transformedSubjects.forEach(subject => {
         subject.assessments.forEach(assessment => {
-          assessment.startTime = assessment.startTime ? moment(assessment.startTime).format("hh:mm a") : "";
-          assessment.endTime = assessment.endTime ? moment(assessment.endTime).format("hh:mm a") : "";
-          assessment.examDate = assessment.examDate ? moment(assessment.examDate).format("DD-MM-YYYY") : "";
+          assessment.startTime = assessment.startTime ? moment(assessment.startTime).format("hh:mm A") : "";
+          assessment.endTime = assessment.endTime ? moment(assessment.endTime).format("hh:mm A") : "";
+          assessment.examDate = assessment.examDate ? moment(assessment.examDate).format("YYYY-MM-DD") : "";
         });
       });
 
       const apiPayload = {
         ...formData,
-        startDate: formData.startDate ? moment(formData.startDate).format("DD-MM-YYYY") : "",
-        endDate: formData.endDate ? moment(formData.endDate).format("DD-MM-YYYY") : "",
-        resultPublishDate: formData.resultPublishDate ? moment(formData.resultPublishDate).format("DD-MM-YYYY") : "",
+        startDate: formData.startDate ? moment(formData.startDate).format("YYYY-MM-DD") : "",
+        endDate: formData.endDate ? moment(formData.endDate).format("YYYY-MM-DD") : "",
+        resultPublishDate: formData.resultPublishDate ? moment(formData.resultPublishDate).format("YYYY-MM-DD") : "",
         subjects: transformedSubjects,
       };
 
@@ -259,18 +259,18 @@ const CreateExam = () => {
       assessments: subject.assessments.map(ass => ({
         ...ass,
         // IMPORTANT: Convert string dates/times from API back to Date objects
-        examDate: ass.examDate ? moment(ass.examDate, "DD-MM-YYYY").toDate() : null,
-        startTime: ass.startTime ? moment(ass.startTime, "hh:mm a").toDate() : null,
-        endTime: ass.endTime ? moment(ass.endTime, "hh:mm a").toDate() : null,
+        examDate: ass.examDate ? moment(ass.examDate, "YYYY-MM-DD").toDate() : null,
+        startTime: ass.startTime ? moment(ass.startTime, "hh:mm A").toDate() : null,
+        endTime: ass.endTime ? moment(ass.endTime, "hh:mm A").toDate() : null,
       }))
     }));
 
     setFormData({
       ...data,
       // IMPORTANT: Convert top-level string dates from API back to Date objects
-      startDate: data.startDate ? moment(data.startDate, "DD-MM-YYYY").toDate() : null,
-      endDate: data.endDate ? moment(data.endDate, "DD-MM-YYYY").toDate() : null,
-      resultPublishDate: data.resultPublishDate ? moment(data.resultPublishDate, "DD-MM-YYYY").toDate() : null,
+      startDate: data.startDate ? moment(data.startDate, "YYYY-MM-DD").toDate() : null,
+      endDate: data.endDate ? moment(data.endDate, "YYYY-MM-DD").toDate() : null,
+      resultPublishDate: data.resultPublishDate ? moment(data.resultPublishDate, "YYYY-MM-DD").toDate() : null,
       subjects: subjectsWithDateObjects,
     });
   };
@@ -377,7 +377,7 @@ const CreateExam = () => {
           </div>
         </form>
       </div>
-      <ViewExam onEdit={handleEdit} />
+      <ViewExam onEdit={handleEdit} loader={loader}/>
     </div>
   );
 };

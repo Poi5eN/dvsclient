@@ -47,7 +47,7 @@ const ViewExam = ({ onEdit, loader }) => {
   };
   useEffect(() => {
     getExams()
-  }, []);
+  }, [loader]);
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
