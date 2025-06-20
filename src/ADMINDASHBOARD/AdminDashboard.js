@@ -44,7 +44,8 @@ const AdminDashboard = () => {
 
           {/* Padding to push content below the fixed navbar */}
           {/* <div className="mt-[75px] px-1"> */}
-          <div className="mt-[90px] sm:mt-[90px] px-1">
+          <div className="mt-[70px] sm:mt-[70px] px-1">
+          {/* <div className="mt-[90px] sm:mt-[90px] px-1"> */}
 
             {themeSettings && <ThemeSettings />}
             <Outlet />

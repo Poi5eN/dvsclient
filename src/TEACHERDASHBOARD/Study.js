@@ -159,7 +159,7 @@ const Study = () => {
               }
             >
               <option>Select Type</option>
-              <option value="video">Video</option>
+            {/* <option value="video">Video</option> */}
               <option value="PDF">PDF</option>
               <option value="youtube">YouTube</option>
               <option value="Notes">Notes</option>
@@ -172,7 +172,7 @@ const Study = () => {
               onChange={handleImageChange}
             />
           )}
-          {(formData.type === "Video" || formData.type === "youtube") && (
+          {(formData.type === "youtube") && (
             <input
               type="text"
               placeholder={`Link (e.g., YouTube URL)`}

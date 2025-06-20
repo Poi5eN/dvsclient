@@ -14,49 +14,49 @@ import Mobile from "./Mobile/Index";
 const TeacherHome = () => {
   const authToken = localStorage.getItem("token");
   const {  teacherRoleData } = useStateContext();
-  const [teacherCount, setTeacherCount] = useState([]);
-  const [parentCount, setParentCount] = useState([]);
+  // const [teacherCount, setTeacherCount] = useState([]);
+  // const [parentCount, setParentCount] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getTeachers", {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      .then((response) => {
-        if (Array.isArray(response.data.data)) {
-          setTeacherCount(response.data.data.length);
-        } else {
-          console.error("Data format is not as expected:", response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching teacher count:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getTeachers", {
+  //       withCredentials: true,
+  //       headers: {
+  //         Authorization: `Bearer ${authToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       if (Array.isArray(response.data.data)) {
+  //         setTeacherCount(response.data.data.length);
+  //       } else {
+  //         console.error("Data format is not as expected:", response.data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching teacher count:", error);
+  //     });
+  // }, []);
 
-  useEffect(() => {
-    axios
-      .get(
-        "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllParents",
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        setParentCount(response.data.allParent.length);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get(
+  //       "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/getAllParents",
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       setParentCount(response.data.allParent.length);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
-  useEffect(() => {}, [teacherCount, parentCount]);
+  // useEffect(() => {}, [teacherCount, parentCount]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
