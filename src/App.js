@@ -311,7 +311,7 @@ function App() {
               <Route path="admission/edit-admission/:email" element={<EditAdmission />} />
               <Route path="status" element={<AdmissionStatus />} />
               <Route path="classes" element={<Classes />} />
-              <Route path="classes/edit-classes/:className" element={<EditPrimary />} />
+              <Route path="classes/edit-classes/:classId" element={<EditPrimary />} />
               <Route path="staff" element={<Staff />} />
               <Route path="staff/view-profile/:email" element={<ViewStaff />} />
               <Route path="staff/edit-profile/:email" element={<EditStaff />} />
