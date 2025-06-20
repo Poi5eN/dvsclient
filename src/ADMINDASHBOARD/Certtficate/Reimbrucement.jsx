@@ -3,7 +3,7 @@ import { useStateContext } from "../../contexts/ContextProvider"; // Adjust path
 import { useReactToPrint } from "react-to-print";
 import '../../App.css';
 import {
-    Button, TextField, Typography, Box, CircularProgress,
+    TextField, Typography, Box, CircularProgress,
     Paper, Grid
 } from "@mui/material";
 import bg from "../../ShikshMitraWebsite/assets/Certificate/Reimbrucement.jpg"; // YOUR BACKGROUND IMAGE
@@ -13,6 +13,8 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
 import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+import Button from "../../Dynamic/utils/Button";
 
 // A4 Dimensions
 const PAGE_WIDTH_MM = 210;
@@ -54,6 +56,7 @@ const Reimbrucement = () => {
     const [allStudents, setAllStudents] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
     const [selectedClassForFilter, setSelectedClassForFilter] = useState("");
+    console.log(selectedClassForFilter,"selectedClassForFilter")
     const [selectedStudentIdForPrefill, setSelectedStudentIdForPrefill] = useState("");
     const [isStudentDataLoading, setIsStudentDataLoading] = useState(false);
 const today_date=moment(new Date()).format("DD-MM-YYYY");
@@ -131,6 +134,7 @@ const actualAmt=tuitionFee *12;
     }, [fetchStudentDataForPrefill]);
 
     const handleStudentSelectForPrefill = useCallback((selectedOption) => {
+        debugger
         const studentId = selectedOption ? selectedOption?.target.value : "";
         setSelectedStudentIdForPrefill(studentId);
         const student = allStudents.find(s => s.studentId === studentId);
@@ -336,50 +340,76 @@ const actualAmt=tuitionFee *12;
             console.warn("DEBUG: Background image path (bg) is UNDEFINED or NULL. Background will not display.");
         }
     }, []);
-
+ const handleClassChange = (e) => {
+    const selectedClassName = e.target.value;
+    setSelectedClassForFilter(selectedClassName);}
     return (
         <>
             <PageHeaderWithBreadcrumb breadcrumbItems={BreadcrumbList.admission} title="Generate Reimbursement Slip (A4)" />
             <Box sx={{ padding: 2, backgroundColor: '#fff', borderRadius: 1, boxShadow: 1 }}>
                 <Paper elevation={2} className="no-print" sx={{ p: 2, mb: 3 }}>
-                    {/* <Typography variant="h6" gutterBottom>Enter Reimbursement Details</Typography> */}
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={4}>
+                   
+                        <div className="grid  gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-6">
                            <ReactSelect
                                 label="Filter by Class (for Student List)"
-                                value={classOptionsForFilter.find(opt => opt.value === selectedClassForFilter) || null}
-                                handleChange={(selectedOption) => setSelectedClassForFilter(selectedOption ? selectedOption.value : "")}
+                                value={selectedClassForFilter}
+                                // value={classOptionsForFilter.find(opt => opt.value === selectedClassForFilter) || null}
+                               handleChange={handleClassChange}
                                 dynamicOptions={classOptionsForFilter}
                                 placeholder="Select Class to Filter Students"
                                 isDisabled={isStudentDataLoading}
                             />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
+                        
                              <ReactSelect
                                 label="Select Student"
-                                value={studentOptionsForPrefill.find(opt => opt.value === selectedStudentIdForPrefill) || null}
+                                name="student"
+                                value={selectedStudentIdForPrefill}
+                                // value={studentOptionsForPrefill.find(opt => opt.value === selectedStudentIdForPrefill) || null}
                                 handleChange={handleStudentSelectForPrefill}
                                 dynamicOptions={[{label: "Select Student", value:""}, ...studentOptionsForPrefill]}
                                 placeholder="Search and Select Student..."
                                 isClearable
                                 isDisabled={isStudentDataLoading || !allStudents.length}
                             />
-                        </Grid>
-                        <Grid item xs={6} md={3}><TextField fullWidth label="Tuition Fee" variant="outlined" size="small" type="number" value={tuitionFee} onChange={e => setTuitionFee(e.target.value)} /></Grid>
-                        <Grid item xs={6} md={3}><TextField fullWidth label="Admission Fee" variant="outlined" size="small" type="number" value={admissionFee} onChange={e => setAdmissionFee(e.target.value)} /></Grid>
-                        <Grid item xs={6} md={3}><TextField fullWidth label="Exam Fee" variant="outlined" size="small" type="number" value={examFee} onChange={e => setExamFee(e.target.value)} /></Grid>
-                        <Grid item xs={6} md={3}><TextField fullWidth label="Balance Fee" variant="outlined" size="small" type="number" value={balance} onChange={e => setBalance(e.target.value)} /></Grid>
-                        {/* <Grid item xs={12}>
-                            <Typography variant="h6" sx={{ textAlign: 'right', mt: 1 }}>
-                                Total: {totalFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </Typography>
-                        </Grid> */}
-                        <Grid item xs={12}>
-                            <Button fullWidth variant="contained" onClick={handlePrint} style={{ backgroundColor: currentColor, color: 'white', height: '40px' }} disabled={isLoader}>
-                                {isLoader ? <CircularProgress size={20} color="inherit" /> : `Preview & Print Reimbursement Slip`}
-                            </Button>
-                        </Grid>
-                    </Grid>
+                     
+                         <ReactInput
+                                      type="number" 
+                                      maxLength="10"
+                                      name="Tuitionfee"
+                                      required={true}
+                                      label="Tuition Fee"
+                                     onChange={e => setTuitionFee(e.target.value)}
+                                      value={tuitionFee}
+                                    />
+                         <ReactInput
+                                      type="number" 
+                                      maxLength="10"
+                                      name="AdmissionFee"
+                                      required={true}
+                                      label="Admission Fee"
+                                   onChange={e => setAdmissionFee(e.target.value)}
+                                      value={admissionFee}
+                                    />
+                         <ReactInput
+                                      type="number" 
+                                      maxLength="10"
+                                      name="ExamFee"
+                                      required={true}
+                                      label="Exam Fee"
+                                   value={examFee} onChange={e => setExamFee(e.target.value)} 
+                                    />
+                         <ReactInput
+                                      type="number" 
+                                      maxLength="10"
+                                      name="BalanceFee"
+                                      required={true}
+                                      label="Balance Fee"
+                                    value={balance} onChange={e => setBalance(e.target.value)} 
+                                    />
+                       
+                        <Button color={"green"} name="Print" onClick={handlePrint} />
+                        </div>
+                    
                 </Paper>
 
              
