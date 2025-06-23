@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Box, Typography, Grid, Button, IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Select from "react-select";
-import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
+import BoltIcon from '@mui/icons-material/Bolt';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
+// ... (other imports remain the same)
+import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
 import Buttons from "../../Dynamic/utils/Button";
 import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
-// Corrected import: 'updateExam' instead of 'AdminUpdateExam'
-import { AdminGetAllClasses, createExam, updateExam } from "../../Network/AdminApi";
+import { AdminGetAllClasses, createExam, updateExam, updateExams } from "../../Network/AdminApi";
 import { toast } from "react-toastify";
 import ViewExam from "./AllExams/ViewExam";
 import { useStateContext } from "../../contexts/ContextProvider";
@@ -17,17 +20,16 @@ import BreadcrumbList from "../../Dynamic/BreadcrumbList";
 import DatePicker from "../../Dynamic/DatePicker/DatePicker";
 import TimePicker from "../../Dynamic/TimePicker/TimePicker";
 
-// Define the initial state outside the component to avoid re-creation on renders
+
 const initialFormData = {
-  name: "",
-  examType: "",
-  classNames: [],
-  sections: [],
-  term: "",
-  startDate: new Date(),
-  endDate: new Date(),
-  resultPublishDate: new Date(),
+  name: "PT 1", examType: "", classNames: [], sections: [], term: "",
+  startDate: new Date(), endDate: new Date(), resultPublishDate: new Date(),
   subjects: [],
+};
+
+const defaultAssessment = {
+  name: "", totalMarks: "100", passingMarks: "33", startTime: new Date(), endTime: new Date(), examDate: new Date(),
+  // name: "", totalMarks: "100", passingMarks: "33", startTime: null, endTime: null, examDate: null,
 };
 
 const CreateExam = () => {
@@ -38,13 +40,43 @@ const CreateExam = () => {
   const [selectedSections, setSelectedSections] = useState([]);
   const [availableSubjectsForClass, setAvailableSubjectsForClass] = useState([]);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
+  
+  const [masterAssessments, setMasterAssessments] = useState([defaultAssessment]);
 
   const [isEdit, setIsEdit] = useState(false);
-  const [editingExamId, setEditingExamId] = useState(null); // State to hold the ID of the exam being edited
+  const [editingExamId, setEditingExamId] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   const [loader, setLoader] = useState(false);
 
-  // --- FORM RESET FUNCTION ---
+  // --- MODIFICATION 1: Change state to handle multiple open subjects ---
+  const [openSubjects, setOpenSubjects] = useState(new Set());
+
+
+  // --- MODIFICATION 2: Update toggle handler to work with a Set ---
+  const handleToggleSubject = (sIndex) => {
+    setOpenSubjects(prevOpenSubjects => {
+      const newOpenSubjects = new Set(prevOpenSubjects);
+      if (newOpenSubjects.has(sIndex)) {
+        newOpenSubjects.delete(sIndex);
+      } else {
+        newOpenSubjects.add(sIndex);
+      }
+      return newOpenSubjects;
+    });
+  };
+
+  // --- MODIFICATION 3: New handler to toggle all accordions ---
+  const handleToggleAllSubjects = () => {
+    // If all are open, close all. Otherwise, open all.
+    const areAllOpen = openSubjects.size === formData.subjects.length;
+    if (areAllOpen) {
+      setOpenSubjects(new Set()); // Close all
+    } else {
+      const allIndices = new Set(formData.subjects.map((_, index) => index));
+      setOpenSubjects(allIndices); // Open all
+    }
+  };
+
   const resetForm = () => {
     setFormData(initialFormData);
     setSelectedClass(null);
@@ -52,52 +84,97 @@ const CreateExam = () => {
     setSelectedSubjects([]);
     setAvailableSections([]);
     setAvailableSubjectsForClass([]);
+    setMasterAssessments([defaultAssessment]);
     setIsEdit(false);
     setEditingExamId(null);
+    setOpenSubjects(new Set()); // Reset accordion state
   };
-
-  // Handler for simple top-level inputs
+  
+  // ... (All other handlers like handleInputChange, handleMasterAssessmentChange, etc. remain UNCHANGED) ...
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "name" || name === "examType") {
+      setFormData({ ...formData, [name]: value.toUpperCase() });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleTermChange = (option) => {
-    setFormData({ ...formData, term: option ? option.value : "" });
+    setFormData({ ...formData, term: option ? option?.target.value : "" });
   };
 
-  // Handler for top-level date fields
   const handleTopLevelDateChange = (dateValue, name) => {
     setFormData((prev) => ({ ...prev, [name]: dateValue }));
   };
 
-  // Handler for nested assessment fields
   const handleAssessmentFieldChange = (value, name, sIndex, aIndex) => {
+    let processedValue = value;
+    if (name === "name" && typeof value === 'string') {
+        processedValue = value.toUpperCase();
+    }
     setFormData((prev) => {
-      const updatedSubjects = prev.subjects.map((subject, subjectIndex) => {
-        if (sIndex === subjectIndex) {
-          const updatedAssessments = subject.assessments.map((assessment, assessmentIndex) => {
-            if (aIndex === assessmentIndex) {
-              return { ...assessment, [name]: value };
-            }
-            return assessment;
-          });
-          return { ...subject, assessments: updatedAssessments };
-        }
-        return subject;
-      });
+      const updatedSubjects = [...prev.subjects];
+      updatedSubjects[sIndex].assessments[aIndex] = {
+          ...updatedSubjects[sIndex].assessments[aIndex],
+          [name]: processedValue,
+      };
       return { ...prev, subjects: updatedSubjects };
     });
   };
 
-  const removeSubject = (index) => {
-    // Also remove from the selectedSubjects dropdown state
-    const subjectToRemove = formData.subjects[index];
-    setSelectedSubjects(prev => prev.filter(s => s.value !== subjectToRemove.name));
+  const handleMasterAssessmentChange = (value, name, masterIndex) => {
+    let processedValue = value;
+    if (name === "name" && typeof value === 'string') {
+        processedValue = value.toUpperCase();
+    }
+    setMasterAssessments(prev => prev.map((ass, i) => 
+        i === masterIndex ? { ...ass, [name]: processedValue } : ass
+    ));
+    setFormData(prev => ({
+      ...prev,
+      subjects: prev.subjects.map((subject, sIndex) => {
+        if (subject.assessments[masterIndex]) {
+          const updatedAssessments = [...subject.assessments];
+          let updatedValue = processedValue;
+          if (name === 'examDate') {
+            updatedValue = value ? moment(value).add(sIndex, 'days').toDate() : null;
+          }
+          updatedAssessments[masterIndex] = {
+            ...updatedAssessments[masterIndex],
+            [name]: updatedValue,
+          };
+          return { ...subject, assessments: updatedAssessments };
+        }
+        return subject;
+      })
+    }));
+  };
+  
+  const addMasterAssessmentRow = () => {
+    const baseDate = masterAssessments[0]?.examDate;
+    setMasterAssessments(prev => [...prev, defaultAssessment]);
+    setFormData(prev => ({
+        ...prev,
+        subjects: prev.subjects.map((subject, sIndex) => {
+            const subjectDate = baseDate 
+                ? moment(baseDate).add(sIndex, 'days').toDate() 
+                : null;
+            const newAssessment = { ...defaultAssessment, examDate: subjectDate };
+            return { ...subject, assessments: [...subject.assessments, newAssessment] };
+        })
+    }));
+  };
 
-    setFormData({
-      ...formData,
-      subjects: formData.subjects.filter((_, i) => i !== index),
-    });
+  const removeMasterAssessmentRow = (masterIndex) => {
+    setMasterAssessments(prev => prev.filter((_, i) => i !== masterIndex));
+    setFormData(prev => ({
+      ...prev,
+      subjects: prev.subjects.map(subject => ({
+        ...subject,
+        assessments: subject.assessments.filter((_, aIndex) => aIndex !== masterIndex)
+      }))
+    }));
   };
 
   const getAllClass = async () => {
@@ -105,124 +182,98 @@ const CreateExam = () => {
       setIsLoader(true);
       const response = await AdminGetAllClasses();
       if (response?.success) {
-        let classes = response.classes.map((item) => ({
-          value: item._id,
-          label: item.className,
-          sections: item.sections,
-          subjects: item.subjects,
-        }));
-        setAvailableClasses(classes);
-      } else {
-        toast.error("Failed to fetch class list.");
-        setAvailableClasses([]);
-      }
-    } catch (error) {
-      console.log("error", error);
-    } finally {
-      setIsLoader(false);
-    }
+        setAvailableClasses(response.classes.map((item) => ({
+          value: item._id, label: item.className, sections: item.sections, subjects: item.subjects,
+        })));
+      } else { toast.error("Failed to fetch class list."); }
+    } catch (error) { console.log("error", error); } 
+    finally { setIsLoader(false); }
   };
 
-  useEffect(() => {
-    getAllClass();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  useEffect(() => { getAllClass(); }, []);
+  
   const handleClassSelect = (selectedOption) => {
     setSelectedClass(selectedOption);
-    // Reset downstream selections
     setSelectedSections([]);
-    setSelectedSubjects([]);
-    
-    setFormData((prevData) => ({
-      ...prevData,
-      classNames: selectedOption ? [selectedOption.label] : [],
-      sections: [],
-      subjects: [],
-    }));
-    
     if (selectedOption) {
-      setAvailableSections(selectedOption.sections.map((section) => ({ value: section, label: section })));
-      setAvailableSubjectsForClass(selectedOption.subjects.map((subject) => ({ value: subject, label: subject })));
+      setAvailableSections(selectedOption.sections.map((s) => ({ value: s, label: s })));
+      const allSubjects = selectedOption.subjects.map((s) => ({ value: s, label: s }));
+      setAvailableSubjectsForClass(allSubjects);
+      handleSubjectsSelect(allSubjects);
     } else {
       setAvailableSections([]);
       setAvailableSubjectsForClass([]);
+      handleSubjectsSelect([]);
     }
+    setFormData((prev) => ({ ...prev, classNames: selectedOption ? [selectedOption.label] : [], sections: [] }));
   };
 
   const handleSectionSelect = (selectedOptions) => {
     setSelectedSections(selectedOptions);
-    const selectedSectionValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
-    setFormData((prevData) => ({ ...prevData, sections: selectedSectionValues }));
+    const sectionValues = selectedOptions ? selectedOptions.map((o) => o.value) : [];
+    setFormData((prev) => ({ ...prev, sections: sectionValues }));
   };
 
-  const addAssessment = (subjectIndex) => {
-    const newSubjects = [...formData.subjects];
-    newSubjects[subjectIndex].assessments.push({
-      name: "", totalMarks: "", passingMarks: "", startTime: null, endTime: null, examDate: null,
-    });
-    setFormData({ ...formData, subjects: newSubjects });
-  };
-
-  const removeAssessment = (subjectIndex, assessmentIndex) => {
-    const newSubjects = [...formData.subjects];
-    newSubjects[subjectIndex].assessments = newSubjects[subjectIndex].assessments.filter((_, i) => i !== assessmentIndex);
-    setFormData({ ...formData, subjects: newSubjects });
-  };
 
   const handleSubjectsSelect = (selectedOptions) => {
     setSelectedSubjects(selectedOptions);
-    const newSubjects = selectedOptions.map((option) => {
+    const newSubjects = selectedOptions.map((option, sIndex) => {
       const existingSubject = formData.subjects.find((s) => s.name === option.value);
-      return existingSubject || { name: option.value, assessments: [] };
+      if (existingSubject) return existingSubject;
+      const baseDate = masterAssessments[0]?.examDate;
+      const assessments = masterAssessments.map(() => {
+        const subjectDate = baseDate 
+            ? moment(baseDate).add(sIndex, 'days').toDate() 
+            : null;
+        return { ...defaultAssessment, examDate: subjectDate };
+      });
+      return { name: option.value, assessments };
     });
-    setFormData((prevData) => ({ ...prevData, subjects: newSubjects }));
+    setFormData((prev) => ({ ...prev, subjects: newSubjects }));
+
+    // --- MODIFICATION 4: Set all subjects to be open by default ---
+    const allIndices = new Set(newSubjects.map((_, index) => index));
+    setOpenSubjects(allIndices);
   };
 
+  const removeAssessment = (subjectIndex, assessmentIndex) => {
+    setFormData(prev => ({
+        ...prev,
+        subjects: prev.subjects.map((s, i) => 
+            i === subjectIndex 
+                ? { ...s, assessments: s.assessments.filter((_, a) => a !== assessmentIndex) } 
+                : s
+        )
+    }));
+  };
+
+  // ... (handleSubmit remains unchanged) ...
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
     setLoader(true);
-    
     try {
-      // Create a deep copy and format dates/times for the API
-      const transformedSubjects = JSON.parse(JSON.stringify(formData.subjects));
-      transformedSubjects.forEach(subject => {
+      const payload = JSON.parse(JSON.stringify(formData));
+      payload.name = payload.name.toUpperCase();
+      payload.examType = payload.examType.toUpperCase();
+      payload.term = payload.term.toUpperCase();
+      payload.startDate = payload.startDate ? moment(payload.startDate).format("YYYY-MM-DD") : "";
+      payload.endDate = payload.endDate ? moment(payload.endDate).format("YYYY-MM-DD") : "";
+      payload.resultPublishDate = payload.resultPublishDate ? moment(payload.resultPublishDate).format("YYYY-MM-DD") : "";
+      payload.subjects.forEach(subject => {
         subject.assessments.forEach(assessment => {
+          assessment.name = assessment.name.toUpperCase();
           assessment.startTime = assessment.startTime ? moment(assessment.startTime).format("hh:mm A") : "";
           assessment.endTime = assessment.endTime ? moment(assessment.endTime).format("hh:mm A") : "";
           assessment.examDate = assessment.examDate ? moment(assessment.examDate).format("YYYY-MM-DD") : "";
         });
       });
-
-      const apiPayload = {
-        ...formData,
-        startDate: formData.startDate ? moment(formData.startDate).format("YYYY-MM-DD") : "",
-        endDate: formData.endDate ? moment(formData.endDate).format("YYYY-MM-DD") : "",
-        resultPublishDate: formData.resultPublishDate ? moment(formData.resultPublishDate).format("YYYY-MM-DD") : "",
-        subjects: transformedSubjects,
-      };
-
-      let response;
-      if (isEdit) {
-        // --- UPDATE LOGIC ---
-        // Corrected function call to 'updateExam'
-        response = await updateExam(editingExamId, apiPayload);
-        if (response.success) {
-          toast.success("Exam updated successfully!");
-          resetForm(); // Reset form after successful update
-        } else {
-          toast.error(response?.message || "Failed to update exam.");
-        }
+      const response = isEdit ? await updateExams(editingExamId, payload) : await createExam(payload);
+      if (response.success) {
+        toast.success(`Exam ${isEdit ? 'updated' : 'created'} successfully!`);
+        resetForm();
       } else {
-        // --- CREATE LOGIC ---
-        response = await createExam(apiPayload);
-        if (response.success) {
-          toast.success("Exam created successfully!");
-          resetForm(); // Reset form after successful creation
-        } else {
-          toast.error(response?.message || "Failed to create exam.");
-        }
+        toast.error(response?.message || `Failed to ${isEdit ? 'update' : 'create'} exam.`);
       }
     } catch (error) {
       toast.error("An error occurred.");
@@ -233,139 +284,162 @@ const CreateExam = () => {
     }
   };
 
+
   const handleEdit = (data) => {
-    window.scrollTo(0, 0); // Scroll to top to see the form
+    debugger
+    window.scrollTo(0, 0); 
     setIsEdit(true);
-    setEditingExamId(data._id); // Store the exam ID
-
-    // Find the full class object to set in the react-select state
+    setEditingExamId(data.examId); 
     const cls = availableClasses.find((c) => c.label === data.classNames[0]);
-    setSelectedClass(cls);
-
     if (cls) {
-      // Populate available sections and subjects for the selected class
+      setSelectedClass(cls);
       setAvailableSections(cls.sections.map(s => ({ value: s, label: s })));
-      setAvailableSubjectsForClass(cls.subjects.map(s => ({ value: s, label: s })));
+      setAvailableSubjectsForClass(cls.subjects.map(s => ({ value: s, label:s })));
     }
-    
-    // Populate selected sections and subjects for react-select
     setSelectedSections(data.sections.map(s => ({ value: s, label: s })));
-    const subs = data.subjects.map(s => ({ label: s.name, value: s.name }));
-    setSelectedSubjects(subs);
-
-    // Deep copy and parse dates/times back to Date objects for the pickers
+    setSelectedSubjects(data.subjects.map(s => ({ label: s.name, value: s.name })));
     const subjectsWithDateObjects = data.subjects.map(subject => ({
       ...subject,
       assessments: subject.assessments.map(ass => ({
         ...ass,
-        // IMPORTANT: Convert string dates/times from API back to Date objects
         examDate: ass.examDate ? moment(ass.examDate, "YYYY-MM-DD").toDate() : null,
         startTime: ass.startTime ? moment(ass.startTime, "hh:mm A").toDate() : null,
         endTime: ass.endTime ? moment(ass.endTime, "hh:mm A").toDate() : null,
       }))
     }));
-
+    if (subjectsWithDateObjects.length > 0 && subjectsWithDateObjects[0].assessments.length > 0) {
+        setMasterAssessments(subjectsWithDateObjects[0].assessments);
+    }
     setFormData({
       ...data,
-      // IMPORTANT: Convert top-level string dates from API back to Date objects
       startDate: data.startDate ? moment(data.startDate, "YYYY-MM-DD").toDate() : null,
       endDate: data.endDate ? moment(data.endDate, "YYYY-MM-DD").toDate() : null,
       resultPublishDate: data.resultPublishDate ? moment(data.resultPublishDate, "YYYY-MM-DD").toDate() : null,
       subjects: subjectsWithDateObjects,
     });
+    // --- MODIFICATION 5: Set all subjects to be open on edit ---
+    const allIndices = new Set(subjectsWithDateObjects.map((_, index) => index));
+    setOpenSubjects(allIndices);
   };
 
-  const handleCancel = () => {
-    resetForm();
-  };
+  const handleCancel = () => { resetForm(); };
+
 
   return (
-    <div className="">
+    <div>
       <PageHeaderWithBreadcrumb
         breadcrumbItems={BreadcrumbList.admission}
         title={isEdit ? "Edit Exam" : "Create Exam"}
       />
-      <div className="bg-white p-4 pt-2 rounded-lg shadow border border-gray-200">
+      <div className="bg-white px-4 md:pb-6 pt-2 rounded-lg shadow-md">
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-wrap gap-4 gap-y-3">
-            <ReactInput type="text" name="name" required onChange={handleInputChange} value={formData.name} label="Exam Name" />
-            <ReactInput type="text" name="examType" required onChange={handleInputChange} value={formData.examType} label="Exam Type"/>
-            {/* <ReactSelect
-                name="term"
-                value={formData.term ? { label: formData.term, value: formData.term } : null}
-                handleChange={handleTermChange}
-                label="TERMS"
-                options={[
-                  { label: "TERM 1", value: "TERM 1" },
-                  { label: "TERM 2", value: "TERM 2" },
-                  { label: "TERM 3", value: "TERM 3" },
-                ]}
-              /> */}
-               <ReactSelect
-              name="term"
-              value={formData?.term}
-              // value={{ label: formData.term, value: formData.term }}
-              handleChange={handleInputChange}
-              // handleChange={(e) => setFormData({ ...formData, term: e.value })}
-              label="TERMS"
-              dynamicOptions={[
-                { label: "TERM 1", value: "TERM 1" },
-                { label: "TERM 2", value: "TERM 2" },
-                { label: "TERM 3", value: "TERM 3" },
-              ]}
-            />
-            <DatePicker label={"Start Date"} name="startDate" value={formData.startDate} handleChange={(e) => handleTopLevelDateChange(e.value, "startDate")}/>
-            <DatePicker label={"End Date"} name="endDate" value={formData.endDate} handleChange={(e) => handleTopLevelDateChange(e.value, "endDate")}/>
-            <DatePicker label={"Result Publish Date"} name="resultPublishDate" value={formData.resultPublishDate} handleChange={(e) => handleTopLevelDateChange(e.value, "resultPublishDate")}/>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Select Class</label>
-              <Select options={availableClasses} value={selectedClass} onChange={handleClassSelect} placeholder="Select a Class" isSearchable isClearable isDisabled={isEdit}/>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Select Sections</label>
-              <Select options={availableSections} value={selectedSections} onChange={handleSectionSelect} placeholder="Select Sections" isMulti isSearchable isDisabled={!selectedClass}/>
-            </div>
-            <div className="md:col-span-2 lg:col-span-1">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Select Subjects</label>
-              <Select options={availableSubjectsForClass} value={selectedSubjects} onChange={handleSubjectsSelect} placeholder="Select Subjects" isMulti isSearchable isDisabled={!selectedClass}/>
-            </div>
-          </div>
-          
-          {formData.subjects.map((subject, sIndex) => (
-            <Box key={sIndex} mt={2} p={2} border={1} borderColor="grey.300" borderRadius={2}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={10}>
-                  <Typography variant="h6">{subject.name}</Typography>
-                </Grid>
-                <Grid item xs={2} container justifyContent="flex-end">
-                  <IconButton color="error" onClick={() => removeSubject(sIndex)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
-              {subject.assessments.map((ass, aIndex) => (
-                <div className="flex flex-wrap items-center gap-3 mt-2 px-3 py-2 border border-dashed border-gray-300 rounded-md" key={aIndex}>
-                  <ReactInput type="text" name="name" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.name} label="Assessment Name"/>
-                  <ReactInput type="number" name="totalMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.totalMarks} label="Total Marks"/>
-                  <ReactInput type="number" name="passingMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.passingMarks} label="Passing Marks"/>
-                  <DatePicker label={"Date"} name="examDate" value={ass.examDate} handleChange={(e) => handleAssessmentFieldChange(e.value, "examDate", sIndex, aIndex)}/>
-                  <TimePicker label={"Start Time"} name="startTime" value={ass.startTime} respclass="max-w-[120px]" handleChange={(e) => handleAssessmentFieldChange(e.value, "startTime", sIndex, aIndex)}/>
-                  <TimePicker label={"End Time"} name="endTime" value={ass.endTime} respclass="max-w-[120px]" handleChange={(e) => handleAssessmentFieldChange(e.value, "endTime", sIndex, aIndex)}/>
-                  <IconButton color="error" sx={{ alignSelf: "center", mt: 2 }} onClick={() => removeAssessment(sIndex, aIndex)}>
-                    <DeleteIcon />
-                  </IconButton>
+            {/* ... (Section 1 and Section 2 JSX remains unchanged) ... */}
+            <div
+            //  className="border-b border-gray-200 pb-6 mb-6"
+             >
+                {/* <h2 className="text-lg font-semibold text-gray-700 mb-4">Exam Details</h2> */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                    <ReactInput type="text" name="name" required onChange={handleInputChange} value={formData.name} label="Exam Name" />
+                    <ReactInput type="text" name="examType" required onChange={handleInputChange} value={formData.examType} label="Exam Type"/>
+                    <ReactSelect name="term" value={formData.term} handleChange={handleTermChange} label="TERMS"
+                        dynamicOptions={[{ label: "TERM 1", value: "TERM 1" },{ label: "TERM 2", value: "TERM 2" },{ label: "TERM 3", value: "TERM 3" }]}
+                    />             
+                    <DatePicker label={"Start Date"} name="startDate" value={formData.startDate} handleChange={(e) => handleTopLevelDateChange(e.target.value, "startDate")}/>          
+                    <DatePicker label={"End Date"} name="endDate" value={formData.endDate} handleChange={(e) => handleTopLevelDateChange(e.target.value, "endDate")}/>
+                    <DatePicker label={"Result Publish Date"} name="resultPublishDate" value={formData.resultPublishDate} handleChange={(e) => handleTopLevelDateChange(e.target.value, "resultPublishDate")}/>
                 </div>
-              ))}
-              <Button startIcon={<AddIcon />} variant="outlined" color="primary" size="small" sx={{ mt: 2 }} onClick={() => addAssessment(sIndex)}>
-                Add Assessment
-              </Button>
-            </Box>
-          ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 ">
+                    <Select options={availableClasses} value={selectedClass} onChange={handleClassSelect} placeholder="Select a Class" isSearchable isClearable isDisabled={isEdit}/>
+                    <Select options={availableSections} value={selectedSections} onChange={handleSectionSelect} placeholder="Select Sections" isMulti isSearchable isDisabled={!selectedClass}/>
+                    <Select options={availableSubjectsForClass} value={selectedSubjects} onChange={handleSubjectsSelect} placeholder="Select Subjects" isMulti isSearchable isDisabled={!selectedClass}/>
+                </div>
+            </div>
+
+            {formData.subjects.length > 0 && (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 md:p-2 mb-4 mt-2">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <BoltIcon className="text-yellow-500" />
+                        Bulk Edit Assessments
+                    </h3>
+                    <Buttons name={"Add Another Assessment"} color="blue" variant="outlined" disabled={loader} onClick={addMasterAssessmentRow} />
+                </div>
+                
+                <div className="">
+                {masterAssessments.map((masterAss, masterIndex) => (
+                    <div key={masterIndex}
+                     className="grid grid-cols-2 md:grid-cols-6 gap-3 p-1 bg-white border-b border-dashed border-gray-300 rounded-lg"
+                    //  className="flex flex-wrap items-end gap-3 p-3 bg-white border border-dashed border-gray-300 rounded-lg"
+                     >
+                        <ReactInput type="text" name="name" onChange={(e) => handleMasterAssessmentChange(e.target.value, e.target.name, masterIndex)} value={masterAss.name} label="Assessment Name"/>
+                        <ReactInput type="number" name="totalMarks" onChange={(e) => handleMasterAssessmentChange(e.target.value, e.target.name, masterIndex)} value={masterAss.totalMarks} label="Total Marks"/>
+                        <ReactInput type="number" name="passingMarks" onChange={(e) => handleMasterAssessmentChange(e.target.value, e.target.name, masterIndex)} value={masterAss.passingMarks} label="Passing Marks"/>
+                        <DatePicker  label={"Date"} name="examDate" value={masterAss.examDate} handleChange={(e) => handleMasterAssessmentChange(e.target.value, "examDate", masterIndex)}/>
+                        <div className="max-w-[140px]"><TimePicker label={"Start Time"} name="startTime" value={masterAss.startTime} handleChange={(e) => handleMasterAssessmentChange(e.target.value, "startTime", masterIndex)}/></div>
+                        <div className="max-w-[140px]"><TimePicker label={"End Time"} name="endTime" value={masterAss.endTime} handleChange={(e) => handleMasterAssessmentChange(e.target.value, "endTime", masterIndex)}/></div>
+                        {masterAssessments.length > 1 && (
+                            <IconButton color="error" className="mb-1" onClick={() => removeMasterAssessmentRow(masterIndex)} title="Remove this bulk row">
+                                <DeleteIcon />
+                            </IconButton>
+                        )}
+                    </div>
+                ))}
+                </div>
+                </div>
+            )}
+            
+
+            {/* --- Section 3: Individual Subject Details (Accordion) --- */}
+            {formData.subjects.length > 0 && (
+                <div className="">
+                    {/* --- MODIFICATION 6: Add Toggle All button --- */}
+                    <div className="flex justify-between items-center mb-2">
+                        <h2 className="text-lg font-semibold text-gray-700">Subject-wise Schedule</h2>
+                        <button
+                            type="button"
+                            onClick={handleToggleAllSubjects}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                        >
+                            {openSubjects.size === formData.subjects.length ? 'Collapse All' : 'Expand All'}
+                        </button>
+                    </div>
+
+                    {formData.subjects.map((subject, sIndex) => (
+                    <div key={sIndex} className="border border-gray-200 rounded-lg overflow-hidden my-1">
+                        <button
+                            type="button"
+                            className="w-full flex justify-between items-center p-1 bg-gray-50 hover:bg-gray-100 transition-colors"
+                            onClick={() => handleToggleSubject(sIndex)}
+                        >
+                            <span className="text-md font-medium text-gray-800 pl-3">{subject.name}</span>
+                            {/* --- MODIFICATION 7: Check if index is in the Set --- */}
+                            {openSubjects.has(sIndex) ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+                        </button>
+                    
+                        {/* --- MODIFICATION 8: Check if index is in the Set --- */}
+                        {openSubjects.has(sIndex) && (
+                            <div className="px-4  bg-white">
+                                {subject.assessments.map((ass, aIndex) => (
+                                // <div className="flex flex-wrap items-end gap-3 p-3 border-b border-gray-200 last:border-b-0" key={aIndex}>
+                                <div className="grid grid-cols-2 md:grid-cols-6 gap-3 py-2 border-b border-gray-200 last:border-b-0" key={aIndex}>
+                                    <ReactInput type="text" name="name" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.name} label="Assessment Name"/>
+                                    <ReactInput type="number" name="totalMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.totalMarks} label="Total Marks"/>
+                                    <ReactInput type="number" name="passingMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.passingMarks} label="Passing Marks"/>
+                                    <DatePicker label={"Date"} name="examDate" value={ass.examDate} handleChange={(e) => handleAssessmentFieldChange(e.target.value, "examDate", sIndex, aIndex)}/>
+                                    <div className="max-w-[140px]"><TimePicker label={"Start Time"} name="startTime" value={ass.startTime} handleChange={(e) => handleAssessmentFieldChange(e.target.value, "startTime", sIndex, aIndex)}/></div>
+                                    <div className="max-w-[140px]"><TimePicker label={"End Time"} name="endTime" value={ass.endTime} handleChange={(e) => handleAssessmentFieldChange(e.target.value, "endTime", sIndex, aIndex)}/></div>
+                                    <IconButton color="error" className="mb-1" onClick={() => removeAssessment(sIndex, aIndex)} title="Remove this assessment"><DeleteIcon fontSize="small" /></IconButton>
+                                </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    ))}
+                </div>
+            )}
           
-          <div className="w-full flex justify-end gap-3 mt-4">
+          {/* ... (Form Actions remain unchanged) ... */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2, pt: 2, borderTop: '1px solid #e5e7eb' }}>
             {isEdit ? (
               <>
                 <Buttons name={"Update Exam"} type="submit" color="blue" disabled={loader} />
@@ -374,15 +448,406 @@ const CreateExam = () => {
             ) : (
               <Buttons name={"Create Exam"} type="submit" color="blue" disabled={loader} />
             )}
-          </div>
+          </Box>
         </form>
       </div>
-      <ViewExam onEdit={handleEdit} loader={loader}/>
+
+      <div className="mt-8">
+        <ViewExam onEdit={handleEdit} loader={loader}/>
+      </div>
     </div>
   );
 };
 
 export default CreateExam;
+
+
+
+// import React, { useEffect, useState } from "react";
+// import moment from "moment";
+// import { Box, Typography, Grid, Button, IconButton } from "@mui/material";
+// import Select from "react-select";
+// import { ReactSelect } from "../../Dynamic/ReactSelect/ReactSelect";
+// import AddIcon from "@mui/icons-material/Add";
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import Buttons from "../../Dynamic/utils/Button";
+// import { ReactInput } from "../../Dynamic/ReactInput/ReactInput";
+// // Corrected import: 'updateExam' instead of 'AdminUpdateExam'
+// import { AdminGetAllClasses, createExam, updateExam } from "../../Network/AdminApi";
+// import { toast } from "react-toastify";
+// import ViewExam from "./AllExams/ViewExam";
+// import { useStateContext } from "../../contexts/ContextProvider";
+// import PageHeaderWithBreadcrumb from "../../Dynamic/PageHeaderWithBreadcrumb";
+// import BreadcrumbList from "../../Dynamic/BreadcrumbList";
+// import DatePicker from "../../Dynamic/DatePicker/DatePicker";
+// import TimePicker from "../../Dynamic/TimePicker/TimePicker";
+
+// // Define the initial state outside the component to avoid re-creation on renders
+// const initialFormData = {
+//   name: "",
+//   examType: "",
+//   classNames: [],
+//   sections: [],
+//   term: "",
+//   startDate: new Date(),
+//   endDate: new Date(),
+//   resultPublishDate: new Date(),
+//   subjects: [],
+// };
+
+// const CreateExam = () => {
+//   const { setIsLoader } = useStateContext();
+//   const [availableClasses, setAvailableClasses] = useState([]);
+//   const [selectedClass, setSelectedClass] = useState(null);
+//   const [availableSections, setAvailableSections] = useState([]);
+//   const [selectedSections, setSelectedSections] = useState([]);
+//   const [availableSubjectsForClass, setAvailableSubjectsForClass] = useState([]);
+//   const [selectedSubjects, setSelectedSubjects] = useState([]);
+
+//   const [isEdit, setIsEdit] = useState(false);
+//   const [editingExamId, setEditingExamId] = useState(null); // State to hold the ID of the exam being edited
+//   const [formData, setFormData] = useState(initialFormData);
+//   const [loader, setLoader] = useState(false);
+
+//   // --- FORM RESET FUNCTION ---
+//   const resetForm = () => {
+//     setFormData(initialFormData);
+//     setSelectedClass(null);
+//     setSelectedSections([]);
+//     setSelectedSubjects([]);
+//     setAvailableSections([]);
+//     setAvailableSubjectsForClass([]);
+//     setIsEdit(false);
+//     setEditingExamId(null);
+//   };
+
+//   // Handler for simple top-level inputs
+//   const handleInputChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   const handleTermChange = (option) => {
+//     setFormData({ ...formData, term: option ? option.value : "" });
+//   };
+
+//   // Handler for top-level date fields
+//   const handleTopLevelDateChange = (dateValue, name) => {
+//     setFormData((prev) => ({ ...prev, [name]: dateValue }));
+//   };
+
+//   // Handler for nested assessment fields
+//   const handleAssessmentFieldChange = (value, name, sIndex, aIndex) => {
+//     setFormData((prev) => {
+//       const updatedSubjects = prev.subjects.map((subject, subjectIndex) => {
+//         if (sIndex === subjectIndex) {
+//           const updatedAssessments = subject.assessments.map((assessment, assessmentIndex) => {
+//             if (aIndex === assessmentIndex) {
+//               return { ...assessment, [name]: value };
+//             }
+//             return assessment;
+//           });
+//           return { ...subject, assessments: updatedAssessments };
+//         }
+//         return subject;
+//       });
+//       return { ...prev, subjects: updatedSubjects };
+//     });
+//   };
+
+//   const removeSubject = (index) => {
+//     // Also remove from the selectedSubjects dropdown state
+//     const subjectToRemove = formData.subjects[index];
+//     setSelectedSubjects(prev => prev.filter(s => s.value !== subjectToRemove.name));
+
+//     setFormData({
+//       ...formData,
+//       subjects: formData.subjects.filter((_, i) => i !== index),
+//     });
+//   };
+
+//   const getAllClass = async () => {
+//     try {
+//       setIsLoader(true);
+//       const response = await AdminGetAllClasses();
+//       if (response?.success) {
+//         let classes = response.classes.map((item) => ({
+//           value: item._id,
+//           label: item.className,
+//           sections: item.sections,
+//           subjects: item.subjects,
+//         }));
+//         setAvailableClasses(classes);
+//       } else {
+//         toast.error("Failed to fetch class list.");
+//         setAvailableClasses([]);
+//       }
+//     } catch (error) {
+//       console.log("error", error);
+//     } finally {
+//       setIsLoader(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     getAllClass();
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, []);
+
+//   const handleClassSelect = (selectedOption) => {
+//     setSelectedClass(selectedOption);
+//     // Reset downstream selections
+//     setSelectedSections([]);
+//     setSelectedSubjects([]);
+    
+//     setFormData((prevData) => ({
+//       ...prevData,
+//       classNames: selectedOption ? [selectedOption.label] : [],
+//       sections: [],
+//       subjects: [],
+//     }));
+    
+//     if (selectedOption) {
+//       setAvailableSections(selectedOption.sections.map((section) => ({ value: section, label: section })));
+//       setAvailableSubjectsForClass(selectedOption.subjects.map((subject) => ({ value: subject, label: subject })));
+//     } else {
+//       setAvailableSections([]);
+//       setAvailableSubjectsForClass([]);
+//     }
+//   };
+
+//   const handleSectionSelect = (selectedOptions) => {
+//     setSelectedSections(selectedOptions);
+//     const selectedSectionValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
+//     setFormData((prevData) => ({ ...prevData, sections: selectedSectionValues }));
+//   };
+
+//   const addAssessment = (subjectIndex) => {
+//     const newSubjects = [...formData.subjects];
+//     newSubjects[subjectIndex].assessments.push({
+//       name: "", totalMarks: "", passingMarks: "", startTime: null, endTime: null, examDate: null,
+//     });
+//     setFormData({ ...formData, subjects: newSubjects });
+//   };
+
+//   const removeAssessment = (subjectIndex, assessmentIndex) => {
+//     const newSubjects = [...formData.subjects];
+//     newSubjects[subjectIndex].assessments = newSubjects[subjectIndex].assessments.filter((_, i) => i !== assessmentIndex);
+//     setFormData({ ...formData, subjects: newSubjects });
+//   };
+
+//   const handleSubjectsSelect = (selectedOptions) => {
+//     setSelectedSubjects(selectedOptions);
+//     const newSubjects = selectedOptions.map((option) => {
+//       const existingSubject = formData.subjects.find((s) => s.name === option.value);
+//       return existingSubject || { name: option.value, assessments: [] };
+//     });
+//     setFormData((prevData) => ({ ...prevData, subjects: newSubjects }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoader(true);
+//     setLoader(true);
+    
+//     try {
+//       // Create a deep copy and format dates/times for the API
+//       const transformedSubjects = JSON.parse(JSON.stringify(formData.subjects));
+//       transformedSubjects.forEach(subject => {
+//         subject.assessments.forEach(assessment => {
+//           assessment.startTime = assessment.startTime ? moment(assessment.startTime).format("hh:mm A") : "";
+//           assessment.endTime = assessment.endTime ? moment(assessment.endTime).format("hh:mm A") : "";
+//           assessment.examDate = assessment.examDate ? moment(assessment.examDate).format("YYYY-MM-DD") : "";
+//         });
+//       });
+
+//       const apiPayload = {
+//         ...formData,
+//         startDate: formData.startDate ? moment(formData.startDate).format("YYYY-MM-DD") : "",
+//         endDate: formData.endDate ? moment(formData.endDate).format("YYYY-MM-DD") : "",
+//         resultPublishDate: formData.resultPublishDate ? moment(formData.resultPublishDate).format("YYYY-MM-DD") : "",
+//         subjects: transformedSubjects,
+//       };
+
+//       let response;
+//       if (isEdit) {
+//         // --- UPDATE LOGIC ---
+//         // Corrected function call to 'updateExam'
+//         response = await updateExam(editingExamId, apiPayload);
+//         if (response.success) {
+//           toast.success("Exam updated successfully!");
+//           resetForm(); // Reset form after successful update
+//         } else {
+//           toast.error(response?.message || "Failed to update exam.");
+//         }
+//       } else {
+//         // --- CREATE LOGIC ---
+//         response = await createExam(apiPayload);
+//         if (response.success) {
+//           toast.success("Exam created successfully!");
+//           resetForm(); // Reset form after successful creation
+//         } else {
+//           toast.error(response?.message || "Failed to create exam.");
+//         }
+//       }
+//     } catch (error) {
+//       toast.error("An error occurred.");
+//       console.log("error", error);
+//     } finally {
+//       setIsLoader(false);
+//       setLoader(false);
+//     }
+//   };
+
+//   const handleEdit = (data) => {
+//     window.scrollTo(0, 0); // Scroll to top to see the form
+//     setIsEdit(true);
+//     setEditingExamId(data._id); // Store the exam ID
+
+//     // Find the full class object to set in the react-select state
+//     const cls = availableClasses.find((c) => c.label === data.classNames[0]);
+//     setSelectedClass(cls);
+
+//     if (cls) {
+//       // Populate available sections and subjects for the selected class
+//       setAvailableSections(cls.sections.map(s => ({ value: s, label: s })));
+//       setAvailableSubjectsForClass(cls.subjects.map(s => ({ value: s, label: s })));
+//     }
+    
+//     // Populate selected sections and subjects for react-select
+//     setSelectedSections(data.sections.map(s => ({ value: s, label: s })));
+//     const subs = data.subjects.map(s => ({ label: s.name, value: s.name }));
+//     setSelectedSubjects(subs);
+
+//     // Deep copy and parse dates/times back to Date objects for the pickers
+//     const subjectsWithDateObjects = data.subjects.map(subject => ({
+//       ...subject,
+//       assessments: subject.assessments.map(ass => ({
+//         ...ass,
+//         // IMPORTANT: Convert string dates/times from API back to Date objects
+//         examDate: ass.examDate ? moment(ass.examDate, "YYYY-MM-DD").toDate() : null,
+//         startTime: ass.startTime ? moment(ass.startTime, "hh:mm A").toDate() : null,
+//         endTime: ass.endTime ? moment(ass.endTime, "hh:mm A").toDate() : null,
+//       }))
+//     }));
+
+//     setFormData({
+//       ...data,
+//       // IMPORTANT: Convert top-level string dates from API back to Date objects
+//       startDate: data.startDate ? moment(data.startDate, "YYYY-MM-DD").toDate() : null,
+//       endDate: data.endDate ? moment(data.endDate, "YYYY-MM-DD").toDate() : null,
+//       resultPublishDate: data.resultPublishDate ? moment(data.resultPublishDate, "YYYY-MM-DD").toDate() : null,
+//       subjects: subjectsWithDateObjects,
+//     });
+//   };
+
+//   const handleCancel = () => {
+//     resetForm();
+//   };
+
+//   return (
+//     <div className="">
+//       <PageHeaderWithBreadcrumb
+//         breadcrumbItems={BreadcrumbList.admission}
+//         title={isEdit ? "Edit Exam" : "Create Exam"}
+//       />
+//       <div className="bg-white p-4 pt-2 rounded-lg shadow border border-gray-200">
+//         <form onSubmit={handleSubmit}>
+//           <div className="flex flex-wrap gap-4 gap-y-3">
+//             <ReactInput type="text" name="name" required onChange={handleInputChange} value={formData.name} label="Exam Name" />
+//             <ReactInput type="text" name="examType" required onChange={handleInputChange} value={formData.examType} label="Exam Type"/>
+//             {/* <ReactSelect
+//                 name="term"
+//                 value={formData.term ? { label: formData.term, value: formData.term } : null}
+//                 handleChange={handleTermChange}
+//                 label="TERMS"
+//                 options={[
+//                   { label: "TERM 1", value: "TERM 1" },
+//                   { label: "TERM 2", value: "TERM 2" },
+//                   { label: "TERM 3", value: "TERM 3" },
+//                 ]}
+//               /> */}
+//                <ReactSelect
+//               name="term"
+//               value={formData?.term}
+//               // value={{ label: formData.term, value: formData.term }}
+//               handleChange={handleInputChange}
+//               // handleChange={(e) => setFormData({ ...formData, term: e.value })}
+//               label="TERMS"
+//               dynamicOptions={[
+//                 { label: "TERM 1", value: "TERM 1" },
+//                 { label: "TERM 2", value: "TERM 2" },
+//                 { label: "TERM 3", value: "TERM 3" },
+//               ]}
+//             />
+//             <DatePicker label={"Start Date"} name="startDate" value={formData.startDate} handleChange={(e) => handleTopLevelDateChange(e.value, "startDate")}/>
+//             <DatePicker label={"End Date"} name="endDate" value={formData.endDate} handleChange={(e) => handleTopLevelDateChange(e.value, "endDate")}/>
+//             <DatePicker label={"Result Publish Date"} name="resultPublishDate" value={formData.resultPublishDate} handleChange={(e) => handleTopLevelDateChange(e.value, "resultPublishDate")}/>
+//           </div>
+          
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+//             <div>
+//               <label className="text-sm font-medium text-gray-700 block mb-1">Select Class</label>
+//               <Select options={availableClasses} value={selectedClass} onChange={handleClassSelect} placeholder="Select a Class" isSearchable isClearable isDisabled={isEdit}/>
+//             </div>
+//             <div>
+//               <label className="text-sm font-medium text-gray-700 block mb-1">Select Sections</label>
+//               <Select options={availableSections} value={selectedSections} onChange={handleSectionSelect} placeholder="Select Sections" isMulti isSearchable isDisabled={!selectedClass}/>
+//             </div>
+//             <div className="md:col-span-2 lg:col-span-1">
+//               <label className="text-sm font-medium text-gray-700 block mb-1">Select Subjects</label>
+//               <Select options={availableSubjectsForClass} value={selectedSubjects} onChange={handleSubjectsSelect} placeholder="Select Subjects" isMulti isSearchable isDisabled={!selectedClass}/>
+//             </div>
+//           </div>
+          
+//           {formData.subjects.map((subject, sIndex) => (
+//             <Box key={sIndex} mt={2} p={2} border={1} borderColor="grey.300" borderRadius={2}>
+//               <Grid container spacing={2} alignItems="center">
+//                 <Grid item xs={10}>
+//                   <Typography variant="h6">{subject.name}</Typography>
+//                 </Grid>
+//                 <Grid item xs={2} container justifyContent="flex-end">
+//                   <IconButton color="error" onClick={() => removeSubject(sIndex)}>
+//                     <DeleteIcon />
+//                   </IconButton>
+//                 </Grid>
+//               </Grid>
+//               {subject.assessments.map((ass, aIndex) => (
+//                 <div className="flex flex-wrap items-center gap-3 mt-2 px-3 py-2 border border-dashed border-gray-300 rounded-md" key={aIndex}>
+//                   <ReactInput type="text" name="name" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.name} label="Assessment Name"/>
+//                   <ReactInput type="number" name="totalMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.totalMarks} label="Total Marks"/>
+//                   <ReactInput type="number" name="passingMarks" required onChange={(e) => handleAssessmentFieldChange(e.target.value, e.target.name, sIndex, aIndex)} value={ass.passingMarks} label="Passing Marks"/>
+//                   <DatePicker label={"Date"} name="examDate" value={ass.examDate} handleChange={(e) => handleAssessmentFieldChange(e.value, "examDate", sIndex, aIndex)}/>
+//                   <TimePicker label={"Start Time"} name="startTime" value={ass.startTime} respclass="max-w-[120px]" handleChange={(e) => handleAssessmentFieldChange(e.value, "startTime", sIndex, aIndex)}/>
+//                   <TimePicker label={"End Time"} name="endTime" value={ass.endTime} respclass="max-w-[120px]" handleChange={(e) => handleAssessmentFieldChange(e.value, "endTime", sIndex, aIndex)}/>
+//                   <IconButton color="error" sx={{ alignSelf: "center", mt: 2 }} onClick={() => removeAssessment(sIndex, aIndex)}>
+//                     <DeleteIcon />
+//                   </IconButton>
+//                 </div>
+//               ))}
+//               <Button startIcon={<AddIcon />} variant="outlined" color="primary" size="small" sx={{ mt: 2 }} onClick={() => addAssessment(sIndex)}>
+//                 Add Assessment
+//               </Button>
+//             </Box>
+//           ))}
+          
+//           <div className="w-full flex justify-end gap-3 mt-4">
+//             {isEdit ? (
+//               <>
+//                 <Buttons name={"Update Exam"} type="submit" color="blue" disabled={loader} />
+//                 <Buttons name={"Cancel"} type="button" color="gray" onClick={handleCancel} />
+//               </>
+//             ) : (
+//               <Buttons name={"Create Exam"} type="submit" color="blue" disabled={loader} />
+//             )}
+//           </div>
+//         </form>
+//       </div>
+//       <ViewExam onEdit={handleEdit} loader={loader}/>
+//     </div>
+//   );
+// };
+
+// export default CreateExam;
 
 
 
