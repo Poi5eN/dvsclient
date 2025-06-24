@@ -51,6 +51,7 @@ import TC from "./ADMINDASHBOARD/Certtficate/TC";
 import TCprint from "./ADMINDASHBOARD/Certtficate/TCprint";
 import Printed from "./ADMINDASHBOARD/IdCard/Printed";
 import Reimbrucement from "./ADMINDASHBOARD/Certtficate/Reimbrucement";
+import SetReimbursement from "./ADMINDASHBOARD/SetDesign/SetReimbursement";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -333,6 +334,7 @@ function App() {
               <Route path="udise" element={<Udise />} />
               <Route path="userdetails" element={<AdminUser />} />
               <Route path="testing" element={<Testing />} />
+              <Route path="set-reimbursement" element={<SetReimbursement />} />
               <Route path="transfer-certificate" element={<TC />} />
               <Route path="transfer-certificate-print" element={<TCprint />} />
               <Route path="reimb-certificate-print" element={<Reimbrucement />} />

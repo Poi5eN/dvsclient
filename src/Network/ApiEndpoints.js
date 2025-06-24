@@ -6,6 +6,7 @@ export const apiUrls = {
    design:"adminRoute/design",
    // getIDcarddesign:"adminRoute/design?type=idCard",
    getIDcarddesign:"adminRoute/design?type=idCard&isDefault=true",
+   getdesign:"adminRoute/design",
    
    updateAdmin:"adminRoute/admin ",
    getAdminInfo:"adminRoute/getAdminInfo",

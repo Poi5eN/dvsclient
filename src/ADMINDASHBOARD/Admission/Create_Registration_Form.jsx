@@ -157,10 +157,10 @@ const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
       toast.warn("Please Fill Father's Name");
       return;
     }
-    if (!payload?.parentContact) {
-      toast.warn("Please Fill Parent Contact");
-      return;
-    }
+    // if (!payload?.parentContact) {
+    //   toast.warn("Please Fill Parent Contact");
+    //   return;
+    // }
     
     setIsLoader(true);
 
@@ -193,9 +193,12 @@ const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
     if (sibling) { // Assuming 'sibling' flag indicates creating a new parent
       payloadDataForApi.motherName = payload.motherName?.charAt(0)?.toUpperCase() + payload.motherName?.slice(1) || "";
       // fatherName is already in payloadDataForApi from above
-      payloadDataForApi.parentEmail = generateEmail(payload.fatherName, payload.parentContact);
-      payloadDataForApi.parentPassword = payload.parentContact;
-      payloadDataForApi.parentContact = payload.parentContact || "";
+      payloadDataForApi.parentEmail = generateEmail(payload.fatherName, payload.studentContact);
+      payloadDataForApi.parentPassword = payload.studentContact;
+      payloadDataForApi.parentContact = payload.studentContact || "";
+      // payloadDataForApi.parentEmail = generateEmail(payload.fatherName, payload.parentContact);
+      // payloadDataForApi.parentPassword = payload.parentContact;
+      // payloadDataForApi.parentContact = payload.parentContact || "";
     } else {
       payloadDataForApi.parentAdmissionNumber = payload.parentAdmissionNumber || "";
     }
@@ -638,7 +641,7 @@ const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
                 onChange={handleChange}
                 value={payload.motherName}
               />
-              <ReactInput
+              {/* <ReactInput
                 type="phone"
                 maxLength="10"
                 name="parentContact"
@@ -646,7 +649,7 @@ const [initialStudentImageUrl, setInitialStudentImageUrl] = useState( null);
                 label="Contact"
                 onChange={handleChange}
                 value={payload.parentContact}
-              />
+              /> */}
             </div>
             <div className="flex ">
                        {/* Student Image */}

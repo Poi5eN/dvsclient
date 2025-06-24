@@ -249,7 +249,7 @@ const AllotMarks = () => {
                             value={studentMarks[student.studentId]?.[assessmentName] || ""}
                             onChange={(e) => handleInputChange(student.studentId, assessmentName, e.target.value)}
                         /> */}
-                        <input type="number"  className="outline-none border-none bg-gray-200 px-3 w-[50px]"  value={studentMarks[student.studentId]?.[assessmentName] || ""}
+                        <input type="number"  className="outline-none border-none bg-green-600 text-white px-3 w-[50px]"  value={studentMarks[student.studentId]?.[assessmentName] || ""}
                             onChange={(e) => handleInputChange(student.studentId, assessmentName, e.target.value)}
                      />
                     </td>
