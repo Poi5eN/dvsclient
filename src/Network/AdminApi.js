@@ -525,6 +525,19 @@ export const createExam = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const updateExams = async (editingExamId,payload) => {
+  // console.log("payload",payload)
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.createExam}/${editingExamId}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 export const examresult = async (studentId) => {
   try {
     const option = {
@@ -1147,5 +1160,3 @@ export const duesandsales = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
-
-// inventory end 
