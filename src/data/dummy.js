@@ -190,6 +190,18 @@ export const links = [
       children: [
           // { name: 'Records', link: 'records' },
           { name: 'Reimbursement', link: 'reimb-certificate-print' },
+          { name: 'Bondfide', link: 'bonafide' },
+          // { name: 'Sales', link: 'sales' }, 
+        
+      ],
+  },
+  {
+      name: 'Set Design',
+      icon: <BiSolidStoreAlt />,
+      children: [
+          // { name: 'Records', link: 'records' },
+          { name: 'Reimbursement', link: 'set-reimbursement' },
+           { name: 'Bonafide', link: 'set-bonafide' },
           // { name: 'Sales', link: 'sales' }, 
         
       ],

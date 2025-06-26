@@ -44,6 +44,28 @@ export const getIDcarddesign = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
+export const getdesignReimbursement = async (payload) => {
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getdesign}?type=reimbursementForm&isDefault=true`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const getdesignbonafideCertificate = async (payload) => {
+  try {
+    const option = {
+      method: "GET", // Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.getdesign}?type=bonafideCertificate&isDefault=true`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
 
 export const updateAdmin = async (payload) => {
   try {
@@ -520,6 +542,19 @@ export const createExam = async (payload) => {
       payloadData: payload// Ensure the method is GET
     };
     const data = await makeApiRequest(`${apiUrls.createExam}`, option);
+    return data;
+  } catch (error) {
+    console.error(error, "Something Went Wrong");
+  }
+};
+export const updateExams = async (editingExamId,payload) => {
+  // console.log("payload",payload)
+  try {
+    const option = {
+      method: "PUT",
+      payloadData: payload// Ensure the method is GET
+    };
+    const data = await makeApiRequest(`${apiUrls.createExam}/${editingExamId}`, option);
     return data;
   } catch (error) {
     console.error(error, "Something Went Wrong");
@@ -1147,5 +1182,3 @@ export const duesandsales = async (payload) => {
     console.error(error, "Something Went Wrong");
   }
 };
-
-// inventory end 

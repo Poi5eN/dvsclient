@@ -8,8 +8,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { MantineProvider } from '@mantine/core';
+
 import ExamSystem from "./ADMINDASHBOARD/Exams/ExamSystem";
 import Loading from "./Loading";
 import PublicRoute from "./components/Auth/PublicRoute";
@@ -52,6 +51,9 @@ import TC from "./ADMINDASHBOARD/Certtficate/TC";
 import TCprint from "./ADMINDASHBOARD/Certtficate/TCprint";
 import Printed from "./ADMINDASHBOARD/IdCard/Printed";
 import Reimbrucement from "./ADMINDASHBOARD/Certtficate/Reimbrucement";
+import SetReimbursement from "./ADMINDASHBOARD/SetDesign/SetReimbursement";
+import SetBonafide from "./ADMINDASHBOARD/SetDesign/SetBonafide";
+import Bonafide from "./ADMINDASHBOARD/Certtficate/Bonafide";
 
 const LandingPage = lazy(() => import("./ShikshMitraWebsite/LandingPage"));
 const AdminDashboard = lazy(() => import("./ADMINDASHBOARD/AdminDashboard"));
@@ -207,7 +209,6 @@ const ThirdPartyMobile = lazy(() => import("./THIRDPARTY/Mobile/ThirdPartyMobile
 const Feature = lazy(() => import("./ShikshMitraWebsite/component/New/Feature"));
 const Contact = lazy(() => import("./ShikshMitraWebsite/component/New/Page/Fetaure/Contact/Contact"));
 const About = lazy(() => import("./ShikshMitraWebsite/component/New/Page/About/About"));
-const Blog = lazy(() => import("./ShikshMitraWebsite/component/New/Page/Blog/Blog"));
 const ReportCard = lazy(() => import("./ADMINDASHBOARD/Exams/ReportCard"));
 const Newegistrations = lazy(() => import("./ADMINDASHBOARD/NewRegistration/Newegistrations"));
 const Unauthorized = lazy(() => import("./components/Auth/Unauthorized"));
@@ -226,32 +227,8 @@ function App() {
   //   }
   // }, [token, userRole, navigate]);
 
-
-
-  // index.js or App.js
-const resizeObserverErrHandler = () => {
-  // Suppress the ResizeObserver loop error
-  const error = window.console.error;
-  window.console.error = (...args) => {
-    if (
-      args[0] &&
-      typeof args[0] === "string" &&
-      args[0].includes("ResizeObserver loop completed")
-    ) {
-      return;
-    }
-    error(...args);
-  };
-};
-
-resizeObserverErrHandler();
-
-
-
-
   return (
-    <ThemeProvider>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
+    <>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route element={<PublicRoute />}>
@@ -268,7 +245,6 @@ resizeObserverErrHandler();
               <Route path="/thirdparty" element={<Thirdpartylogin />} />
               <Route path="/studentlogin" element={<StudentLogin />} />
               <Route path="/parentlogin" element={<ParentLogin />} />
-              <Route path="/blog" element={<Blog />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Route>
           </Route>
@@ -360,6 +336,9 @@ resizeObserverErrHandler();
               <Route path="udise" element={<Udise />} />
               <Route path="userdetails" element={<AdminUser />} />
               <Route path="testing" element={<Testing />} />
+              <Route path="bonafide" element={<Bonafide />} />
+              <Route path="set-reimbursement" element={<SetReimbursement />} />
+              <Route path="set-bonafide" element={<SetBonafide />} />
               <Route path="transfer-certificate" element={<TC />} />
               <Route path="transfer-certificate-print" element={<TCprint />} />
               <Route path="reimb-certificate-print" element={<Reimbrucement />} />
@@ -439,8 +418,7 @@ resizeObserverErrHandler();
           />
         </Routes>
       </Suspense>
-      </MantineProvider>
-    </ThemeProvider>
+    </>
   );
 }
 
