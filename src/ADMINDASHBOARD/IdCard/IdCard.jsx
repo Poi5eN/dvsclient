@@ -303,7 +303,7 @@ const IdCard = () => {
         studentImage: student?.studentImage?.url,
         name: student?.studentName?.toUpperCase() || '',
         dob: student?.dateOfBirth ? moment(student.dateOfBirth).format("DD-MM-YYYY") : '',
-        class: student?.class ? `${student.class}${student.section ? ` - ${student.section}` : ''}` : '',
+        class: student?.class || '',
         section: student?.section || '',
         gender: student?.gender || '',
         contact: student?.contact || '',
