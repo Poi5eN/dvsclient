@@ -8,7 +8,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 
-
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { MantineProvider } from '@mantine/core';
 import ExamSystem from "./ADMINDASHBOARD/Exams/ExamSystem";
 import Loading from "./Loading";
 import PublicRoute from "./components/Auth/PublicRoute";
@@ -206,6 +207,7 @@ const ThirdPartyMobile = lazy(() => import("./THIRDPARTY/Mobile/ThirdPartyMobile
 const Feature = lazy(() => import("./ShikshMitraWebsite/component/New/Feature"));
 const Contact = lazy(() => import("./ShikshMitraWebsite/component/New/Page/Fetaure/Contact/Contact"));
 const About = lazy(() => import("./ShikshMitraWebsite/component/New/Page/About/About"));
+const Blog = lazy(() => import("./ShikshMitraWebsite/component/New/Page/Blog/Blog"));
 const ReportCard = lazy(() => import("./ADMINDASHBOARD/Exams/ReportCard"));
 const Newegistrations = lazy(() => import("./ADMINDASHBOARD/NewRegistration/Newegistrations"));
 const Unauthorized = lazy(() => import("./components/Auth/Unauthorized"));
@@ -224,8 +226,32 @@ function App() {
   //   }
   // }, [token, userRole, navigate]);
 
+
+
+  // index.js or App.js
+const resizeObserverErrHandler = () => {
+  // Suppress the ResizeObserver loop error
+  const error = window.console.error;
+  window.console.error = (...args) => {
+    if (
+      args[0] &&
+      typeof args[0] === "string" &&
+      args[0].includes("ResizeObserver loop completed")
+    ) {
+      return;
+    }
+    error(...args);
+  };
+};
+
+resizeObserverErrHandler();
+
+
+
+
   return (
-    <>
+    <ThemeProvider>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route element={<PublicRoute />}>
@@ -242,6 +268,7 @@ function App() {
               <Route path="/thirdparty" element={<Thirdpartylogin />} />
               <Route path="/studentlogin" element={<StudentLogin />} />
               <Route path="/parentlogin" element={<ParentLogin />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Route>
           </Route>
@@ -412,7 +439,8 @@ function App() {
           />
         </Routes>
       </Suspense>
-    </>
+      </MantineProvider>
+    </ThemeProvider>
   );
 }
 

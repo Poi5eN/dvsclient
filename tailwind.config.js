@@ -5,6 +5,16 @@ module.exports =withMT ({
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   darkMode: 'class',
   theme: {
+    extend: {
+      colors: {
+        primary: '#4F46E5', // Indigo for buttons/icons
+        secondary: '#EF4444', // Red for delete actions
+        accent: '#10B981', // Green for success/add actions
+        dark: '#111827', // Charcoal for dark mode
+        light: '#F9FAFB', // Off-white for light mode
+        neutral: '#6B7280', // Grey for text
+      },
+    },
     // fontFamily: {
     //   display: ['Open Sans', 'sans-serif'],
     //   body: ['Open Sans', 'sans-serif'],

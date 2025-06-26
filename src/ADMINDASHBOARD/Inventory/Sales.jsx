@@ -54,90 +54,91 @@ const Sales = () => {
     toDate: new Date(),
     mode: {},
   });
+  const [studentsPage, setStudentsPage] = useState(1);
+  const [hasMoreStudents, setHasMoreStudents] = useState(true);
+  const [loadingMoreStudents, setLoadingMoreStudents] = useState(false);
 
   const receiptModalContentRef = useRef();
   const searchContainerRef = useRef();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        if (!token) {
-          throw new Error("Authentication token not found.");
-        }
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const [
-          studentResponse,
-          itemResponse,
-          bundleResponse,
-          salesResponse,
-          duesResponse,
-        ] = await Promise.all([
-          axios.get(
-            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true",
-            { withCredentials: true, headers }
-          ),
-          axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items", {
-            withCredentials: true,
-            headers,
-          }),
-          axios.get(
-            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/bundles",
-            { withCredentials: true, headers }
-          ),
-          axios.get("https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales", {
-            withCredentials: true,
-            headers,
-          }),
-          axios.get(
-            "https://api.digitalvidyasaarthi.in/api/v1/adminRoute/salesdues",
-            { withCredentials: true, headers }
-          ),
-        ]);
-
-        if (studentResponse.data.success)
-          setStudents(studentResponse.data.students.data || []);
-        else
-          throw new Error(
-            studentResponse.data.message || "Failed to fetch students"
-          );
-        if (itemResponse.data.success)
-          setItems(itemResponse.data.listOfAllItems || []);
-        else
-          throw new Error(itemResponse.data.message || "Failed to fetch items");
-        if (bundleResponse.data.success)
-          setBundles(bundleResponse.data.data || []);
-        else
-          throw new Error(
-            bundleResponse.data.message || "Failed to fetch bundles"
-          );
-        if (salesResponse.data.success)
-          setSales(salesResponse.data.sales?.reverse() || []);
-        else
-          throw new Error(
-            salesResponse.data.message || "Failed to fetch sales"
-          );
-        if (duesResponse.data.success)
-          setDuesSales(duesResponse.data.sales?.reverse() || []);
-        else
-          throw new Error(duesResponse.data.message || "Failed to fetch dues");
-      } catch (error) {
-        console.error("Fetch data error:", error);
-        toast.error(
-          error.response?.data?.message ||
-            error.message ||
-            "Failed to fetch data."
-        );
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      if (!token) {
+        throw new Error("Authentication token not found.");
       }
-    };
-    fetchData();
-  }, []);
+      const headers = { Authorization: `Bearer ${token}` };
+      const page = 1;
+      const limit = 10;
+
+      // Fetch only essential data first
+      const [studentResponse, itemResponse] = await Promise.all([
+        axios.get(
+          `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true&page=${page}&limit=${limit}`,
+          { withCredentials: true, headers }
+        ),
+        axios.get(
+          `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/items?page=${page}&limit=${limit}`,
+          { withCredentials: true, headers }
+        ),
+      ]);
+
+      if (studentResponse.data.success) {
+        const studentsData = studentResponse.data.students.data || [];
+        setStudents(studentsData);
+        setHasMoreStudents(studentsData.length === limit); // Check if there might be more
+        setStudentsPage(1);
+      }
+      if (itemResponse.data.success)
+        setItems(itemResponse.data.listOfAllItems || []);
+
+      // Load other data after initial render
+      setTimeout(() => {
+        fetchRemainingData(headers);
+      }, 100);
+
+    } catch (error) {
+      console.error("Fetch data error:", error);
+      toast.error(error.response?.data?.message || error.message || "Failed to fetch data.");
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRemainingData = async (headers) => {
+    try {
+      const [bundleResponse, salesResponse, duesResponse] = await Promise.all([
+        axios.get(
+          `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/bundles?page=1&limit=20`,
+          { withCredentials: true, headers }
+        ),
+        axios.get(
+          `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/sales?page=1&limit=20`,
+          { withCredentials: true, headers }
+        ),
+        axios.get(
+          `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/salesdues?page=1&limit=20`,
+          { withCredentials: true, headers }
+        ),
+      ]);
+
+      if (bundleResponse.data.success)
+        setBundles(bundleResponse.data.data || []);
+      if (salesResponse.data.success)
+        setSales(salesResponse.data.sales?.reverse() || []);
+      if (duesResponse.data.success)
+        setDuesSales(duesResponse.data.sales?.reverse() || []);
+    } catch (error) {
+      console.error("Error fetching remaining data:", error);
+    }
+  };
+
+  fetchData();
+}, [token]);
 
   const getAllSales = async () => {
     const payload = {
@@ -180,25 +181,30 @@ const Sales = () => {
   }, [sales, selectedStudent]);
 
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setSearchResults([]);
-      setShowSuggestions(false);
-      return;
-    }
+  if (searchTerm.trim() === "") {
+    setSearchResults([]);
+    setShowSuggestions(false);
+    return;
+  }
+
+  const timeoutId = setTimeout(() => {
+    const term = searchTerm.toLowerCase();
     const filtered = students
       .filter((s) => {
-        const term = searchTerm.toLowerCase();
         return (
           s.studentName.toLowerCase().includes(term) ||
-          (s.admissionNumber &&
-            String(s.admissionNumber).toLowerCase().includes(term)) ||
+          (s.admissionNumber && String(s.admissionNumber).toLowerCase().includes(term)) ||
           s.studentId.toLowerCase().includes(term)
         );
       })
-      .slice(0, 10);
+      .slice(0, 5);
+    
     setSearchResults(filtered);
-    setShowSuggestions(true);
-  }, [searchTerm, students]);
+    setShowSuggestions(filtered.length > 0);
+  }, 300);
+
+  return () => clearTimeout(timeoutId);
+}, [searchTerm, students]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -231,20 +237,49 @@ const Sales = () => {
     setDueSelectedItem("");
   };
 
-  const handleSearchChange = (e) => {
-    const newSearchTerm = e.target.value;
-    setSearchTerm(newSearchTerm);
-    if (newSearchTerm.trim() === "") {
-      setSelectedStudent(null);
-      setSelectedStudentDisplay("");
-      setSelectedStudentTotalDue(0);
-      setSelectedStudentUnpaidSales([]);
-      setDueSaleNumber("");
-      setDuePaymentAmount("");
-      setDueNewItems([]);
-      setDueSelectedItem("");
+  const handleSearchChange = async (e) => {
+  const newSearchTerm = e.target.value;
+  setSearchTerm(newSearchTerm);
+  
+  if (newSearchTerm.trim() === "") {
+    setSelectedStudent(null);
+    setSelectedStudentDisplay("");
+    setSelectedStudentTotalDue(0);
+    setSelectedStudentUnpaidSales([]);
+    setDueSaleNumber("");
+    setDuePaymentAmount("");
+    setDueNewItems([]);
+    setDueSelectedItem("");
+    return;
+  }
+
+  // If search term is long enough and no results found, try loading more students
+  if (newSearchTerm.length >= 3 && searchResults.length === 0 && hasMoreStudents && !loadingMoreStudents) {
+    setLoadingMoreStudents(true);
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const nextPage = studentsPage + 1;
+      
+      const response = await axios.get(
+        `https://api.digitalvidyasaarthi.in/api/v1/adminRoute/studentparent?fetchAllStudents=true&page=${nextPage}&limit=10`,
+        { withCredentials: true, headers }
+      );
+      
+      if (response.data.success && response.data.students.data?.length > 0) {
+        const newStudents = response.data.students.data;
+        setStudents(prev => [...prev, ...newStudents]);
+        setStudentsPage(nextPage);
+        setHasMoreStudents(newStudents.length === 10);
+      } else {
+        setHasMoreStudents(false);
+      }
+    } catch (error) {
+      console.error("Error loading more students:", error);
+    } finally {
+      setLoadingMoreStudents(false);
     }
-  };
+  }
+};
 
   const itemOptions = [
     ...items.map((item) => ({
@@ -414,7 +449,7 @@ const Sales = () => {
     setDueAmount(Math.max(0, calculatedSubtotal - paid));
   }, [selectedItems, paidAmount]);
 
-  const handleSubmit = async () => {
+ const handleSubmit = async () => {
     if (!selectedStudent || !selectedStudent.studentId) {
       toast.error("Please search and select a student.");
       return;
@@ -423,12 +458,9 @@ const Sales = () => {
       toast.error("Please add items to the sale.");
       return;
     }
-    if (selectedStudentTotalDue > 0) {
-      toast.info(
-        `Note: This student has a previous due balance of ₹${selectedStudentTotalDue.toFixed(
-          2
-        )}.`
-      );
+    if (paidAmount && !paidMode?.value) {
+      toast.error("Please select a payment mode when providing a paid amount.");
+      return;
     }
 
     const saleData = {
@@ -441,7 +473,7 @@ const Sales = () => {
       paymentStatus:
         (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : "pending",
       paidAmount: parseFloat(paidAmount) || 0,
-      paymentMode: paidMode?.value,
+      paymentMode: paidMode?.value || "Cash", // Default to "Cash" if not set
     };
 
     try {
@@ -800,11 +832,17 @@ const Sales = () => {
   };
 
   useEffect(() => {
-    const filtervalue = sales.filter((val) =>
-      values?.mode === "All" ? true : val?.paymentStatus === values?.mode
-    );
-    setFilterData(filtervalue || sales);
-  }, [values?.mode]);
+  if (!values?.mode || values?.mode === "All") {
+    setFilterData(sales);
+    return;
+  }
+  
+  // Use requestAnimationFrame to avoid blocking UI
+  requestAnimationFrame(() => {
+    const filtered = sales.filter(val => val?.paymentStatus === values?.mode);
+    setFilterData(filtered);
+  });
+}, [values?.mode, sales]);
 
   const overallTotalPaid = () =>
     filterData.reduce(
@@ -893,13 +931,15 @@ const Sales = () => {
     }
   };
 
-  if (loading && !filterData.length) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  if (loading) {
+  return (
+    <div className="flex flex-col justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+      <p className="text-gray-600">Loading essential data...</p>
+      <p className="text-sm text-gray-500">This should only take a moment</p>
+    </div>
+  );
+}
 
   if (error && !filterData.length) {
     return (
@@ -1021,9 +1061,13 @@ const Sales = () => {
       </table>
     </div>
   );
+  
 
   return (
+
+
     <div className="">
+      
       <PageHeaderWithBreadcrumb
         breadcrumbItems={BreadcrumbList.admission}
         title="Create New Sale"

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import { gsap } from 'gsap';
 import '../../App.css'; // Ensure you have styles for slider in App.css
 import togore from '../assets/school logo.jpg'
 import spl from '../assets/clients/Spl.jpg'
@@ -23,27 +24,28 @@ const slidesData = [
 ];
 
 const SlidingCards = () => {
-  // Duplicating for infinite scroll illusion
-  const repeatedSlides = [...slidesData, ...slidesData];
+  useEffect(() => {
+    const slides = document.querySelectorAll('.slide');
+    gsap.to(slides, {
+      x: '-100%',
+      duration: 20,
+      repeat: -1,
+      ease: 'linear',
+      stagger: 0.1,
+    });
+  }, []);
 
   return (
-    <div className="container mx-auto px-4 sm:px-12 py-8">
-         <div className="text-center text-2xl md:text-3xl font-bold text-[#ee582c] mb-8 ">
+    <div className="container mx-auto px-4 sm:px-12 py-8 bg-white dark:bg-gray-900">
+      <div className="text-center text-2xl md:text-3xl font-bold text-[#ee5828] dark:text-[#ee5828] mb-8">
         Our Clients
       </div>
-      <div className="slider">
-        <div className="slide-track py-6">
-          {repeatedSlides.map((slide, idx) => (
-            <div
-              key={idx}
-              className="slide flex flex-col items-center justify-center text-white text-center  rounded-lg shadow-lg px-4 py-10 mx-2"
-            >
-              <img
-                src={slide.logo}
-                alt={`${slide.schoolName} logo`}
-                className="mb-2 h-32 bg-white p-1 object-contain"
-              />
-              <h3 className="font-semibold text-[#29abe2]">{slide.schoolName}</h3>
+      <div className="overflow-hidden">
+        <div className="flex slide-track py-6">
+          {slidesData.concat(slidesData).map((slide, idx) => (
+            <div key={idx} className="slide flex-shrink-0 flex flex-col items-center justify-center text-center rounded-lg shadow-lg px-4 py-10 mx-2 bg-white dark:bg-gray-800">
+              <img src={slide.logo} alt={`${slide.schoolName} logo`} className="mb-2 h-32 bg-white p-1 object-contain" />
+              <h3 className="font-semibold text-[#29abe2] dark:text-[#29abe2]">{slide.schoolName}</h3>
             </div>
           ))}
         </div>
