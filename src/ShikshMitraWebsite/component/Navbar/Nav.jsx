@@ -7,7 +7,7 @@ import Whitelogo from "../../digitalvidya.png";
 
 const Nav = () => {
   const context = useContext(ThemeContext);
-  const { theme = "light", toggleTheme = () => {} } = context || {}; // Fallback to default values
+  const { theme = "light", toggleTheme = () => { } } = context || {}; // Fallback to default values
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -46,12 +46,48 @@ const Nav = () => {
         </div>
         {isOpen && (
           <div className="md:hidden bg-white dark:bg-gray-900 px-2 pt-2 pb-3">
-            <Link to="/" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]">Home</Link>
-            <Link to="/feature" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]">Features</Link>
-            <Link to="/about" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]">About</Link>
-            <Link to="/contact" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]">Contact</Link>
-            <Link to="/blog" className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]">Blog</Link>
-            <Link to="/login" className="block px-3 py-2 bg-[#ee5828] text-white rounded-md hover:bg-[#2fa7db]">Login</Link>
+            <Link
+              to="/"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]"
+            >
+              Home
+            </Link>
+            <Link
+              to="/feature"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]"
+            >
+              Features
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]"
+            >
+              Contact
+            </Link>
+            <Link
+              to="/blog"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-[#ee5828]"
+            >
+              Blog
+            </Link>
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 bg-[#ee5828] text-white rounded-md hover:bg-[#2fa7db]"
+            >
+              Login
+            </Link>
           </div>
         )}
       </div>
