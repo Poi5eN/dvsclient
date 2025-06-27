@@ -31,7 +31,7 @@ const Sales = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [paidAmount, setPaidAmount] = useState("");
-  const [paidMode, setPaidMode] = useState({ label: "Cash", value: "Cash" });
+  const [paidMode, setPaidMode] = useState("Cash");
   const [additionalDuePayment, setAdditionalDuePayment] = useState("");
   const [dueAmount, setDueAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -50,10 +50,10 @@ const Sales = () => {
   const [dueSelectedItem, setDueSelectedItem] = useState("");
   const [filterData, setFilterData] = useState([]);
   const [values, setValues] = useState({
-    fromDate: new Date(),
-    toDate: new Date(),
-    mode: {},
-  });
+  fromDate: new Date(),
+  toDate: new Date(),
+  mode: "All", // Set default mode to "All" as a string
+});
   const [studentsPage, setStudentsPage] = useState(1);
   const [hasMoreStudents, setHasMoreStudents] = useState(true);
   const [loadingMoreStudents, setLoadingMoreStudents] = useState(false);
@@ -450,31 +450,31 @@ const Sales = () => {
   }, [selectedItems, paidAmount]);
 
  const handleSubmit = async () => {
-    if (!selectedStudent || !selectedStudent.studentId) {
-      toast.error("Please search and select a student.");
-      return;
-    }
-    if (selectedItems.length === 0) {
-      toast.error("Please add items to the sale.");
-      return;
-    }
-    if (paidAmount && !paidMode?.value) {
-      toast.error("Please select a payment mode when providing a paid amount.");
-      return;
-    }
+  if (!selectedStudent || !selectedStudent.studentId) {
+    toast.error("Please search and select a student.");
+    return;
+  }
+  if (selectedItems.length === 0) {
+    toast.error("Please add items to the sale.");
+    return;
+  }
+  if (paidAmount && !paidMode) {
+    toast.error("Please select a payment mode when providing a paid amount.");
+    return;
+  }
 
-    const saleData = {
-      studentId: selectedStudent.studentId,
-      items: selectedItems.map((i) => ({
-        itemId: i.itemId,
-        quantity: i.quantity,
-        bundleId: i.bundleId,
-      })),
-      paymentStatus:
-        (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : "pending",
-      paidAmount: parseFloat(paidAmount) || 0,
-      paymentMode: paidMode?.value || "Cash", // Default to "Cash" if not set
-    };
+  const saleData = {
+    studentId: selectedStudent.studentId,
+    items: selectedItems.map((i) => ({
+      itemId: i.itemId,
+      quantity: i.quantity,
+      bundleId: i.bundleId,
+    })),
+    paymentStatus:
+      (parseFloat(paidAmount) || 0) >= subtotal ? "paid" : "pending",
+    paidAmount: parseFloat(paidAmount) || 0,
+    paymentMode: paidMode, // Use paidMode directly, no default needed since it's always set
+  };
 
     try {
       setIsSubmitting(true);
@@ -832,17 +832,16 @@ const Sales = () => {
   };
 
   useEffect(() => {
-  if (!values?.mode || values?.mode === "All") {
+  if (values.mode === "All") {
     setFilterData(sales);
-    return;
+  } else {
+    // Use requestAnimationFrame to avoid blocking UI
+    requestAnimationFrame(() => {
+      const filtered = sales.filter(val => val?.paymentStatus === values.mode);
+      setFilterData(filtered);
+    });
   }
-  
-  // Use requestAnimationFrame to avoid blocking UI
-  requestAnimationFrame(() => {
-    const filtered = sales.filter(val => val?.paymentStatus === values?.mode);
-    setFilterData(filtered);
-  });
-}, [values?.mode, sales]);
+}, [values.mode, sales]);
 
   const overallTotalPaid = () =>
     filterData.reduce(
@@ -1219,15 +1218,17 @@ const Sales = () => {
                   />
                 </div>
                 <ReactSelect
-                  label="Mode"
-                  name="paidMode"
-                  value={paidMode}
-                  handleChange={(e) => setPaidMode(e.target.value)}
-                  dynamicOptions={[
-                    { label: "Cash", value: "Cash" },
-                    { label: "Online", value: "Online" },
-                  ]}
-                />
+  label="Mode"
+  name="paidMode"
+  value={paidMode}
+  handleChange={(e) => setPaidMode(e.target.value)}
+  dynamicOptions={[
+    { label: "Cash", value: "Cash" },
+    { label: "Online", value: "Online" },
+    { label: "Card", value: "Card" },
+    { label: "Cheque", value: "Cheque" },
+  ]}
+/>
                 <div className="w-full sm:w-32">
                   <ReactInput
                     label="Pay Dues"

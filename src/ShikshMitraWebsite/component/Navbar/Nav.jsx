@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiSun, FiMoon } from "react-icons/fi";
@@ -6,8 +6,9 @@ import { ThemeContext } from "../../../contexts/ThemeContext";
 import Whitelogo from "../../digitalvidya.png";
 
 const Nav = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
-  const [isOpen, setIsOpen] = React.useState(false);
+  const context = useContext(ThemeContext);
+  const { theme = "light", toggleTheme = () => {} } = context || {}; // Fallback to default values
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.nav
@@ -35,11 +36,11 @@ const Nav = () => {
               onClick={toggleTheme}
               className="p-2 rounded-full bg-gray-200 dark:bg-gray-700"
             >
-              {theme === 'light' ? <FiMoon className="text-gray-700" /> : <FiSun className="text-yellow-400" />}
+              {theme === "light" ? <FiMoon className="text-gray-700" /> : <FiSun className="text-yellow-400" />}
             </motion.button>
             <Link to="/login" className="bg-[#ee5828] text-white px-5 py-2 rounded-lg hover:bg-[#2fa7db]">Login</Link>
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2">
-              {isOpen ? 'X' : '☰'}
+              {isOpen ? "X" : "☰"}
             </button>
           </div>
         </div>
