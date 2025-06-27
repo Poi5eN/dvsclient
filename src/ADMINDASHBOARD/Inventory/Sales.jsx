@@ -479,7 +479,9 @@ const Sales = () => {
     try {
       setIsSubmitting(true);
       const response = await PostSales(saleData);
+      console.log("firstresponse",response)
       if (response?.success) {
+        toast.success(response?.data?.message)
         const newSale = response?.data.sale;
         const studentDetailsForReceipt = { ...selectedStudent };
         const itemsForReceipt =
@@ -573,14 +575,14 @@ const Sales = () => {
         const receiptData = { ...newSale, items: itemsForReceipt };
         generateReceiptHtml(receiptData, studentDetailsForReceipt);
       } else {
-        toast.error(response.data.message || "Failed to create sale.");
+        toast.error(response.message );
       }
     } catch (error) {
-      console.error("Submit sale error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "An error occurred while creating the sale."
-      );
+      // console.error("Submit sale error:", error);
+      // toast.error(
+      //   error.response?.data?.message ||
+      //     "An error occurred while creating the sale."
+      // );
     } finally {
       setIsSubmitting(false);
     }

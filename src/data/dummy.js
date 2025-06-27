@@ -206,6 +206,16 @@ export const links = [
         
       ],
   },
+  {
+      name: 'Set Design',
+      icon: <BiSolidStoreAlt />,
+      children: [
+          // { name: 'Records', link: 'records' },
+          { name: 'Reimbursement', link: 'set-reimbursement' },
+          // { name: 'Sales', link: 'sales' }, 
+        
+      ],
+  },
   // {
   //     name: 'Design',
   //     icon: <BiSolidStoreAlt />,
