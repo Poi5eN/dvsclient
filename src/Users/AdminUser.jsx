@@ -20,7 +20,7 @@ const user=JSON.parse(localStorage.getItem("user"))
     schoolName: "",
     address: "",
     logoImage: null,
-    AdminPhoto: null,
+    image: null,
     Sign: null,
     feeMessage: "",
     admissionMessage: "",
@@ -85,6 +85,7 @@ if(user){
   },[])
 
   const handleSubmit = async () => {
+    debugger
     setIsLoader(true);
 const payload={
   email:values?.email|| "",
@@ -101,16 +102,23 @@ const payload={
   newPassword:values?.newpassword|| "",
   currentPassword:values?.currentpassword || "",
   logoImage:values?.logoImage,
+  image:values?.image,
 }
     const formDataToSend = new FormData();
-
-    Object.entries(payload).forEach(([key, value]) => {
-      if (key === "logoImage" && value) {
-        formDataToSend.append(key, value);
-      } else {
-        formDataToSend.append(key, String(value));
-      }
-    });
+Object.entries(payload).forEach(([key, value]) => {
+  if ((key === "logoImage" || key === "image") && value) {
+    formDataToSend.append(key, value);
+  } else {
+    formDataToSend.append(key, String(value ?? ""));
+  }
+});
+    // Object.entries(payload).forEach(([key, value]) => {
+    //   if (key === "logoImage" && value) {
+    //     formDataToSend.append(key, value);
+    //   } else {
+    //     formDataToSend.append(key, String(value));
+    //   }
+    // });
 
     try {
 
@@ -137,6 +145,12 @@ const payload={
       setValues({ ...values, logoImage: file });
     }
   };
+  const handleImageChangeADmin = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setValues({ ...values, image: file });
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -158,56 +172,7 @@ if(props==="Update"){
      
       <div
         className="bg-white p-2 rounded-lg shadow border border-gray-200 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 ">
-        {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1  rounded-md">
-          {[
-            
-            { name: "name", label: "Name" ,  disable: isEdit ? true : false },
-            { name: "email", label: "Email",
-              disable: isEdit ? true : false
-             },
-            { name: "currentpassword", label: "Current Password"  , disable: isEdit ? true : false },
-            { name: "newpassword", label: "New Password"  , disable: isEdit ? true : false },
-            { name: "contact", label: "Contact"  , disable: isEdit ? true : false },
-            { name: "alternateNo.", label: "Alt Number."  , disable: isEdit ? true : false },
-            { name: "schoolName", label: "School Name"  , disable: isEdit ? true : false },
-            { name: "address", label: "Address"  , disable: isEdit ? true : false },
-            { name: "feeMessage", label: "Fee Message"  , disable: isEdit ? true : false },
-            { name: "admissionMessage", label: "Admission Message"  , disable: isEdit ? true : false },
-            { name: "registrationMessage", label: "Registration Message"  , disable: isEdit ? true : false },
-            { name: "state", label: "State"  , disable: isEdit ? true : false },
-            { name: "city", label: "City"  , disable: isEdit ? true : false },
-            { name: "pincode", label: "Pincode"  , disable: isEdit ? true : false },
-          ].map((field) => (
-            <ReactInput
-              key={field.name}
-              type="text"
-              name={field.name}
-              required={false}
-              label={field.label}
-              onChange={handleChange}
-              value={values[field.name]}
-              disabled={field?.disable}
-            />
-          ))}
-
-          <ReactInput
-            type="file"
-            name="logoImage"
-            accept="image/*"
-            label="Logo Image"
-            onChange={handleImageChange}
-          />
-          {values.logoImage && (
-            <img
-              // src={URL.createObjectURL(values.logoImage)}
-              src={user?.logoImage?.url}
-              alt="Logo Preview"
-              className="w-10 h-10 object-cover rounded-md"
-            />
-          )}
-        </div> */}
-        {/* <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 px-1 rounded-md"> */}
-  <ReactInput
+         <ReactInput
     type="text"
     name="name"
     required={false}
@@ -366,32 +331,32 @@ if(props==="Update"){
   )}
   <ReactInput
     type="file"
-    name="AdminPhoto"
+    name="image"
     accept="image/*"
     label="Admin Photo"
-    onChange={handleImageChange}
+    onChange={handleImageChangeADmin}
   />
-  {values.AdminPhoto && (
+  {values.image && (
     <img
-      src={user?.AdminPhoto?.url}
+      src={user?.image?.url}
       alt="Logo Preview"
       className="w-10 h-10 object-cover rounded-md"
     />
   )}
-  <ReactInput
+  {/* <ReactInput
     type="file"
     name="Sign"
     accept="image/*"
     label="Principal Sign"
     onChange={handleImageChange}
-  />
-  {values.Sign && (
+  /> */}
+  {/* {values.Sign && (
     <img
       src={user?.Sign?.url}
       alt="Logo Preview"
       className="w-10 h-10 object-cover rounded-md"
     />
-  )}
+  )} */}
 {/* </div> */}
 
 
