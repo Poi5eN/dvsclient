@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ContextProvider } from "./contexts/ContextProvider";
 // import { ChakraProvider } from "@chakra-ui/react";
+import { ThemeWrapper } from "./contexts/ThemeContext"; // Import ThemeWrapper
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,15 +16,17 @@ const Root = () => {
   return (
     <React.StrictMode>
       <ContextProvider>
-        <BrowserRouter>
-          {/* <ChakraProvider> */}
+        <ThemeWrapper>
+          <BrowserRouter>
+            {/* <ChakraProvider> */}
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <App />
             </ThemeProvider>
-          {/* </ChakraProvider> */}
-        </BrowserRouter>
-        <ToastContainer />
+            {/* </ChakraProvider> */}
+          </BrowserRouter>
+          <ToastContainer />
+        </ThemeWrapper>
       </ContextProvider>
     </React.StrictMode>
   );
